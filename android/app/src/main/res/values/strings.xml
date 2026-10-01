@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">System Optix Pharmacy</string>
+    <string name="title_activity_main">System Optix Pharmacy</string>
+    <string name="package_name">com.pharmacypos.cloud</string>
+    <string name="custom_url_scheme">com.pharmacypos.cloud</string>
+</resources>

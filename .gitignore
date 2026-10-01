@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.DS_Store
+server/data/
+__pycache__/
+*.py[cod]
+public/ocr/
+
+# Packaged installers/APKs. These are served by the web host and are never part
+# of the web bundle: keeping them out of public/ is what keeps the app small.
+downloads/
+release/
+
+# Capacitor regenerates this copy of dist/ on every `cap copy` / `cap sync`.
+android/app/src/main/assets/public/
+ios/App/App/public/

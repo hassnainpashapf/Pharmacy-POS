@@ -1,0 +1,9 @@
+{
+  "appId": "com.pharmacypos.cloud",
+  "appName": "System Optix Pharmacy",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false
+  }
+}

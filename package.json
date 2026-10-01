@@ -1,0 +1,107 @@
+{
+  "name": "pharmacy-pos",
+  "private": true,
+  "version": "1.0.0",
+  "description": "System Optix Pharmacy POS - offline-first desktop station with cloud-synced mobile inventory",
+  "author": "System Optix",
+  "type": "module",
+  "engines": { "node": ">=22.0.0" },
+  "main": "electron/main.cjs",
+  "scripts": {
+    "predev": "node scripts/prepare-ocr.mjs",
+    "dev": "node scripts/dev.mjs",
+    "prebuild": "node scripts/prepare-ocr.mjs",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve:web": "node scripts/serve-browser.cjs",
+    "electron:dev": "vite build && electron electron/main.cjs",
+    "electron:build:win": "vite build && electron-builder --win nsis --x64",
+    "electron:build:mac": "vite build && electron-builder --mac dmg",
+    "electron:build:all": "vite build && electron-builder -mw",
+    "electron:pack:win": "vite build && electron-builder --win --dir",
+    "electron:pack:mac": "vite build && electron-builder --mac --dir",
+    "mobile:sync": "vite build && npx cap sync",
+    "android:open": "npx cap open android",
+    "ios:open": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
+    "@tesseract.js-data/eng": "^1.0.0",
+    "@zxing/browser": "^0.2.1",
+    "lucide-react": "^0.469.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.1.0",
+    "recharts": "^3.10.1",
+    "tesseract.js": "^6.0.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "electron": "^44.5.1",
+    "electron-builder": "^26.15.3",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "vite": "^6.0.1"
+  },
+  "build": {
+    "appId": "com.pharmacypos.station",
+    "productName": "System Optix Pharmacy Station",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json",
+      "!node_modules/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Pharmacy POS Station"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.business",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
+    },
+    "dmg": {
+      "title": "Pharmacy POS Station Installer",
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
+  }
+}
