@@ -29,7 +29,7 @@ function createWindow() {
       contextIsolation: true,
       sandbox: false,
     },
-    icon: path.join(__dirname, '../public/favicon.ico'),
+    icon: path.join(__dirname, '../public/icon.ico'),
     show: false,
   })
 
