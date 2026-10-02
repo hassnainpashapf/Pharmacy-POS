@@ -57,16 +57,66 @@ export function medicineMatchesSearch(medicine, query, extra = []) {
   return String(query || '').trim().toLowerCase().split(/\s+/).every((term) => text.includes(term))
 }
 
+export const POPULAR_PHARMA_COMPANIES = [
+  'GSK Pakistan',
+  'Abbott Laboratories',
+  'Getz Pharma',
+  'Sanofi Aventis',
+  'The Searle Company',
+  'Hilton Pharma',
+  'Sami Pharmaceuticals',
+  'Ferozsons Laboratories',
+  'CCL Pharmaceuticals',
+  'Bosch Pharmaceuticals',
+  'Martin Dow',
+  'AGP Limited',
+  'Pfizer Pakistan',
+  'Novartis / Haleon',
+  'Reckitt Benckiser',
+  'Platinum Pharmaceuticals',
+  'Atco Laboratories',
+  'PharmEvo (Pvt) Ltd',
+  'Highnoon Laboratories',
+  'Genix Pharma',
+  'Barrett Hodgson',
+  'Macter International',
+  'Bayer Pakistan',
+  'English Pharma',
+  'Horizon Pharmaceuticals',
+]
+
+export function getDistinctCompanies(medicines = []) {
+  const set = new Set()
+  medicines.forEach((m) => {
+    if (m?.manufacturer && typeof m.manufacturer === 'string' && m.manufacturer.trim()) {
+      set.add(m.manufacturer.trim())
+    }
+  })
+  POPULAR_PHARMA_COMPANIES.forEach((c) => set.add(c))
+  return Array.from(set).sort((a, b) => a.localeCompare(b))
+}
+
+export function getCompanyMedicineCounts(medicines = []) {
+  const map = {}
+  medicines.forEach((m) => {
+    const c = (m?.manufacturer && m.manufacturer.trim()) ? m.manufacturer.trim() : 'Unassigned'
+    map[c] = (map[c] || 0) + 1
+  })
+  return map
+}
+
 // Counts describe records matching the search/status, before the form selection.
 // Catalogue records are products; inventory records are batches or adjustments.
 export function filterMedicineRecords(records, {
-  query = '', group = 'all', medicineFor = (record) => record, extraSearch = () => [],
+  query = '', group = 'all', company = 'all', medicineFor = (record) => record, extraSearch = () => [],
 } = {}) {
   const counts = Object.fromEntries(MEDICINE_GROUPS.map(({ id }) => [id, 0]))
   const matches = []
   for (const record of records) {
     const medicine = medicineFor(record)
     if (!medicineMatchesSearch(medicine, query, extraSearch(record))) continue
+    const medCompany = (medicine?.manufacturer || 'Unassigned').trim()
+    if (company && company !== 'all' && medCompany.toLowerCase() !== company.toLowerCase()) continue
     const recordGroup = medicineGroup(medicine)
     counts.all += 1
     counts[recordGroup] += 1

@@ -24,9 +24,11 @@ import {
   AlertTriangle,
   Receipt,
   FileSpreadsheet,
+  Building2,
 } from 'lucide-react'
+import { getDistinctCompanies } from '../lib/medicineGroups'
 
-// All 32 Pharmacy-Specific Reports Grouped into 4 Core Categories
+// All 35 Pharmacy-Specific Reports Grouped into 4 Core Categories
 const REPORT_CATEGORIES = [
   {
     id: 'sales',
@@ -35,6 +37,7 @@ const REPORT_CATEGORIES = [
       { id: 'SALES_DAILY', title: 'Daily Sales Summary' },
       { id: 'SALES_MONTHLY', title: 'Monthly Sales Comparison' },
       { id: 'SALES_DATE_RANGE', title: 'Date-Wise Sales Journal' },
+      { id: 'SALES_COMPANY', title: '🏢 Company-Wise Sales & Revenue' },
       { id: 'SALES_CASHIER', title: 'Cashier Performance & Sales' },
       { id: 'SALES_MEDICINE', title: 'Medicine-Wise Sales Volume' },
       { id: 'SALES_CATEGORY', title: 'Category / Form Sales' },
@@ -47,6 +50,7 @@ const REPORT_CATEGORIES = [
     id: 'stock',
     name: '📦 Stock & Expiry',
     reports: [
+      { id: 'STOCK_COMPANY', title: '🏢 Company-Wise Stock Master' },
       { id: 'STOCK_CURRENT', title: 'Current Stock Master' },
       { id: 'STOCK_VALUATION', title: 'Stock Valuation (Cost vs Retail)' },
       { id: 'STOCK_LOW', title: 'Low Stock & Reorder Report' },
@@ -76,6 +80,7 @@ const REPORT_CATEGORIES = [
     id: 'accounting',
     name: '💰 Accounting & Profit',
     reports: [
+      { id: 'PROFIT_COMPANY', title: '🏢 Company Profitability & Margins' },
       { id: 'PROFIT_MEDICINE', title: 'Profit by Medicine' },
       { id: 'PROFIT_CATEGORY', title: 'Profit by Dosage Form' },
       { id: 'PROFIT_BATCH', title: 'Batch Margin Variance' },
@@ -99,26 +104,26 @@ export default function Reports() {
 const REPORT_SECTIONS = {
   analytics: {
     title: 'Business Analytics',
-    description: 'Monthly trends, cashier performance, product demand and profit analysis.',
+    description: 'Monthly trends, cashier performance, company demand and profit analysis.',
     categories: [{
       id: 'analytics', name: '📊 Business Performance',
-      reports: ['SALES_MONTHLY', 'SALES_CASHIER', 'SALES_MEDICINE', 'SALES_CATEGORY', 'PROFIT_MEDICINE', 'PROFIT_CATEGORY']
+      reports: ['SALES_MONTHLY', 'SALES_COMPANY', 'STOCK_COMPANY', 'SALES_CASHIER', 'SALES_MEDICINE', 'SALES_CATEGORY', 'PROFIT_MEDICINE', 'PROFIT_COMPANY']
         .map((id) => REPORT_CATEGORIES.flatMap((category) => category.reports).find((report) => report.id === id)),
     }],
   },
   sales: {
     title: 'Sales Reports',
-    description: 'Sales journals, customer invoices, counter totals and day-end closing.',
+    description: 'Company-wise sales, customer invoices, counter totals and day-end closing.',
     categories: REPORT_CATEGORIES.filter((category) => category.id === 'sales'),
   },
   inventory: {
     title: 'Inventory Reports',
-    description: 'Stock levels, batch expiry, valuation, movement and reorder reports.',
+    description: 'Company stock levels, batch expiry, valuation, movement and reorder reports.',
     categories: REPORT_CATEGORIES.filter((category) => category.id === 'stock'),
   },
   financial: {
     title: 'Financial Reports',
-    description: 'Profit, expenses, cash book, purchase ledgers, receivables and payables.',
+    description: 'Company profit margins, expenses, cash book, purchase ledgers, receivables and payables.',
     categories: ['accounting', 'purchasing'].map((id) => REPORT_CATEGORIES.find((category) => category.id === id)),
   },
 }
@@ -128,7 +133,10 @@ function ReportSection({ section }) {
   const config = REPORT_SECTIONS[section]
   const [selectedReportId, setSelectedReportId] = useState(config.categories[0].reports[0].id)
   const [filterPeriod, setFilterPeriod] = useState(30)
+  const [selectedCompany, setSelectedCompany] = useState('ALL')
   const [searchTerm, setSearchTerm] = useState('')
+
+  const distinctCompanies = useMemo(() => getDistinctCompanies(db.medicines || []), [db.medicines])
 
   // Selected Report Metadata
   const currentReportMeta = useMemo(() => {
@@ -214,6 +222,69 @@ function ReportSection({ section }) {
             'Invoices in Range': periodSales.length,
             'Total Revenue': fmt(periodSales.reduce((a, b) => a + b.total, 0)),
             'Total Profit': fmt(periodSales.reduce((a, b) => a + (b.profit || 0), 0)),
+          },
+        }
+      }
+
+      case 'SALES_COMPANY': {
+        const byComp = {}
+        let totalSalesRevenue = 0
+        for (const s of periodSales) {
+          for (const it of s.items || []) {
+            const m = medicineById(it.medicineId)
+            const comp = (m?.manufacturer || 'Unassigned').trim()
+            if (!byComp[comp]) {
+              byComp[comp] = {
+                name: comp,
+                invoices: new Set(),
+                units: 0,
+                revenue: 0,
+                cost: 0,
+                profit: 0,
+              }
+            }
+            byComp[comp].invoices.add(s.id || s.invoiceNo)
+            byComp[comp].units += it.qty
+            const lineRev = it.qty * it.price
+            const lineCost = it.qty * (it.cost || (it.price * 0.75))
+            byComp[comp].revenue += lineRev
+            byComp[comp].cost += lineCost
+            byComp[comp].profit += (lineRev - lineCost)
+            totalSalesRevenue += lineRev
+          }
+        }
+
+        const rows = Object.values(byComp).sort((a, b) => b.revenue - a.revenue)
+        return {
+          columns: [
+            'Pharma Company',
+            'Invoices',
+            'Units Sold',
+            'Sales Revenue',
+            'Cost of Sales',
+            'Gross Profit',
+            'Margin %',
+            'Revenue Share',
+          ],
+          rows: rows.map((r) => {
+            const share = totalSalesRevenue > 0 ? `${Math.round((r.revenue / totalSalesRevenue) * 100)}%` : '0%'
+            const marginPct = r.revenue > 0 ? `${Math.round((r.profit / r.revenue) * 100)}%` : '0%'
+            return [
+              r.name,
+              r.invoices.size,
+              r.units,
+              fmt(r.revenue),
+              fmt(r.cost),
+              fmt(r.profit),
+              marginPct,
+              share,
+            ]
+          }),
+          summary: {
+            'Companies with Sales': rows.length,
+            'Total Company Revenue': fmt(totalSalesRevenue),
+            'Total Gross Profit': fmt(rows.reduce((a, b) => a + b.profit, 0)),
+            'Top Selling Company': rows[0]?.name || 'None',
           },
         }
       }
@@ -346,6 +417,89 @@ function ReportSection({ section }) {
           summary: {
             'Recorded Shifts': shifts.length,
             'Currently Open': shifts.filter((s) => s.status === 'OPEN').length,
+          },
+        }
+      }
+
+      case 'STOCK_COMPANY': {
+        const byComp = {}
+        const now = new Date()
+        const nearExpiryCutoff = new Date(now.getTime() + 90 * 86400000)
+
+        for (const m of (db.medicines || [])) {
+          const comp = (m.manufacturer || 'Unassigned').trim()
+          if (!byComp[comp]) {
+            byComp[comp] = {
+              name: comp,
+              products: 0,
+              batches: 0,
+              stock: 0,
+              costVal: 0,
+              retailVal: 0,
+              lowStockCount: 0,
+              nearExpiryCount: 0,
+            }
+          }
+          byComp[comp].products += 1
+
+          const mBatches = (db.batches || []).filter((b) => b.medicineId === m.id)
+          const mStock = mBatches.reduce((a, b) => a + b.qty, 0)
+          byComp[comp].batches += mBatches.length
+          byComp[comp].stock += mStock
+          if (mStock <= (m.minStock || 10)) {
+            byComp[comp].lowStockCount += 1
+          }
+
+          for (const b of mBatches) {
+            byComp[comp].costVal += b.qty * (b.purchasePrice || m.purchasePrice || 0)
+            byComp[comp].retailVal += b.qty * (b.salePrice || m.salePrice || 0)
+            const exp = new Date(b.expiry)
+            if (exp > now && exp <= nearExpiryCutoff && b.qty > 0) {
+              byComp[comp].nearExpiryCount += 1
+            }
+          }
+        }
+
+        const rows = Object.values(byComp).sort((a, b) => b.retailVal - a.retailVal)
+        const totalCostAll = rows.reduce((a, b) => a + b.costVal, 0)
+        const totalRetailAll = rows.reduce((a, b) => a + b.retailVal, 0)
+        const totalStockUnits = rows.reduce((a, b) => a + b.stock, 0)
+
+        return {
+          columns: [
+            'Pharma Company',
+            'Products (SKUs)',
+            'Batches',
+            'In-Stock Units',
+            'Cost Valuation',
+            'Retail Valuation',
+            'Potential Margin',
+            'Margin %',
+            'Low Stock',
+            'Near Expiry',
+          ],
+          rows: rows.map((r) => {
+            const margin = r.retailVal - r.costVal
+            const marginPct = r.retailVal > 0 ? `${Math.round((margin / r.retailVal) * 100)}%` : '0%'
+            return [
+              r.name,
+              r.products,
+              r.batches,
+              r.stock,
+              fmt(r.costVal),
+              fmt(r.retailVal),
+              fmt(margin),
+              marginPct,
+              r.lowStockCount > 0 ? `⚠️ ${r.lowStockCount} items` : '✓ OK',
+              r.nearExpiryCount > 0 ? `⏰ ${r.nearExpiryCount} batches` : '—',
+            ]
+          }),
+          summary: {
+            'Companies Registered': rows.length,
+            'Total Stock Units': totalStockUnits,
+            'Total Cost Valuation': fmt(totalCostAll),
+            'Total Retail Valuation': fmt(totalRetailAll),
+            'Potential Gross Profit': fmt(totalRetailAll - totalCostAll),
           },
         }
       }
@@ -554,6 +708,65 @@ function ReportSection({ section }) {
         }
       }
 
+      case 'PROFIT_COMPANY': {
+        const byComp = {}
+        const topMedByComp = {}
+
+        for (const s of periodSales) {
+          for (const it of s.items || []) {
+            const m = medicineById(it.medicineId)
+            const comp = (m?.manufacturer || 'Unassigned').trim()
+            const medName = m ? `${m.name} ${m.strength}` : 'Unknown'
+            if (!byComp[comp]) {
+              byComp[comp] = { name: comp, units: 0, revenue: 0, cost: 0, profit: 0 }
+              topMedByComp[comp] = {}
+            }
+            byComp[comp].units += it.qty
+            const lineRev = it.qty * it.price
+            const lineCost = it.qty * (it.cost || (it.price * 0.75))
+            byComp[comp].revenue += lineRev
+            byComp[comp].cost += lineCost
+            byComp[comp].profit += (lineRev - lineCost)
+            topMedByComp[comp][medName] = (topMedByComp[comp][medName] || 0) + lineRev
+          }
+        }
+
+        const rows = Object.values(byComp).sort((a, b) => b.profit - a.profit)
+        return {
+          columns: [
+            'Pharma Company',
+            'Best Selling Product',
+            'Units Sold',
+            'Revenue',
+            'Cost (COGS)',
+            'Gross Profit',
+            'Margin %',
+            'ROI / Markup %',
+          ],
+          rows: rows.map((r) => {
+            const marginPct = r.revenue > 0 ? `${Math.round((r.profit / r.revenue) * 100)}%` : '0%'
+            const roiPct = r.cost > 0 ? `${Math.round((r.profit / r.cost) * 100)}%` : '0%'
+            const topMeds = Object.entries(topMedByComp[r.name] || {}).sort((a, b) => b[1] - a[1])
+            const topMedName = topMeds[0] ? topMeds[0][0] : '—'
+            return [
+              r.name,
+              topMedName,
+              r.units,
+              fmt(r.revenue),
+              fmt(r.cost),
+              fmt(r.profit),
+              marginPct,
+              roiPct,
+            ]
+          }),
+          summary: {
+            'Top Performing Company': rows[0]?.name || 'None',
+            'Total Gross Profit': fmt(rows.reduce((a, b) => a + b.profit, 0)),
+            'Average Margin': rows.length > 0 ? `${Math.round(rows.reduce((a, b) => a + (b.revenue > 0 ? (b.profit / b.revenue) * 100 : 0), 0) / rows.length)}%` : '0%',
+          },
+        }
+      }
+
       case 'PROFIT_MEDICINE': {
         const byMed = {}
         for (const s of periodSales) {
@@ -642,14 +855,21 @@ function ReportSection({ section }) {
     }
   }, [selectedReportId, periodSales, db])
 
-  // Filtered Rows by user search term
+  // Filtered Rows by user search term & company
   const displayRows = useMemo(() => {
-    if (!searchTerm.trim()) return reportData.rows
+    let rows = reportData.rows
+    if (selectedCompany && selectedCompany !== 'ALL') {
+      const compLower = selectedCompany.toLowerCase()
+      rows = rows.filter((row) =>
+        row.some((cell) => String(cell).toLowerCase().includes(compLower))
+      )
+    }
+    if (!searchTerm.trim()) return rows
     const q = searchTerm.toLowerCase()
-    return reportData.rows.filter((row) =>
+    return rows.filter((row) =>
       row.some((cell) => String(cell).toLowerCase().includes(q))
     )
-  }, [reportData.rows, searchTerm])
+  }, [reportData.rows, searchTerm, selectedCompany])
 
   function handleExportCSV() {
     const header = reportData.columns.join(',')
@@ -658,7 +878,8 @@ function ReportSection({ section }) {
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement('a')
     link.setAttribute('href', encodedUri)
-    link.setAttribute('download', `${selectedReportId}_${new Date().toISOString().slice(0, 10)}.csv`)
+    const compTag = selectedCompany !== 'ALL' ? `_${selectedCompany.replace(/[^a-zA-Z0-9]/g, '_')}` : ''
+    link.setAttribute('download', `${selectedReportId}${compTag}_${new Date().toISOString().slice(0, 10)}.csv`)
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -677,8 +898,24 @@ function ReportSection({ section }) {
           </h2>
         </div>
 
-        {/* Global Date Period Filter */}
-        <div className="flex items-center gap-2">
+        {/* Global Date Period & Company Filter */}
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Company Filter Selector */}
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+            <Building2 className="w-3.5 h-3.5 text-indigo-600 flex-shrink-0" />
+            <select
+              value={selectedCompany}
+              onChange={(e) => setSelectedCompany(e.target.value)}
+              className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[180px] truncate"
+              title="Filter by Pharma Company"
+            >
+              <option value="ALL">🏢 All Companies ({distinctCompanies.length})</option>
+              {distinctCompanies.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
           <select
             value={filterPeriod}
             onChange={(e) => setFilterPeriod(Number(e.target.value))}
