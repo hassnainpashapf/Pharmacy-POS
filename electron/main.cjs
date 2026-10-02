@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu } = require('electron')
+const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron')
 const path = require('path')
 
 // Disable hardware acceleration on Windows to eliminate GPU rasterization
@@ -8,6 +8,9 @@ if (process.platform === 'win32') {
   app.commandLine.appendSwitch('disable-gpu')
   app.commandLine.appendSwitch('disable-gpu-compositing')
 }
+
+// Live Cloudflare Workers/Pages station URL
+const CLOUD_STATION_URL = 'https://pharmacy-pos.ellahabad.workers.dev/'
 
 let mainWindow = null
 
@@ -30,14 +33,34 @@ function createWindow() {
     show: false,
   })
 
-  // Determine if running in dev mode or packaged app
-  const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
+  // External links open in system browser
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('http:') || url.startsWith('https:')) {
+      shell.openExternal(url)
+    }
+    return { action: 'deny' }
+  })
+
+  // Load Cloudflare station with automatic offline fallback
+  const isDev = process.env.NODE_ENV === 'development'
 
   if (isDev && process.env.VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL)
     mainWindow.webContents.openDevTools({ mode: 'detach' })
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
+    // Attempt connecting to the live Cloudflare Station
+    mainWindow.loadURL(CLOUD_STATION_URL).catch((err) => {
+      console.warn('Network unavailable, loading offline local station:', err)
+      mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
+    })
+
+    // Fallback gracefully to offline bundle if internet disconnects
+    mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+      if (validatedURL && validatedURL.startsWith('http') && errorCode !== -3) {
+        console.warn(`Connection failed (${errorCode}: ${errorDescription}). Switching to offline local station.`)
+        mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
+      }
+    })
   }
 
   mainWindow.once('ready-to-show', () => {
