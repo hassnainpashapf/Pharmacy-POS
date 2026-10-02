@@ -237,6 +237,80 @@ function load(targetTenantId) {
         }
       }
 
+      // Automatic migration: ensure GSK supplier exists
+      if (!Array.isArray(d.suppliers)) d.suppliers = []
+      if (!d.suppliers.some((s) => s.id === 'sup_gsk' || /glaxosmithkline|gsk/i.test(s?.name || ''))) {
+        d.suppliers.unshift({
+          id: 'sup_gsk',
+          name: 'GSK Pakistan (GlaxoSmithKline)',
+          company: 'GlaxoSmithKline Healthcare Pakistan',
+          phone: '021-111-475-725',
+          balance: 0,
+        })
+      }
+
+      // Automatic migration: ensure comprehensive GSK catalog exists
+      if (Array.isArray(d.medicines)) {
+        if (!Array.isArray(d.batches)) d.batches = []
+        const gskItems = [
+          { name: 'Panadol Syrup 120mg/5ml', generic: 'Paracetamol', strength: '120mg/5ml', form: 'Syrup', barcode: '8964000123509', manufacturer: 'GSK Pakistan', minStock: 25, salePrice: 135, brand: 'Panadol', packSize: '120ml Bottle', maxStock: 150, wholesalePrice: 118, batchNo: 'GSK-SY01', expiry: '2027-05-15', qty: 85 },
+          { name: 'Panadol Infant Drops 100mg/ml', generic: 'Paracetamol', strength: '100mg/ml', form: 'Drops', barcode: '8964000123516', manufacturer: 'GSK Pakistan', minStock: 20, salePrice: 140, brand: 'Panadol', packSize: '20ml Dropper Bottle', maxStock: 120, wholesalePrice: 122, batchNo: 'GSK-DR01', expiry: '2027-04-10', qty: 60 },
+          { name: 'Augmentin 375mg', generic: 'Amoxicillin + Clavulanic Acid', strength: '375mg', form: 'Tablet', barcode: '8964000123523', manufacturer: 'GSK Pakistan', minStock: 15, salePrice: 540, brand: 'Augmentin', packSize: 'Pack of 10 Tablets', maxStock: 100, wholesalePrice: 475, batchNo: 'AU-3701', expiry: '2027-06-20', qty: 50 },
+          { name: 'Augmentin 312.5mg DS Syrup', generic: 'Amoxicillin + Clavulanic Acid', strength: '312.5mg/5ml', form: 'Syrup', barcode: '8964000123530', manufacturer: 'GSK Pakistan', minStock: 15, salePrice: 440, brand: 'Augmentin', packSize: '100ml Suspension Bottle', maxStock: 90, wholesalePrice: 385, batchNo: 'AU-3101', expiry: '2027-07-15', qty: 45 },
+          { name: 'Amoxil 250mg Capsules', generic: 'Amoxicillin', strength: '250mg', form: 'Capsule', barcode: '8964000123547', manufacturer: 'GSK Pakistan', minStock: 20, salePrice: 165, brand: 'Amoxil', packSize: 'Pack of 12 Capsules', maxStock: 120, wholesalePrice: 145, batchNo: 'AM-2501', expiry: '2027-03-25', qty: 70 },
+          { name: 'Amoxil 500mg Capsules', generic: 'Amoxicillin', strength: '500mg', form: 'Capsule', barcode: '8964000123554', manufacturer: 'GSK Pakistan', minStock: 25, salePrice: 310, brand: 'Amoxil', packSize: 'Pack of 12 Capsules', maxStock: 150, wholesalePrice: 272, batchNo: 'AM-5001', expiry: '2027-08-10', qty: 95 },
+          { name: 'Amoxil 125mg/5ml Syrup', generic: 'Amoxicillin', strength: '125mg/5ml', form: 'Syrup', barcode: '8964000123561', manufacturer: 'GSK Pakistan', minStock: 20, salePrice: 95, brand: 'Amoxil', packSize: '60ml Bottle', maxStock: 120, wholesalePrice: 82, batchNo: 'AM-1201', expiry: '2027-05-18', qty: 65 },
+          { name: 'Ventolin 2mg/5ml Syrup', generic: 'Salbutamol', strength: '2mg/5ml', form: 'Syrup', barcode: '8964000123578', manufacturer: 'GSK Pakistan', minStock: 20, salePrice: 125, brand: 'Ventolin', packSize: '120ml Bottle', maxStock: 120, wholesalePrice: 110, batchNo: 'VT-2001', expiry: '2027-09-12', qty: 80 },
+          { name: 'Ventolin Expectorant', generic: 'Salbutamol + Guaifenesin', strength: 'Standard', form: 'Syrup', barcode: '8964000123585', manufacturer: 'GSK Pakistan', minStock: 15, salePrice: 145, brand: 'Ventolin', packSize: '120ml Bottle', maxStock: 100, wholesalePrice: 128, batchNo: 'VT-EX01', expiry: '2027-06-30', qty: 55 },
+          { name: 'Betnovate Cream 20g', generic: 'Betamethasone Valerate', strength: '0.1%', form: 'Cream', barcode: '8964000123592', manufacturer: 'GSK Pakistan', minStock: 20, salePrice: 98, brand: 'Betnovate', packSize: '20g Tube', maxStock: 150, wholesalePrice: 85, batchNo: 'BN-2001', expiry: '2027-07-22', qty: 90 },
+          { name: 'Betnovate-N Cream 20g', generic: 'Betamethasone + Neomycin', strength: 'Standard', form: 'Cream', barcode: '8964000123608', manufacturer: 'GSK Pakistan', minStock: 20, salePrice: 115, brand: 'Betnovate', packSize: '20g Tube', maxStock: 150, wholesalePrice: 100, batchNo: 'BNN-201', expiry: '2027-08-15', qty: 85 },
+          { name: 'Dermovate Cream 20g', generic: 'Clobetasol Propionate', strength: '0.05%', form: 'Cream', barcode: '8964000123615', manufacturer: 'GSK Pakistan', minStock: 15, salePrice: 140, brand: 'Dermovate', packSize: '20g Tube', maxStock: 120, wholesalePrice: 122, batchNo: 'DM-2001', expiry: '2027-09-05', qty: 65 },
+          { name: 'Dermovate Ointment 20g', generic: 'Clobetasol Propionate', strength: '0.05%', form: 'Ointment', barcode: '8964000123622', manufacturer: 'GSK Pakistan', minStock: 15, salePrice: 140, brand: 'Dermovate', packSize: '20g Tube', maxStock: 120, wholesalePrice: 122, batchNo: 'DMO-201', expiry: '2027-08-20', qty: 50 },
+          { name: 'Polyfax Eye Ointment', generic: 'Polymyxin B + Bacitracin', strength: 'Ophthalmic', form: 'Ointment', barcode: '8964000123639', manufacturer: 'GSK Pakistan', minStock: 15, salePrice: 95, brand: 'Polyfax', packSize: '6g Tube', maxStock: 100, wholesalePrice: 82, batchNo: 'PF-EY01', expiry: '2027-04-18', qty: 60 },
+          { name: 'Ceftum 250mg Tablets', generic: 'Cefuroxime Axetil', strength: '250mg', form: 'Tablet', barcode: '8964000123646', manufacturer: 'GSK Pakistan', minStock: 10, salePrice: 850, brand: 'Ceftum', packSize: 'Pack of 14 Tablets', maxStock: 80, wholesalePrice: 750, batchNo: 'CF-2501', expiry: '2027-10-15', qty: 40 },
+          { name: 'Ceftum 500mg Tablets', generic: 'Cefuroxime Axetil', strength: '500mg', form: 'Tablet', barcode: '8964000123653', manufacturer: 'GSK Pakistan', minStock: 10, salePrice: 1550, brand: 'Ceftum', packSize: 'Pack of 14 Tablets', maxStock: 60, wholesalePrice: 1360, batchNo: 'CF-5001', expiry: '2027-11-20', qty: 35 },
+        ]
+
+        gskItems.forEach((item) => {
+          const exists = d.medicines.some((m) => m?.name?.toLowerCase() === item.name.toLowerCase() || (m?.barcode && m.barcode === item.barcode))
+          if (!exists) {
+            const purchasePrice = Math.round(item.salePrice * 0.78)
+            const mId = uid()
+            const m = {
+              id: mId,
+              name: item.name,
+              generic: item.generic,
+              strength: item.strength,
+              form: item.form,
+              dosageForm: item.form,
+              barcode: item.barcode,
+              manufacturer: item.manufacturer,
+              brand: item.brand,
+              packSize: item.packSize,
+              minStock: item.minStock,
+              maxStock: item.maxStock,
+              purchasePrice,
+              salePrice: item.salePrice,
+              wholesalePrice: item.wholesalePrice,
+            }
+            d.medicines.push(m)
+            d.batches.push({
+              id: uid(),
+              medicineId: mId,
+              batchNo: item.batchNo,
+              expiry: item.expiry,
+              mfgDate: '2024-04-01',
+              qty: item.qty,
+              purchasePrice,
+              salePrice: item.salePrice,
+              supplierId: 'sup_gsk',
+              branchId: 'main',
+              status: 'ACTIVE',
+            })
+          }
+        })
+      }
+
       localStorage.setItem(storageKey, JSON.stringify(d))
       return d
     } else if (targetTenantId && !isMainTenant) {
@@ -249,10 +323,11 @@ function load(targetTenantId) {
 
 function seed(d) {
   // Real Authorized Pharmaceutical Distributors
+  const supGSK = { id: 'sup_gsk', name: 'GSK Pakistan (GlaxoSmithKline)', company: 'GlaxoSmithKline Healthcare Pakistan', phone: '021-111-475-725', balance: 0 }
   const supMP = { id: 'sup_mp', name: 'Muller & Phipps Pakistan (Pvt) Ltd', company: 'M&P Healthcare Distribution', phone: '042-35889901', balance: 0 }
   const supPremier = { id: 'sup_premier', name: 'Premier Agencies & Distribution Services', company: 'Premier Group Pakistan', phone: '042-35754412', balance: 0 }
   const supAGP = { id: 'sup_agp', name: 'Ali Gohar & Company (Pvt) Ltd', company: 'AGP Distribution Network', phone: '042-35912300', balance: 0 }
-  d.suppliers = [supMP, supPremier, supAGP]
+  d.suppliers = [supGSK, supMP, supPremier, supAGP]
 
   const mk = (name, generic, strength, form, barcode, manufacturer, minStock, salePrice, brand, packSize, maxStock, wholesalePrice) => {
     const purchasePrice = Math.round(salePrice * 0.78)
@@ -295,21 +370,30 @@ function seed(d) {
 
   // 1. Tablets
   const m1 = mk('Panadol 500mg', 'Paracetamol', '500mg', 'Tablet', '8964000123011', 'GSK Pakistan', 30, 300, 'Panadol', 'Pack of 200 Tablets (20x10)', 300, 260)
-  b(m1, 'GSK-2401', '2027-04-15', 180, '2024-04-01', 'ACTIVE', supMP.id)
-  b(m1, 'GSK-2402', '2026-11-20', 60, '2024-02-15', 'ACTIVE', supMP.id)
+  b(m1, 'GSK-2401', '2027-04-15', 180, '2024-04-01', 'ACTIVE', supGSK.id)
+  b(m1, 'GSK-2402', '2026-11-20', 60, '2024-02-15', 'ACTIVE', supGSK.id)
 
   const m2 = mk('Panadol Extra', 'Paracetamol + Caffeine', '500mg/65mg', 'Tablet', '8964000123028', 'GSK Pakistan', 20, 360, 'Panadol', 'Pack of 100 Tablets', 200, 315)
-  b(m2, 'GSK-2415', '2027-02-10', 95, '2024-02-01', 'ACTIVE', supMP.id)
+  b(m2, 'GSK-2415', '2027-02-10', 95, '2024-02-01', 'ACTIVE', supGSK.id)
 
   const m3 = mk('Panadol CF', 'Paracetamol + Pseudoephedrine + Chlorpheniramine', 'Multi-Action', 'Tablet', '8964000123035', 'GSK Pakistan', 15, 420, 'Panadol', 'Pack of 100 Tablets', 150, 370)
-  b(m3, 'GSK-2422', '2027-05-30', 80, '2024-05-01', 'ACTIVE', supMP.id)
+  b(m3, 'GSK-2422', '2027-05-30', 80, '2024-05-01', 'ACTIVE', supGSK.id)
 
   const m4 = mk('Augmentin 625mg', 'Amoxicillin + Clavulanic Acid', '625mg', 'Tablet', '8964000123042', 'GSK Pakistan', 15, 850, 'Augmentin', 'Pack of 10 Tablets', 100, 750)
-  b(m4, 'AU-8901', '2027-06-15', 45, '2024-06-01', 'ACTIVE', supMP.id)
-  b(m4, 'AU-8902', '2026-08-10', 20, '2023-08-01', 'ACTIVE', supMP.id)
+  b(m4, 'AU-8901', '2027-06-15', 45, '2024-06-01', 'ACTIVE', supGSK.id)
+  b(m4, 'AU-8902', '2026-08-10', 20, '2023-08-01', 'ACTIVE', supGSK.id)
 
   const m5 = mk('Augmentin 1g', 'Amoxicillin + Clavulanic Acid', '1000mg', 'Tablet', '8964000123059', 'GSK Pakistan', 10, 1450, 'Augmentin', 'Pack of 14 Tablets', 80, 1280)
-  b(m5, 'AU-1002', '2027-08-20', 35, '2024-08-01', 'ACTIVE', supMP.id)
+  b(m5, 'AU-1002', '2027-08-20', 35, '2024-08-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_aug375 = mk('Augmentin 375mg', 'Amoxicillin + Clavulanic Acid', '375mg', 'Tablet', '8964000123523', 'GSK Pakistan', 15, 540, 'Augmentin', 'Pack of 10 Tablets', 100, 475)
+  b(mGSK_aug375, 'AU-3701', '2027-06-20', 50, '2024-06-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_ceftum250 = mk('Ceftum 250mg Tablets', 'Cefuroxime Axetil', '250mg', 'Tablet', '8964000123646', 'GSK Pakistan', 10, 850, 'Ceftum', 'Pack of 14 Tablets', 80, 750)
+  b(mGSK_ceftum250, 'CF-2501', '2027-10-15', 40, '2024-10-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_ceftum500 = mk('Ceftum 500mg Tablets', 'Cefuroxime Axetil', '500mg', 'Tablet', '8964000123653', 'GSK Pakistan', 10, 1550, 'Ceftum', 'Pack of 14 Tablets', 60, 1360)
+  b(mGSK_ceftum500, 'CF-5001', '2027-11-20', 35, '2024-11-01', 'ACTIVE', supGSK.id)
 
   const m6 = mk('Brufen 400mg', 'Ibuprofen', '400mg', 'Tablet', '8964000123073', 'Abbott Laboratories', 25, 180, 'Brufen', 'Pack of 30 Tablets', 200, 155)
   b(m6, 'AB-7701', '2027-01-15', 120, '2024-01-10', 'ACTIVE', supMP.id)
@@ -339,13 +423,13 @@ function seed(d) {
   b(m14, 'AB-1182', '2027-08-14', 70, '2024-08-01', 'ACTIVE', supMP.id)
 
   const m15 = mk('CaC 1000 Plus', 'Calcium + Vitamin C + D3', '1000mg', 'Tablet', '8964000123219', 'GSK Pakistan', 20, 340, 'CaC 1000', 'Tube of 10 Effervescent Tablets', 150, 300)
-  b(m15, 'GSK-9901', '2027-02-28', 85, '2024-02-01', 'ACTIVE', supMP.id)
+  b(m15, 'GSK-9901', '2027-02-28', 85, '2024-02-01', 'ACTIVE', supGSK.id)
 
   const m16 = mk('Klaricid 250mg', 'Clarithromycin', '250mg', 'Tablet', '8964000123226', 'Abbott Laboratories', 10, 1100, 'Klaricid', 'Pack of 14 Tablets', 80, 970)
   b(m16, 'AB-4309', '2027-10-10', 40, '2024-10-01', 'ACTIVE', supMP.id)
 
   const m17 = mk('Zyrtec 10mg', 'Cetirizine HCl', '10mg', 'Tablet', '8964000123240', 'GSK Pakistan', 15, 190, 'Zyrtec', 'Pack of 20 Tablets', 120, 165)
-  b(m17, 'GSK-5519', '2027-04-18', 95, '2024-04-01', 'ACTIVE', supMP.id)
+  b(m17, 'GSK-5519', '2027-04-18', 95, '2024-04-01', 'ACTIVE', supGSK.id)
 
   const m18 = mk('Rivo 2mg', 'Clonazepam', '2mg', 'Tablet', '8964000123257', 'Martin Dow', 15, 260, 'Rivo', 'Pack of 30 Tablets', 100, 230)
   b(m18, 'MD-8831', '2027-03-12', 65, '2024-03-01', 'ACTIVE', supAGP.id)
@@ -375,6 +459,12 @@ function seed(d) {
   const m26 = mk('Risek 40mg', 'Omeprazole', '40mg', 'Capsule', '8964000123141', 'Getz Pharma', 15, 620, 'Risek', 'Pack of 14 Capsules', 100, 545)
   b(m26, 'GZ-1108', '2027-06-15', 75, '2024-06-01', 'ACTIVE', supPremier.id)
 
+  const mGSK_amox250 = mk('Amoxil 250mg Capsules', 'Amoxicillin', '250mg', 'Capsule', '8964000123547', 'GSK Pakistan', 20, 165, 'Amoxil', 'Pack of 12 Capsules', 120, 145)
+  b(mGSK_amox250, 'AM-2501', '2027-03-25', 70, '2024-03-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_amox500 = mk('Amoxil 500mg Capsules', 'Amoxicillin', '500mg', 'Capsule', '8964000123554', 'GSK Pakistan', 25, 310, 'Amoxil', 'Pack of 12 Capsules', 150, 272)
+  b(mGSK_amox500, 'AM-5001', '2027-08-10', 95, '2024-08-01', 'ACTIVE', supGSK.id)
+
   const m27 = mk('Velosef 500mg', 'Cephradine', '500mg', 'Capsule', '8964000123332', 'OBS Pakistan', 15, 460, 'Velosef', 'Pack of 12 Capsules', 100, 405)
   b(m27, 'OB-8812', '2027-07-20', 65, '2024-07-01', 'ACTIVE', supAGP.id)
 
@@ -382,8 +472,26 @@ function seed(d) {
   b(m28, 'GZ-9934', '2027-09-12', 70, '2024-09-01', 'ACTIVE', supPremier.id)
 
   // 3. Syrups & Suspensions
+  const mGSK_panadolSyr = mk('Panadol Syrup 120mg/5ml', 'Paracetamol', '120mg/5ml', 'Syrup', '8964000123509', 'GSK Pakistan', 25, 135, 'Panadol', '120ml Bottle', 150, 118)
+  b(mGSK_panadolSyr, 'GSK-SY01', '2027-05-15', 85, '2024-05-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_panadolDrp = mk('Panadol Infant Drops 100mg/ml', 'Paracetamol', '100mg/ml', 'Drops', '8964000123516', 'GSK Pakistan', 20, 140, 'Panadol', '20ml Dropper Bottle', 120, 122)
+  b(mGSK_panadolDrp, 'GSK-DR01', '2027-04-10', 60, '2024-04-01', 'ACTIVE', supGSK.id)
+
   const m29 = mk('Augmentin 156.25mg DS Syrup', 'Amoxicillin + Clavulanic Acid', '156.25mg/5ml', 'Syrup', '8964000123066', 'GSK Pakistan', 12, 320, 'Augmentin', '100ml Suspension Bottle', 80, 280)
-  b(m29, 'AU-7711', '2027-03-15', 50, '2024-03-01', 'ACTIVE', supMP.id)
+  b(m29, 'AU-7711', '2027-03-15', 50, '2024-03-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_aug312 = mk('Augmentin 312.5mg DS Syrup', 'Amoxicillin + Clavulanic Acid', '312.5mg/5ml', 'Syrup', '8964000123530', 'GSK Pakistan', 15, 440, 'Augmentin', '100ml Suspension Bottle', 90, 385)
+  b(mGSK_aug312, 'AU-3101', '2027-07-15', 45, '2024-07-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_amoxSyr = mk('Amoxil 125mg/5ml Syrup', 'Amoxicillin', '125mg/5ml', 'Syrup', '8964000123561', 'GSK Pakistan', 20, 95, 'Amoxil', '60ml Bottle', 120, 82)
+  b(mGSK_amoxSyr, 'AM-1201', '2027-05-18', 65, '2024-05-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_ventSyr = mk('Ventolin 2mg/5ml Syrup', 'Salbutamol', '2mg/5ml', 'Syrup', '8964000123578', 'GSK Pakistan', 20, 125, 'Ventolin', '120ml Bottle', 120, 110)
+  b(mGSK_ventSyr, 'VT-2001', '2027-09-12', 80, '2024-09-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_ventExp = mk('Ventolin Expectorant', 'Salbutamol + Guaifenesin', 'Standard', 'Syrup', '8964000123585', 'GSK Pakistan', 15, 145, 'Ventolin', '120ml Bottle', 100, 128)
+  b(mGSK_ventExp, 'VT-EX01', '2027-06-30', 55, '2024-06-01', 'ACTIVE', supGSK.id)
 
   const m30 = mk('Brufen 100mg/5ml Syrup', 'Ibuprofen', '100mg/5ml', 'Syrup', '8964000123080', 'Abbott Laboratories', 20, 135, 'Brufen', '120ml Bottle', 150, 118)
   b(m30, 'AB-5510', '2027-01-20', 85, '2024-01-15', 'ACTIVE', supMP.id)
@@ -392,7 +500,7 @@ function seed(d) {
   b(m31, 'SN-3390', '2027-04-10', 65, '2024-04-01', 'ACTIVE', supMP.id)
 
   const m32 = mk('Calpol 120mg/5ml Syrup', 'Paracetamol', '120mg/5ml', 'Syrup', '8964000123196', 'GSK Pakistan', 25, 95, 'Calpol', '60ml Bottle', 150, 82)
-  b(m32, 'GSK-4412', '2027-08-30', 110, '2024-08-01', 'ACTIVE', supMP.id)
+  b(m32, 'GSK-4412', '2027-08-30', 110, '2024-08-01', 'ACTIVE', supGSK.id)
 
   const m33 = mk('Hydryllin Syrup', 'Aminophylline + Diphenhydramine', 'Cough Formula', 'Syrup', '8964000123356', 'Searle Company', 20, 145, 'Hydryllin', '120ml Cough Syrup Bottle', 150, 128)
   b(m33, 'SR-9901', '2027-02-15', 90, '2024-02-01', 'ACTIVE', supPremier.id)
@@ -412,14 +520,29 @@ function seed(d) {
 
   // 5. Inhalers
   const m38 = mk('Ventolin Inhaler 100mcg', 'Salbutamol', '100mcg/puff', 'Inhaler', '8964000123301', 'GSK Pakistan', 12, 480, 'Ventolin', '200 Metered Actuations', 80, 420)
-  b(m38, 'GSK-6610', '2027-09-20', 60, '2024-09-01', 'ACTIVE', supMP.id)
+  b(m38, 'GSK-6610', '2027-09-20', 60, '2024-09-01', 'ACTIVE', supGSK.id)
 
   // 6. Ointments & Drops
   const m39 = mk('Polyfax Skin Ointment', 'Polymyxin B + Bacitracin', 'Standard', 'Ointment', '8964000123318', 'GSK Pakistan', 20, 120, 'Polyfax', '20g Tube', 150, 105)
-  b(m39, 'GSK-3312', '2027-03-10', 95, '2024-03-01', 'ACTIVE', supMP.id)
+  b(m39, 'GSK-3312', '2027-03-10', 95, '2024-03-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_polyEye = mk('Polyfax Eye Ointment', 'Polymyxin B + Bacitracin', 'Ophthalmic', 'Ointment', '8964000123639', 'GSK Pakistan', 15, 95, 'Polyfax', '6g Tube', 100, 82)
+  b(mGSK_polyEye, 'PF-EY01', '2027-04-18', 60, '2024-04-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_betCream = mk('Betnovate Cream 20g', 'Betamethasone Valerate', '0.1%', 'Cream', '8964000123592', 'GSK Pakistan', 20, 98, 'Betnovate', '20g Tube', 150, 85)
+  b(mGSK_betCream, 'BN-2001', '2027-07-22', 90, '2024-07-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_betNCream = mk('Betnovate-N Cream 20g', 'Betamethasone + Neomycin', 'Standard', 'Cream', '8964000123608', 'GSK Pakistan', 20, 115, 'Betnovate', '20g Tube', 150, 100)
+  b(mGSK_betNCream, 'BNN-201', '2027-08-15', 85, '2024-08-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_dermCream = mk('Dermovate Cream 20g', 'Clobetasol Propionate', '0.05%', 'Cream', '8964000123615', 'GSK Pakistan', 15, 140, 'Dermovate', '20g Tube', 120, 122)
+  b(mGSK_dermCream, 'DM-2001', '2027-09-05', 65, '2024-09-01', 'ACTIVE', supGSK.id)
+
+  const mGSK_dermOint = mk('Dermovate Ointment 20g', 'Clobetasol Propionate', '0.05%', 'Ointment', '8964000123622', 'GSK Pakistan', 15, 140, 'Dermovate', '20g Tube', 120, 122)
+  b(mGSK_dermOint, 'DMO-201', '2027-08-20', 50, '2024-08-01', 'ACTIVE', supGSK.id)
 
   const m40 = mk('Betnesol Eye/Ear Drops', 'Betamethasone Sodium Phosphate', '0.1%', 'Drops', '8964000123325', 'GSK Pakistan', 15, 115, 'Betnesol', '5ml Dropper Bottle', 120, 100)
-  b(m40, 'GSK-2281', '2027-04-05', 80, '2024-04-01', 'ACTIVE', supMP.id)
+  b(m40, 'GSK-2281', '2027-04-05', 80, '2024-04-01', 'ACTIVE', supGSK.id)
 
   // Walk-in customer default
   d.customers = [{ id: 'walkin', name: 'Walk-in Customer', phone: '', creditLimit: 0, balance: 0, points: 0 }]

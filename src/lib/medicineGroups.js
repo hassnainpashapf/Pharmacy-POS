@@ -59,6 +59,7 @@ export function medicineMatchesSearch(medicine, query, extra = []) {
 
 export const POPULAR_PHARMA_COMPANIES = [
   'GSK Pakistan',
+  'GSK (GlaxoSmithKline)',
   'Abbott Laboratories',
   'Getz Pharma',
   'Sanofi Aventis',
