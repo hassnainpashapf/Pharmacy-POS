@@ -11,7 +11,7 @@
     "predev": "node scripts/prepare-ocr.mjs",
     "dev": "node scripts/dev.mjs",
     "prebuild": "node scripts/prepare-ocr.mjs",
-    "build": "vite build",
+    "build": "vite build && node -e \"require('node:fs').copyFileSync('dist/index.html', 'dist/200.html')\",
     "preview": "vite preview",
     "serve:web": "node scripts/serve-browser.cjs",
     "electron:dev": "vite build && electron electron/main.cjs",
