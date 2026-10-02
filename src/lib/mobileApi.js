@@ -1,9 +1,12 @@
-const DEFAULT_API_BASE = 'http://150.230.52.29:8787'
+const DEFAULT_API_BASE = 'https://pharmacy-api.150.230.52.29.sslip.io'
 
 function getBase() {
   if (typeof window !== 'undefined') {
-    const custom = localStorage.getItem('pharmacy_cloud_api_url') || DEFAULT_API_BASE
-    return `${custom.replace(/\/+$/, '')}/api/mobile`
+    const custom = localStorage.getItem('pharmacy_cloud_api_url')
+    if (custom && !custom.includes('150.230.52.29:8787') && !custom.includes('127.0.0.1:8787')) {
+      return `${custom.replace(/\/+$/, '')}/api/mobile`
+    }
+    return `${DEFAULT_API_BASE}/api/mobile`
   }
   return `${DEFAULT_API_BASE}/api/mobile`
 }

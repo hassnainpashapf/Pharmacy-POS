@@ -33,6 +33,10 @@ DEFAULT_ORIGINS = (
     "https://pharmacy-pos.ellahabad.workers.dev",
     "http://150.230.52.29:8787",
     "http://150.230.52.29",
+    "https://pharmacy-api.150.230.52.29.sslip.io",
+    "http://pharmacy-api.150.230.52.29.sslip.io",
+    "https://pharmacy.150-230-52-29.nip.io",
+    "http://pharmacy.150-230-52-29.nip.io",
 )
 
 
@@ -315,7 +319,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
         origin = self.headers.get("Origin")
-        if origin and (origin in self.server.origins or "*" in self.server.origins):
+        if origin and self.is_allowed_origin(origin):
             self.send_header("Access-Control-Allow-Origin", origin)
             self.send_header("Access-Control-Allow-Credentials", "true")
             self.send_header("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS")
@@ -327,10 +331,27 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def is_allowed_origin(self, origin):
+        if not origin:
+            return False
+        if origin in self.server.origins or "*" in self.server.origins:
+            return True
+        hostname = urlsplit(origin).hostname or ""
+        return (hostname.endswith(".sslip.io") or hostname.endswith(".nip.io") or hostname.endswith(".workers.dev"))
+
+    def is_allowed_host(self, host):
+        if "*" in self.server.allowed_hosts or host in self.server.allowed_hosts:
+            return True
+        host_no_port = host.split(":")[0]
+        allowed_hosts_no_port = {h.split(":")[0] for h in self.server.allowed_hosts}
+        if host_no_port in allowed_hosts_no_port:
+            return True
+        return (host_no_port.endswith(".sslip.io") or host_no_port.endswith(".nip.io") or host_no_port.endswith(".workers.dev"))
+
     def do_OPTIONS(self):
         origin = self.headers.get("Origin")
         self.send_response(204)
-        if origin and (origin in self.server.origins or "*" in self.server.origins):
+        if origin and self.is_allowed_origin(origin):
             self.send_header("Access-Control-Allow-Origin", origin)
             self.send_header("Access-Control-Allow-Credentials", "true")
             self.send_header("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS")
@@ -380,15 +401,13 @@ class Handler(BaseHTTPRequestHandler):
 
     def check_request(self, write):
         host = self.headers.get("Host", "").lower()
-        host_no_port = host.split(":")[0]
-        allowed_hosts_no_port = {h.split(":")[0] for h in self.server.allowed_hosts}
-        if "*" not in self.server.allowed_hosts and host not in self.server.allowed_hosts and host_no_port not in allowed_hosts_no_port:
+        if not self.is_allowed_host(host):
             fail("Host is not allowed", 403)
         origin = self.headers.get("Origin")
-        if origin is not None and "*" not in self.server.origins and origin not in self.server.origins:
+        if origin is not None and not self.is_allowed_origin(origin):
             fail("Origin is not allowed", 403)
         if self.headers.get("Sec-Fetch-Site") == "cross-site":
-            if origin and (origin in self.server.origins or "*" in self.server.origins):
+            if origin and self.is_allowed_origin(origin):
                 pass
             else:
                 fail("Cross-site requests are not allowed", 403)

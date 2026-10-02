@@ -79,21 +79,13 @@ export function isPureCloudClient() {
 }
 
 export const CLOUD_STORAGE_KEY = 'pharmacy_cloud_api_url'
-export const DEFAULT_CLOUD_API_URL = 'http://127.0.0.1:8787'
+export const DEFAULT_CLOUD_API_URL = 'https://pharmacy-api.150.230.52.29.sslip.io'
 
 export function getCloudApiUrl() {
   if (typeof window === 'undefined') return DEFAULT_CLOUD_API_URL
   const customUrl = localStorage.getItem(CLOUD_STORAGE_KEY)
-  if (customUrl) return customUrl.replace(/\/+$/, '')
-
-  // If in browser development or production web
-  if (window.location && window.location.origin) {
-    if (window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')) {
-      return DEFAULT_CLOUD_API_URL
-    }
-    if (window.location.protocol.startsWith('http')) {
-      return window.location.origin
-    }
+  if (customUrl && !customUrl.includes('150.230.52.29:8787') && !customUrl.includes('127.0.0.1:8787')) {
+    return customUrl.replace(/\/+$/, '')
   }
   return DEFAULT_CLOUD_API_URL
 }

@@ -14,7 +14,7 @@ RUN mkdir -p /app/data && chmod 700 /app/data
 ENV MOBILE_HOST=0.0.0.0
 ENV MOBILE_PORT=8787
 ENV MOBILE_DB=/app/data/inventory.sqlite3
-ENV MOBILE_ORIGINS=https://pharmacy-pos.ellahabad.workers.dev,http://localhost:5173,http://127.0.0.1:5173,http://150.230.52.29:8787,http://150.230.52.29,http://localhost:8787,http://127.0.0.1:8787
+ENV MOBILE_ORIGINS=https://pharmacy-pos.ellahabad.workers.dev,https://pharmacy-api.150.230.52.29.sslip.io,http://pharmacy-api.150.230.52.29.sslip.io,http://localhost:5173,http://127.0.0.1:5173,http://150.230.52.29:8787,http://150.230.52.29,http://localhost:8787,http://127.0.0.1:8787
 
 EXPOSE 8787
 
