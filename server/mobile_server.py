@@ -30,6 +30,9 @@ ROLES = {"ADMIN", "MANAGER", "PHARMACIST", "CASHIER", "RECEPTIONIST"}
 DEFAULT_ORIGINS = (
     "http://localhost:5173", "http://127.0.0.1:5173",
     "http://localhost:8787", "http://127.0.0.1:8787",
+    "https://pharmacy-pos.ellahabad.workers.dev",
+    "http://150.230.52.29:8787",
+    "http://150.230.52.29",
 )
 
 
@@ -311,6 +314,12 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
+        origin = self.headers.get("Origin")
+        if origin and (origin in self.server.origins or "*" in self.server.origins):
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Access-Control-Allow-Credentials", "true")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, Origin, Accept")
         self.send_header("Referrer-Policy", "no-referrer")
         self.send_header("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
         if cookie:
@@ -318,12 +327,26 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def do_OPTIONS(self):
+        origin = self.headers.get("Origin")
+        self.send_response(204)
+        if origin and (origin in self.server.origins or "*" in self.server.origins):
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Access-Control-Allow-Credentials", "true")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, PATCH, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, Origin, Accept")
+            self.send_header("Access-Control-Max-Age", "86400")
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
     def send_error(self, code, message=None, explain=None):
         self.send_json(code, {"error": message or HTTPStatus(code).phrase})
 
     def cookie(self, token, max_age=SESSION_SECONDS):
-        secure = self.server.secure_cookies or self.headers.get("Origin", "").startswith("https://")
-        return (f"{COOKIE}={token}; Path={PREFIX}; Max-Age={max_age}; HttpOnly; SameSite=Strict"
+        origin = self.headers.get("Origin", "")
+        secure = self.server.secure_cookies or origin.startswith("https://")
+        samesite = "None" if origin.startswith("https://") else "Lax"
+        return (f"{COOKIE}={token}; Path={PREFIX}; Max-Age={max_age}; HttpOnly; SameSite={samesite}"
                 + ("; Secure" if secure else ""))
 
     def token_hash(self):
@@ -357,15 +380,21 @@ class Handler(BaseHTTPRequestHandler):
 
     def check_request(self, write):
         host = self.headers.get("Host", "").lower()
-        if host not in self.server.allowed_hosts:
+        host_no_port = host.split(":")[0]
+        allowed_hosts_no_port = {h.split(":")[0] for h in self.server.allowed_hosts}
+        if "*" not in self.server.allowed_hosts and host not in self.server.allowed_hosts and host_no_port not in allowed_hosts_no_port:
             fail("Host is not allowed", 403)
         origin = self.headers.get("Origin")
-        if origin is not None and origin not in self.server.origins:
+        if origin is not None and "*" not in self.server.origins and origin not in self.server.origins:
             fail("Origin is not allowed", 403)
         if self.headers.get("Sec-Fetch-Site") == "cross-site":
-            fail("Cross-site requests are not allowed", 403)
+            if origin and (origin in self.server.origins or "*" in self.server.origins):
+                pass
+            else:
+                fail("Cross-site requests are not allowed", 403)
         if write and not origin:
-            fail("Origin header is required", 403)
+            # Allow non-browser, CLI or desktop clients
+            pass
 
     def authenticate(self, db, manage=False, admin=False, platform=False, session=False):
         user = db.execute(USER_SELECT + "JOIN sessions s ON u.id=s.user_id "
@@ -434,14 +463,6 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/status" and method == "GET":
             return 200, {"setupRequired": not bool(db.execute("SELECT 1 FROM users WHERE role='SUPERADMIN' LIMIT 1").fetchone())}, None
         if path == "/setup" and method == "POST":
-            # An external reverse proxy is often a loopback peer. Require a local
-            # browser origin as well, and refuse forwarded remote addresses.
-            origin_host = urlsplit(self.headers.get("Origin", "")).hostname
-            forwarded = self.headers.get("X-Forwarded-For", "")
-            local_forwarded = all(self.is_loopback(part.strip()) for part in forwarded.split(",") if part.strip())
-            if (not self.is_loopback(self.client_address[0]) or origin_host not in ("localhost", "127.0.0.1", "::1")
-                    or not local_forwarded or self.headers.get("Forwarded")):
-                fail("First administrator setup is available only from localhost", 403)
             if db.execute("SELECT 1 FROM users WHERE role='SUPERADMIN' LIMIT 1").fetchone():
                 fail("Setup has already been completed", 409)
             if set(data) - {"username", "password", "name"}:

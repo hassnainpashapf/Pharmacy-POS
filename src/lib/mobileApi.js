@@ -1,20 +1,15 @@
+const DEFAULT_API_BASE = 'http://150.230.52.29:8787'
+
 function getBase() {
   if (typeof window !== 'undefined') {
-    if (window.Capacitor || window.location?.protocol === 'file:') {
-      const custom = localStorage.getItem('pharmacy_cloud_api_url') || 'http://127.0.0.1:8787'
-      return `${custom.replace(/\/+$/, '')}/api/mobile`
-    }
-    const custom = localStorage.getItem('pharmacy_cloud_api_url')
-    if (custom) return `${custom.replace(/\/+$/, '')}/api/mobile`
+    const custom = localStorage.getItem('pharmacy_cloud_api_url') || DEFAULT_API_BASE
+    return `${custom.replace(/\/+$/, '')}/api/mobile`
   }
-  return '/api/mobile'
+  return `${DEFAULT_API_BASE}/api/mobile`
 }
 
 function getCredentialsMode() {
-  if (typeof window !== 'undefined' && (window.Capacitor || window.location?.protocol === 'file:')) {
-    return 'include'
-  }
-  return 'same-origin'
+  return 'include'
 }
 
 export class MobileApiError extends Error {
