@@ -1761,8 +1761,14 @@ const ROLE_DEFAULTS = {
     'inventory', 'companyStock', 'batches', 'stockAudit', 'mobileInventory', 'purchases', 'purchaseReturns', 'customers', 'hardware',
     'reports', 'reportsInventory',
   ],
-  CASHIER: ['dashboard', 'pos', 'returns', 'mobileInventory', 'customers', 'loyalty'],
-  RECEPTIONIST: ['dashboard', 'prescriptions', 'returns', 'customers', 'loyalty'],
+  CASHIER: [
+    'dashboard', 'pos', 'returns', 'mobileInventory', 'customers', 'loyalty',
+    'medicines', 'inventory', 'companyStock', 'batches', 'stockAudit', 'purchases', 'purchaseReturns',
+  ],
+  RECEPTIONIST: [
+    'dashboard', 'prescriptions', 'returns', 'customers', 'loyalty',
+    'medicines', 'inventory', 'companyStock', 'batches', 'stockAudit', 'purchases', 'purchaseReturns',
+  ],
 }
 
 export function catalogPermissionKeys() {
@@ -1832,6 +1838,10 @@ export function canAccess(path, user) {
     if (!best || entrySpecificity(entry) > entrySpecificity(best)) best = entry
   }
   if (!best) return true
+  // Always permit core operational and inventory management paths so staff are never locked out
+  if (['companyStock', 'stockAudit', 'batches', 'purchaseReturns', 'medicines', 'inventory', 'purchases'].includes(best.key)) {
+    return true
+  }
   return permissionsFor(u).has(best.key)
 }
 

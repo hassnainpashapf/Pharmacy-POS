@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { useLocation } from 'react-router'
+import { useLocation, Link, useNavigate } from 'react-router'
 import {
   useDB,
   fmt,
@@ -123,6 +123,78 @@ export default function Inventory({ forcedTab }) {
 
   return (
     <div className="space-y-4 w-full pb-8">
+      {/* ⚡ DIRECT SECTIONS SWITCHER (فوری اور الگ الگ پیجز) */}
+      <div className="bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-xl p-3 shadow-md flex flex-wrap items-center justify-between gap-2.5 border border-slate-700">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold text-xs">
+            ⚡
+          </div>
+          <div>
+            <div className="text-xs font-bold text-white leading-tight">
+              سٹاک اور انوینٹری کے براہِ راست پیجز (Direct Links)
+            </div>
+            <div className="text-[10px] text-slate-300">
+              کسی بھی سیکشن پر کلک کر کے متعلقہ پیج کھولیں
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Link
+            to="/company-stock"
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+              tab === 'COMPANIES'
+                ? 'bg-emerald-500 text-white shadow-xs ring-2 ring-emerald-300'
+                : 'bg-emerald-950/80 text-emerald-200 hover:bg-emerald-900 border border-emerald-700/60'
+            }`}
+          >
+            <span>🏢 کمپنی وائز سٹاک</span>
+          </Link>
+          <Link
+            to="/stock-audit"
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+              tab === 'audit'
+                ? 'bg-amber-500 text-white shadow-xs ring-2 ring-amber-300'
+                : 'bg-amber-950/80 text-amber-200 hover:bg-amber-900 border border-amber-700/60'
+            }`}
+          >
+            <span>⚖️ سٹاک آڈٹ (کم/زیادہ)</span>
+          </Link>
+          <Link
+            to="/expiry-management"
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+              tab === 'NEAR_EXPIRY'
+                ? 'bg-orange-500 text-white shadow-xs ring-2 ring-orange-300'
+                : 'bg-orange-950/80 text-orange-200 hover:bg-orange-900 border border-orange-700/60'
+            }`}
+          >
+            <span>⏳ ایکسپائری مینجمنٹ</span>
+          </Link>
+          <Link
+            to="/medicines?view=companies"
+            className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-indigo-950/80 text-indigo-200 hover:bg-indigo-900 border border-indigo-700/60"
+          >
+            <span>🏢 تمام کمپنیاں (GSK)</span>
+          </Link>
+          <Link
+            to="/purchase-returns"
+            className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-rose-950/80 text-rose-200 hover:bg-rose-900 border border-rose-700/60"
+          >
+            <span>🔄 خریداری واپسی</span>
+          </Link>
+          <Link
+            to="/inventory"
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+              tab === 'ALL'
+                ? 'bg-slate-700 text-white shadow-xs ring-2 ring-slate-400'
+                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-600'
+            }`}
+          >
+            <span>📦 تمام بیجز لسٹ</span>
+          </Link>
+        </div>
+      </div>
+
       {/* Compact row-based inventory toolbar */}
       <div className="pb-4 border-b border-slate-200 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
         <div>

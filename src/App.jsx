@@ -861,6 +861,85 @@ function Shell({ children }) {
           </div>
         </header>
 
+        {/* Universal Top Quick Links Strip (اہم آپشنز کی فوری رسائی پٹی) */}
+        {loc.pathname !== '/pos' && (
+          <div className="bg-slate-900 border-b border-slate-800 text-white px-4 py-1.5 flex items-center justify-between gap-3 text-xs shrink-0 shadow-sm overflow-x-auto custom-scroll z-10">
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="flex items-center gap-1 font-bold text-amber-300 text-[11px] uppercase tracking-wider">
+                <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+                <span>فوری شارٹ کٹس:</span>
+              </span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0 overflow-x-auto text-[11px]">
+              <Link
+                to="/company-stock"
+                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
+                  loc.pathname === '/company-stock'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30'
+                }`}
+              >
+                <span>📦 کمپنی وائز سٹاک</span>
+              </Link>
+
+              <Link
+                to="/stock-audit"
+                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
+                  loc.pathname === '/stock-audit'
+                    ? 'bg-amber-600 text-white shadow-xs'
+                    : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30'
+                }`}
+              >
+                <span>⚖️ سٹاک آڈٹ (کم/زیادہ)</span>
+              </Link>
+
+              <Link
+                to="/expiry-management"
+                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
+                  loc.pathname === '/expiry-management'
+                    ? 'bg-orange-600 text-white shadow-xs'
+                    : 'bg-slate-800 hover:bg-slate-700 text-orange-300 border border-orange-500/30'
+                }`}
+              >
+                <span>⏳ ایکسپائری مینجمنٹ</span>
+              </Link>
+
+              <Link
+                to="/medicines?view=companies"
+                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
+                  loc.pathname === '/medicines' && loc.search.includes('view=companies')
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-indigo-500/30'
+                }`}
+              >
+                <span>🏢 کمپنی وائز میڈیسن</span>
+              </Link>
+
+              <Link
+                to="/purchase-returns"
+                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
+                  loc.pathname === '/purchase-returns'
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'bg-slate-800 hover:bg-slate-700 text-rose-300 border border-rose-500/30'
+                }`}
+              >
+                <span>🔄 خریداری واپسی (ڈیبٹ)</span>
+              </Link>
+
+              <Link
+                to="/purchases"
+                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
+                  loc.pathname === '/purchases'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'bg-slate-800 hover:bg-slate-700 text-blue-300 border border-blue-500/30'
+                }`}
+              >
+                <span>🛍️ خریداری و GRN</span>
+              </Link>
+            </div>
+          </div>
+        )}
+
         {/* Content Area */}
         <main
           className={`desktop-content flex-1 min-h-0 w-full h-full ${
