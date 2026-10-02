@@ -86,7 +86,7 @@ export const POPULAR_PHARMA_COMPANIES = [
   'Horizon Pharmaceuticals',
 ]
 
-export function getDistinctCompanies(medicines = []) {
+export function getDistinctCompanies(medicines = [], extraCompanies = []) {
   const set = new Set()
   medicines.forEach((m) => {
     if (m?.manufacturer && typeof m.manufacturer === 'string' && m.manufacturer.trim()) {
@@ -94,6 +94,11 @@ export function getDistinctCompanies(medicines = []) {
     }
   })
   POPULAR_PHARMA_COMPANIES.forEach((c) => set.add(c))
+  if (Array.isArray(extraCompanies)) {
+    extraCompanies.forEach((c) => {
+      if (typeof c === 'string' && c.trim()) set.add(c.trim())
+    })
+  }
   return Array.from(set).sort((a, b) => a.localeCompare(b))
 }
 

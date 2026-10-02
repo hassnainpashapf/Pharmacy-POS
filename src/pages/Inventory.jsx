@@ -73,7 +73,7 @@ export default function Inventory() {
   // Batch & Expiry opens the near-expiry FEFO view, and Stock Audit opens physical verification.
   useEffect(() => {
     const requested = new URLSearchParams(location.search).get('tab')
-    setTab(['ALL', 'AVAILABLE', 'NEAR_EXPIRY', 'EXPIRED', 'DAMAGED', 'RETURNED', 'adjustments', 'audit'].includes(requested) ? requested : 'ALL')
+    setTab(['ALL', 'COMPANIES', 'AVAILABLE', 'NEAR_EXPIRY', 'EXPIRED', 'DAMAGED', 'RETURNED', 'adjustments', 'audit'].includes(requested) ? requested : 'ALL')
   }, [location.search])
 
   const summary = getStockStatusSummary()
@@ -195,6 +195,7 @@ export default function Inventory() {
       <div className="flex flex-wrap gap-1 bg-slate-100 p-0.5 rounded-sm border border-slate-300 w-fit">
         {[
           ['ALL', `All Batches (${allBatches.length})`],
+          ['COMPANIES', `🏢 By Company (${distinctCompanies.length})`],
           ['AVAILABLE', `Available (${summary.available} units)`],
           ['NEAR_EXPIRY', `Near Expiry (FEFO) (${allBatches.filter((b) => batchMatchesStockTab(b, 'NEAR_EXPIRY', now) && b.qty > 0).reduce((a, b) => a + b.qty, 0)} units)`],
           ['EXPIRED', `Expired (${summary.expired} units)`],
@@ -216,7 +217,7 @@ export default function Inventory() {
         ))}
       </div>
 
-      {tab !== 'audit' && (
+      {tab !== 'audit' && tab !== 'COMPANIES' && (
         <MedicineGroupFilter
           value={group}
           onChange={setGroup}
@@ -225,7 +226,7 @@ export default function Inventory() {
           context={tab === 'adjustments' ? 'current search' : 'current search and stock status'}
         />
       )}
-      {tab !== 'audit' && (
+      {tab !== 'audit' && tab !== 'COMPANIES' && (
         <div className="flex items-center justify-between gap-3 px-1">
           <p className="text-xs text-slate-500" role="status">
             Showing <b className="text-slate-800">{tab === 'adjustments' ? filteredAdjustments.length : batches.length}</b> {tab === 'adjustments' ? 'adjustments' : 'batches'}
@@ -236,7 +237,7 @@ export default function Inventory() {
       )}
 
       {/* One row per batch; keep the table scrollable on smaller screens. */}
-      {tab !== 'adjustments' && tab !== 'audit' && (
+      {tab !== 'adjustments' && tab !== 'audit' && tab !== 'COMPANIES' && (
         <section aria-label="Inventory batch list" className="bg-white border border-slate-200 overflow-x-auto" tabIndex={0}>
           <table className="w-full min-w-[1100px] text-xs text-left">
             <caption className="sr-only">Inventory batches</caption>
@@ -248,6 +249,122 @@ export default function Inventory() {
               {!batches.length && <tr><td colSpan={11} className="p-8 text-center text-slate-500">No batches match this dosage form, stock status, company, and search. Try another form or status, or clear the search.</td></tr>}
             </tbody>
           </table>
+        </section>
+      )}
+
+      {/* Company Stock Summary View */}
+      {tab === 'COMPANIES' && (
+        <section aria-label="Company stock breakdown" className="space-y-3">
+          <div className="flex items-center justify-between gap-3 px-1">
+            <p className="text-xs text-slate-500">
+              Showing stock breakdown for <b className="text-slate-800">{distinctCompanies.length}</b> pharmaceutical companies
+            </p>
+            <button
+              type="button"
+              onClick={() => setCompanyStockInOpen(true)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5"
+            >
+              <Building2 className="w-3.5 h-3.5" /> Stock In by Company
+            </button>
+          </div>
+
+          <div className="bg-white border border-slate-200 overflow-x-auto rounded-sm">
+            <table className="w-full min-w-[1000px] text-xs text-left">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                <tr>
+                  <th className="p-3">Company Name</th>
+                  <th className="p-3 text-center">Products</th>
+                  <th className="p-3 text-center">Active Batches</th>
+                  <th className="p-3 text-right">Stock Units</th>
+                  <th className="p-3 text-right">Stock Cost (Rs.)</th>
+                  <th className="p-3 text-right">Retail Value (Rs.)</th>
+                  <th className="p-3 text-right">Gross Margin</th>
+                  <th className="p-3 text-center">Near Expiry (&lt;90d)</th>
+                  <th className="p-3 text-center">Expired</th>
+                  <th className="p-3 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {distinctCompanies.map((comp) => {
+                  const companyMeds = (db.medicines || []).filter((m) => (m.manufacturer || 'Unassigned').trim().toLowerCase() === comp.trim().toLowerCase())
+                  const medIds = new Set(companyMeds.map((m) => m.id))
+                  const companyBatches = (db.batches || []).filter((b) => medIds.has(b.medicineId))
+                  const totalUnits = companyBatches.reduce((sum, b) => sum + (Number(b.qty) || 0), 0)
+                  const costVal = companyBatches.reduce((sum, b) => sum + ((Number(b.purchasePrice) || 0) * (Number(b.qty) || 0)), 0)
+                  const retailVal = companyBatches.reduce((sum, b) => sum + ((Number(b.salePrice) || 0) * (Number(b.qty) || 0)), 0)
+                  const nearExpiryUnits = companyBatches.filter((b) => batchMatchesStockTab(b, 'NEAR_EXPIRY', now) && b.qty > 0).reduce((sum, b) => sum + (Number(b.qty) || 0), 0)
+                  const expiredUnits = companyBatches.filter((b) => batchMatchesStockTab(b, 'EXPIRED', now) && b.qty > 0).reduce((sum, b) => sum + (Number(b.qty) || 0), 0)
+                  const marginPct = retailVal > 0 ? Math.round(((retailVal - costVal) / retailVal) * 100) : 0
+
+                  return (
+                    <tr key={comp} className="hover:bg-slate-50 transition-colors">
+                      <td className="p-3 font-bold text-slate-900">
+                        <span className="flex items-center gap-2">
+                          <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                          {comp}
+                        </span>
+                      </td>
+                      <td className="p-3 text-center font-semibold text-slate-700">{companyMeds.length}</td>
+                      <td className="p-3 text-center tabular-nums text-slate-600">{companyBatches.length}</td>
+                      <td className="p-3 text-right font-bold text-slate-900 tabular-nums">
+                        {totalUnits.toLocaleString()}
+                      </td>
+                      <td className="p-3 text-right font-mono text-slate-600 tabular-nums">
+                        {fmt(costVal)}
+                      </td>
+                      <td className="p-3 text-right font-mono font-bold text-slate-900 tabular-nums">
+                        {fmt(retailVal)}
+                      </td>
+                      <td className="p-3 text-right font-mono font-bold text-emerald-700 tabular-nums">
+                        {marginPct}%
+                      </td>
+                      <td className="p-3 text-center">
+                        {nearExpiryUnits > 0 ? (
+                          <span className="bg-amber-50 text-amber-700 px-2 py-0.5 rounded text-[11px] font-bold border border-amber-200">
+                            {nearExpiryUnits} u
+                          </span>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center">
+                        {expiredUnits > 0 ? (
+                          <span className="bg-rose-50 text-rose-700 px-2 py-0.5 rounded text-[11px] font-bold border border-rose-200">
+                            {expiredUnits} u
+                          </span>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
+                      </td>
+                      <td className="p-3 text-center">
+                        <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCompanyFilter(comp)
+                              setTab('ALL')
+                            }}
+                            className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-2.5 py-1 rounded-sm text-xs font-bold transition-colors"
+                            title={`Filter all batches for ${comp}`}
+                          >
+                            View Batches
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setCompanyStockInOpen(comp)}
+                            className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-sm text-xs font-bold transition-colors inline-flex items-center gap-1"
+                            title={`Stock in delivery invoice for ${comp}`}
+                          >
+                            <Plus className="w-3 h-3" /> Stock In
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
         </section>
       )}
 
@@ -316,6 +433,7 @@ export default function Inventory() {
       {companyStockInOpen && (
         <CompanyStockInModal
           distinctCompanies={distinctCompanies}
+          initialCompany={typeof companyStockInOpen === 'string' ? companyStockInOpen : ''}
           onClose={() => setCompanyStockInOpen(false)}
         />
       )}
@@ -451,11 +569,19 @@ function ReclassifyModal({ batch, onClose }) {
   )
 }
 
-export function CompanyStockInModal({ distinctCompanies = [], onClose }) {
+export function CompanyStockInModal({ distinctCompanies = [], onClose, initialCompany = '' }) {
   const db = useDB()
-  const [company, setCompany] = useState(distinctCompanies[0] || 'GSK Pakistan')
-  const [customCompany, setCustomCompany] = useState('')
-  const [isCustom, setIsCustom] = useState(false)
+  const [company, setCompany] = useState(() => {
+    if (initialCompany && distinctCompanies.includes(initialCompany)) return initialCompany
+    if (initialCompany) return initialCompany
+    return distinctCompanies[0] || 'GSK Pakistan'
+  })
+  const [customCompany, setCustomCompany] = useState(() => {
+    return initialCompany && !distinctCompanies.includes(initialCompany) ? initialCompany : ''
+  })
+  const [isCustom, setIsCustom] = useState(() => {
+    return Boolean(initialCompany && !distinctCompanies.includes(initialCompany))
+  })
   const activeCompany = isCustom ? customCompany.trim() : company.trim()
 
   const [selectedMedId, setSelectedMedId] = useState('')

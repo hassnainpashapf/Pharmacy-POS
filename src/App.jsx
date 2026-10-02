@@ -118,8 +118,10 @@ const navGroups = [
   {
     title: 'INVENTORY',
     items: [
-      { to: '/medicines', label: 'Medicines', icon: Pill },
+      { to: '/medicines?view=companies', label: 'Company-Wise Medicines', icon: Building2 },
+      { to: '/medicines', label: 'Medicines Catalogue', icon: Pill },
       { to: '/inventory', label: 'Stock Management', icon: Package },
+      { to: '/inventory?tab=COMPANIES', label: 'Company Stock Breakdown', icon: Layers },
       { to: '/inventory?tab=audit', label: 'Stock Audit (Kam/Zyada)', icon: ClipboardCheck },
       { to: '/inventory?tab=NEAR_EXPIRY', label: 'Batch & Expiry', icon: Clock },
       { to: '/purchases', label: 'Purchases & PO', icon: ShoppingBag },
