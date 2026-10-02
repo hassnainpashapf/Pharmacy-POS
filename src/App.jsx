@@ -21,8 +21,8 @@ import Dashboard from './pages/Dashboard'
 import POS from './pages/POS'
 import SalesHistory from './pages/SalesHistory'
 import Medicines from './pages/Medicines'
-import Inventory from './pages/Inventory'
-import Purchases from './pages/Purchases'
+import Inventory, { CompanyStockPage, StockAuditPage, ExpiryManagementPage } from './pages/Inventory'
+import Purchases, { PurchaseReturnsPage } from './pages/Purchases'
 import { Suppliers, Customers } from './pages/People'
 import Reports from './pages/Reports'
 import Returns from './pages/Returns'
@@ -123,11 +123,11 @@ const navGroups = [
       { to: '/medicines?view=companies', label: 'Company-Wise Medicines', icon: Building2, badge: 'کمپنی وائز', badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
       { to: '/medicines', label: 'Medicines Catalogue', icon: Pill },
       { to: '/inventory', label: 'Stock Management', icon: Package },
-      { to: '/inventory?tab=COMPANIES', label: 'Company Stock Breakdown', icon: Layers, badge: 'کمپنی سٹاک', badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-      { to: '/inventory?tab=audit', label: 'Stock Audit (Kam/Zyada)', icon: ClipboardCheck, badge: 'کم / زیادہ', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200' },
-      { to: '/inventory?tab=NEAR_EXPIRY', label: 'Batch & Expiry', icon: Clock },
+      { to: '/company-stock', label: 'Company Stock Breakdown', icon: Layers, badge: 'کمپنی سٹاک', badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+      { to: '/stock-audit', label: 'Stock Audit (Kam/Zyada)', icon: ClipboardCheck, badge: 'کم / زیادہ', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200' },
+      { to: '/expiry-management', label: 'Batch & Expiry Management', icon: Clock, badge: 'ایکسپائری', badgeColor: 'bg-orange-50 text-orange-700 border-orange-200' },
       { to: '/purchases', label: 'Purchases & GRN', icon: ShoppingBag, badge: 'GRN + ٹیکس', badgeColor: 'bg-blue-50 text-blue-700 border-blue-200' },
-      { to: '/purchases?tab=returns', label: 'Purchase Returns', icon: RotateCcw, badge: 'واپسی', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
+      { to: '/purchase-returns', label: 'Purchase Returns', icon: RotateCcw, badge: 'واپسی', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
       { to: '/suppliers', label: 'Suppliers', icon: Truck },
     ],
   },
@@ -550,7 +550,7 @@ function Shell({ children }) {
 
                       <button
                         type="button"
-                        onClick={() => { navigate('/inventory?tab=COMPANIES'); setQuickHubOpen(false) }}
+                        onClick={() => { navigate('/company-stock'); setQuickHubOpen(false) }}
                         className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
                       >
                         <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
@@ -564,7 +564,7 @@ function Shell({ children }) {
 
                       <button
                         type="button"
-                        onClick={() => { navigate('/inventory?tab=audit'); setQuickHubOpen(false) }}
+                        onClick={() => { navigate('/stock-audit'); setQuickHubOpen(false) }}
                         className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-amber-200 hover:bg-amber-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
                       >
                         <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
@@ -578,7 +578,7 @@ function Shell({ children }) {
 
                       <button
                         type="button"
-                        onClick={() => { navigate('/purchases?tab=returns'); setQuickHubOpen(false) }}
+                        onClick={() => { navigate('/purchase-returns'); setQuickHubOpen(false) }}
                         className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
                       >
                         <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
@@ -899,9 +899,16 @@ function LegacyApp() {
         <Route path="/sales-history" element={<SalesHistory />} />
         <Route path="/medicines" element={<Medicines />} />
         <Route path="/inventory" element={<Inventory />} />
+        <Route path="/company-stock" element={<CompanyStockPage />} />
+        <Route path="/inventory/companies" element={<CompanyStockPage />} />
+        <Route path="/stock-audit" element={<StockAuditPage />} />
+        <Route path="/inventory/audit" element={<StockAuditPage />} />
+        <Route path="/expiry-management" element={<ExpiryManagementPage />} />
+        <Route path="/inventory/expiry" element={<ExpiryManagementPage />} />
         <Route path="/smart" element={<SmartInventory />} />
         <Route path="/accounting" element={<Accounting />} />
         <Route path="/purchases" element={<Purchases />} />
+        <Route path="/purchase-returns" element={<PurchaseReturnsPage />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/customers" element={<Customers />} />
         <Route path="/returns" element={<Returns />} />

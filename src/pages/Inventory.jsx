@@ -42,13 +42,36 @@ import {
   DOSAGE_FORM_OPTIONS,
 } from '../lib/medicineGroups'
 
-export default function Inventory() {
+export function CompanyStockPage() {
+  return <Inventory forcedTab="COMPANIES" />
+}
+
+export function StockAuditPage() {
+  return <Inventory forcedTab="audit" />
+}
+
+export function ExpiryManagementPage() {
+  return <Inventory forcedTab="NEAR_EXPIRY" />
+}
+
+export default function Inventory({ forcedTab }) {
   const db = useDB()
-  let location = { search: '' }
+  let location = { search: '', pathname: '' }
   try {
     location = useLocation()
   } catch {}
-  const [tab, setTab] = useState('ALL')
+
+  const computeTab = () => {
+    if (forcedTab) return forcedTab
+    const p = location.pathname || ''
+    if (p === '/company-stock' || p === '/inventory/companies') return 'COMPANIES'
+    if (p === '/stock-audit' || p === '/inventory/audit') return 'audit'
+    if (p === '/expiry-management' || p === '/inventory/expiry') return 'NEAR_EXPIRY'
+    const requested = new URLSearchParams(location.search).get('tab')
+    return ['ALL', 'COMPANIES', 'AVAILABLE', 'NEAR_EXPIRY', 'EXPIRED', 'DAMAGED', 'RETURNED', 'adjustments', 'audit'].includes(requested) ? requested : 'ALL'
+  }
+
+  const [tab, setTab] = useState(computeTab)
   const [search, setSearch] = useState('')
   const [group, setGroup] = useState('all')
   const [companyFilter, setCompanyFilter] = useState('all')
@@ -69,12 +92,10 @@ export default function Inventory() {
     return map
   }, [db.batches, db.medicines])
 
-  // Keep sidebar deep-links separate: Stock Management opens all stock while
-  // Batch & Expiry opens the near-expiry FEFO view, and Stock Audit opens physical verification.
+  // Synchronize tab based on props, URL path or query params
   useEffect(() => {
-    const requested = new URLSearchParams(location.search).get('tab')
-    setTab(['ALL', 'COMPANIES', 'AVAILABLE', 'NEAR_EXPIRY', 'EXPIRED', 'DAMAGED', 'RETURNED', 'adjustments', 'audit'].includes(requested) ? requested : 'ALL')
-  }, [location.search])
+    setTab(computeTab())
+  }, [location.search, location.pathname, forcedTab])
 
   const summary = getStockStatusSummary()
 
@@ -106,12 +127,28 @@ export default function Inventory() {
       <div className="pb-4 border-b border-slate-200 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
         <div>
           <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>{tab === 'NEAR_EXPIRY' ? 'Batch & Expiry' : 'Stock Management'}</span>
+            <span>
+              {tab === 'COMPANIES'
+                ? '🏢 کمپنی وائز سٹاک رپورٹ (Company Stock Breakdown)'
+                : tab === 'audit'
+                ? '⚖️ فزیکل سٹاک آڈٹ (Stock Audit: Kam / Zyada)'
+                : tab === 'NEAR_EXPIRY'
+                ? '⏳ ایکسپائری و بیچ مینجمنٹ (Batch & Expiry)'
+                : '📦 سٹاک مینجمنٹ (Stock Management)'}
+            </span>
             <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-sm border border-indigo-200">
-              FEFO Managed
+              {tab === 'audit' ? 'Physical Count' : tab === 'COMPANIES' ? 'Company Grouped' : 'FEFO Managed'}
             </span>
           </h2>
-          {tab === 'NEAR_EXPIRY' && <p className="text-xs text-slate-600 mt-1">Expiring within 90 days</p>}
+          <p className="text-xs text-slate-500 mt-1">
+            {tab === 'COMPANIES'
+              ? 'ہر فارما کمپنی کا دکان میں موجود کل سٹاک اور ان کی مالیت'
+              : tab === 'audit'
+              ? 'کاؤنٹر پر موجود مال کی فزیکل گنتی اور کم/زیادہ کا فوری حل'
+              : tab === 'NEAR_EXPIRY'
+              ? 'نزدیک ایکسپائر ہونے والے بیجز (90 دن سے کم) اور زائد المیعاد دواؤں کا ریکارڈ'
+              : 'دکان کی تمام ادویات اور بیجز کا لائیو سٹاک ریکارڈ'}
+          </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">

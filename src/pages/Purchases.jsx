@@ -41,13 +41,28 @@ import {
   FileText,
 } from 'lucide-react'
 
-export default function Purchases() {
+export function PurchaseReturnsPage() {
+  return <Purchases forcedTab="returns" />
+}
+
+export default function Purchases({ forcedTab }) {
   const db = useDB()
   const location = useLocation()
   const navigate = useNavigate()
 
+  const computeTab = () => {
+    if (forcedTab) return forcedTab
+    if (location.pathname === '/purchase-returns') return 'returns'
+    const params = new URLSearchParams(location.search)
+    const t = params.get('tab')
+    if (t === 'orders' || t === 'invoices' || t === 'returns') {
+      return t
+    }
+    return 'orders'
+  }
+
   // Tabs: 'orders' (Parches Orders) | 'invoices' (Inward Invoices & Supplier Dues) | 'returns' (Purchase Returns)
-  const [tab, setTab] = useState('orders')
+  const [tab, setTab] = useState(computeTab)
   const [showNewPurchase, setShowNewPurchase] = useState(false)
   const [showNewPO, setShowNewPO] = useState(false)
   const [showNewReturn, setShowNewReturn] = useState(false)
@@ -56,18 +71,18 @@ export default function Purchases() {
   const [viewingReturn, setViewingReturn] = useState(null)
   const [viewingGRN, setViewingGRN] = useState(null)
 
-  // Sync tab with URL search params if present
+  // Sync tab with URL search params or path
   useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const t = params.get('tab')
-    if (t === 'orders' || t === 'invoices' || t === 'returns') {
-      setTab(t)
-    }
-  }, [location.search])
+    setTab(computeTab())
+  }, [location.search, location.pathname, forcedTab])
 
   const setTabAndUrl = (newTab) => {
     setTab(newTab)
-    navigate(`/purchases?tab=${newTab}`, { replace: true })
+    if (newTab === 'returns') {
+      navigate('/purchase-returns', { replace: true })
+    } else {
+      navigate(`/purchases?tab=${newTab}`, { replace: true })
+    }
   }
 
   // Supplier-wise outstanding report
@@ -164,10 +179,16 @@ export default function Purchases() {
         <div>
           <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
             <ShoppingBag className="w-6 h-6 text-emerald-600" />
-            Purchases, GRN & Orders (خریداری اور جی آر این)
+            {tab === 'returns'
+              ? '🔄 خریداری واپسی و ڈیبٹ نوٹ (Purchase Returns & Debit Notes)'
+              : tab === 'orders'
+              ? '📋 خریداری آرڈرز (Purchase Orders)'
+              : '🧾 خریداری بل اور GRN (Purchases & Inward Goods)'}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Goods Received Note (GRN) banaein, GST, Advance Tax, Discounts, Batches aur Expiry manage karein, ya stock wapis karein.
+            {tab === 'returns'
+              ? 'سپلائر کو زائد المیعاد یا خراب مال کی واپسی کا اندراج اور ڈیبٹ نوٹ جاری کریں۔'
+              : 'Goods Received Note (GRN) بنائیں، GST، Advance Tax، Discounts، Batches اور Expiry manage کریں۔'}
           </p>
         </div>
 

@@ -180,7 +180,7 @@ export default function Dashboard() {
           {/* 2. Company Stock Breakdown */}
           <button
             type="button"
-            onClick={() => nav('/inventory?tab=COMPANIES')}
+            onClick={() => nav('/company-stock')}
             className="group relative text-left bg-slate-800/90 hover:bg-emerald-600/90 hover:border-emerald-400 border border-slate-700 rounded-xl p-3 sm:p-3.5 transition-all shadow-sm hover:shadow-emerald-500/20 flex flex-col justify-between cursor-pointer"
           >
             <div>
@@ -207,7 +207,7 @@ export default function Dashboard() {
           {/* 3. Stock Audit: Kam / Zyada */}
           <button
             type="button"
-            onClick={() => nav('/inventory?tab=audit')}
+            onClick={() => nav('/stock-audit')}
             className="group relative text-left bg-slate-800/90 hover:bg-amber-600/90 hover:border-amber-400 border border-slate-700 rounded-xl p-3 sm:p-3.5 transition-all shadow-sm hover:shadow-amber-500/20 flex flex-col justify-between cursor-pointer"
           >
             <div>
@@ -234,7 +234,7 @@ export default function Dashboard() {
           {/* 4. Purchase Returns */}
           <button
             type="button"
-            onClick={() => nav('/purchases?tab=returns')}
+            onClick={() => nav('/purchase-returns')}
             className="group relative text-left bg-slate-800/90 hover:bg-rose-600/90 hover:border-rose-400 border border-slate-700 rounded-xl p-3 sm:p-3.5 transition-all shadow-sm hover:shadow-rose-500/20 flex flex-col justify-between cursor-pointer"
           >
             <div>
