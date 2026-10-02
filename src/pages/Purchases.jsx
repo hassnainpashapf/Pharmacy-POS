@@ -11,6 +11,9 @@ import {
   savePurchaseOrder,
   updatePurchaseOrderStatus,
   deletePurchaseOrder,
+  purchaseReturns,
+  savePurchaseReturn,
+  deletePurchaseReturn,
 } from '../lib/db'
 import { Modal, Input } from './Medicines'
 import {
@@ -31,6 +34,9 @@ import {
   TrendingUp,
   AlertCircle,
   Package,
+  RotateCcw,
+  DollarSign,
+  AlertTriangle,
 } from 'lucide-react'
 
 export default function Purchases() {
@@ -38,18 +44,20 @@ export default function Purchases() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  // Tabs: 'orders' (Parches Orders) | 'invoices' (Inward Invoices & Supplier Dues)
+  // Tabs: 'orders' (Parches Orders) | 'invoices' (Inward Invoices & Supplier Dues) | 'returns' (Purchase Returns)
   const [tab, setTab] = useState('orders')
   const [showNewPurchase, setShowNewPurchase] = useState(false)
   const [showNewPO, setShowNewPO] = useState(false)
+  const [showNewReturn, setShowNewReturn] = useState(false)
   const [viewingPO, setViewingPO] = useState(null)
   const [receivingPO, setReceivingPO] = useState(null)
+  const [viewingReturn, setViewingReturn] = useState(null)
 
   // Sync tab with URL search params if present
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     const t = params.get('tab')
-    if (t === 'orders' || t === 'invoices') {
+    if (t === 'orders' || t === 'invoices' || t === 'returns') {
       setTab(t)
     }
   }, [location.search])
@@ -106,6 +114,41 @@ export default function Purchases() {
     return { total, draft, sent, received, totalValue }
   }, [allPOs])
 
+  // Purchase Returns Data & Filters
+  const [returnSearch, setReturnSearch] = useState('')
+  const [returnReasonFilter, setReturnReasonFilter] = useState('ALL')
+
+  const allReturns = purchaseReturns()
+
+  const filteredReturns = useMemo(() => {
+    return allReturns.filter((pr) => {
+      const sup = supplierById(pr.supplierId)
+      const q = returnSearch.toLowerCase().trim()
+      const matchSearch =
+        !q ||
+        pr.returnNo?.toLowerCase().includes(q) ||
+        sup?.name?.toLowerCase().includes(q) ||
+        sup?.company?.toLowerCase().includes(q) ||
+        pr.items?.some((it) => it.medicineName?.toLowerCase().includes(q) || it.batchNo?.toLowerCase().includes(q))
+
+      const matchReason =
+        returnReasonFilter === 'ALL' ||
+        pr.items?.some((it) => it.reason === returnReasonFilter)
+
+      return matchSearch && matchReason
+    })
+  }, [allReturns, returnSearch, returnReasonFilter])
+
+  // Returns KPIs
+  const returnStats = useMemo(() => {
+    const total = allReturns.length
+    const totalUnits = allReturns.reduce((acc, r) => acc + (r.items || []).reduce((s, it) => s + (Number(it.qty) || 0), 0), 0)
+    const totalValue = allReturns.reduce((acc, r) => acc + (r.totalAmount || 0), 0)
+    const creditNotes = allReturns.filter((r) => r.settlementType === 'CREDIT_NOTE').length
+    const cashRefunds = allReturns.filter((r) => r.settlementType === 'CASH_REFUND').length
+    return { total, totalUnits, totalValue, creditNotes, cashRefunds }
+  }, [allReturns])
+
   const handleReceivePO = (po) => {
     setReceivingPO(po)
   }
@@ -117,10 +160,10 @@ export default function Purchases() {
         <div>
           <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
             <ShoppingBag className="w-6 h-6 text-emerald-600" />
-            Purchases & Orders (خریداری اور آرڈرز)
+            Purchases, Orders & Returns (خریداری، آرڈرز اور واپسی)
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Suppliers ke Purchase Orders (Parches Orders) manage karein, stock audit ki kam medicines ko reorder karein aur invoices verify karein.
+            Suppliers ke Purchase Orders manage karein, stock audit shortage reorder karein, invoices verify karein aur expiry/damage stock wapis karein.
           </p>
         </div>
 
@@ -142,6 +185,13 @@ export default function Purchases() {
             + New Purchase Order (PO)
           </button>
           <button
+            onClick={() => setShowNewReturn(true)}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-sm transition"
+          >
+            <RotateCcw className="w-4 h-4" />
+            + New Purchase Return
+          </button>
+          <button
             onClick={() => {
               setReceivingPO(null)
               setShowNewPurchase(true)
@@ -155,10 +205,10 @@ export default function Purchases() {
       </div>
 
       {/* Tab Navigation Switcher */}
-      <div className="flex items-center gap-2 border-b border-slate-200">
+      <div className="flex items-center gap-2 border-b border-slate-200 overflow-x-auto">
         <button
           onClick={() => setTabAndUrl('orders')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition ${
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition whitespace-nowrap ${
             tab === 'orders'
               ? 'border-blue-600 text-blue-600 bg-blue-50/50'
               : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -173,7 +223,7 @@ export default function Purchases() {
 
         <button
           onClick={() => setTabAndUrl('invoices')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition ${
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition whitespace-nowrap ${
             tab === 'invoices'
               ? 'border-emerald-600 text-emerald-600 bg-emerald-50/50'
               : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
@@ -183,6 +233,21 @@ export default function Purchases() {
           🚚 Inward Invoices & Supplier Dues
           <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-emerald-100 text-emerald-700">
             {(db.purchases || []).length}
+          </span>
+        </button>
+
+        <button
+          onClick={() => setTabAndUrl('returns')}
+          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition whitespace-nowrap ${
+            tab === 'returns'
+              ? 'border-purple-600 text-purple-600 bg-purple-50/50'
+              : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+          }`}
+        >
+          <RotateCcw className="w-4 h-4" />
+          🔄 Purchase Returns (خریداری واپسی)
+          <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-purple-100 text-purple-700">
+            {allReturns.length}
           </span>
         </button>
       </div>
@@ -545,6 +610,238 @@ export default function Purchases() {
       )}
 
       {/* ======================================================== */}
+      {/* TAB 3: PURCHASE RETURNS (خریداری واپسی / سپلائر ریٹرنز)    */}
+      {/* ======================================================== */}
+      {tab === 'returns' && (
+        <div className="space-y-4">
+          {/* KPI Summary Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Total Return Vouchers</div>
+              <div className="text-2xl font-black text-purple-700 mt-1">{returnStats.total}</div>
+              <div className="text-[11px] text-slate-400 mt-0.5">Dispatched to suppliers</div>
+            </div>
+
+            <div className="bg-rose-50 p-3 rounded-xl border border-rose-200 shadow-sm">
+              <div className="text-[11px] font-bold text-rose-700 uppercase tracking-wide">Returned Units</div>
+              <div className="text-2xl font-black text-rose-900 mt-1">{returnStats.totalUnits}</div>
+              <div className="text-[11px] text-rose-600 mt-0.5">Total packs/tablets deducted</div>
+            </div>
+
+            <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 shadow-sm">
+              <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide">Total Claimed Value</div>
+              <div className="text-xl font-black text-emerald-900 mt-1">{fmt(returnStats.totalValue)}</div>
+              <div className="text-[11px] text-emerald-600 mt-0.5">Financial recovery from vendors</div>
+            </div>
+
+            <div className="bg-blue-50 p-3 rounded-xl border border-blue-200 shadow-sm">
+              <div className="text-[11px] font-bold text-blue-700 uppercase tracking-wide">Debit Notes</div>
+              <div className="text-2xl font-black text-blue-900 mt-1">{returnStats.creditNotes}</div>
+              <div className="text-[11px] text-blue-600 mt-0.5">Supplier balance adjusted</div>
+            </div>
+
+            <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 shadow-sm col-span-2 sm:col-span-1">
+              <div className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Cash Refunds</div>
+              <div className="text-2xl font-black text-amber-900 mt-1">{returnStats.cashRefunds}</div>
+              <div className="text-[11px] text-amber-600 mt-0.5">Instant cash received</div>
+            </div>
+          </div>
+
+          {/* Search & Reason Filter Toolbar */}
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search PR #, supplier, company, medicine, or batch..."
+                value={returnSearch}
+                onChange={(e) => setReturnSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+
+            {/* Reason Filter Pills */}
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg flex-wrap">
+              {[
+                { id: 'ALL', label: 'All Reasons' },
+                { id: 'EXPIRED', label: '⏰ Expired' },
+                { id: 'NEAR_EXPIRY', label: '⌛ Near Expiry' },
+                { id: 'DAMAGED', label: '💥 Damaged' },
+                { id: 'WRONG_ITEM', label: '❌ Wrong Item' },
+                { id: 'OVER_STOCKED', label: '📦 Excess' },
+              ].map((rf) => (
+                <button
+                  key={rf.id}
+                  onClick={() => setReturnReasonFilter(rf.id)}
+                  className={`px-2.5 py-1 text-xs font-bold rounded-md transition ${
+                    returnReasonFilter === rf.id
+                      ? 'bg-white text-purple-900 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-800'
+                  }`}
+                >
+                  {rf.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Purchase Returns Table */}
+          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="p-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+                Purchase Returns & Debit Notes ({filteredReturns.length})
+              </span>
+              <button
+                onClick={() => setShowNewReturn(true)}
+                className="text-xs font-bold text-purple-600 hover:text-purple-700 flex items-center gap-1"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                + Create Return
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
+                  <tr>
+                    <th className="p-3 text-left">Return #</th>
+                    <th className="p-3 text-left">Date</th>
+                    <th className="p-3 text-left">Supplier / Distributor</th>
+                    <th className="p-3 text-left">Returned Items</th>
+                    <th className="p-3 text-left">Reasons</th>
+                    <th className="p-3 text-right">Claim Amount</th>
+                    <th className="p-3 text-center">Settlement Mode</th>
+                    <th className="p-3 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredReturns.map((pr) => {
+                    const sup = supplierById(pr.supplierId)
+                    const totalUnits = (pr.items || []).reduce((acc, it) => acc + (Number(it.qty) || 0), 0)
+
+                    return (
+                      <tr key={pr.id} className="hover:bg-slate-50 transition">
+                        <td className="p-3 font-mono font-bold text-purple-700">
+                          {pr.returnNo}
+                        </td>
+                        <td className="p-3 text-slate-600">
+                          {pr.date || todayStr()}
+                        </td>
+                        <td className="p-3">
+                          <div className="font-bold text-slate-800">{sup?.name || pr.supplierName || 'General Supplier'}</div>
+                          <div className="text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5">
+                            {(sup?.company || pr.supplierCompany) && <span>{sup?.company || pr.supplierCompany}</span>}
+                            {sup?.phone && (
+                              <span className="flex items-center gap-0.5 text-slate-400">
+                                <Phone className="w-3 h-3" /> {sup.phone}
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <div className="font-semibold text-slate-800">
+                            {pr.items?.length || 0} items ({totalUnits} units)
+                          </div>
+                          <div className="text-[11px] text-slate-500 truncate max-w-xs mt-0.5">
+                            {pr.items?.map((it) => `${it.medicineName || 'Item'} (x${it.qty})`).join(', ')}
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <div className="flex flex-wrap gap-1">
+                            {Array.from(new Set(pr.items?.map((it) => it.reason))).map((r) => (
+                              <span
+                                key={r}
+                                className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                  r === 'EXPIRED'
+                                    ? 'bg-red-100 text-red-800'
+                                    : r === 'NEAR_EXPIRY'
+                                    ? 'bg-amber-100 text-amber-800'
+                                    : r === 'DAMAGED'
+                                    ? 'bg-rose-100 text-rose-800'
+                                    : r === 'WRONG_ITEM'
+                                    ? 'bg-purple-100 text-purple-800'
+                                    : 'bg-blue-100 text-blue-800'
+                                }`}
+                              >
+                                {r === 'EXPIRED' ? '⏰ Expired' :
+                                 r === 'NEAR_EXPIRY' ? '⌛ Near Expiry' :
+                                 r === 'DAMAGED' ? '💥 Damaged' :
+                                 r === 'WRONG_ITEM' ? '❌ Wrong Item' :
+                                 r === 'OVER_STOCKED' ? '📦 Excess' : r}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="p-3 text-right font-black text-emerald-700">
+                          {fmt(pr.totalAmount)}
+                        </td>
+                        <td className="p-3 text-center">
+                          <span
+                            className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide border ${
+                              pr.settlementType === 'CREDIT_NOTE'
+                                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            }`}
+                          >
+                            {pr.settlementType === 'CREDIT_NOTE' ? '💳 Debit Note' : '💵 Cash Refund'}
+                          </span>
+                        </td>
+                        <td className="p-3 text-center">
+                          <div className="flex items-center justify-center gap-1">
+                            {/* View / Print / WhatsApp Voucher */}
+                            <button
+                              onClick={() => setViewingReturn(pr)}
+                              title="View, Print Debit Note, or send to supplier via WhatsApp"
+                              className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-lg transition"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+
+                            {/* Revert / Delete Return */}
+                            <button
+                              onClick={() => {
+                                if (confirm(`Are you sure you want to revert return ${pr.returnNo}? This will restock the returned items back into inventory and revert the financial settlement.`)) {
+                                  deletePurchaseReturn(pr.id)
+                                }
+                              }}
+                              title="Revert Return (Restores stock & balance)"
+                              className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+
+                  {!filteredReturns.length && (
+                    <tr>
+                      <td colSpan="8" className="p-8 text-center text-slate-400">
+                        <RotateCcw className="w-10 h-10 mx-auto text-slate-300 mb-2" />
+                        <div className="font-bold text-slate-600">No Purchase Returns Logged</div>
+                        <div className="text-xs text-slate-400 mt-1">
+                          Expiry, damage ya excess stock distributors ko wapis karne ke liye "New Purchase Return" dabayein.
+                        </div>
+                        <div className="mt-4">
+                          <button
+                            onClick={() => setShowNewReturn(true)}
+                            className="px-4 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-sm"
+                          >
+                            + Create Purchase Return
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================================== */}
       {/* MODAL 1: NEW PURCHASE INVOICE (INWARD STOCK TO BATCHES)   */}
       {/* ======================================================== */}
       {showNewPurchase && (
@@ -581,6 +878,29 @@ export default function Purchases() {
             setViewingPO(null)
             handleReceivePO(po)
           }}
+        />
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 4: CREATE NEW PURCHASE RETURN                      */}
+      {/* ======================================================== */}
+      {showNewReturn && (
+        <NewPurchaseReturnModal
+          onClose={() => setShowNewReturn(false)}
+          onCreated={(newReturn) => {
+            setShowNewReturn(false)
+            setViewingReturn(newReturn)
+          }}
+        />
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 5: VIEW / PRINT / WHATSAPP DEBIT NOTE VOUCHER      */}
+      {/* ======================================================== */}
+      {viewingReturn && (
+        <PurchaseReturnSlipModal
+          pr={viewingReturn}
+          onClose={() => setViewingReturn(null)}
         />
       )}
     </div>
@@ -1227,6 +1547,562 @@ function PODetailModal({ po, onClose, onReceive }) {
               Close
             </button>
           </div>
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
+// ----------------------------------------------------------------------
+// MODAL: CREATE NEW PURCHASE RETURN (خریداری واپسی)
+// ----------------------------------------------------------------------
+function NewPurchaseReturnModal({ onClose, onCreated }) {
+  const db = useDB()
+  const [supplierId, setSupplierId] = useState(db.suppliers[0]?.id || '')
+  const [settlementType, setSettlementType] = useState('CREDIT_NOTE') // CREDIT_NOTE | CASH_REFUND
+  const [note, setNote] = useState('')
+
+  // Item line to add
+  const [selectedBatchId, setSelectedBatchId] = useState('')
+  const [returnQty, setReturnQty] = useState(1)
+  const [returnPrice, setReturnPrice] = useState(0)
+  const [returnReason, setReturnReason] = useState('EXPIRED') // EXPIRED | NEAR_EXPIRY | DAMAGED | WRONG_ITEM | OVER_STOCKED | OTHER
+  const [itemNote, setItemNote] = useState('')
+
+  // Filter batches by selected supplier or show all available batches
+  const [filterBySupplierOnly, setFilterBySupplierOnly] = useState(false)
+  const [batchSearch, setBatchSearch] = useState('')
+
+  // Added items in voucher
+  const [items, setItems] = useState([])
+
+  const selectedSupplier = db.suppliers.find((s) => s.id === supplierId)
+
+  // Available batches with stock > 0
+  const availableBatches = useMemo(() => {
+    return (db.batches || []).filter((b) => {
+      if (b.qty <= 0) return false
+      if (filterBySupplierOnly && b.supplierId && b.supplierId !== supplierId) return false
+      const m = medicineById(b.medicineId)
+      const q = batchSearch.toLowerCase().trim()
+      if (!q) return true
+      return (
+        b.batchNo?.toLowerCase().includes(q) ||
+        m?.name?.toLowerCase().includes(q) ||
+        m?.generic?.toLowerCase().includes(q)
+      )
+    })
+  }, [db.batches, filterBySupplierOnly, supplierId, batchSearch])
+
+  // When selectedBatchId changes, set default return price and reset qty
+  const activeBatch = useMemo(() => {
+    return (db.batches || []).find((b) => b.id === selectedBatchId)
+  }, [db.batches, selectedBatchId])
+
+  const activeMedicine = useMemo(() => {
+    return activeBatch ? medicineById(activeBatch.medicineId) : null
+  }, [activeBatch])
+
+  useEffect(() => {
+    if (activeBatch) {
+      setReturnPrice(activeBatch.purchasePrice || (activeMedicine ? Math.round(activeMedicine.salePrice * 0.75) : 0))
+      setReturnQty(Math.min(1, activeBatch.qty))
+    }
+  }, [activeBatch, activeMedicine])
+
+  function addItem() {
+    if (!activeBatch || !activeMedicine) {
+      alert('Pehlay medicine batch select karein.')
+      return
+    }
+    const q = Number(returnQty) || 0
+    if (q <= 0) {
+      alert('Return quantity 0 se zyada honi chahiye.')
+      return
+    }
+    if (q > activeBatch.qty) {
+      alert(`Is batch mein sirf ${activeBatch.qty} units available hain. Aap is se zyada return nahi kar saktay.`)
+      return
+    }
+    if (items.some((it) => it.batchId === activeBatch.id)) {
+      alert('Yeh batch pehlay se return list mein add hai.')
+      return
+    }
+
+    const price = Number(returnPrice) || 0
+    setItems((prev) => [
+      ...prev,
+      {
+        medicineId: activeMedicine.id,
+        medicineName: `${activeMedicine.name} ${activeMedicine.strength || ''}`,
+        batchId: activeBatch.id,
+        batchNo: activeBatch.batchNo,
+        expiry: activeBatch.expiry,
+        qty: q,
+        purchasePrice: price,
+        total: q * price,
+        reason: returnReason,
+        note: itemNote,
+      },
+    ])
+
+    setSelectedBatchId('')
+    setItemNote('')
+  }
+
+  const grandTotal = items.reduce((s, it) => s + (Number(it.total) || 0), 0)
+
+  function handleSubmit() {
+    if (!items.length) {
+      alert('Kam az kam ek item add karein.')
+      return
+    }
+
+    try {
+      const pr = savePurchaseReturn({
+        supplierId,
+        items,
+        settlementType,
+        note,
+      })
+      onCreated(pr)
+    } catch (e) {
+      alert(e.message)
+    }
+  }
+
+  return (
+    <Modal title="New Purchase Return (سپلائر کو خریداری واپسی)" onClose={onClose}>
+      <div className="space-y-4 text-xs">
+        {/* Step 1: Supplier Selector & Balance info */}
+        <div className="grid grid-cols-2 gap-3 p-3 bg-purple-50/60 border border-purple-200 rounded-xl">
+          <div>
+            <label className="font-bold text-purple-950 block mb-1">Target Supplier / Distributor</label>
+            <select
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
+              className="w-full border rounded-lg px-2.5 py-1.5 text-xs bg-white"
+            >
+              {db.suppliers.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name} {s.company ? `(${s.company})` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="font-bold text-purple-950 block mb-1">Current Payable Balance</label>
+            <div className="px-3 py-1.5 bg-white border border-purple-200 rounded-lg flex items-center justify-between">
+              <span className="text-slate-600">Our Payable Debt:</span>
+              <b className={selectedSupplier?.balance > 0 ? 'text-red-600 text-sm' : 'text-emerald-600 text-sm'}>
+                {fmt(selectedSupplier?.balance || 0)}
+              </b>
+            </div>
+          </div>
+        </div>
+
+        {/* Step 2: Add Batches to Return */}
+        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+          <div className="flex justify-between items-center">
+            <span className="font-bold text-slate-800 flex items-center gap-1.5">
+              <Package className="w-4 h-4 text-purple-600" />
+              Select Medicine Batch from Inventory
+            </span>
+            <label className="flex items-center gap-1.5 text-slate-600 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filterBySupplierOnly}
+                onChange={(e) => setFilterBySupplierOnly(e.target.checked)}
+                className="rounded text-purple-600"
+              />
+              Show batches linked to this supplier only
+            </label>
+          </div>
+
+          {/* Batch Selector Dropdown */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <select
+              value={selectedBatchId}
+              onChange={(e) => setSelectedBatchId(e.target.value)}
+              className="w-full border rounded-lg px-2.5 py-1.5 text-xs bg-white font-medium"
+            >
+              <option value="">— Select batch to return ({availableBatches.length} available) —</option>
+              {availableBatches.map((b) => {
+                const m = medicineById(b.medicineId)
+                const isExp = new Date(b.expiry) < new Date()
+                return (
+                  <option key={b.id} value={b.id}>
+                    {m?.name} {m?.strength} · Batch: {b.batchNo} · Exp: {b.expiry} · Stock: {b.qty} {isExp ? '⚠️ (EXPIRED)' : ''}
+                  </option>
+                )
+              })}
+            </select>
+
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Return Qty</label>
+                <input
+                  type="number"
+                  min="1"
+                  max={activeBatch?.qty || 9999}
+                  value={returnQty}
+                  onChange={(e) => setReturnQty(e.target.value)}
+                  className="w-full border rounded-lg px-2 py-1 text-xs text-center font-bold"
+                  placeholder="Qty"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Cost Rate</label>
+                <input
+                  type="number"
+                  value={returnPrice}
+                  onChange={(e) => setReturnPrice(e.target.value)}
+                  className="w-full border rounded-lg px-2 py-1 text-xs text-right font-mono"
+                  placeholder="Rate"
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Line Total</label>
+                <div className="py-1 px-1 text-center font-black text-slate-800">
+                  {fmt((Number(returnQty) || 0) * (Number(returnPrice) || 0))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Reason & Remarks Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 border-t border-slate-200">
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Return Reason</label>
+              <select
+                value={returnReason}
+                onChange={(e) => setReturnReason(e.target.value)}
+                className="w-full border rounded-lg px-2 py-1 text-xs bg-white font-semibold"
+              >
+                <option value="EXPIRED">⏰ Expired Stock (تاریخ ختم)</option>
+                <option value="NEAR_EXPIRY">⌛ Near Expiry (قریب المیعاد)</option>
+                <option value="DAMAGED">💥 Damaged / Broken (خراب یا ٹوٹا ہوا)</option>
+                <option value="WRONG_ITEM">❌ Wrong Item Delivered (غلط دوائی)</option>
+                <option value="OVER_STOCKED">📦 Slow Moving / Excess (اضافی اسٹاک)</option>
+                <option value="OTHER">📝 Other (دیگر)</option>
+              </select>
+            </div>
+            <div className="sm:col-span-2 flex gap-2 items-end">
+              <div className="flex-1">
+                <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Item Remarks (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Broken packaging, distributor claim agreed..."
+                  value={itemNote}
+                  onChange={(e) => setItemNote(e.target.value)}
+                  className="w-full border rounded-lg px-2.5 py-1 text-xs"
+                />
+              </div>
+              <button
+                onClick={addItem}
+                className="px-4 py-1.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow-sm transition whitespace-nowrap"
+              >
+                + Add to Return
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Step 3: Return Items Table */}
+        <div className="border border-slate-200 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
+          <table className="w-full text-xs">
+            <thead className="bg-slate-100 text-slate-700 sticky top-0 font-bold border-b border-slate-200">
+              <tr>
+                <th className="p-2 text-left">Medicine</th>
+                <th>Batch #</th>
+                <th>Expiry</th>
+                <th>Qty</th>
+                <th>Cost Rate</th>
+                <th>Line Total</th>
+                <th>Reason</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {items.map((it, idx) => (
+                <tr key={idx} className="text-center hover:bg-slate-50">
+                  <td className="p-2 text-left font-bold text-slate-800">{it.medicineName}</td>
+                  <td className="font-mono text-slate-600">{it.batchNo}</td>
+                  <td className="text-slate-500">{it.expiry}</td>
+                  <td className="font-bold text-purple-700">{it.qty}</td>
+                  <td className="text-right font-mono text-slate-600">{fmt(it.purchasePrice)}</td>
+                  <td className="text-right font-black text-slate-900 font-mono">{fmt(it.total)}</td>
+                  <td>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">
+                      {it.reason}
+                    </span>
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => setItems((prev) => prev.filter((_, i) => i !== idx))}
+                      className="text-red-500 hover:text-red-700 px-1 font-bold"
+                    >
+                      ✕
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {!items.length && (
+                <tr>
+                  <td colSpan="8" className="p-6 text-center text-slate-400">
+                    Koi item return list mein shamil nahi. Upar batch chunein aur "+ Add to Return" dabayein.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Step 4: Settlement Mode & General Note */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-200">
+          <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+            <span className="font-bold text-slate-800 block text-xs">Financial Settlement Method:</span>
+            <label className="flex items-start gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name="settlement"
+                value="CREDIT_NOTE"
+                checked={settlementType === 'CREDIT_NOTE'}
+                onChange={() => setSettlementType('CREDIT_NOTE')}
+                className="mt-0.5 text-purple-600"
+              />
+              <div>
+                <b className="text-slate-800">💳 Debit Note / Adjust in Balance (کھاتے سے منہا)</b>
+                <p className="text-[11px] text-slate-500">
+                  Return amount ({fmt(grandTotal)}) supplier ke payable balance mein se deduct ho jayegi.
+                </p>
+              </div>
+            </label>
+            <label className="flex items-start gap-2 cursor-pointer pt-1">
+              <input
+                type="radio"
+                name="settlement"
+                value="CASH_REFUND"
+                checked={settlementType === 'CASH_REFUND'}
+                onChange={() => setSettlementType('CASH_REFUND')}
+                className="mt-0.5 text-emerald-600"
+              />
+              <div>
+                <b className="text-slate-800">💵 Cash Refund Received (نقد رقم وصول کی)</b>
+                <p className="text-[11px] text-slate-500">
+                  Supplier ne delivery rider ke zariye foran cash refund ada kar diya hai.
+                </p>
+              </div>
+            </label>
+          </div>
+
+          <div>
+            <label className="font-bold text-slate-700 block mb-1">Return Remarks / Driver Name</label>
+            <textarea
+              rows="3"
+              placeholder="e.g. Returned via Distributor Rider Ahmed, Gate pass # 442..."
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              className="w-full border rounded-lg px-2.5 py-1.5 text-xs bg-white"
+            />
+          </div>
+        </div>
+
+        {/* Total & Submit */}
+        <div className="flex justify-between items-center pt-2 border-t border-slate-200">
+          <div>
+            <span className="text-slate-500">Total Items to Return: </span>
+            <b className="text-slate-800">{items.length} items</b>
+          </div>
+          <div className="text-right">
+            <span className="text-slate-500 mr-2">Total Return Recovery Amount:</span>
+            <b className="text-base text-purple-700">{fmt(grandTotal)}</b>
+          </div>
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          className="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow transition flex items-center justify-center gap-1.5 text-xs"
+        >
+          <RotateCcw className="w-4 h-4" />
+          Submit Purchase Return & Deduct Inventory Stock (واپسی مکمل کریں)
+        </button>
+      </div>
+    </Modal>
+  )
+}
+
+// ----------------------------------------------------------------------
+// MODAL: VIEW / PRINT / WHATSAPP DEBIT NOTE VOUCHER
+// ----------------------------------------------------------------------
+function PurchaseReturnSlipModal({ pr, onClose }) {
+  const db = useDB()
+  const sup = supplierById(pr.supplierId)
+  const pharmacyName = db.settings?.pharmacyName || 'Pharmacy POS'
+  const pharmacyPhone = db.settings?.phone || ''
+  const pharmacyAddress = db.settings?.address || ''
+
+  const totalUnits = (pr.items || []).reduce((acc, it) => acc + (Number(it.qty) || 0), 0)
+
+  // Format WhatsApp message
+  const handleWhatsApp = () => {
+    let msg = `*DEBIT NOTE / PURCHASE RETURN: ${pr.returnNo}*\n`
+    msg += `*Pharmacy:* ${pharmacyName}\n`
+    if (pharmacyPhone) msg += `*Contact:* ${pharmacyPhone}\n`
+    msg += `*Date:* ${pr.date || todayStr()}\n`
+    msg += `*Vendor/Distributor:* ${sup?.name || pr.supplierName || 'Distributor'} ${sup?.company ? `(${sup.company})` : ''}\n\n`
+    msg += `*RETURNED MEDICINES (واپس کی گئی ادویات):*\n`
+
+    ;(pr.items || []).forEach((it, idx) => {
+      msg += `${idx + 1}. *${it.medicineName}*\n`
+      msg += `   Batch: ${it.batchNo} | Exp: ${it.expiry}\n`
+      msg += `   Qty: *${it.qty} units* @ Rs. ${it.purchasePrice} = *Rs. ${it.total}*\n`
+      msg += `   Reason: ${it.reason}\n`
+    })
+
+    msg += `\n*Total Items:* ${pr.items?.length || 0} (${totalUnits} units)\n`
+    msg += `*Total Claim Amount:* ${fmt(pr.totalAmount)}\n`
+    msg += `*Settlement Mode:* ${pr.settlementType === 'CREDIT_NOTE' ? 'Debit Note (Deduct from Payable Balance)' : 'Cash Refund'}\n`
+    if (pr.note) msg += `*Remarks:* ${pr.note}\n`
+    msg += `\n_Please confirm credit note acknowledgment. Thank you!_`
+
+    const cleanPhone = (sup?.phone || '').replace(/[^0-9]/g, '')
+    const url = cleanPhone
+      ? `https://wa.me/${cleanPhone.startsWith('92') ? cleanPhone : '92' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent(msg)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`
+
+    window.open(url, '_blank')
+  }
+
+  const handlePrint = () => {
+    window.print()
+  }
+
+  return (
+    <Modal title={`Debit Note Voucher: ${pr.returnNo}`} onClose={onClose}>
+      <div className="space-y-4 text-xs">
+        {/* Printable Debit Note Card */}
+        <div id="pr-printable-slip" className="p-4 bg-white border border-slate-300 rounded-xl shadow-sm space-y-4">
+          {/* Slip Header */}
+          <div className="flex justify-between items-start border-b border-slate-200 pb-3">
+            <div>
+              <h3 className="text-base font-black text-slate-900">{pharmacyName}</h3>
+              {pharmacyAddress && <p className="text-slate-500 text-[11px]">{pharmacyAddress}</p>}
+              {pharmacyPhone && <p className="text-slate-500 text-[11px]">Phone: {pharmacyPhone}</p>}
+            </div>
+            <div className="text-right">
+              <span className="px-2.5 py-1 bg-purple-100 text-purple-800 text-[11px] font-black rounded-lg">
+                DEBIT NOTE / PURCHASE RETURN
+              </span>
+              <div className="font-mono font-bold text-slate-800 text-sm mt-1">{pr.returnNo}</div>
+              <div className="text-slate-500 text-[11px]">Date: {pr.date || todayStr()}</div>
+            </div>
+          </div>
+
+          {/* Supplier & Details Grid */}
+          <div className="grid grid-cols-2 gap-3 bg-purple-50/50 p-3 rounded-lg border border-purple-200">
+            <div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase">Vendor / Supplier</div>
+              <div className="font-black text-slate-800 text-xs mt-0.5">{sup?.name || pr.supplierName || 'General Supplier'}</div>
+              <div className="text-slate-500 text-[11px]">{sup?.company || pr.supplierCompany || 'Pharmaceutical Distributor'}</div>
+              <div className="text-slate-500 text-[11px] flex items-center gap-1 mt-0.5">
+                <Phone className="w-3 h-3 text-slate-400" /> {sup?.phone || 'No phone'}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] font-bold text-slate-400 uppercase">Settlement Mode</div>
+              <div className="mt-0.5">
+                <span className="font-bold text-purple-700">
+                  {pr.settlementType === 'CREDIT_NOTE' ? '💳 Debit Note (Balance Deducted)' : '💵 Cash Refund Received'}
+                </span>
+              </div>
+              <div className="mt-0.5 text-slate-500">
+                Processed By: <b className="text-slate-700">{pr.by || 'Pharmacist'}</b>
+              </div>
+            </div>
+          </div>
+
+          {/* Items Table */}
+          <table className="w-full text-xs">
+            <thead className="bg-slate-100 text-slate-700 font-bold border-y border-slate-200">
+              <tr>
+                <th className="p-2 text-left">#</th>
+                <th className="p-2 text-left">Medicine Description</th>
+                <th className="p-2 text-center">Batch #</th>
+                <th className="p-2 text-center">Expiry</th>
+                <th className="p-2 text-center">Qty Returned</th>
+                <th className="p-2 text-right">Cost Rate</th>
+                <th className="p-2 text-right">Total Claim</th>
+                <th className="p-2 text-center">Reason</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {(pr.items || []).map((it, idx) => (
+                <tr key={idx}>
+                  <td className="p-2 text-slate-400">{idx + 1}</td>
+                  <td className="p-2 font-bold text-slate-800">{it.medicineName}</td>
+                  <td className="p-2 text-center font-mono text-slate-600">{it.batchNo}</td>
+                  <td className="p-2 text-center text-slate-500">{it.expiry}</td>
+                  <td className="p-2 text-center font-bold text-purple-700">{it.qty}</td>
+                  <td className="p-2 text-right text-slate-600 font-mono">{fmt(it.purchasePrice || 0)}</td>
+                  <td className="p-2 text-right font-bold text-slate-800 font-mono">
+                    {fmt(it.total || (it.qty * (it.purchasePrice || 0)))}
+                  </td>
+                  <td className="p-2 text-center">
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+                      {it.reason}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot className="border-t-2 border-slate-300 font-bold bg-slate-50">
+              <tr>
+                <td colSpan="4" className="p-2 text-slate-700">
+                  Total Items: {pr.items?.length || 0}
+                </td>
+                <td className="p-2 text-center text-purple-700 font-black">{totalUnits} units</td>
+                <td className="p-2 text-right text-slate-600">Grand Total:</td>
+                <td className="p-2 text-right text-purple-700 text-sm font-black font-mono">
+                  {fmt(pr.totalAmount)}
+                </td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+
+          {pr.note && (
+            <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200 text-slate-600 text-[11px]">
+              <b>Instructions / Remarks:</b> {pr.note}
+            </div>
+          )}
+        </div>
+
+        {/* Action Buttons Toolbar */}
+        <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-200">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition"
+            >
+              <Printer className="w-4 h-4 text-slate-600" />
+              Print Debit Note Slip
+            </button>
+            <button
+              onClick={handleWhatsApp}
+              className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-sm transition"
+            >
+              <Send className="w-4 h-4" />
+              Send to Supplier via WhatsApp
+            </button>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-lg transition"
+          >
+            Close
+          </button>
         </div>
       </div>
     </Modal>

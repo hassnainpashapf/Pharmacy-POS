@@ -803,6 +803,56 @@ function ReportSection({ section }) {
         }
       }
 
+      case 'PURCHASE_RETURNS': {
+        const returns = db.purchaseReturns || []
+        const rows = []
+        for (const pr of [...returns].reverse()) {
+          const sup = supplierById(pr.supplierId)
+          for (const it of pr.items || []) {
+            rows.push([
+              pr.returnNo,
+              pr.date || todayStr(),
+              sup ? `${sup.name} (${sup.company || 'Distributor'})` : pr.supplierName || 'Distributor',
+              it.medicineName || medicineById(it.medicineId)?.name || 'Medicine',
+              it.batchNo || '—',
+              it.qty,
+              fmt(it.purchasePrice || 0),
+              fmt(it.total || (it.qty * (it.purchasePrice || 0))),
+              it.reason === 'EXPIRED' ? '⏰ Expired Stock' :
+              it.reason === 'NEAR_EXPIRY' ? '⌛ Near Expiry' :
+              it.reason === 'DAMAGED' ? '💥 Damaged Goods' :
+              it.reason === 'WRONG_ITEM' ? '❌ Wrong Delivery' :
+              it.reason === 'OVER_STOCKED' ? '📦 Excess Stock' : 'Return Claim',
+              pr.settlementType === 'CREDIT_NOTE' ? 'Debit Note (Balance Adjusted)' : 'Cash Refunded',
+            ])
+          }
+        }
+        const totalRefund = returns.reduce((a, b) => a + (b.totalAmount || 0), 0)
+        const totalUnits = returns.reduce((a, b) => a + (b.items || []).reduce((s, it) => s + (Number(it.qty) || 0), 0), 0)
+        return {
+          columns: [
+            'Return #',
+            'Date',
+            'Supplier / Distributor',
+            'Medicine Name',
+            'Batch #',
+            'Qty Returned',
+            'Purchase Rate',
+            'Total Value',
+            'Reason',
+            'Settlement Mode',
+          ],
+          rows,
+          summary: {
+            'Return Vouchers': returns.length,
+            'Total Units Returned': totalUnits,
+            'Total Amount Claimed': fmt(totalRefund),
+            'Debit Notes Issued': returns.filter((r) => r.settlementType === 'CREDIT_NOTE').length,
+            'Cash Refunds Received': returns.filter((r) => r.settlementType === 'CASH_REFUND').length,
+          },
+        }
+      }
+
       case 'SUPPLIER_DUES': {
         const rows = (db.suppliers || [])
           .filter((s) => (s.balance || 0) > 0)

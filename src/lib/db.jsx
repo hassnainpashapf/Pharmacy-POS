@@ -42,6 +42,7 @@ const empty = () => ({
   activeCounterId: 'counter-1',
   stockAdjustments: [],
   stockAudits: [],
+  purchaseReturns: [],
   hardware: {
     thermalWidth: '80mm',
     autoPrintReceipt: true,
@@ -1904,6 +1905,112 @@ export function deletePurchaseOrder(id) {
 }
 
 export function purchaseOrders() { return [...(db.purchaseOrders || [])].reverse() }
+
+// ---------- Purchase Returns (سپلائر کو خریداری واپسی) ----------
+export function savePurchaseReturn({
+  supplierId,
+  items = [], // [{ medicineId, medicineName, batchId, batchNo, expiry, qty, purchasePrice, total, reason, note }]
+  settlementType = 'CREDIT_NOTE', // 'CREDIT_NOTE' | 'CASH_REFUND'
+  note = '',
+}) {
+  if (!items || !items.length) throw new Error('Return list mein kam az kam ek item hona zaroori hai.')
+  const sup = supplierById(supplierId)
+  if (!sup) throw new Error('Supplier select karein.')
+
+  let totalAmount = 0
+
+  // 1. Validate & Deduct from active/expired batches
+  for (const it of items) {
+    const qty = Number(it.qty) || 0
+    if (qty <= 0) throw new Error(`Invalid return quantity for ${it.medicineName || 'item'}`)
+
+    const b = db.batches.find((x) => x.id === it.batchId) ||
+              db.batches.find((x) => x.medicineId === it.medicineId && x.batchNo === it.batchNo)
+
+    if (!b) throw new Error(`Batch record nahi mila: ${it.batchNo || it.medicineName}`)
+    if (b.qty < qty) {
+      throw new Error(`Batch ${b.batchNo} mein sirf ${b.qty} units available hain, jabkay ${qty} return kiye ja rahay hain.`)
+    }
+
+    b.qty -= qty
+    if (b.qty === 0) {
+      b.status = 'RETURNED'
+    }
+
+    const price = Number(it.purchasePrice) || Number(b.purchasePrice) || 0
+    it.total = qty * price
+    totalAmount += it.total
+  }
+
+  // 2. Financial settlement
+  if (settlementType === 'CREDIT_NOTE') {
+    // Reduce supplier payable balance (debit note to supplier)
+    sup.balance -= totalAmount
+  } else if (settlementType === 'CASH_REFUND') {
+    // Immediate cash refund received from supplier
+    recordShiftTransaction('SUPPLIER_REFUND', totalAmount)
+  }
+
+  // 3. Create purchase return record
+  const count = (db.purchaseReturns?.length || 0) + 1
+  const pr = {
+    id: uid(),
+    returnNo: 'PR-' + String(count).padStart(4, '0'),
+    supplierId,
+    supplierName: sup.name,
+    supplierCompany: sup.company || '',
+    items,
+    totalAmount,
+    settlementType, // 'CREDIT_NOTE' | 'CASH_REFUND'
+    note: note || '',
+    date: todayStr(),
+    createdAt: new Date().toISOString(),
+    by: db.session?.name || db.session?.username || 'Pharmacist',
+  }
+
+  if (!db.purchaseReturns) db.purchaseReturns = []
+  db.purchaseReturns.push(pr)
+
+  log('PURCHASE_RETURN', `${pr.returnNo}: Returned ${items.length} items to ${sup.name} (${fmt(totalAmount)}) via ${settlementType}`)
+  save()
+  notifyListeners()
+  return pr
+}
+
+export function purchaseReturns() {
+  return [...(db.purchaseReturns || [])].reverse()
+}
+
+export function deletePurchaseReturn(id) {
+  if (!db.purchaseReturns) return
+  const pr = db.purchaseReturns.find((p) => p.id === id)
+  if (!pr) return
+
+  // Revert batch quantities
+  for (const it of pr.items || []) {
+    const b = db.batches.find((x) => x.id === it.batchId) ||
+              db.batches.find((x) => x.medicineId === it.medicineId && x.batchNo === it.batchNo)
+    if (b) {
+      b.qty += Number(it.qty) || 0
+      b.status = 'ACTIVE'
+    }
+  }
+
+  // Revert supplier balance or cash refund
+  const sup = supplierById(pr.supplierId)
+  if (sup) {
+    if (pr.settlementType === 'CREDIT_NOTE') {
+      sup.balance += pr.totalAmount
+    } else if (pr.settlementType === 'CASH_REFUND') {
+      recordShiftTransaction('SUPPLIER_PAYMENT', pr.totalAmount)
+    }
+  }
+
+  db.purchaseReturns = db.purchaseReturns.filter((p) => p.id !== id)
+  log('PURCHASE_RETURN_DELETE', `Reverted ${pr.returnNo} (${fmt(pr.totalAmount)})`)
+  save()
+  notifyListeners()
+}
 
 export function recordStockAudit({
   title = 'Physical Stock Audit',

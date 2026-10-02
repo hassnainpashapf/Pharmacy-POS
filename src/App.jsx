@@ -123,6 +123,7 @@ const navGroups = [
       { to: '/inventory?tab=audit', label: 'Stock Audit (Kam/Zyada)', icon: ClipboardCheck },
       { to: '/inventory?tab=NEAR_EXPIRY', label: 'Batch & Expiry', icon: Clock },
       { to: '/purchases', label: 'Purchases & PO', icon: ShoppingBag },
+      { to: '/purchases?tab=returns', label: 'Purchase Returns', icon: RotateCcw },
       { to: '/suppliers', label: 'Suppliers', icon: Truck },
     ],
   },
