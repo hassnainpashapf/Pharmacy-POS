@@ -82,7 +82,7 @@ export default function MobileApps() {
                   <div className="flex justify-between items-center">
                     <div>
                       <div className="text-[10px] uppercase font-bold text-slate-400">Executive Dashboard</div>
-                      <h3 className="font-extrabold text-sm text-slate-900">Al-Shifa Enterprise HQ</h3>
+                      <h3 className="font-extrabold text-sm text-slate-900">{db.settings?.pharmacyName || 'Pharmacy POS'} HQ</h3>
                     </div>
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                   </div>

@@ -39,8 +39,8 @@ const empty = () => ({
     customerDisplayPort: 'COM3 / Virtual Second Screen',
     labelPaperSize: '50x25mm',
     barcodeFormat: 'CODE128',
-    headerText: 'Al-Shifa Pharmacy\nMain Bazar, Lahore · Tel: 0300-0000000',
-    footerText: 'Thank you for choosing Al-Shifa Pharmacy!\nOriginal computer receipt required for exchanges within 3 days.\nKeep medicines stored below 25°C away from sunlight.',
+    headerText: 'Pharmacy POS\nMain Bazar, Lahore · Tel: 0300-0000000',
+    footerText: 'Thank you for choosing Pharmacy POS!\nOriginal computer receipt required for exchanges within 3 days.\nKeep medicines stored below 25°C away from sunlight.',
   },
   localNetwork: {
     stationName: 'POS-Counter-01',
@@ -52,7 +52,7 @@ const empty = () => ({
     lastLocalBackup: new Date().toISOString(),
   },
   settings: {
-    pharmacyName: 'Al-Shifa Pharmacy',
+    pharmacyName: 'Pharmacy POS',
     address: 'Main Bazar, Lahore',
     phone: '0300-0000000',
     taxPct: 0,
@@ -78,14 +78,23 @@ const DEFAULT_PLUGINS = [
 let db = load()
 
 function load() {
-  const DEFAULT_TPL = 'Dear Customer,\n\nThank you for choosing Al-Shifa Pharmacy.\n\nThank you,\n{{pharmacy}}\n{{phone}}'
+  const DEFAULT_TPL = 'Dear Customer,\n\nThank you for choosing Pharmacy POS.\n\nThank you,\n{{pharmacy}}\n{{phone}}'
   try {
     const raw = localStorage.getItem(KEY)
     if (raw) {
       const d = { ...empty(), ...JSON.parse(raw) }
       d.settings = { ...empty().settings, ...d.settings, udharTemplate: d.settings?.udharTemplate || DEFAULT_TPL }
       
-      // Keep real operational history. Older builds wiped these collections on
+      // Automatic migration: rename default Al-Shifa Pharmacy to Pharmacy POS
+      if (d.settings?.pharmacyName === 'Al-Shifa Pharmacy' || !d.settings?.pharmacyName) {
+        d.settings.pharmacyName = 'Pharmacy POS'
+      }
+      if (d.hardware?.headerText?.includes('Al-Shifa Pharmacy')) {
+        d.hardware.headerText = d.hardware.headerText.replace(/Al-Shifa Pharmacy/g, 'Pharmacy POS')
+      }
+      if (d.hardware?.footerText?.includes('Al-Shifa Pharmacy')) {
+        d.hardware.footerText = d.hardware.footerText.replace(/Al-Shifa Pharmacy/g, 'Pharmacy POS')
+      }
       // every reload, which made wholesale, delivery and API screens appear
       // non-functional. Only initialise missing collections.
       d.wholesaleOrders = Array.isArray(d.wholesaleOrders) ? d.wholesaleOrders : []
@@ -2168,7 +2177,7 @@ export function updateNetworkSettings(patch) {
 
 export function exportLocalDatabase() {
   const exportPayload = {
-    appName: 'Al-Shifa Pharmacy POS',
+    appName: 'Pharmacy POS',
     schemaVersion: '4.0.0-LAN-LOCAL',
     exportedAt: new Date().toISOString(),
     exportedBy: db.session?.username || 'system',
