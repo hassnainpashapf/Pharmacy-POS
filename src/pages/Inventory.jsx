@@ -1245,6 +1245,37 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
         </div>
       </div>
 
+      {/* 💡 آسان طریقہ آڈٹ گائیڈ (Easy Audit Guide Banner) */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white p-3.5 rounded-2xl border border-slate-700 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold text-sm shrink-0">
+            ⚖️
+          </div>
+          <div className="text-xs">
+            <span className="font-bold text-amber-300">آسان آڈٹ کا طریقہ (Easy Stock Audit):</span>{' '}
+            <span className="text-slate-200">
+              دکان پر موجود مال گنیں ➜ لسٹ میں <b>[-] یا [+]</b> دبا کر یا خانے میں گنتی لکھیں ➜ کمی کی صورت میں <b>"Draft Purchase Order"</b> سے آرڈر بنائیں اور <b>"Reconcile Stock"</b> سے سٹاک برابر کریں۔
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={() => setVarianceFilter('KAM')}
+            className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1 cursor-pointer active:scale-95"
+          >
+            <span>🔻 کم مال ({kamItems.length})</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setVarianceFilter('ZYADA')}
+            className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1 cursor-pointer active:scale-95"
+          >
+            <span>🔺 زیادہ مال ({zyadaItems.length})</span>
+          </button>
+        </div>
+      </div>
+
       {/* 4 KPI Summary Cards (Kam vs Zyada) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Card 1: Kam Medicines (Shortages) */}

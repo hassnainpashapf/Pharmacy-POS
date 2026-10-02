@@ -208,6 +208,28 @@ export default function Purchases() {
         </div>
       </div>
 
+      {/* 💡 آسان خریداری و GRN گائیڈ (Easy Purchase Guide Banner) */}
+      <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-3.5 rounded-xl border border-blue-900/60 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold text-sm shrink-0">
+            🧾
+          </div>
+          <div className="text-xs">
+            <span className="font-bold text-blue-300">آسان خریداری اینٹری (Easy Purchase Guide):</span>{' '}
+            <span className="text-slate-200">
+              سپلائر کا نیا بل درج کرنے کے لیے <b>"+ New GRN / Purchase Inward"</b> دبائیں ➜ GST، ایڈوانس ٹیکس (236G/H)، اور ڈسکاؤنٹ درج کریں ➜ مال خودبخود دکان کے سٹاک میں شامل ہو جائے گا۔
+            </span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => { setReceivingPO(null); setShowNewPurchase(true) }}
+          className="self-start sm:self-auto px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer active:scale-95"
+        >
+          <span>+ نیا خریداری بل درج کریں</span>
+        </button>
+      </div>
+
       {/* Tab Navigation Switcher */}
       <div className="flex items-center gap-2 border-b border-slate-200 overflow-x-auto">
         <button
@@ -219,7 +241,7 @@ export default function Purchases() {
           }`}
         >
           <ShoppingBag className="w-4 h-4" />
-          📋 Purchase Orders (Parches Orders)
+          📋 خریداری آرڈرز (Purchase Orders)
           <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-blue-100 text-blue-700">
             {allPOs.length}
           </span>
@@ -234,7 +256,7 @@ export default function Purchases() {
           }`}
         >
           <Receipt className="w-4 h-4" />
-          🚚 GRN Invoices & Supplier Dues
+          🧾 خریداری بل، ٹیکس اور GRN
           <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-emerald-100 text-emerald-700">
             {(db.purchases || []).length}
           </span>
