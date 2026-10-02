@@ -784,21 +784,31 @@ function ReportSection({ section }) {
       }
 
       case 'PURCHASE_JOURNAL': {
-        const rows = (db.purchases || []).map((p) => [
-          p.invoiceNo,
-          p.date,
-          supplierById(p.supplierId)?.name || 'Supplier',
-          p.items?.length || 0,
-          fmt(p.total),
-          fmt(p.paid || p.total),
-          fmt(p.total - (p.paid || p.total)),
-        ])
+        const rows = (db.purchases || []).map((p) => {
+          const taxes = (Number(p.gstAmount) || 0) + (Number(p.advanceTaxAmount) || 0) + (Number(p.otherTax) || 0)
+          const gross = p.subtotal || p.total
+          return [
+            p.grnNo || '—',
+            p.invoiceNo,
+            p.date,
+            supplierById(p.supplierId)?.name || 'Supplier',
+            p.items?.length || 0,
+            fmt(gross),
+            fmt(p.discountAmount || 0),
+            fmt(taxes),
+            fmt(p.total),
+            fmt(p.paid || 0),
+            fmt(p.due !== undefined ? p.due : (p.total - (p.paid || 0))),
+          ]
+        })
         return {
-          columns: ['Invoice #', 'Date', 'Supplier', 'Items Count', 'Invoice Total', 'Amount Paid', 'Remaining Due'],
+          columns: ['GRN #', 'Invoice #', 'Date', 'Supplier', 'Items', 'Gross Subtotal', 'Discount', 'GST & Taxes', 'Net Total', 'Paid / Adv.', 'Balance Due'],
           rows,
           summary: {
-            'Purchases Count': (db.purchases || []).length,
-            'Total Purchases': fmt((db.purchases || []).reduce((a, b) => a + b.total, 0)),
+            'Total GRNs / Invoices': (db.purchases || []).length,
+            'Total Net Purchases': fmt((db.purchases || []).reduce((a, b) => a + (b.total || 0), 0)),
+            'Total GST & Taxes Paid': fmt((db.purchases || []).reduce((a, b) => a + (Number(b.gstAmount) || 0) + (Number(b.advanceTaxAmount) || 0) + (Number(b.otherTax) || 0), 0)),
+            'Total Discounts Availed': fmt((db.purchases || []).reduce((a, b) => a + (Number(b.discountAmount) || 0), 0)),
           },
         }
       }

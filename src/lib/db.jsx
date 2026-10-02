@@ -818,29 +818,134 @@ export function cashierWiseSales(days = 30) {
   return Object.values(map).sort((a, b) => b.revenue - a.revenue)
 }
 
-// ---------- Purchase (creates/receives batches) ----------
-export function savePurchase({ supplierId, invoiceNo, date, items, paid }) {
-  // items: [{medicineId, batchNo, expiry, qty, purchasePrice, salePrice}]
-  if (!items.length) throw new Error('No items')
-  let total = 0
+// ---------- Purchase / GRN (creates/receives batches) ----------
+export function savePurchase({
+  supplierId,
+  grnNo,
+  invoiceNo,
+  date,
+  items, // [{medicineId, medicineName, batchNo, expiry, qty, bonusQty, purchasePrice, salePrice}]
+  subtotal,
+  discountPct = 0,
+  discountAmount = 0,
+  gstPct = 0,
+  gstAmount = 0,
+  advanceTaxPct = 0,
+  advanceTaxAmount = 0,
+  otherTax = 0,
+  paid = 0,
+  note = '',
+}) {
+  if (!items || !items.length) throw new Error('No items in purchase / GRN')
+
+  let calculatedSubtotal = 0
   const batchIds = []
+  const savedItems = []
+
   for (const it of items) {
-    let batch = db.batches.find((b) => b.medicineId === it.medicineId && b.batchNo === it.batchNo)
-    if (batch) { batch.qty += Number(it.qty); batch.expiry = it.expiry }
-    else {
-      batch = { id: uid(), medicineId: it.medicineId, batchNo: it.batchNo, expiry: it.expiry, qty: Number(it.qty), purchasePrice: Number(it.purchasePrice), salePrice: Number(it.salePrice), supplierId }
+    const qty = Number(it.qty) || 0
+    const bonusQty = Number(it.bonusQty) || 0
+    const totalUnits = qty + bonusQty
+    const pPrice = Number(it.purchasePrice) || 0
+    const sPrice = Number(it.salePrice) || 0
+    const batchNo = String(it.batchNo || '').trim() || `B-${todayStr().replace(/-/g, '').slice(2)}`
+    const expiry = it.expiry || new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10)
+
+    let batch = db.batches.find((b) => b.medicineId === it.medicineId && b.batchNo === batchNo)
+    if (batch) {
+      batch.qty += totalUnits
+      batch.expiry = expiry
+      batch.purchasePrice = pPrice
+      if (sPrice > 0) batch.salePrice = sPrice
+      if (batch.status === 'EXHAUSTED' || batch.status === 'RETURNED') batch.status = 'ACTIVE'
+    } else {
+      batch = {
+        id: uid(),
+        medicineId: it.medicineId,
+        batchNo,
+        expiry,
+        qty: totalUnits,
+        purchasePrice: pPrice,
+        salePrice: sPrice,
+        supplierId,
+        status: 'ACTIVE',
+      }
       db.batches.push(batch)
     }
+
     const m = medicineById(it.medicineId)
-    if (m && Number(it.salePrice) > 0) m.salePrice = Number(it.salePrice)
-    total += it.qty * it.purchasePrice
+    if (m) {
+      if (sPrice > 0) m.salePrice = sPrice
+      if (pPrice > 0) m.purchasePrice = pPrice
+    }
+
+    const lineTotal = qty * pPrice
+    calculatedSubtotal += lineTotal
     batchIds.push(batch.id)
+
+    savedItems.push({
+      medicineId: it.medicineId,
+      medicineName: it.medicineName || (m ? `${m.name} ${m.strength || ''}` : 'Medicine'),
+      batchId: batch.id,
+      batchNo,
+      expiry,
+      qty,
+      bonusQty,
+      purchasePrice: pPrice,
+      salePrice: sPrice,
+      lineTotal,
+    })
   }
-  const p = { id: uid(), supplierId, invoiceNo, date: date || todayStr(), items: batchIds, total, paid: Number(paid || 0) }
+
+  const grossSubtotal = subtotal !== undefined ? Number(subtotal) : calculatedSubtotal
+  const disc = Number(discountAmount) || 0
+  const gst = Number(gstAmount) || 0
+  const advTax = Number(advanceTaxAmount) || 0
+  const oTax = Number(otherTax) || 0
+
+  const netTotal = Math.max(0, grossSubtotal - disc + gst + advTax + oTax)
+  const paidNow = Number(paid || 0)
+  const remainingDue = netTotal - paidNow
+
+  const grnCount = (db.purchases?.length || 0) + 1
+  const generatedGrnNo = grnNo || ('GRN-' + String(grnCount).padStart(4, '0'))
+  const generatedInvNo = invoiceNo || ('INV-' + Date.now())
+
+  const p = {
+    id: uid(),
+    grnNo: generatedGrnNo,
+    invoiceNo: generatedInvNo,
+    supplierId,
+    date: date || todayStr(),
+    items: savedItems,
+    batchIds,
+    subtotal: grossSubtotal,
+    discountPct: Number(discountPct) || 0,
+    discountAmount: disc,
+    gstPct: Number(gstPct) || 0,
+    gstAmount: gst,
+    advanceTaxPct: Number(advanceTaxPct) || 0,
+    advanceTaxAmount: advTax,
+    otherTax: oTax,
+    total: netTotal,
+    paid: paidNow,
+    due: remainingDue,
+    note: note || '',
+    receivedBy: db.session?.name || db.session?.username || 'Pharmacist',
+    createdAt: new Date().toISOString(),
+  }
+
+  if (!db.purchases) db.purchases = []
   db.purchases.push(p)
+
   const s = supplierById(supplierId)
-  if (s) s.balance += total - Number(paid || 0)
+  if (s) {
+    s.balance += remainingDue
+  }
+
+  log('PURCHASE_GRN', `${p.grnNo} / ${p.invoiceNo} — ${savedItems.length} items from ${s?.name || 'supplier'} (Net Total: ${fmt(netTotal)}, Paid: ${fmt(paidNow)})`)
   save()
+  notifyListeners()
   return p
 }
 

@@ -37,6 +37,8 @@ import {
   RotateCcw,
   DollarSign,
   AlertTriangle,
+  Receipt,
+  FileText,
 } from 'lucide-react'
 
 export default function Purchases() {
@@ -52,6 +54,7 @@ export default function Purchases() {
   const [viewingPO, setViewingPO] = useState(null)
   const [receivingPO, setReceivingPO] = useState(null)
   const [viewingReturn, setViewingReturn] = useState(null)
+  const [viewingGRN, setViewingGRN] = useState(null)
 
   // Sync tab with URL search params if present
   useEffect(() => {
@@ -71,8 +74,8 @@ export default function Purchases() {
   const supReport = useMemo(() => {
     return (db.suppliers || []).map((s) => {
       const purchases = (db.purchases || []).filter((p) => p.supplierId === s.id)
-      const totalPurchases = purchases.reduce((a, p) => a + p.total, 0)
-      const totalPaid = purchases.reduce((a, p) => a + p.paid, 0)
+      const totalPurchases = purchases.reduce((a, p) => a + (p.total || 0), 0)
+      const totalPaid = purchases.reduce((a, p) => a + (p.paid || 0), 0)
       const invoices = purchases.length
       const lastDate = purchases.map((p) => p.date).sort().slice(-1)[0]
       return { ...s, totalPurchases, totalPaid, invoices, lastDate, outstanding: Math.max(0, s.balance || 0) }
@@ -151,6 +154,7 @@ export default function Purchases() {
 
   const handleReceivePO = (po) => {
     setReceivingPO(po)
+    setShowNewPurchase(true)
   }
 
   return (
@@ -160,10 +164,10 @@ export default function Purchases() {
         <div>
           <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
             <ShoppingBag className="w-6 h-6 text-emerald-600" />
-            Purchases, Orders & Returns (خریداری، آرڈرز اور واپسی)
+            Purchases, GRN & Orders (خریداری اور جی آر این)
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Suppliers ke Purchase Orders manage karein, stock audit shortage reorder karein, invoices verify karein aur expiry/damage stock wapis karein.
+            Goods Received Note (GRN) banaein, GST, Advance Tax, Discounts, Batches aur Expiry manage karein, ya stock wapis karein.
           </p>
         </div>
 
@@ -185,13 +189,6 @@ export default function Purchases() {
             + New Purchase Order (PO)
           </button>
           <button
-            onClick={() => setShowNewReturn(true)}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-sm transition"
-          >
-            <RotateCcw className="w-4 h-4" />
-            + New Purchase Return
-          </button>
-          <button
             onClick={() => {
               setReceivingPO(null)
               setShowNewPurchase(true)
@@ -199,7 +196,14 @@ export default function Purchases() {
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition"
           >
             <Plus className="w-4 h-4" />
-            + New Purchase (Stock In)
+            + New GRN / Purchase Inward
+          </button>
+          <button
+            onClick={() => setShowNewReturn(true)}
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-sm transition"
+          >
+            <RotateCcw className="w-4 h-4" />
+            + New Purchase Return
           </button>
         </div>
       </div>
@@ -229,8 +233,8 @@ export default function Purchases() {
               : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
-          <TrendingUp className="w-4 h-4" />
-          🚚 Inward Invoices & Supplier Dues
+          <Receipt className="w-4 h-4" />
+          🚚 GRN Invoices & Supplier Dues
           <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-emerald-100 text-emerald-700">
             {(db.purchases || []).length}
           </span>
@@ -423,11 +427,11 @@ export default function Purchases() {
                             {po.status !== 'RECEIVED' && (
                               <button
                                 onClick={() => handleReceivePO(po)}
-                                title="Convert PO into Purchase Invoice (Receive batches into inventory)"
+                                title="Convert PO into GRN (Receive batches into inventory)"
                                 className="px-2 py-1 text-[11px] font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-md shadow-sm transition flex items-center gap-1"
                               >
                                 <Package className="w-3.5 h-3.5" />
-                                Receive
+                                Receive GRN
                               </button>
                             )}
 
@@ -493,7 +497,7 @@ export default function Purchases() {
       )}
 
       {/* ======================================================== */}
-      {/* TAB 2: INWARD INVOICES & SUPPLIER DUES                    */}
+      {/* TAB 2: GRN INVOICES & SUPPLIER DUES                      */}
       {/* ======================================================== */}
       {tab === 'invoices' && (
         <div className="space-y-4">
@@ -548,20 +552,22 @@ export default function Purchases() {
             </div>
           </div>
 
-          {/* Inward Purchases Invoices Ledger */}
+          {/* Inward Purchases & GRN Invoices Ledger */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-              <span className="text-xs font-bold text-slate-700 uppercase tracking-wide">
-                Purchase Invoices Log ({(db.purchases || []).length})
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
+                <Receipt className="w-4 h-4 text-emerald-600" />
+                Goods Received Notes (GRN) & Invoices ({(db.purchases || []).length})
               </span>
               <button
                 onClick={() => {
                   setReceivingPO(null)
                   setShowNewPurchase(true)
                 }}
-                className="text-xs font-bold text-emerald-600 hover:text-emerald-700"
+                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
               >
-                + Add Inward Stock
+                <Plus className="w-3.5 h-3.5" />
+                + Add GRN / Inward Stock
               </button>
             </div>
             <div className="overflow-x-auto">
@@ -569,36 +575,59 @@ export default function Purchases() {
                 <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
                   <tr>
                     <th className="p-2.5 text-left">Date</th>
-                    <th className="p-2.5 text-left">Invoice #</th>
+                    <th className="p-2.5 text-left">GRN #</th>
+                    <th className="p-2.5 text-left">Invoice / Challan</th>
                     <th className="p-2.5 text-left">Supplier</th>
                     <th className="p-2.5 text-center">Items</th>
-                    <th className="p-2.5 text-right">Total Invoice</th>
-                    <th className="p-2.5 text-right">Amount Paid</th>
-                    <th className="p-2.5 text-right">Remaining Due</th>
+                    <th className="p-2.5 text-right">Subtotal</th>
+                    <th className="p-2.5 text-right">Discount</th>
+                    <th className="p-2.5 text-right">GST & Tax</th>
+                    <th className="p-2.5 text-right">Net Total</th>
+                    <th className="p-2.5 text-right">Paid Advance</th>
+                    <th className="p-2.5 text-right">Balance Due</th>
+                    <th className="p-2.5 text-center">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {[...db.purchases].reverse().map((p) => {
                     const sup = supplierById(p.supplierId)
-                    const due = p.total - (p.paid || 0)
+                    const taxes = (Number(p.gstAmount) || 0) + (Number(p.advanceTaxAmount) || 0) + (Number(p.otherTax) || 0)
+                    const due = p.due !== undefined ? p.due : (p.total - (p.paid || 0))
                     return (
                       <tr key={p.id} className="hover:bg-slate-50 transition text-center">
                         <td className="p-2.5 text-left text-slate-600">{p.date}</td>
-                        <td className="p-2.5 text-left font-mono font-bold text-slate-800">{p.invoiceNo}</td>
+                        <td className="p-2.5 text-left font-mono font-bold text-blue-700">{p.grnNo || '—'}</td>
+                        <td className="p-2.5 text-left font-mono text-slate-800 font-semibold">{p.invoiceNo}</td>
                         <td className="p-2.5 text-left font-semibold text-slate-700">{sup?.name || '—'}</td>
                         <td className="p-2.5">{p.items?.length || 0}</td>
-                        <td className="p-2.5 text-right font-bold text-slate-800">{fmt(p.total)}</td>
-                        <td className="p-2.5 text-right text-emerald-700 font-bold">{fmt(p.paid)}</td>
-                        <td className={`p-2.5 text-right font-bold ${due > 0 ? 'text-red-600' : 'text-slate-400'}`}>
+                        <td className="p-2.5 text-right text-slate-600 font-mono">{fmt(p.subtotal || p.total)}</td>
+                        <td className="p-2.5 text-right text-amber-700 font-mono font-semibold">
+                          {p.discountAmount ? `-${fmt(p.discountAmount)}` : '—'}
+                        </td>
+                        <td className="p-2.5 text-right text-purple-700 font-mono">
+                          {taxes > 0 ? `+${fmt(taxes)}` : '—'}
+                        </td>
+                        <td className="p-2.5 text-right font-black text-slate-900 font-mono">{fmt(p.total)}</td>
+                        <td className="p-2.5 text-right text-emerald-700 font-bold font-mono">{fmt(p.paid || 0)}</td>
+                        <td className={`p-2.5 text-right font-bold font-mono ${due > 0 ? 'text-red-600 font-black' : 'text-slate-400'}`}>
                           {fmt(due)}
+                        </td>
+                        <td className="p-2.5 text-center">
+                          <button
+                            onClick={() => setViewingGRN(p)}
+                            title="View / Print GRN Voucher"
+                            className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
                         </td>
                       </tr>
                     )
                   })}
                   {!db.purchases.length && (
                     <tr>
-                      <td colSpan="7" className="p-6 text-center text-slate-400">
-                        No purchase records logged yet
+                      <td colSpan="12" className="p-6 text-center text-slate-400">
+                        No GRN / purchase records logged yet. Click "+ Add GRN / Inward Stock" to register your first delivery.
                       </td>
                     </tr>
                   )}
@@ -842,7 +871,7 @@ export default function Purchases() {
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 1: NEW PURCHASE INVOICE (INWARD STOCK TO BATCHES)   */}
+      {/* MODAL 1: NEW GRN PURCHASE INWARD (GOODS RECEIVED NOTE)   */}
       {/* ======================================================== */}
       {showNewPurchase && (
         <PurchaseForm
@@ -851,11 +880,26 @@ export default function Purchases() {
             setShowNewPurchase(false)
             setReceivingPO(null)
           }}
+          onSaved={(newGRN) => {
+            setShowNewPurchase(false)
+            setReceivingPO(null)
+            setViewingGRN(newGRN)
+          }}
         />
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 2: CREATE NEW PURCHASE ORDER (PO / PARCHES ORDER)  */}
+      {/* MODAL 2: VIEW / PRINT / WHATSAPP GRN VOUCHER             */}
+      {/* ======================================================== */}
+      {viewingGRN && (
+        <GRNDetailModal
+          grn={viewingGRN}
+          onClose={() => setViewingGRN(null)}
+        />
+      )}
+
+      {/* ======================================================== */}
+      {/* MODAL 3: CREATE NEW PURCHASE ORDER (PO / PARCHES ORDER)  */}
       {/* ======================================================== */}
       {showNewPO && (
         <NewPOModal
@@ -868,7 +912,7 @@ export default function Purchases() {
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 3: VIEW / PRINT / WHATSAPP PURCHASE ORDER SLIP     */}
+      {/* MODAL 4: VIEW / PRINT / WHATSAPP PURCHASE ORDER SLIP     */}
       {/* ======================================================== */}
       {viewingPO && (
         <PODetailModal
@@ -882,7 +926,7 @@ export default function Purchases() {
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 4: CREATE NEW PURCHASE RETURN                      */}
+      {/* MODAL 5: CREATE NEW PURCHASE RETURN                      */}
       {/* ======================================================== */}
       {showNewReturn && (
         <NewPurchaseReturnModal
@@ -895,7 +939,7 @@ export default function Purchases() {
       )}
 
       {/* ======================================================== */}
-      {/* MODAL 5: VIEW / PRINT / WHATSAPP DEBIT NOTE VOUCHER      */}
+      {/* MODAL 6: VIEW / PRINT / WHATSAPP DEBIT NOTE VOUCHER      */}
       {/* ======================================================== */}
       {viewingReturn && (
         <PurchaseReturnSlipModal
@@ -908,10 +952,14 @@ export default function Purchases() {
 }
 
 // ----------------------------------------------------------------------
-// FORM COMPONENT: Purchase Inward (creates/receives batches)
+// FORM COMPONENT: GOODS RECEIVED NOTE (GRN) / PURCHASE INWARD
+// With GST, Advance Tax, Other Tax, Discount (Desiccant), Batch & Expiry
 // ----------------------------------------------------------------------
-function PurchaseForm({ initialPO, onClose }) {
+function PurchaseForm({ initialPO, onClose, onSaved }) {
   const db = useDB()
+
+  // Header Details
+  const [grnNo, setGrnNo] = useState(() => 'GRN-' + String((db.purchases?.length || 0) + 1).padStart(4, '0'))
   const [supplierId, setSupplierId] = useState(
     initialPO?.supplierId || db.suppliers[0]?.id || ''
   )
@@ -919,49 +967,167 @@ function PurchaseForm({ initialPO, onClose }) {
     initialPO ? `INV-${initialPO.poNo.replace('PO-', '')}` : ''
   )
   const [date, setDate] = useState(todayStr())
-  const [paid, setPaid] = useState(0)
+
+  // Line item entry states
+  const [mid, setMid] = useState('')
+  const [lineBatchNo, setLineBatchNo] = useState(`B-${todayStr().replace(/-/g, '').slice(2)}`)
+  const [lineExpiry, setLineExpiry] = useState(new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10))
+  const [lineQty, setLineQty] = useState(10)
+  const [lineBonus, setLineBonus] = useState(0) // Free bonus units
+  const [linePPrice, setLinePPrice] = useState(0)
+  const [lineSPrice, setLineSPrice] = useState(0)
 
   // Initialize items from initialPO if available
   const [items, setItems] = useState(() => {
     if (initialPO?.items && initialPO.items.length > 0) {
-      return initialPO.items.map((it) => {
+      return initialPO.items.map((it, idx) => {
         const m = medicineById(it.medicineId)
+        const pPrice = Number(it.purchasePrice) || (m ? Math.round(m.salePrice * 0.75) : 0)
+        const sPrice = Number(it.salePrice) || (m ? m.salePrice : 0)
         return {
           medicineId: it.medicineId,
-          batchNo: `B-${todayStr().replace(/-/g, '').slice(2)}`,
+          medicineName: it.name || (m ? `${m.name} ${m.strength || ''}` : 'Medicine'),
+          batchNo: `B-${todayStr().replace(/-/g, '').slice(2)}-${idx + 1}`,
           expiry: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
-          qty: it.qty || 1,
-          purchasePrice: it.purchasePrice || (m ? Math.round(m.salePrice * 0.75) : 0),
-          salePrice: it.salePrice || (m ? m.salePrice : 0),
+          qty: Number(it.qty) || 1,
+          bonusQty: 0,
+          purchasePrice: pPrice,
+          salePrice: sPrice,
+          lineTotal: (Number(it.qty) || 1) * pPrice,
         }
       })
     }
     return []
   })
 
-  const [mid, setMid] = useState('')
+  // When medicine selection changes, prefill prices
+  useEffect(() => {
+    if (mid) {
+      const m = medicineById(mid)
+      if (m) {
+        setLinePPrice(m.purchasePrice || Math.round(m.salePrice * 0.75))
+        setLineSPrice(m.salePrice || 0)
+      }
+    }
+  }, [mid])
 
-  const total = items.reduce((s, i) => s + (Number(i.qty) || 0) * (Number(i.purchasePrice) || 0), 0)
+  // Financial Taxes & Discount States
+  const [discountPct, setDiscountPct] = useState(0)
+  const [discountAmount, setDiscountAmount] = useState(0)
+  const [gstPct, setGstPct] = useState(0)
+  const [gstAmount, setGstAmount] = useState(0)
+  const [advanceTaxPct, setAdvanceTaxPct] = useState(0)
+  const [advanceTaxAmount, setAdvanceTaxAmount] = useState(0)
+  const [otherTax, setOtherTax] = useState(0)
+  const [paid, setPaid] = useState(0)
+  const [note, setNote] = useState(initialPO ? `Inwarded from ${initialPO.poNo}` : '')
+
+  // Calculate gross subtotal from items
+  const subtotal = useMemo(() => {
+    return items.reduce((s, it) => s + (Number(it.qty) || 0) * (Number(it.purchasePrice) || 0), 0)
+  }, [items])
+
+  // Handle Discount % change -> updates discountAmount
+  const handleDiscountPctChange = (pct) => {
+    const p = Math.max(0, Number(pct) || 0)
+    setDiscountPct(p)
+    setDiscountAmount(Math.round((subtotal * p) / 100))
+  }
+
+  // Handle Discount Amount change -> updates discountPct
+  const handleDiscountAmountChange = (amt) => {
+    const a = Math.max(0, Number(amt) || 0)
+    setDiscountAmount(a)
+    setDiscountPct(subtotal > 0 ? parseFloat(((a / subtotal) * 100).toFixed(2)) : 0)
+  }
+
+  // Handle GST % change -> updates gstAmount
+  const handleGstPctChange = (pct) => {
+    const p = Math.max(0, Number(pct) || 0)
+    setGstPct(p)
+    const base = Math.max(0, subtotal - discountAmount)
+    setGstAmount(Math.round((base * p) / 100))
+  }
+
+  // Handle Advance Tax % change -> updates advanceTaxAmount
+  const handleAdvanceTaxPctChange = (pct) => {
+    const p = Math.max(0, Number(pct) || 0)
+    setAdvanceTaxPct(p)
+    const base = Math.max(0, subtotal - discountAmount)
+    setAdvanceTaxAmount(Math.round((base * p) / 100))
+  }
+
+  // Recalculate taxes when subtotal or discount changes
+  useEffect(() => {
+    if (discountPct > 0) {
+      setDiscountAmount(Math.round((subtotal * discountPct) / 100))
+    }
+  }, [subtotal, discountPct])
+
+  useEffect(() => {
+    const base = Math.max(0, subtotal - discountAmount)
+    if (gstPct > 0) {
+      setGstAmount(Math.round((base * gstPct) / 100))
+    }
+    if (advanceTaxPct > 0) {
+      setAdvanceTaxAmount(Math.round((base * advanceTaxPct) / 100))
+    }
+  }, [subtotal, discountAmount, gstPct, advanceTaxPct])
+
+  // Net Grand Total
+  const netTotal = useMemo(() => {
+    return Math.max(0, subtotal - (Number(discountAmount) || 0) + (Number(gstAmount) || 0) + (Number(advanceTaxAmount) || 0) + (Number(otherTax) || 0))
+  }, [subtotal, discountAmount, gstAmount, advanceTaxAmount, otherTax])
+
+  // Remaining Due Balance
+  const remainingDue = useMemo(() => {
+    return netTotal - (Number(paid) || 0)
+  }, [netTotal, paid])
 
   function addItem() {
     const m = medicineById(mid)
     if (!m) return
-    setItems((x) => [
-      ...x,
+    const q = Number(lineQty) || 0
+    if (q <= 0) {
+      alert('Quantity 0 se zyada honi chahiye.')
+      return
+    }
+    if (!lineBatchNo.trim()) {
+      alert('Batch Number zaroori hai.')
+      return
+    }
+    if (!lineExpiry) {
+      alert('Expiry Date zaroori hai.')
+      return
+    }
+
+    const pPrice = Number(linePPrice) || 0
+    const sPrice = Number(lineSPrice) || 0
+
+    setItems((prev) => [
+      ...prev,
       {
         medicineId: m.id,
-        batchNo: '',
-        expiry: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
-        qty: 1,
-        purchasePrice: Math.round(m.salePrice * 0.75),
-        salePrice: m.salePrice,
+        medicineName: `${m.name} ${m.strength || ''}`,
+        batchNo: lineBatchNo.trim(),
+        expiry: lineExpiry,
+        qty: q,
+        bonusQty: Number(lineBonus) || 0,
+        purchasePrice: pPrice,
+        salePrice: sPrice,
+        lineTotal: q * pPrice,
       },
     ])
+
+    // Reset line fields for next item
     setMid('')
+    setLineQty(10)
+    setLineBonus(0)
+    setLineBatchNo(`B-${todayStr().replace(/-/g, '').slice(2)}`)
   }
 
   function save() {
-    if (!items.length) return alert('Pehlay items add karein.')
+    if (!items.length) return alert('Pehlay kam az kam 1 medicine item add karein.')
     for (const it of items) {
       if (!it.batchNo) return alert('Tamam items ke Batch Number darj karein.')
       if (!it.expiry) return alert('Tamam items ki Expiry Date darj karein.')
@@ -969,12 +1135,22 @@ function PurchaseForm({ initialPO, onClose }) {
     }
 
     try {
-      savePurchase({
+      const saved = savePurchase({
         supplierId,
-        invoiceNo: invoiceNo || 'INV-' + Date.now(),
+        grnNo,
+        invoiceNo: invoiceNo || `INV-${Date.now()}`,
         date,
         items,
+        subtotal,
+        discountPct,
+        discountAmount,
+        gstPct,
+        gstAmount,
+        advanceTaxPct,
+        advanceTaxAmount,
+        otherTax,
         paid,
+        note,
       })
 
       // If this purchase was converted from a Purchase Order, mark PO as RECEIVED
@@ -982,176 +1158,699 @@ function PurchaseForm({ initialPO, onClose }) {
         updatePurchaseOrderStatus(initialPO.id, 'RECEIVED')
       }
 
-      onClose()
+      if (onSaved) {
+        onSaved(saved)
+      } else {
+        onClose()
+      }
     } catch (e) {
       alert(e.message)
     }
   }
 
   return (
-    <Modal title={initialPO ? `Receive Purchase Order: ${initialPO.poNo}` : 'New Purchase (GRN / Stock In)'} onClose={onClose}>
-      {initialPO && (
-        <div className="mb-3 p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 flex items-center justify-between">
-          <span className="flex items-center gap-1.5">
-            <ClipboardCheck className="w-4 h-4 text-blue-600" />
-            Inwarding items from Purchase Order <b>{initialPO.poNo}</b>. Batch aur expiry check kar ke save karein.
-          </span>
-          <span className="font-bold text-blue-700 uppercase text-[10px] bg-blue-200 px-2 py-0.5 rounded">
-            PO Source: {initialPO.source}
-          </span>
+    <Modal title={initialPO ? `Receive Purchase Order as GRN: ${initialPO.poNo}` : 'New Goods Received Note (GRN / خریداری رسید)'} onClose={onClose}>
+      <div className="space-y-3.5 text-xs max-h-[85vh] overflow-y-auto pr-1">
+        {initialPO && (
+          <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-900 flex items-center justify-between">
+            <span className="flex items-center gap-1.5 font-medium">
+              <ClipboardCheck className="w-4 h-4 text-blue-600" />
+              Inwarding items from Purchase Order <b>{initialPO.poNo}</b>. Batch, Expiry aur Taxes verify kar ke save karein.
+            </span>
+            <span className="font-bold text-blue-700 uppercase text-[10px] bg-blue-200 px-2 py-0.5 rounded">
+              PO Source: {initialPO.source}
+            </span>
+          </div>
+        )}
+
+        {/* Step 1: GRN Header Details */}
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+          <div>
+            <label className="font-bold text-slate-700 block mb-1">GRN # (Goods Received Note)</label>
+            <input
+              type="text"
+              value={grnNo}
+              onChange={(e) => setGrnNo(e.target.value)}
+              className="w-full border rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold text-blue-700 bg-white"
+            />
+          </div>
+          <div>
+            <label className="font-bold text-slate-700 block mb-1">Supplier Invoice / Challan #</label>
+            <input
+              type="text"
+              placeholder="e.g. INV-9482"
+              value={invoiceNo}
+              onChange={(e) => setInvoiceNo(e.target.value)}
+              className="w-full border rounded-lg px-2.5 py-1.5 text-xs font-mono bg-white"
+            />
+          </div>
+          <div>
+            <label className="font-bold text-slate-700 block mb-1">Invoice / Receiving Date</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full border rounded-lg px-2.5 py-1.5 text-xs bg-white"
+            />
+          </div>
+          <div>
+            <label className="font-bold text-slate-700 block mb-1">Supplier / Distributor</label>
+            <select
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
+              className="w-full border rounded-lg px-2.5 py-1.5 text-xs bg-white font-medium"
+            >
+              {db.suppliers.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name} {s.company ? `(${s.company})` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      )}
 
-      <div className="grid grid-cols-4 gap-3 text-xs mb-3">
-        <label className="col-span-2">
-          <span className="font-bold text-slate-700">Supplier / Distributor</span>
-          <select
-            value={supplierId}
-            onChange={(e) => setSupplierId(e.target.value)}
-            className="border rounded w-full px-2 py-1.5 mt-1 text-xs bg-white"
-          >
-            {db.suppliers.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name} {s.company ? `(${s.company})` : ''}
-              </option>
-            ))}
-          </select>
-        </label>
-        <Input label="Invoice No" value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} />
-        <Input label="Invoice Date" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-      </div>
+        {/* Step 2: Add Medicine Line (Batch, Expiry, Billed Qty, Bonus, Cost, MRP) */}
+        <div className="p-3 bg-emerald-50/50 border border-emerald-200 rounded-xl space-y-2">
+          <span className="font-bold text-emerald-950 block text-xs">
+            Add Medicine with Batch No & Expire Date (بیچ اور تاریخ تنسیخ)
+          </span>
 
-      <div className="flex gap-2 mb-2 text-xs">
-        <select
-          value={mid}
-          onChange={(e) => setMid(e.target.value)}
-          className="border rounded px-2 py-1.5 flex-1 bg-white"
-        >
-          <option value="">— Select medicine to add —</option>
-          {db.medicines.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.name} {m.strength} ({m.dosageForm || m.form})
-            </option>
-          ))}
-        </select>
-        <button onClick={addItem} className="bg-blue-600 text-white px-4 py-1.5 rounded-lg font-bold text-xs">
-          + Add
-        </button>
-      </div>
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+            <div className="sm:col-span-2">
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Medicine Name</label>
+              <select
+                value={mid}
+                onChange={(e) => setMid(e.target.value)}
+                className="w-full border rounded-lg px-2.5 py-1.5 text-xs bg-white font-medium"
+              >
+                <option value="">— Select Medicine —</option>
+                {db.medicines.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name} {m.strength} ({m.dosageForm || m.form}) · MRP Rs. {m.salePrice}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Batch No (بیچ نمبر)</label>
+              <input
+                type="text"
+                placeholder="e.g. B-01"
+                value={lineBatchNo}
+                onChange={(e) => setLineBatchNo(e.target.value)}
+                className="w-full border rounded-lg px-2 py-1.5 text-xs font-mono font-bold text-center bg-white"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Expire Date (میعاد)</label>
+              <input
+                type="date"
+                value={lineExpiry}
+                onChange={(e) => setLineExpiry(e.target.value)}
+                className="w-full border rounded-lg px-2 py-1.5 text-xs bg-white"
+              />
+            </div>
+          </div>
 
-      <div className="border border-slate-200 rounded-lg overflow-hidden max-h-64 overflow-y-auto">
-        <table className="w-full text-xs">
-          <thead className="bg-slate-100 text-slate-700 sticky top-0 font-bold border-b border-slate-200">
-            <tr>
-              <th className="p-2 text-left">Medicine</th>
-              <th>Batch #</th>
-              <th>Expiry</th>
-              <th>Qty</th>
-              <th>P.Price</th>
-              <th>S.Price</th>
-              <th>Total</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {items.map((it, idx) => {
-              const m = medicineById(it.medicineId)
-              const set = (k) => (e) =>
-                setItems((x) => x.map((r, i) => (i === idx ? { ...r, [k]: e.target.value } : r)))
-              return (
-                <tr key={idx} className="text-center hover:bg-slate-50">
-                  <td className="p-2 text-left font-bold text-slate-800">
-                    {m ? `${m.name} ${m.strength || ''}` : 'Unknown'}
-                  </td>
-                  <td>
-                    <input
-                      value={it.batchNo}
-                      onChange={set('batchNo')}
-                      className="border rounded w-20 px-1 py-0.5 text-xs text-center font-mono"
-                      placeholder="e.g. B-01"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="date"
-                      value={it.expiry}
-                      onChange={set('expiry')}
-                      className="border rounded px-1 py-0.5 text-xs"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      min="1"
-                      value={it.qty}
-                      onChange={set('qty')}
-                      className="border rounded w-16 px-1 py-0.5 text-xs text-center font-bold"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={it.purchasePrice}
-                      onChange={set('purchasePrice')}
-                      className="border rounded w-20 px-1 py-0.5 text-xs text-right"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={it.salePrice}
-                      onChange={set('salePrice')}
-                      className="border rounded w-20 px-1 py-0.5 text-xs text-right"
-                    />
-                  </td>
-                  <td className="font-bold text-slate-800">
-                    {fmt((Number(it.qty) || 0) * (Number(it.purchasePrice) || 0))}
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => setItems((x) => x.filter((_, i) => i !== idx))}
-                      className="text-red-500 hover:text-red-700 px-1 font-bold"
-                    >
-                      ✕
-                    </button>
+          <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-1">
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Billed Qty</label>
+              <input
+                type="number"
+                min="1"
+                value={lineQty}
+                onChange={(e) => setLineQty(e.target.value)}
+                className="w-full border rounded-lg px-2 py-1.5 text-xs text-center font-bold bg-white"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Bonus / Free</label>
+              <input
+                type="number"
+                min="0"
+                value={lineBonus}
+                onChange={(e) => setLineBonus(e.target.value)}
+                className="w-full border rounded-lg px-2 py-1.5 text-xs text-center font-bold bg-white text-emerald-700"
+                placeholder="0"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Purchase Cost (TP)</label>
+              <input
+                type="number"
+                value={linePPrice}
+                onChange={(e) => setLinePPrice(e.target.value)}
+                className="w-full border rounded-lg px-2 py-1.5 text-xs text-right font-mono bg-white"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Sale MRP</label>
+              <input
+                type="number"
+                value={lineSPrice}
+                onChange={(e) => setLineSPrice(e.target.value)}
+                className="w-full border rounded-lg px-2 py-1.5 text-xs text-right font-mono bg-white"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Line Total</label>
+              <div className="py-1.5 px-2 text-center font-black text-slate-800 text-xs">
+                {fmt((Number(lineQty) || 0) * (Number(linePPrice) || 0))}
+              </div>
+            </div>
+            <div className="flex items-end">
+              <button
+                type="button"
+                onClick={addItem}
+                className="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-sm transition text-xs flex items-center justify-center gap-1"
+              >
+                + Add Line
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Step 3: Items Table */}
+        <div className="border border-slate-200 rounded-xl overflow-hidden max-h-52 overflow-y-auto">
+          <table className="w-full text-xs">
+            <thead className="bg-slate-100 text-slate-700 sticky top-0 font-bold border-b border-slate-200">
+              <tr>
+                <th className="p-2 text-left">Medicine</th>
+                <th>Batch #</th>
+                <th>Expiry</th>
+                <th>Billed Qty</th>
+                <th>Bonus</th>
+                <th>Cost Rate (TP)</th>
+                <th>Sale MRP</th>
+                <th>Line Total</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {items.map((it, idx) => {
+                const set = (k) => (e) =>
+                  setItems((prev) =>
+                    prev.map((r, i) => {
+                      if (i !== idx) return r
+                      const updated = { ...r, [k]: e.target.value }
+                      if (k === 'qty' || k === 'purchasePrice') {
+                        updated.lineTotal = (Number(updated.qty) || 0) * (Number(updated.purchasePrice) || 0)
+                      }
+                      return updated
+                    })
+                  )
+                return (
+                  <tr key={idx} className="text-center hover:bg-slate-50">
+                    <td className="p-2 text-left font-bold text-slate-800">{it.medicineName}</td>
+                    <td>
+                      <input
+                        value={it.batchNo}
+                        onChange={set('batchNo')}
+                        className="border rounded w-20 px-1 py-0.5 text-xs text-center font-mono"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="date"
+                        value={it.expiry}
+                        onChange={set('expiry')}
+                        className="border rounded px-1 py-0.5 text-xs"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        min="1"
+                        value={it.qty}
+                        onChange={set('qty')}
+                        className="border rounded w-16 px-1 py-0.5 text-xs text-center font-bold"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        min="0"
+                        value={it.bonusQty}
+                        onChange={set('bonusQty')}
+                        className="border rounded w-14 px-1 py-0.5 text-xs text-center font-bold text-emerald-700"
+                        placeholder="0"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        value={it.purchasePrice}
+                        onChange={set('purchasePrice')}
+                        className="border rounded w-18 px-1 py-0.5 text-xs text-right font-mono"
+                      />
+                    </td>
+                    <td>
+                      <input
+                        type="number"
+                        value={it.salePrice}
+                        onChange={set('salePrice')}
+                        className="border rounded w-18 px-1 py-0.5 text-xs text-right font-mono"
+                      />
+                    </td>
+                    <td className="font-bold text-slate-800 font-mono">
+                      {fmt((Number(it.qty) || 0) * (Number(it.purchasePrice) || 0))}
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => setItems((prev) => prev.filter((_, i) => i !== idx))}
+                        className="text-red-500 hover:text-red-700 px-1 font-bold"
+                      >
+                        ✕
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+              {!items.length && (
+                <tr>
+                  <td colSpan="9" className="p-6 text-center text-slate-400">
+                    Koi medicine add nahi hui. Upar form se medicine, batch aur expiry darj kar ke Add Line dabayein.
                   </td>
                 </tr>
-              )
-            })}
-            {!items.length && (
-              <tr>
-                <td colSpan="8" className="p-6 text-center text-slate-400">
-                  Koi medicine add nahi hui. Upar dropdown se medicine chunein aur Add dabayein.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-      <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-200 text-xs">
-        <label className="font-semibold text-slate-700 flex items-center gap-2">
-          Amount Paid Now:
+        {/* Step 4: Complete Tax & Discount Engine (GST, Advance Tax, Desiccant, WHT) */}
+        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+          <div className="font-bold text-slate-800 flex items-center justify-between border-b pb-1.5">
+            <span className="flex items-center gap-1.5">
+              <DollarSign className="w-4 h-4 text-emerald-600" />
+              Invoice Taxes, Discount & Financials (ٹیکس، ڈسکاؤنٹ اور حساب)
+            </span>
+            <span className="text-slate-600">
+              Gross Subtotal: <b className="text-slate-900 font-mono text-sm ml-1">{fmt(subtotal)}</b>
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+            {/* 1. Discount (Desiccant Amount) */}
+            <div className="p-2.5 bg-white border border-amber-200 rounded-lg space-y-1">
+              <div className="font-bold text-amber-900 flex justify-between">
+                <span>Desiccant / Discount (ڈسکاؤنٹ)</span>
+                <span className="text-[10px] text-amber-700 font-mono">{discountPct}%</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                <div>
+                  <label className="text-[10px] text-slate-500 block">Disc %</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    value={discountPct}
+                    onChange={(e) => handleDiscountPctChange(e.target.value)}
+                    className="w-full border rounded px-1.5 py-1 text-xs text-center font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-500 block">Disc Rs.</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={discountAmount}
+                    onChange={(e) => handleDiscountAmountChange(e.target.value)}
+                    className="w-full border rounded px-1.5 py-1 text-xs text-right font-bold text-amber-800"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 2. GST (General Sales Tax) */}
+            <div className="p-2.5 bg-white border border-purple-200 rounded-lg space-y-1">
+              <div className="font-bold text-purple-900 flex justify-between items-center">
+                <span>GST (سیلز ٹیکس)</span>
+                <div className="flex gap-1">
+                  {[0, 1, 18].map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => handleGstPctChange(p)}
+                      className={`px-1.5 py-0.2 text-[9px] rounded font-bold ${
+                        gstPct === p ? 'bg-purple-600 text-white' : 'bg-purple-100 text-purple-700'
+                      }`}
+                    >
+                      {p}%
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                <div>
+                  <label className="text-[10px] text-slate-500 block">GST %</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={gstPct}
+                    onChange={(e) => handleGstPctChange(e.target.value)}
+                    className="w-full border rounded px-1.5 py-1 text-xs text-center font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-500 block">GST Rs.</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={gstAmount}
+                    onChange={(e) => setGstAmount(Number(e.target.value) || 0)}
+                    className="w-full border rounded px-1.5 py-1 text-xs text-right font-bold text-purple-800"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Advance TAX (Sec 236G/H Advance Tax) */}
+            <div className="p-2.5 bg-white border border-blue-200 rounded-lg space-y-1">
+              <div className="font-bold text-blue-900 flex justify-between items-center">
+                <span>Advance TAX (236G/H)</span>
+                <div className="flex gap-1">
+                  {[0, 0.5, 1, 2.5].map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      onClick={() => handleAdvanceTaxPctChange(p)}
+                      className={`px-1 py-0.2 text-[9px] rounded font-bold ${
+                        advanceTaxPct === p ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-700'
+                      }`}
+                    >
+                      {p}%
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                <div>
+                  <label className="text-[10px] text-slate-500 block">Adv Tax %</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={advanceTaxPct}
+                    onChange={(e) => handleAdvanceTaxPctChange(e.target.value)}
+                    className="w-full border rounded px-1.5 py-1 text-xs text-center font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-slate-500 block">Adv Tax Rs.</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={advanceTaxAmount}
+                    onChange={(e) => setAdvanceTaxAmount(Number(e.target.value) || 0)}
+                    className="w-full border rounded px-1.5 py-1 text-xs text-right font-bold text-blue-800"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Other Tax / WHT */}
+            <div className="p-2.5 bg-white border border-slate-200 rounded-lg space-y-1">
+              <div className="font-bold text-slate-800">Other Tax / WHT (دیگر ٹیکس)</div>
+              <div>
+                <label className="text-[10px] text-slate-500 block">Amount (Rs.)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={otherTax}
+                  onChange={(e) => setOtherTax(Number(e.target.value) || 0)}
+                  className="w-full border rounded px-2 py-1 text-xs text-right font-bold font-mono"
+                  placeholder="0"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Grand Totals & Payment / Advance */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-200 items-center">
+            <div>
+              <label className="text-[11px] font-bold text-slate-700 block mb-1">
+                Advance Paid / Paid Now (ادا شدہ رقم)
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={paid}
+                onChange={(e) => setPaid(e.target.value)}
+                className="w-full border rounded-lg px-2.5 py-1.5 text-xs text-right font-bold text-emerald-700 bg-white"
+              />
+            </div>
+
+            <div className="text-center sm:text-right">
+              <span className="text-slate-500 block text-[11px]">Net Payable Total (کل واجب الادا)</span>
+              <b className="text-lg text-emerald-800 font-black font-mono">{fmt(netTotal)}</b>
+            </div>
+
+            <div className="text-center sm:text-right p-2 bg-red-50/70 border border-red-200 rounded-lg">
+              <span className="text-red-700 block text-[11px] font-bold">Remaining Due / Dues Added</span>
+              <b className="text-lg text-red-600 font-black font-mono">{fmt(remainingDue)}</b>
+            </div>
+          </div>
+        </div>
+
+        {/* Note / Remarks */}
+        <div>
+          <label className="font-bold text-slate-700 block mb-1">GRN Remarks / Delivery Note / Rider</label>
           <input
-            type="number"
-            value={paid}
-            onChange={(e) => setPaid(e.target.value)}
-            className="border rounded px-2 py-1 w-28 text-right font-bold text-emerald-700"
+            type="text"
+            placeholder="e.g. Delivered by distributor rider Ali, Gate pass # 104..."
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            className="w-full border rounded-lg px-2.5 py-1.5 text-xs bg-white"
           />
-        </label>
-        <div className="text-right">
-          <span className="text-slate-500 mr-2">Grand Total:</span>
-          <b className="text-base text-emerald-700">{fmt(total)}</b>
+        </div>
+
+        <button
+          onClick={save}
+          className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg font-bold text-xs shadow transition flex items-center justify-center gap-1.5"
+        >
+          <CheckCircle2 className="w-4 h-4" />
+          Save GRN & Update Inventory Batches (اسٹاک درج کریں)
+        </button>
+      </div>
+    </Modal>
+  )
+}
+
+// ----------------------------------------------------------------------
+// MODAL: VIEW / PRINT / WHATSAPP GRN VOUCHER (GOODS RECEIVED NOTE)
+// ----------------------------------------------------------------------
+function GRNDetailModal({ grn, onClose }) {
+  const db = useDB()
+  const sup = supplierById(grn.supplierId)
+  const pharmacyName = db.settings?.pharmacyName || 'Pharmacy POS'
+  const pharmacyPhone = db.settings?.phone || ''
+  const pharmacyAddress = db.settings?.address || ''
+
+  const totalBilledUnits = (grn.items || []).reduce((s, it) => s + (Number(it.qty) || 0), 0)
+  const totalBonusUnits = (grn.items || []).reduce((s, it) => s + (Number(it.bonusQty) || 0), 0)
+
+  const taxesTotal = (Number(grn.gstAmount) || 0) + (Number(grn.advanceTaxAmount) || 0) + (Number(grn.otherTax) || 0)
+  const due = grn.due !== undefined ? grn.due : (grn.total - (grn.paid || 0))
+
+  const handlePrint = () => {
+    window.print()
+  }
+
+  const handleWhatsApp = () => {
+    let msg = `*GOODS RECEIVED NOTE (GRN): ${grn.grnNo || grn.invoiceNo}*\n`
+    msg += `*Pharmacy:* ${pharmacyName}\n`
+    if (pharmacyPhone) msg += `*Contact:* ${pharmacyPhone}\n`
+    msg += `*Date:* ${grn.date || todayStr()}\n`
+    msg += `*Supplier:* ${sup?.name || 'Distributor'} ${sup?.company ? `(${sup.company})` : ''}\n`
+    msg += `*Supplier Inv #:* ${grn.invoiceNo}\n\n`
+    msg += `*RECEIVED ITEMS (موصولہ ادویات):*\n`
+
+    ;(grn.items || []).forEach((it, idx) => {
+      msg += `${idx + 1}. *${it.medicineName || 'Medicine'}*\n`
+      msg += `   Batch: *${it.batchNo}* | Exp: *${it.expiry}*\n`
+      msg += `   Qty: *${it.qty}* ${it.bonusQty ? `(+${it.bonusQty} Bonus)` : ''} @ Rs. ${it.purchasePrice} = *Rs. ${it.lineTotal || it.qty * it.purchasePrice}*\n`
+    })
+
+    msg += `\n*Gross Subtotal:* ${fmt(grn.subtotal || grn.total)}\n`
+    if (grn.discountAmount) msg += `*Discount:* -${fmt(grn.discountAmount)}\n`
+    if (grn.gstAmount) msg += `*GST (${grn.gstPct || 0}%):* +${fmt(grn.gstAmount)}\n`
+    if (grn.advanceTaxAmount) msg += `*Advance Tax (${grn.advanceTaxPct || 0}%):* +${fmt(grn.advanceTaxAmount)}\n`
+    if (grn.otherTax) msg += `*Other Tax:* +${fmt(grn.otherTax)}\n`
+    msg += `*Net Grand Total:* *${fmt(grn.total)}*\n`
+    msg += `*Paid Advance:* ${fmt(grn.paid || 0)}\n`
+    msg += `*Balance Due:* *${fmt(due)}*\n`
+
+    const cleanPhone = (sup?.phone || '').replace(/[^0-9]/g, '')
+    const url = cleanPhone
+      ? `https://wa.me/${cleanPhone.startsWith('92') ? cleanPhone : '92' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent(msg)}`
+      : `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`
+
+    window.open(url, '_blank')
+  }
+
+  return (
+    <Modal title={`Goods Received Note (GRN): ${grn.grnNo || grn.invoiceNo}`} onClose={onClose}>
+      <div className="space-y-4 text-xs">
+        {/* Printable GRN Card */}
+        <div id="grn-printable-slip" className="p-4 bg-white border border-slate-300 rounded-xl shadow-sm space-y-4">
+          {/* Slip Header */}
+          <div className="flex justify-between items-start border-b border-slate-200 pb-3">
+            <div>
+              <h3 className="text-base font-black text-slate-900">{pharmacyName}</h3>
+              {pharmacyAddress && <p className="text-slate-500 text-[11px]">{pharmacyAddress}</p>}
+              {pharmacyPhone && <p className="text-slate-500 text-[11px]">Phone: {pharmacyPhone}</p>}
+            </div>
+            <div className="text-right">
+              <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-[11px] font-black rounded-lg">
+                GOODS RECEIVED NOTE (GRN)
+              </span>
+              <div className="font-mono font-bold text-slate-800 text-sm mt-1">{grn.grnNo || '—'}</div>
+              <div className="text-slate-500 text-[11px]">Supplier Inv: <b>{grn.invoiceNo}</b></div>
+              <div className="text-slate-500 text-[11px]">Date: {grn.date || todayStr()}</div>
+            </div>
+          </div>
+
+          {/* Supplier Details */}
+          <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200">
+            <div>
+              <div className="text-[10px] font-bold text-slate-400 uppercase">Supplier / Distributor</div>
+              <div className="font-black text-slate-800 text-xs mt-0.5">{sup?.name || 'General Supplier'}</div>
+              <div className="text-slate-500 text-[11px]">{sup?.company || 'Pharmaceutical Distributor'}</div>
+              <div className="text-slate-500 text-[11px] flex items-center gap-1 mt-0.5">
+                <Phone className="w-3 h-3 text-slate-400" /> {sup?.phone || 'No phone'}
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-[10px] font-bold text-slate-400 uppercase">Receiving Info</div>
+              <div className="mt-0.5">
+                <span className="font-bold text-slate-700">Received By: </span>
+                <b className="text-slate-900">{grn.receivedBy || 'Pharmacist'}</b>
+              </div>
+              <div className="mt-0.5 text-slate-500">
+                Payment Status: <b className={due > 0 ? 'text-red-600' : 'text-emerald-600'}>{due > 0 ? 'PARTIAL / CREDIT' : 'PAID'}</b>
+              </div>
+            </div>
+          </div>
+
+          {/* Items Table */}
+          <table className="w-full text-xs">
+            <thead className="bg-slate-100 text-slate-700 font-bold border-y border-slate-200">
+              <tr>
+                <th className="p-2 text-left">#</th>
+                <th className="p-2 text-left">Medicine Description</th>
+                <th className="p-2 text-center">Batch No</th>
+                <th className="p-2 text-center">Expiry</th>
+                <th className="p-2 text-center">Billed Qty</th>
+                <th className="p-2 text-center">Bonus</th>
+                <th className="p-2 text-right">Cost Rate (TP)</th>
+                <th className="p-2 text-right">Sale MRP</th>
+                <th className="p-2 text-right">Line Total</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {(grn.items || []).map((it, idx) => (
+                <tr key={idx}>
+                  <td className="p-2 text-slate-400">{idx + 1}</td>
+                  <td className="p-2 font-bold text-slate-800">{it.medicineName || 'Medicine'}</td>
+                  <td className="p-2 text-center font-mono font-bold text-slate-700">{it.batchNo}</td>
+                  <td className="p-2 text-center text-slate-600">{it.expiry}</td>
+                  <td className="p-2 text-center font-bold text-slate-900">{it.qty}</td>
+                  <td className="p-2 text-center text-emerald-700 font-semibold">{it.bonusQty ? `+${it.bonusQty}` : '—'}</td>
+                  <td className="p-2 text-right font-mono text-slate-600">{fmt(it.purchasePrice)}</td>
+                  <td className="p-2 text-right font-mono text-slate-600">{fmt(it.salePrice || 0)}</td>
+                  <td className="p-2 text-right font-bold text-slate-800 font-mono">
+                    {fmt(it.lineTotal || it.qty * it.purchasePrice)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Detailed Financial & Tax Breakdown Box */}
+          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-200">
+            <div className="space-y-1 text-slate-600">
+              {grn.note && (
+                <div className="p-2 bg-slate-50 rounded border text-[11px]">
+                  <b>Remarks / Note:</b> {grn.note}
+                </div>
+              )}
+              <div className="text-[11px] text-slate-500">
+                Total Billed Units: <b>{totalBilledUnits}</b> {totalBonusUnits > 0 ? `(+${totalBonusUnits} Bonus Free)` : ''}
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-1.5 text-xs">
+              <div className="flex justify-between text-slate-600">
+                <span>Gross Subtotal:</span>
+                <span className="font-mono font-semibold">{fmt(grn.subtotal || grn.total)}</span>
+              </div>
+              {Number(grn.discountAmount) > 0 && (
+                <div className="flex justify-between text-amber-700 font-medium">
+                  <span>Less: Desiccant / Discount ({grn.discountPct || 0}%):</span>
+                  <span className="font-mono">-{fmt(grn.discountAmount)}</span>
+                </div>
+              )}
+              {Number(grn.gstAmount) > 0 && (
+                <div className="flex justify-between text-purple-700">
+                  <span>Add: GST ({grn.gstPct || 0}%):</span>
+                  <span className="font-mono">+{fmt(grn.gstAmount)}</span>
+                </div>
+              )}
+              {Number(grn.advanceTaxAmount) > 0 && (
+                <div className="flex justify-between text-blue-700">
+                  <span>Add: Advance TAX Sec 236G/H ({grn.advanceTaxPct || 0}%):</span>
+                  <span className="font-mono">+{fmt(grn.advanceTaxAmount)}</span>
+                </div>
+              )}
+              {Number(grn.otherTax) > 0 && (
+                <div className="flex justify-between text-slate-600">
+                  <span>Add: Other Tax / WHT:</span>
+                  <span className="font-mono">+{fmt(grn.otherTax)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm font-black text-slate-900 border-t pt-1">
+                <span>Net Grand Total:</span>
+                <span className="font-mono text-emerald-800">{fmt(grn.total)}</span>
+              </div>
+              <div className="flex justify-between text-emerald-700 font-bold">
+                <span>Advance / Paid Now:</span>
+                <span className="font-mono">{fmt(grn.paid || 0)}</span>
+              </div>
+              <div className="flex justify-between text-red-600 font-black border-t pt-1">
+                <span>Remaining Balance Due:</span>
+                <span className="font-mono">{fmt(due)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons Toolbar */}
+        <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-200">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition"
+            >
+              <Printer className="w-4 h-4 text-slate-600" />
+              Print GRN Slip
+            </button>
+            <button
+              onClick={handleWhatsApp}
+              className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-sm transition"
+            >
+              <Send className="w-4 h-4" />
+              Send to Supplier via WhatsApp
+            </button>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-lg transition"
+          >
+            Close
+          </button>
         </div>
       </div>
-
-      <button
-        onClick={save}
-        className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg font-bold text-xs shadow transition flex items-center justify-center gap-1.5"
-      >
-        <CheckCircle2 className="w-4 h-4" />
-        Save Purchase & Update Inventory Batches (اسٹاک درج کریں)
-      </button>
     </Modal>
   )
 }
@@ -1537,7 +2236,7 @@ function PODetailModal({ po, onClose, onReceive }) {
                 className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow-sm transition"
               >
                 <Package className="w-4 h-4" />
-                🚚 Receive Stock (Convert to Invoice)
+                🚚 Receive Stock as GRN
               </button>
             )}
             <button
