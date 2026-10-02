@@ -10,6 +10,8 @@ import {
   getCounters,
   getCurrentShift,
   getShiftHistory,
+  todayStr,
+  getStockAudits,
 } from '../lib/db'
 import {
   BarChart3,
@@ -50,6 +52,7 @@ const REPORT_CATEGORIES = [
     id: 'stock',
     name: '📦 Stock & Expiry',
     reports: [
+      { id: 'STOCK_AUDIT_VARIANCE', title: '📋 Stock Audit Variance (Kam vs Zyada)' },
       { id: 'STOCK_COMPANY', title: '🏢 Company-Wise Stock Master' },
       { id: 'STOCK_CURRENT', title: 'Current Stock Master' },
       { id: 'STOCK_VALUATION', title: 'Stock Valuation (Cost vs Retail)' },
@@ -68,6 +71,7 @@ const REPORT_CATEGORIES = [
     id: 'purchasing',
     name: '🚚 Purchases & Ledgers',
     reports: [
+      { id: 'PURCHASE_ORDERS', title: '📋 Purchase Orders (Parches Orders) Ledger' },
       { id: 'PURCHASE_JOURNAL', title: 'Purchase Invoices Journal' },
       { id: 'PURCHASE_SUPPLIER', title: 'Supplier-Wise Purchases' },
       { id: 'PURCHASE_RETURNS', title: 'Purchase Returns Ledger' },
@@ -421,6 +425,86 @@ function ReportSection({ section }) {
         }
       }
 
+      case 'STOCK_AUDIT_VARIANCE': {
+        const audits = db.stockAudits || []
+        if (audits.length > 0) {
+          const latestAudit = audits[audits.length - 1]
+          const rows = (latestAudit.items || []).map((it) => {
+            const isKam = it.variance < 0
+            const isZyada = it.variance > 0
+            const status = isKam
+              ? `🔻 -${Math.abs(it.variance)} KAM (Shortage)`
+              : isZyada
+              ? `🔺 +${it.variance} ZYADA (Surplus)`
+              : '✓ MATCHED'
+            const costImpact = Math.abs(it.variance) * (Number(it.costPrice) || 0)
+            return [
+              it.medicineName || medicineById(it.medicineId)?.name || 'Medicine',
+              it.systemStock,
+              it.physicalStock,
+              status,
+              fmt(it.costPrice || 0),
+              `${isKam ? '-' : isZyada ? '+' : ''}${fmt(costImpact)}`,
+              it.note || (isKam ? 'Deficit / Shortage' : isZyada ? 'Surplus Found' : 'Physical Matches System'),
+            ]
+          })
+          return {
+            columns: [
+              'Medicine Name',
+              'System Recorded Stock',
+              'Physical Count',
+              'Audit Variance (Kam/Zyada)',
+              'Unit Cost Price',
+              'Discrepancy Valuation',
+              'Remarks / Notes',
+            ],
+            rows,
+            summary: {
+              'Audit Report': `${latestAudit.auditNo} — ${latestAudit.title || 'Physical Stock Audit'}`,
+              'Auditor Name': latestAudit.auditor || 'Pharmacist',
+              'Kam Medicines (Deficit)': `${latestAudit.kamCount || 0} items (-${latestAudit.totalKamUnits || 0} units)`,
+              'Zyada Medicines (Surplus)': `${latestAudit.zyadaCount || 0} items (+${latestAudit.totalZyadaUnits || 0} units)`,
+              'Total Financial Shortage': fmt(latestAudit.totalKamCost || 0),
+              'Stock Reconciled': latestAudit.reconciled ? 'YES (Adjusted in System)' : 'NO (Audit Log Only)',
+              'Purchase Order': latestAudit.poNo ? `Auto-Generated (${latestAudit.poNo})` : 'None Generated',
+            },
+          }
+        } else {
+          // No formal audit logged yet: show system stock vs target minStock
+          const rows = (db.medicines || []).map((m) => {
+            const batches = (db.batches || []).filter((b) => b.medicineId === m.id)
+            const currentStock = batches.reduce((a, b) => a + b.qty, 0)
+            const minStock = m.minStock || 15
+            const diff = currentStock - minStock
+            return [
+              `${m.name} ${m.strength || ''}`,
+              currentStock,
+              minStock,
+              diff < 0 ? `🔻 ${Math.abs(diff)} Below Target (Kam)` : `🔺 +${diff} Above Target (Zyada)`,
+              fmt(m.purchasePrice || Math.round(m.salePrice * 0.75)),
+              diff < 0 ? `-${fmt(Math.abs(diff) * (m.purchasePrice || Math.round(m.salePrice * 0.75)))}` : `+${fmt(diff * (m.purchasePrice || Math.round(m.salePrice * 0.75)))}`,
+              'Physical Audit Pending (Target Safety Comparison Shown)',
+            ]
+          })
+          return {
+            columns: [
+              'Medicine Name',
+              'Current System Stock',
+              'Safety Target Stock',
+              'Target Variance (Kam/Zyada)',
+              'Unit Cost Price',
+              'Target Valuation Difference',
+              'Audit Status',
+            ],
+            rows,
+            summary: {
+              'Audit Status': 'No physical stock audit recorded yet',
+              'Action Needed': 'Perform a physical stock count in Inventory -> Stock Audit (Kam/Zyada)',
+            },
+          }
+        }
+      }
+
       case 'STOCK_COMPANY': {
         const byComp = {}
         const now = new Date()
@@ -656,6 +740,45 @@ function ReportSection({ section }) {
           rows,
           summary: {
             'Total Batches': (db.batches || []).length,
+          },
+        }
+      }
+
+      case 'PURCHASE_ORDERS': {
+        const orders = db.purchaseOrders || []
+        const rows = [...orders].reverse().map((po) => {
+          const sup = supplierById(po.supplierId)
+          const totalQty = (po.items || []).reduce((s, it) => s + (Number(it.qty) || 0), 0)
+          const totalCost = po.totalEstimatedCost || (po.items || []).reduce((s, it) => s + (Number(it.qty) || 0) * (Number(it.purchasePrice) || 0), 0)
+          return [
+            po.poNo,
+            po.date || todayStr(),
+            sup ? `${sup.name} (${sup.company || 'Distributor'})` : 'General Supplier',
+            po.source === 'AUDIT' ? '📋 Stock Audit Deficit' : 'Manual PO',
+            `${po.items?.length || 0} items (${totalQty} units)`,
+            fmt(totalCost),
+            po.status || 'DRAFT',
+            po.note || '—',
+          ]
+        })
+        return {
+          columns: [
+            'PO Number',
+            'Order Date',
+            'Supplier / Distributor',
+            'Source / Origin',
+            'Items & Units',
+            'Estimated Total Payable',
+            'Order Status',
+            'Remarks / Notes',
+          ],
+          rows,
+          summary: {
+            'Total POs Created': orders.length,
+            'Draft POs': orders.filter((p) => p.status === 'DRAFT').length,
+            'Sent to Suppliers': orders.filter((p) => p.status === 'SENT').length,
+            'Received & Stocked': orders.filter((p) => p.status === 'RECEIVED').length,
+            'Total Demand Valuation': fmt(orders.reduce((s, p) => s + (p.totalEstimatedCost || 0), 0)),
           },
         }
       }

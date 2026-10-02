@@ -81,6 +81,7 @@ import {
   ShieldCheck,
   AlertOctagon,
   ClipboardList,
+  ClipboardCheck,
   Receipt as ReceiptIcon,
   HelpCircle,
   MessageSquare,
@@ -119,8 +120,9 @@ const navGroups = [
     items: [
       { to: '/medicines', label: 'Medicines', icon: Pill },
       { to: '/inventory', label: 'Stock Management', icon: Package },
+      { to: '/inventory?tab=audit', label: 'Stock Audit (Kam/Zyada)', icon: ClipboardCheck },
       { to: '/inventory?tab=NEAR_EXPIRY', label: 'Batch & Expiry', icon: Clock },
-      { to: '/purchases', label: 'Purchases', icon: ShoppingBag },
+      { to: '/purchases', label: 'Purchases & PO', icon: ShoppingBag },
       { to: '/suppliers', label: 'Suppliers', icon: Truck },
     ],
   },

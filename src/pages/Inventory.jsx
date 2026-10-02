@@ -9,8 +9,30 @@ import {
   getStockAdjustments,
   addBatch,
   addMedicine,
+  recordStockAudit,
+  getStockAudits,
+  savePurchaseOrder,
+  todayStr,
 } from '../lib/db'
-import { Search, Building2, Plus, CheckCircle2 } from 'lucide-react'
+import {
+  Search,
+  Building2,
+  Plus,
+  Minus,
+  CheckCircle2,
+  ClipboardCheck,
+  AlertTriangle,
+  TrendingDown,
+  TrendingUp,
+  Printer,
+  Download,
+  RotateCcw,
+  ShoppingBag,
+  Check,
+  Package,
+  Layers,
+  ArrowRight,
+} from 'lucide-react'
 import MedicineGroupFilter from '../components/MedicineGroupFilter'
 import {
   batchMatchesStockTab,
@@ -48,10 +70,10 @@ export default function Inventory() {
   }, [db.batches, db.medicines])
 
   // Keep sidebar deep-links separate: Stock Management opens all stock while
-  // Batch & Expiry opens the near-expiry FEFO view.
+  // Batch & Expiry opens the near-expiry FEFO view, and Stock Audit opens physical verification.
   useEffect(() => {
     const requested = new URLSearchParams(location.search).get('tab')
-    setTab(['ALL', 'AVAILABLE', 'NEAR_EXPIRY', 'EXPIRED', 'DAMAGED', 'RETURNED', 'adjustments'].includes(requested) ? requested : 'ALL')
+    setTab(['ALL', 'AVAILABLE', 'NEAR_EXPIRY', 'EXPIRED', 'DAMAGED', 'RETURNED', 'adjustments', 'audit'].includes(requested) ? requested : 'ALL')
   }, [location.search])
 
   const summary = getStockStatusSummary()
@@ -179,6 +201,7 @@ export default function Inventory() {
           ['DAMAGED', `Damaged (${summary.damaged} units)`],
           ['RETURNED', `Returned (${summary.returned} units)`],
           ['adjustments', `Adjustment History (${adjustments.length})`],
+          ['audit', `📋 Stock Audit (Kam / Zyada)`],
         ].map(([k, label]) => (
           <button
             key={k}
@@ -193,23 +216,27 @@ export default function Inventory() {
         ))}
       </div>
 
-      <MedicineGroupFilter
-        value={group}
-        onChange={setGroup}
-        counts={tab === 'adjustments' ? adjustmentCounts : batchCounts}
-        unit={tab === 'adjustments' ? 'adjustments' : 'batches'}
-        context={tab === 'adjustments' ? 'current search' : 'current search and stock status'}
-      />
-      <div className="flex items-center justify-between gap-3 px-1">
-        <p className="text-xs text-slate-500" role="status">
-          Showing <b className="text-slate-800">{tab === 'adjustments' ? filteredAdjustments.length : batches.length}</b> {tab === 'adjustments' ? 'adjustments' : 'batches'}
-          {tab !== 'adjustments' && <> · {batches.reduce((total, batch) => total + (Number(batch.qty) || 0), 0)} stock units</>}
-        </p>
-        {(search || group !== 'all') && <button type="button" onClick={clearFilters} className="text-xs font-semibold text-emerald-700 hover:text-emerald-900">Clear form & search</button>}
-      </div>
+      {tab !== 'audit' && (
+        <MedicineGroupFilter
+          value={group}
+          onChange={setGroup}
+          counts={tab === 'adjustments' ? adjustmentCounts : batchCounts}
+          unit={tab === 'adjustments' ? 'adjustments' : 'batches'}
+          context={tab === 'adjustments' ? 'current search' : 'current search and stock status'}
+        />
+      )}
+      {tab !== 'audit' && (
+        <div className="flex items-center justify-between gap-3 px-1">
+          <p className="text-xs text-slate-500" role="status">
+            Showing <b className="text-slate-800">{tab === 'adjustments' ? filteredAdjustments.length : batches.length}</b> {tab === 'adjustments' ? 'adjustments' : 'batches'}
+            {tab !== 'adjustments' && <> · {batches.reduce((total, batch) => total + (Number(batch.qty) || 0), 0)} stock units</>}
+          </p>
+          {(search || group !== 'all') && <button type="button" onClick={clearFilters} className="text-xs font-semibold text-emerald-700 hover:text-emerald-900">Clear form & search</button>}
+        </div>
+      )}
 
       {/* One row per batch; keep the table scrollable on smaller screens. */}
-      {tab !== 'adjustments' && (
+      {tab !== 'adjustments' && tab !== 'audit' && (
         <section aria-label="Inventory batch list" className="bg-white border border-slate-200 overflow-x-auto" tabIndex={0}>
           <table className="w-full min-w-[1100px] text-xs text-left">
             <caption className="sr-only">Inventory batches</caption>
@@ -265,6 +292,16 @@ export default function Inventory() {
             </tbody>
           </table>
         </section>
+      )}
+
+      {/* Stock Audit (Kam vs Zyada) View */}
+      {tab === 'audit' && (
+        <StockAuditView
+          db={db}
+          companyFilter={companyFilter}
+          onCompanyChange={setCompanyFilter}
+          distinctCompanies={distinctCompanies}
+        />
       )}
 
       {/* Reclassification Modal */}
@@ -827,3 +864,932 @@ export function CompanyStockInModal({ distinctCompanies = [], onClose }) {
     </div>
   )
 }
+
+export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, distinctCompanies = [] }) {
+  const [q, setQ] = useState('')
+  const [varianceFilter, setVarianceFilter] = useState('ALL') // 'ALL' | 'KAM' | 'ZYADA' | 'MATCHED'
+  const [subTab, setSubTab] = useState('worksheet') // 'worksheet' | 'history'
+  const [auditTitle, setAuditTitle] = useState(`Physical Stock Audit — ${todayStr()}`)
+  const [physicalCounts, setPhysicalCounts] = useState({})
+  const [selectedForPO, setSelectedForPO] = useState(new Set())
+  const [poModalOpen, setPoModalOpen] = useState(false)
+  const [feedbackMsg, setFeedbackMsg] = useState('')
+  const [reconciledConfirmOpen, setReconciledConfirmOpen] = useState(false)
+
+  const medicines = db.medicines || []
+  const batches = db.batches || []
+  const suppliers = db.suppliers || []
+  const pastAudits = getStockAudits()
+
+  // Calculate live system stock vs physical count for all medicines
+  const auditData = useMemo(() => {
+    return medicines.map((m) => {
+      const activeBatches = batches.filter(
+        (b) => b.medicineId === m.id && b.qty > 0 && b.status !== 'EXPIRED' && b.status !== 'DAMAGED'
+      )
+      const systemStock = activeBatches.reduce((a, b) => a + Number(b.qty), 0)
+      const countEntered = physicalCounts[m.id]
+      const physicalStock = countEntered !== undefined && countEntered !== '' ? Number(countEntered) : systemStock
+      const variance = physicalStock - systemStock
+      const costPrice = m.purchasePrice != null ? m.purchasePrice : Math.round((m.salePrice || 100) * 0.75)
+      const salePrice = m.salePrice || 0
+      const financialImpact = variance * costPrice
+
+      let varianceType = 'MATCHED'
+      if (variance < 0) varianceType = 'KAM'
+      else if (variance > 0) varianceType = 'ZYADA'
+
+      return {
+        medicine: m,
+        systemStock,
+        physicalStock,
+        variance,
+        varianceType,
+        costPrice,
+        salePrice,
+        financialImpact,
+      }
+    })
+  }, [medicines, batches, physicalCounts])
+
+  // Summary Metrics
+  const kamItems = useMemo(() => auditData.filter((x) => x.variance < 0), [auditData])
+  const zyadaItems = useMemo(() => auditData.filter((x) => x.variance > 0), [auditData])
+  const matchedItems = useMemo(() => auditData.filter((x) => x.variance === 0), [auditData])
+
+  const totalKamUnits = useMemo(() => kamItems.reduce((a, b) => a + Math.abs(b.variance), 0), [kamItems])
+  const totalZyadaUnits = useMemo(() => zyadaItems.reduce((a, b) => a + b.variance, 0), [zyadaItems])
+  const totalKamLoss = useMemo(() => kamItems.reduce((a, b) => a + Math.abs(b.financialImpact), 0), [kamItems])
+  const totalZyadaSurplus = useMemo(() => zyadaItems.reduce((a, b) => a + b.financialImpact, 0), [zyadaItems])
+  const netVarianceValuation = totalZyadaSurplus - totalKamLoss
+
+  // Filtered rows for active worksheet
+  const displayRows = useMemo(() => {
+    return auditData.filter((row) => {
+      const m = row.medicine
+      // Company filter
+      if (companyFilter !== 'all') {
+        const c = (m.manufacturer || 'Unassigned').trim().toLowerCase()
+        if (c !== companyFilter.trim().toLowerCase()) return false
+      }
+      // Status filter
+      if (varianceFilter === 'KAM' && row.varianceType !== 'KAM') return false
+      if (varianceFilter === 'ZYADA' && row.varianceType !== 'ZYADA') return false
+      if (varianceFilter === 'MATCHED' && row.varianceType !== 'MATCHED') return false
+
+      // Search query
+      if (q.trim()) {
+        const query = q.toLowerCase()
+        const text = `${m.name} ${m.generic || ''} ${m.barcode || ''} ${m.manufacturer || ''}`.toLowerCase()
+        if (!text.includes(query)) return false
+      }
+      return true
+    })
+  }, [auditData, companyFilter, varianceFilter, q])
+
+  function handleCountChange(medId, val) {
+    const num = val === '' ? '' : Math.max(0, parseInt(val, 10) || 0)
+    setPhysicalCounts((prev) => ({
+      ...prev,
+      [medId]: num,
+    }))
+  }
+
+  function adjustCount(medId, currentPhysical, delta) {
+    const nextVal = Math.max(0, currentPhysical + delta)
+    handleCountChange(medId, nextVal)
+  }
+
+  function handleResetAll() {
+    if (confirm('Reset all entered counts back to match system stock?')) {
+      setPhysicalCounts({})
+      setFeedbackMsg('Physical counts reset to match system.')
+      setTimeout(() => setFeedbackMsg(''), 4000)
+    }
+  }
+
+  function handleOpenPOModalForKam() {
+    if (kamItems.length === 0) {
+      alert('Audit count mein koi medicine Kam (short) nahi hai.')
+      return
+    }
+    const s = new Set()
+    kamItems.forEach((x) => s.add(x.medicine.id))
+    setSelectedForPO(s)
+    setPoModalOpen(true)
+  }
+
+  function togglePOSelect(medId) {
+    setSelectedForPO((prev) => {
+      const next = new Set(prev)
+      next.has(medId) ? next.delete(medId) : next.add(medId)
+      return next
+    })
+  }
+
+  function handleSaveAudit(reconcile = false) {
+    const itemsToSave = auditData.map((d) => ({
+      medicineId: d.medicine.id,
+      medicineName: `${d.medicine.name} ${d.medicine.strength || ''}`,
+      systemStock: d.systemStock,
+      physicalStock: d.physicalStock,
+      variance: d.variance,
+      varianceType: d.varianceType,
+      costPrice: d.costPrice,
+      salePrice: d.salePrice,
+    }))
+
+    const record = recordStockAudit({
+      title: auditTitle,
+      items: itemsToSave,
+      reconcile,
+    })
+
+    setReconciledConfirmOpen(false)
+    setFeedbackMsg(`✓ Stock Audit ${record.auditNo} successfully saved! (${record.kamCount} Kam, ${record.zyadaCount} Zyada)${reconcile ? ' · Inventory Batches Reconciled' : ''}`)
+    setTimeout(() => setFeedbackMsg(''), 7000)
+  }
+
+  function handleExportCSV() {
+    const header = ['Medicine', 'Strength', 'Generic', 'Manufacturer', 'System Stock', 'Physical Count', 'Discrepancy (Units)', 'Status', 'Unit Cost', 'Financial Impact (Rs.)']
+    const rows = displayRows.map((r) => [
+      `"${r.medicine.name}"`,
+      `"${r.medicine.strength || ''}"`,
+      `"${r.medicine.generic || ''}"`,
+      `"${r.medicine.manufacturer || 'Unassigned'}"`,
+      r.systemStock,
+      r.physicalStock,
+      r.variance,
+      r.varianceType === 'KAM' ? 'KAM (Shortage)' : r.varianceType === 'ZYADA' ? 'ZYADA (Surplus)' : 'MATCHED (OK)',
+      r.costPrice,
+      r.financialImpact,
+    ])
+    const csvContent = 'data:text/csv;charset=utf-8,' + [header.join(','), ...rows.map((row) => row.join(','))].join('\n')
+    const encoded = encodeURI(csvContent)
+    const link = document.createElement('a')
+    link.setAttribute('href', encoded)
+    link.setAttribute('download', `Stock_Audit_${new Date().toISOString().slice(0, 10)}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Feedback Banner */}
+      {feedbackMsg && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl text-xs font-bold flex items-center justify-between shadow-xs">
+          <span className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            {feedbackMsg}
+          </span>
+          <button onClick={() => setFeedbackMsg('')} className="text-emerald-700 hover:text-emerald-900">✕</button>
+        </div>
+      )}
+
+      {/* Top Banner Card */}
+      <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+              <ClipboardCheck className="w-5 h-5" />
+            </span>
+            <div>
+              <h2 className="text-lg font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+                <span>Stock Audit & Physical Verification</span>
+                <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2.5 py-0.5 rounded-full border border-indigo-200">
+                  Kam vs Zyada Medicines
+                </span>
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Physical count vs system inventory verification. Detect shortages & surpluses, and generate Purchase Orders.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Global Action Buttons */}
+        <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+          {/* ⚡ Generate Purchase Order Button */}
+          <button
+            type="button"
+            onClick={handleOpenPOModalForKam}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-2 shrink-0 animate-pulse hover:animate-none"
+            title="Automatically create a Purchase Order for all deficit medicines"
+          >
+            <ShoppingBag className="w-4 h-4" />
+            <span>⚡ Generate Purchase Order ({kamItems.length} Kam)</span>
+          </button>
+
+          {/* Save Audit Button */}
+          <button
+            type="button"
+            onClick={() => handleSaveAudit(false)}
+            className="bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5"
+            title="Save this audit count record without adjusting system stock"
+          >
+            <CheckCircle2 className="w-4 h-4" /> Save Audit
+          </button>
+
+          {/* Reconcile Batches Button */}
+          <button
+            type="button"
+            onClick={() => setReconciledConfirmOpen(true)}
+            className="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5"
+            title="Adjust system inventory batches to match physical count"
+          >
+            <RotateCcw className="w-4 h-4" /> Reconcile Stock
+          </button>
+
+          {/* Print & CSV */}
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1"
+          >
+            <Download className="w-3.5 h-3.5" /> CSV
+          </button>
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1"
+          >
+            <Printer className="w-3.5 h-3.5" /> Print
+          </button>
+        </div>
+      </div>
+
+      {/* 4 KPI Summary Cards (Kam vs Zyada) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {/* Card 1: Kam Medicines (Shortages) */}
+        <div className="bg-rose-50/70 border border-rose-200 rounded-2xl p-4 shadow-xs">
+          <div className="flex items-center justify-between text-rose-700 mb-1">
+            <span className="text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
+              <TrendingDown className="w-4 h-4" /> 🔻 Kam Medicines (Shortages)
+            </span>
+            <span className="text-[10px] font-bold bg-rose-200/80 px-2 py-0.5 rounded-full">
+              Deficit
+            </span>
+          </div>
+          <div className="text-2xl font-black text-rose-900 tracking-tight">
+            {kamItems.length} <span className="text-sm font-semibold text-rose-700">Products</span>
+          </div>
+          <div className="flex justify-between items-center text-xs mt-2 text-rose-800 font-medium pt-2 border-t border-rose-200/60">
+            <span>Missing Units: <b>-{totalKamUnits}</b></span>
+            <span>Cost Loss: <b>Rs. {fmt(totalKamLoss)}</b></span>
+          </div>
+        </div>
+
+        {/* Card 2: Zyada Medicines (Surplus / Excess) */}
+        <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 shadow-xs">
+          <div className="flex items-center justify-between text-emerald-700 mb-1">
+            <span className="text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
+              <TrendingUp className="w-4 h-4" /> 🔺 Zyada Medicines (Surplus)
+            </span>
+            <span className="text-[10px] font-bold bg-emerald-200/80 px-2 py-0.5 rounded-full">
+              Excess
+            </span>
+          </div>
+          <div className="text-2xl font-black text-emerald-900 tracking-tight">
+            {zyadaItems.length} <span className="text-sm font-semibold text-emerald-700">Products</span>
+          </div>
+          <div className="flex justify-between items-center text-xs mt-2 text-emerald-800 font-medium pt-2 border-t border-emerald-200/60">
+            <span>Surplus Units: <b>+{totalZyadaUnits}</b></span>
+            <span>Excess Value: <b>Rs. {fmt(totalZyadaSurplus)}</b></span>
+          </div>
+        </div>
+
+        {/* Card 3: Matched Stock */}
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-xs">
+          <div className="flex items-center justify-between text-slate-600 mb-1">
+            <span className="text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
+              <Check className="w-4 h-4 text-emerald-600" /> ✓ Matched Stock (Accurate)
+            </span>
+            <span className="text-[10px] font-bold bg-slate-200 px-2 py-0.5 rounded-full text-slate-700">
+              0 Variance
+            </span>
+          </div>
+          <div className="text-2xl font-black text-slate-900 tracking-tight">
+            {matchedItems.length} <span className="text-sm font-semibold text-slate-500">Products</span>
+          </div>
+          <div className="flex justify-between items-center text-xs mt-2 text-slate-600 font-medium pt-2 border-t border-slate-200">
+            <span>Accuracy Rate: <b>{medicines.length ? Math.round((matchedItems.length / medicines.length) * 100) : 100}%</b></span>
+            <span>Net Discrepancy: <b>Rs. {fmt(netVarianceValuation)}</b></span>
+          </div>
+        </div>
+
+        {/* Card 4: Purchase Order Call-to-Action */}
+        <div className="bg-indigo-50/80 border border-indigo-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between text-indigo-700 mb-1">
+              <span className="text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
+                <ShoppingBag className="w-4 h-4" /> 📋 Purchase Order Ready
+              </span>
+              <span className="text-[10px] font-bold bg-indigo-200/70 px-2 py-0.5 rounded-full text-indigo-900">
+                Action
+              </span>
+            </div>
+            <p className="text-xs text-indigo-900 font-bold mt-1">
+              {kamItems.length > 0 ? `${kamItems.length} medicines need restocking` : 'All inventory levels verified'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleOpenPOModalForKam}
+            disabled={kamItems.length === 0}
+            className={`mt-2 w-full py-1.5 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${
+              kamItems.length > 0
+                ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs cursor-pointer'
+                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+            }`}
+          >
+            <span>Draft Purchase Order</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Sub Tabs: Live Worksheet vs Audit History */}
+      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+        <div className="flex gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+          <button
+            type="button"
+            onClick={() => setSubTab('worksheet')}
+            className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+              subTab === 'worksheet'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Live Audit Worksheet ({auditData.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setSubTab('history')}
+            className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+              subTab === 'history'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Audit History Ledger ({pastAudits.length})
+          </button>
+        </div>
+
+        {subTab === 'worksheet' && (
+          <button
+            type="button"
+            onClick={handleResetAll}
+            className="text-xs font-bold text-slate-500 hover:text-rose-600 underline"
+          >
+            Reset Physical Counts
+          </button>
+        )}
+      </div>
+
+      {/* VIEW 1: Live Audit Worksheet */}
+      {subTab === 'worksheet' && (
+        <div className="space-y-3">
+          {/* Worksheet Filters Bar */}
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+            {/* Variance Status Filter Pills */}
+            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+              <span className="text-[11px] font-bold text-slate-500 mr-1">Filter by Variance:</span>
+              <button
+                type="button"
+                onClick={() => setVarianceFilter('ALL')}
+                className={`px-2.5 py-1 rounded-lg font-bold transition-colors ${
+                  varianceFilter === 'ALL'
+                    ? 'bg-slate-900 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                All Items ({auditData.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setVarianceFilter('KAM')}
+                className={`px-2.5 py-1 rounded-lg font-bold transition-colors ${
+                  varianceFilter === 'KAM'
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                }`}
+              >
+                🔻 Kam (Shortage) ({kamItems.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setVarianceFilter('ZYADA')}
+                className={`px-2.5 py-1 rounded-lg font-bold transition-colors ${
+                  varianceFilter === 'ZYADA'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
+                }`}
+              >
+                🔺 Zyada (Surplus) ({zyadaItems.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setVarianceFilter('MATCHED')}
+                className={`px-2.5 py-1 rounded-lg font-bold transition-colors ${
+                  varianceFilter === 'MATCHED'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                ✓ Matched ({matchedItems.length})
+              </button>
+            </div>
+
+            {/* Search Box */}
+            <div className="relative w-full md:w-64">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search audit lines..."
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-1.5 text-xs font-medium focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
+
+          {/* Audit Worksheet Table */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[1100px] text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                  <tr>
+                    <th className="p-3 text-center w-10">PO</th>
+                    <th className="p-3 text-left">Medicine & Strength</th>
+                    <th className="p-3 text-left">Pharma Company</th>
+                    <th className="p-3 text-center">System Stock</th>
+                    <th className="p-3 text-center">Physical Count (Shelf)</th>
+                    <th className="p-3 text-center">Audit Variance (Kam / Zyada)</th>
+                    <th className="p-3 text-right">Unit Cost</th>
+                    <th className="p-3 text-right">Valuation Impact</th>
+                    <th className="p-3 text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {displayRows.map((row) => {
+                    const m = row.medicine
+                    const isKam = row.variance < 0
+                    const isZyada = row.variance > 0
+                    const isMatched = row.variance === 0
+                    const isPOSelected = selectedForPO.has(m.id)
+
+                    return (
+                      <tr
+                        key={m.id}
+                        className={`hover:bg-slate-50/70 transition-colors ${
+                          isKam ? 'bg-rose-50/30' : isZyada ? 'bg-emerald-50/20' : ''
+                        }`}
+                      >
+                        {/* Checkbox for PO */}
+                        <td className="p-3 text-center">
+                          {isKam ? (
+                            <input
+                              type="checkbox"
+                              checked={isPOSelected}
+                              onChange={() => togglePOSelect(m.id)}
+                              className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer"
+                              title="Include in Purchase Order"
+                            />
+                          ) : (
+                            <span className="text-slate-300">—</span>
+                          )}
+                        </td>
+
+                        {/* Medicine */}
+                        <td className="p-3 text-left font-bold text-slate-900">
+                          {m.name} <span className="font-normal text-slate-500">{m.strength}</span>
+                          <span className="block text-[10px] text-slate-400 font-normal">
+                            {m.generic || dosageFormValue(m) || 'Item'}
+                          </span>
+                        </td>
+
+                        {/* Company */}
+                        <td className="p-3 text-left font-medium text-slate-700">
+                          {m.manufacturer ? (
+                            <span className="bg-slate-100 px-2 py-0.5 rounded text-[11px] text-slate-700 font-semibold">
+                              {m.manufacturer}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 italic">Unassigned</span>
+                          )}
+                        </td>
+
+                        {/* System Stock */}
+                        <td className="p-3 text-center font-bold text-slate-800 font-mono text-sm">
+                          {row.systemStock}
+                        </td>
+
+                        {/* Physical Count with [-] and [+] Quick Adjusters */}
+                        <td className="p-3 text-center">
+                          <div className="inline-flex items-center gap-1 bg-slate-50 border border-slate-300 rounded-lg p-0.5">
+                            <button
+                              type="button"
+                              onClick={() => adjustCount(m.id, row.physicalStock, -1)}
+                              className="w-6 h-6 rounded bg-white hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center border border-slate-200 cursor-pointer text-xs"
+                              title="Minus 1"
+                            >
+                              -
+                            </button>
+                            <input
+                              type="number"
+                              min="0"
+                              value={row.physicalStock}
+                              onChange={(e) => handleCountChange(m.id, e.target.value)}
+                              className="w-14 text-center font-black font-mono text-slate-900 bg-white border-0 outline-none text-xs"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => adjustCount(m.id, row.physicalStock, 1)}
+                              className="w-6 h-6 rounded bg-white hover:bg-slate-200 text-slate-700 font-bold flex items-center justify-center border border-slate-200 cursor-pointer text-xs"
+                              title="Plus 1"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </td>
+
+                        {/* Variance Badge */}
+                        <td className="p-3 text-center">
+                          {isKam && (
+                            <span className="inline-flex items-center gap-1 bg-rose-100 text-rose-800 border border-rose-300 px-2.5 py-1 rounded-full font-extrabold text-[11px]">
+                              🔻 {Math.abs(row.variance)} Kam (Shortage)
+                            </span>
+                          )}
+                          {isZyada && (
+                            <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-full font-extrabold text-[11px]">
+                              🔺 +{row.variance} Zyada (Surplus)
+                            </span>
+                          )}
+                          {isMatched && (
+                            <span className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold text-[11px]">
+                              ✓ Matched (OK)
+                            </span>
+                          )}
+                        </td>
+
+                        {/* Unit Cost */}
+                        <td className="p-3 text-right font-mono text-slate-600">
+                          {fmt(row.costPrice)}
+                        </td>
+
+                        {/* Financial Impact */}
+                        <td className={`p-3 text-right font-bold font-mono ${
+                          isKam ? 'text-rose-600 font-extrabold' : isZyada ? 'text-emerald-600' : 'text-slate-400'
+                        }`}>
+                          {isKam ? `-Rs. ${fmt(Math.abs(row.financialImpact))}` : isZyada ? `+Rs. ${fmt(row.financialImpact)}` : 'Rs. 0'}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="p-3 text-center">
+                          {isKam ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedForPO(new Set([m.id]))
+                                setPoModalOpen(true)
+                              }}
+                              className="px-2.5 py-1 rounded bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-[11px] transition-colors"
+                            >
+                              + PO
+                            </button>
+                          ) : (
+                            <span className="text-slate-300 text-xs">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                  {!displayRows.length && (
+                    <tr>
+                      <td colSpan={9} className="p-8 text-center text-slate-400 font-semibold">
+                        No medicines match the selected filter criteria.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VIEW 2: Audit History Ledger */}
+      {subTab === 'history' && (
+        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-slate-100 flex justify-between items-center">
+            <h3 className="font-extrabold text-slate-900 text-sm">
+              📜 Past Stock Audits History ({pastAudits.length})
+            </h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+                <tr>
+                  <th className="p-3 text-left">Audit #</th>
+                  <th className="p-3 text-left">Date & Time</th>
+                  <th className="p-3 text-left">Title / Auditor</th>
+                  <th className="p-3 text-center">🔻 Kam Items</th>
+                  <th className="p-3 text-center">🔺 Zyada Items</th>
+                  <th className="p-3 text-right">Shortage Loss</th>
+                  <th className="p-3 text-right">Surplus Value</th>
+                  <th className="p-3 text-center">Reconciled</th>
+                  <th className="p-3 text-center">Linked PO</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {pastAudits.map((a) => (
+                  <tr key={a.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="p-3 font-mono font-bold text-slate-900">{a.auditNo}</td>
+                    <td className="p-3 text-slate-600">{new Date(a.date).toLocaleString()}</td>
+                    <td className="p-3 font-semibold text-slate-800">
+                      {a.title}
+                      <span className="block text-[10px] text-slate-400 font-normal">Auditor: {a.auditor}</span>
+                    </td>
+                    <td className="p-3 text-center font-bold text-rose-600">
+                      {a.kamCount > 0 ? `🔻 ${a.kamCount} items (-${a.totalKamUnits}u)` : '✓ 0'}
+                    </td>
+                    <td className="p-3 text-center font-bold text-emerald-600">
+                      {a.zyadaCount > 0 ? `🔺 ${a.zyadaCount} items (+${a.totalZyadaUnits}u)` : '—'}
+                    </td>
+                    <td className="p-3 text-right font-mono text-rose-600 font-bold">
+                      {a.totalKamCost > 0 ? `Rs. ${fmt(a.totalKamCost)}` : 'Rs. 0'}
+                    </td>
+                    <td className="p-3 text-right font-mono text-emerald-600 font-semibold">
+                      {a.totalZyadaCost > 0 ? `Rs. ${fmt(a.totalZyadaCost)}` : 'Rs. 0'}
+                    </td>
+                    <td className="p-3 text-center">
+                      {a.reconciled ? (
+                        <span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded text-[10px] font-bold border border-emerald-200">
+                          ✓ Reconciled
+                        </span>
+                      ) : (
+                        <span className="bg-slate-100 text-slate-500 px-2 py-0.5 rounded text-[10px] font-medium">
+                          Audit Only
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-3 text-center">
+                      {a.poNo ? (
+                        <span className="font-mono text-indigo-700 font-bold bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                          {a.poNo}
+                        </span>
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {!pastAudits.length && (
+                  <tr>
+                    <td colSpan={9} className="p-8 text-center text-slate-400 font-semibold">
+                      No stock audits recorded yet. Conduct an audit above to track physical inventory variances!
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal for Stock Reconciliation */}
+      {reconciledConfirmOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-5 w-full max-w-md shadow-2xl border border-slate-300 space-y-3 text-xs">
+            <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+              <RotateCcw className="w-5 h-5 text-amber-600" />
+              Confirm Inventory Reconciliation
+            </h3>
+            <p className="text-slate-600">
+              Are you sure you want to adjust system inventory batches to match your entered physical counts?
+            </p>
+            <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg space-y-1 text-amber-900">
+              <div>• <b>{kamItems.length} Kam items</b> will have their batches reduced by <b>{totalKamUnits} units</b>.</div>
+              <div>• <b>{zyadaItems.length} Zyada items</b> will have surplus batches added (<b>+{totalZyadaUnits} units</b>).</div>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setReconciledConfirmOpen(false)}
+                className="flex-1 py-2 rounded-lg border border-slate-300 text-slate-700 font-bold hover:bg-slate-100"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSaveAudit(true)}
+                className="flex-1 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold shadow-xs"
+              >
+                Yes, Reconcile Batches
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Generate Purchase Order Modal for Kam items */}
+      {poModalOpen && (
+        <AuditPOModal
+          kamItems={kamItems}
+          selectedIds={selectedForPO}
+          onToggleId={togglePOSelect}
+          suppliers={suppliers}
+          onClose={() => setPoModalOpen(false)}
+          onSuccess={(po) => {
+            setPoModalOpen(false)
+            setFeedbackMsg(`✓ Purchase Order ${po.poNo} created for ${po.items.length} items! You can view or print it in Purchases & PO.`)
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
+function AuditPOModal({ kamItems = [], selectedIds = new Set(), onToggleId, suppliers = [], onClose, onSuccess }) {
+  const [supplierId, setSupplierId] = useState(suppliers[0]?.id || '')
+  const [poNote, setPoNote] = useState('Stock audit shortage replenishment')
+  const [orderQtys, setOrderQtys] = useState(() => {
+    const map = {}
+    kamItems.forEach((it) => {
+      map[it.medicine.id] = Math.abs(it.variance)
+    })
+    return map
+  })
+
+  const selectedItems = kamItems.filter((it) => selectedIds.has(it.medicine.id))
+
+  const totalCost = selectedItems.reduce((acc, it) => {
+    const q = Number(orderQtys[it.medicine.id]) || Math.abs(it.variance)
+    return acc + q * it.costPrice
+  }, 0)
+
+  function handleCreate() {
+    if (selectedItems.length === 0) {
+      alert('Please select at least one medicine for the Purchase Order.')
+      return
+    }
+
+    const poItems = selectedItems.map((it) => ({
+      medicineId: it.medicine.id,
+      name: `${it.medicine.name} ${it.medicine.strength || ''}`,
+      qty: Number(orderQtys[it.medicine.id]) || Math.abs(it.variance),
+      purchasePrice: it.costPrice,
+      salePrice: it.salePrice,
+      note: `Audit shortage: ${Math.abs(it.variance)} units deficit`,
+    }))
+
+    const po = savePurchaseOrder({
+      supplierId,
+      items: poItems,
+      source: 'AUDIT',
+      note: poNote,
+    })
+
+    onSuccess(po)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl p-5 w-full max-w-2xl max-h-[92vh] overflow-y-auto custom-scroll shadow-2xl border border-slate-300 space-y-4 text-xs">
+        <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+          <div>
+            <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+              <ShoppingBag className="w-5 h-5 text-indigo-600" />
+              ⚡ Generate Purchase Order for Kam Medicines (Shortages)
+            </h3>
+            <p className="text-slate-500 text-[11px] mt-0.5">
+              Review and auto-generate supplier PO for all medicines detected as deficit in the physical audit.
+            </p>
+          </div>
+          <button onClick={onClose} className="p-1 rounded text-slate-400 hover:text-slate-600 font-bold">✕</button>
+        </div>
+
+        {/* Supplier Selector */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-indigo-50/70 rounded-xl border border-indigo-200">
+          <div>
+            <label className="block font-extrabold text-indigo-950 mb-1">
+              Select Supplier / Distributor *
+            </label>
+            <select
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
+              className="w-full bg-white border border-indigo-300 rounded px-2.5 py-1.5 font-bold text-indigo-950"
+            >
+              {suppliers.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name} ({s.company || 'Distributor'})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block font-extrabold text-indigo-950 mb-1">
+              Purchase Order Notes / Reference
+            </label>
+            <input
+              type="text"
+              value={poNote}
+              onChange={(e) => setPoNote(e.target.value)}
+              className="w-full bg-white border border-indigo-300 rounded px-2.5 py-1.5 font-medium"
+            />
+          </div>
+        </div>
+
+        {/* Selected Items Table */}
+        <div className="border border-slate-200 rounded-xl overflow-hidden">
+          <table className="w-full text-xs">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
+              <tr>
+                <th className="p-2.5 text-center w-10">Include</th>
+                <th className="p-2.5 text-left">Medicine & Strength</th>
+                <th className="p-2.5 text-center">Audit Deficit</th>
+                <th className="p-2.5 text-center">Order Qty</th>
+                <th className="p-2.5 text-right">Est. Cost</th>
+                <th className="p-2.5 text-right">Line Total</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {kamItems.map((it) => {
+                const isSelected = selectedIds.has(it.medicine.id)
+                const qty = Number(orderQtys[it.medicine.id]) || Math.abs(it.variance)
+                const lineTotal = qty * it.costPrice
+                return (
+                  <tr key={it.medicine.id} className={isSelected ? 'bg-indigo-50/30' : 'opacity-60 bg-slate-50'}>
+                    <td className="p-2.5 text-center">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => onToggleId(it.medicine.id)}
+                        className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4 cursor-pointer"
+                      />
+                    </td>
+                    <td className="p-2.5 font-bold text-slate-900">
+                      {it.medicine.name} <span className="font-normal text-slate-500">{it.medicine.strength}</span>
+                      <span className="block text-[10px] text-slate-400 font-normal">{it.medicine.manufacturer}</span>
+                    </td>
+                    <td className="p-2.5 text-center font-bold text-rose-600">
+                      -{Math.abs(it.variance)} units
+                    </td>
+                    <td className="p-2.5 text-center">
+                      <input
+                        type="number"
+                        min="1"
+                        value={qty}
+                        disabled={!isSelected}
+                        onChange={(e) => setOrderQtys({ ...orderQtys, [it.medicine.id]: Math.max(1, parseInt(e.target.value, 10) || 1) })}
+                        className="w-20 border border-slate-300 rounded px-2 py-1 text-center font-bold font-mono bg-white"
+                      />
+                    </td>
+                    <td className="p-2.5 text-right font-mono text-slate-600">
+                      {fmt(it.costPrice)}
+                    </td>
+                    <td className="p-2.5 text-right font-bold font-mono text-indigo-700">
+                      {fmt(lineTotal)}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Total Summary */}
+        <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <div>
+            <span className="text-slate-500 font-semibold block">Total Selected Items:</span>
+            <strong className="text-slate-900 text-sm">{selectedItems.length} of {kamItems.length} Products</strong>
+          </div>
+          <div className="text-right">
+            <span className="text-slate-500 font-semibold block">Estimated Purchase Value:</span>
+            <strong className="text-emerald-700 text-base font-mono">{fmt(totalCost)}</strong>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-2 pt-2">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-slate-100"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleCreate}
+            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
+          >
+            <ShoppingBag className="w-4 h-4" /> Generate Official Purchase Order ({selectedItems.length} Items)
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+

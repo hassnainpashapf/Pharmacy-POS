@@ -41,6 +41,7 @@ const empty = () => ({
   activeShiftId: null,
   activeCounterId: 'counter-1',
   stockAdjustments: [],
+  stockAudits: [],
   hardware: {
     thermalWidth: '80mm',
     autoPrintReceipt: true,
@@ -432,6 +433,7 @@ function seed(d) {
   d.snapshots = []
   d.apiKeys = []
   d.stockAdjustments = []
+  d.stockAudits = []
 
   // Staff Users across enterprise roles
   // Emails must be present from the very first save: the login screen's quick
@@ -1485,6 +1487,7 @@ export const PERMISSION_CATALOG = [
   { key: 'controlled',         label: 'Controlled Substances',   group: 'Inventory',   to: '/medicines?filter=controlled' },
   { key: 'inventory',          label: 'View Inventory',          group: 'Inventory',   to: '/inventory' },
   { key: 'batches',            label: 'Manage Batches & Expiry', group: 'Inventory',   to: '/inventory?tab=NEAR_EXPIRY' },
+  { key: 'stockAudit',         label: 'Stock Audit (Kam/Zyada)', group: 'Inventory',   to: '/inventory?tab=audit' },
   { key: 'mobileInventory',    label: 'Mobile Inventory',        group: 'Inventory',   to: '/mobile' },
   { key: 'purchases',          label: 'Purchases',               group: 'Inventory',   to: '/purchases' },
   { key: 'suppliers',          label: 'Suppliers',               group: 'Inventory',   to: '/suppliers' },
@@ -1513,7 +1516,7 @@ const ROLE_DEFAULTS = {
   ADMIN: ['*'],
   MANAGER: [
     'dashboard', 'pos', 'prescriptions', 'returns', 'deleteSales',
-    'medicines', 'controlled', 'inventory', 'batches', 'mobileInventory',
+    'medicines', 'controlled', 'inventory', 'batches', 'stockAudit', 'mobileInventory',
     'purchases', 'suppliers', 'payables', 'smartInventory',
     'customers', 'loyalty', 'accounting', 'expenses', 'branches', 'users',
     'reports', 'reportsAnalytics', 'reportsSales', 'reportsInventory',
@@ -1521,7 +1524,7 @@ const ROLE_DEFAULTS = {
   ],
   PHARMACIST: [
     'dashboard', 'pos', 'prescriptions', 'returns', 'medicines', 'controlled',
-    'inventory', 'batches', 'mobileInventory', 'customers', 'hardware',
+    'inventory', 'batches', 'stockAudit', 'mobileInventory', 'customers', 'hardware',
     'reports', 'reportsInventory',
   ],
   CASHIER: ['dashboard', 'pos', 'returns', 'mobileInventory', 'customers', 'loyalty'],
@@ -1862,20 +1865,156 @@ export function reorderSuggestions() {
   return smartInventory().filter((x) => x.reorderNeeded).sort((a, b) => a.estDays - b.estDays)
 }
 
-export function savePurchaseOrder({ supplierId, items, note }) {
-  // items: [{medicineId, suggestedQty, note}]
+export function savePurchaseOrder({ supplierId, items, note, source = 'MANUAL' }) {
+  // items: [{medicineId, name, qty, purchasePrice, salePrice, note}]
+  const count = (db.purchaseOrders?.length || 0) + 1
   const po = {
-    id: uid(), poNo: 'PO-' + String((db.purchaseOrders?.length || 0) + 1).padStart(4, '0'),
-    supplierId, items, note: note || '', date: todayStr(), status: 'DRAFT',
+    id: uid(),
+    poNo: 'PO-' + String(count).padStart(4, '0'),
+    supplierId: supplierId || db.suppliers[0]?.id || '',
+    items: items || [],
+    totalEstimatedCost: (items || []).reduce((acc, it) => acc + (Number(it.qty) || 0) * (Number(it.purchasePrice) || 0), 0),
+    note: note || '',
+    source, // 'AUDIT' | 'FORECAST' | 'MANUAL'
+    date: todayStr(),
+    createdAt: new Date().toISOString(),
+    status: 'DRAFT', // 'DRAFT' | 'SENT' | 'RECEIVED' | 'CANCELLED'
   }
   if (!db.purchaseOrders) db.purchaseOrders = []
   db.purchaseOrders.push(po)
-  log('PO_CREATE', po.poNo)
+  log('PO_CREATE', `${po.poNo} with ${po.items.length} items (Source: ${source})`)
   save()
   return po
 }
 
+export function updatePurchaseOrderStatus(id, status) {
+  if (!db.purchaseOrders) return null
+  const po = db.purchaseOrders.find((p) => p.id === id)
+  if (!po) return null
+  po.status = status
+  log('PO_STATUS', `${po.poNo} marked as ${status}`)
+  save()
+  return po
+}
+
+export function deletePurchaseOrder(id) {
+  if (!db.purchaseOrders) return
+  db.purchaseOrders = db.purchaseOrders.filter((p) => p.id !== id)
+  save()
+}
+
 export function purchaseOrders() { return [...(db.purchaseOrders || [])].reverse() }
+
+export function recordStockAudit({
+  title = 'Physical Stock Audit',
+  auditor = '',
+  items = [], // [{ medicineId, medicineName, systemStock, physicalStock, variance, costPrice, salePrice, note }]
+  reconcile = false,
+  createPurchaseOrder = false,
+  supplierId = '',
+}) {
+  const auditId = uid()
+  const auditDate = new Date().toISOString()
+  const auditorName = auditor || db.session?.name || db.session?.username || 'Pharmacist'
+
+  // Categorize variances: Kam (shortage), Zyada (excess), Matched (ok)
+  const kamItems = items.filter((it) => it.variance < 0)
+  const zyadaItems = items.filter((it) => it.variance > 0)
+  const matchedItems = items.filter((it) => it.variance === 0)
+
+  const totalKamUnits = kamItems.reduce((acc, it) => acc + Math.abs(it.variance), 0)
+  const totalZyadaUnits = zyadaItems.reduce((acc, it) => acc + it.variance, 0)
+  const totalKamCost = kamItems.reduce((acc, it) => acc + Math.abs(it.variance) * (Number(it.costPrice) || 0), 0)
+  const totalZyadaCost = zyadaItems.reduce((acc, it) => acc + it.variance * (Number(it.costPrice) || 0), 0)
+
+  // Reconcile system batches to match physical counts if requested
+  if (reconcile) {
+    for (const it of items) {
+      if (it.variance === 0) continue
+      const mBatches = (db.batches || []).filter((b) => b.medicineId === it.medicineId && b.qty > 0)
+      if (it.variance < 0) {
+        // Shortage (Kam): deduct units from active batches
+        let toDeduct = Math.abs(it.variance)
+        for (const b of mBatches) {
+          if (toDeduct <= 0) break
+          const deduct = Math.min(b.qty, toDeduct)
+          b.qty -= deduct
+          toDeduct -= deduct
+        }
+      } else if (it.variance > 0) {
+        // Surplus (Zyada): increase active batch or add surplus batch
+        if (mBatches.length > 0) {
+          mBatches[0].qty += it.variance
+        } else {
+          db.batches.push({
+            id: uid(),
+            medicineId: it.medicineId,
+            batchNo: `AUD-${todayStr().replace(/-/g, '')}`,
+            mfgDate: todayStr(),
+            expiry: new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10),
+            qty: it.variance,
+            purchasePrice: Number(it.costPrice) || 0,
+            salePrice: Number(it.salePrice) || 0,
+            status: 'ACTIVE',
+          })
+        }
+      }
+    }
+  }
+
+  // Auto-generate Purchase Order for deficit (Kam) items if requested
+  let generatedPO = null
+  if (createPurchaseOrder && kamItems.length > 0) {
+    const poItems = kamItems.map((k) => {
+      const m = medicineById(k.medicineId)
+      return {
+        medicineId: k.medicineId,
+        name: m ? `${m.name} ${m.strength || ''}` : k.medicineName || 'Medicine',
+        qty: Math.abs(k.variance),
+        purchasePrice: Number(k.costPrice) || (m?.purchasePrice || 0),
+        salePrice: Number(k.salePrice) || (m?.salePrice || 0),
+        note: `Audit Deficit (${Math.abs(k.variance)} units short)`,
+      }
+    })
+
+    generatedPO = savePurchaseOrder({
+      supplierId: supplierId || db.suppliers[0]?.id || '',
+      items: poItems,
+      source: 'AUDIT',
+      note: `Generated from Stock Audit (${title}) for ${kamItems.length} deficit items`,
+    })
+  }
+
+  const record = {
+    id: auditId,
+    auditNo: 'AUD-' + String((db.stockAudits?.length || 0) + 1).padStart(4, '0'),
+    title,
+    date: auditDate,
+    auditor: auditorName,
+    items,
+    kamCount: kamItems.length,
+    zyadaCount: zyadaItems.length,
+    matchedCount: matchedItems.length,
+    totalKamUnits,
+    totalZyadaUnits,
+    totalKamCost,
+    totalZyadaCost,
+    reconciled: reconcile,
+    poId: generatedPO?.id || null,
+    poNo: generatedPO?.poNo || null,
+  }
+
+  if (!db.stockAudits) db.stockAudits = []
+  db.stockAudits.push(record)
+
+  log('STOCK_AUDIT', `${record.auditNo}: ${kamItems.length} Kam (-${totalKamUnits}u), ${zyadaItems.length} Zyada (+${totalZyadaUnits}u)${generatedPO ? ` -> PO ${generatedPO.poNo}` : ''}`)
+  save()
+  return record
+}
+
+export function getStockAudits() {
+  return [...(db.stockAudits || [])].reverse()
+}
 
 export function profitAndLoss(days = 30) {
   const cutoff = Date.now() - days * 86400000
