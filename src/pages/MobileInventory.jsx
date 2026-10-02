@@ -3,7 +3,7 @@ import { Camera, PackagePlus, RefreshCw, Search, LogOut, Users, Package, ArrowLe
 import BarcodeScanner from '../components/BarcodeScanner'
 import MedicineLabelScanner from '../components/MedicineLabelScanner'
 import { mobileApi, exactBarcode, priceValue, stockPayload, verifyStockReceipt } from '../lib/mobileApi'
-import { appIdFromSearch, inventorySessionMode } from '../lib/tenantUi'
+import { appIdFromSearch, inventorySessionMode, DEFAULT_APP_ID, getEffectiveAppId } from '../lib/tenantUi'
 
 const primary = 'min-h-11 rounded-xl bg-[#714b67] px-4 py-3 text-sm font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2'
 const secondary = 'min-h-11 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2'
@@ -20,7 +20,7 @@ function Notice({ children, error = false }) {
 }
 
 export function PharmacyAuthForm({ setup, online, onAuthenticated, onError }) {
-  const [appId, setAppId] = useState(appIdFromSearch)
+  const [appId, setAppId] = useState(getEffectiveAppId)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
@@ -31,16 +31,17 @@ export function PharmacyAuthForm({ setup, online, onAuthenticated, onError }) {
     guard.current = true
     setBusy(true)
     try {
+      const activeAppId = (appId || getEffectiveAppId()).trim()
       const body = {
         username: username.trim(),
         email: username.trim(),
         password,
+        appId: activeAppId,
       }
-      if (appId.trim()) body.appId = appId.trim()
       const data = await mobileApi('/login', { method: 'POST', body })
       if (!data?.user?.id) throw new Error('The server did not return a valid session. Try signing in again.')
       setPassword('')
-      await onAuthenticated(data.user, data.user.appId || appId.trim())
+      await onAuthenticated(data.user, data.user.appId || activeAppId)
     } catch (error) { onError(error) } finally { setPassword(''); guard.current = false; setBusy(false) }
   }
   return <section className={`${card} mx-auto max-w-md`}>
@@ -240,7 +241,7 @@ export default function MobileInventory({ desktop = false }) {
         const session = await mobileApi('/session')
         if (!session?.user?.id) throw new Error('Shared-server session response is invalid.')
         setUser(session.user)
-        const mode = inventorySessionMode(session.user, appIdFromSearch())
+        const mode = inventorySessionMode(session.user, getEffectiveAppId())
         setPhase(mode)
         if (mode === 'ready') await refresh()
       } catch (error) { if (error.status === 401) setPhase('auth'); else throw error }
@@ -264,7 +265,7 @@ export default function MobileInventory({ desktop = false }) {
   async function authenticated(nextUser, requestedAppId) {
     setUser(nextUser)
     setSetup(false)
-    const mode = inventorySessionMode(nextUser, requestedAppId)
+    const mode = inventorySessionMode(nextUser, requestedAppId || DEFAULT_APP_ID)
     setPhase(mode)
     setError('')
     setPane(stock?.pending ? 'stock' : 'inventory')
