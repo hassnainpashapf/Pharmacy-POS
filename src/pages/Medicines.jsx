@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useLocation } from 'react-router'
 import {
   useDB,
@@ -70,9 +70,11 @@ export default function Medicines() {
   const controlledMode = urlParams.get('filter') === 'controlled'
   const requestedView = urlParams.get('view')
 
+  const requestedSearch = urlParams.get('search') || urlParams.get('q') || ''
+
   // View modes: 'companies' (Company-Wise Directory) or 'table' (Flat Product Catalogue)
   const [viewMode, setViewMode] = useState(requestedView === 'table' ? 'table' : (requestedView === 'companies' || !controlledMode ? 'companies' : 'table'))
-  const [q, setQ] = useState('')
+  const [q, setQ] = useState(requestedSearch)
   const [group, setGroup] = useState('all')
   const [companyFilter, setCompanyFilter] = useState('all')
   const [editing, setEditing] = useState(null)
@@ -80,7 +82,7 @@ export default function Medicines() {
   const [companyAddOpen, setCompanyAddOpen] = useState(false)
 
   // Company-Wise Directory States
-  const [compSearch, setCompSearch] = useState('')
+  const [compSearch, setCompSearch] = useState(requestedSearch)
   const [compFilterStatus, setCompFilterStatus] = useState('ALL') // 'ALL', 'WITH_STOCK', 'LOW_STOCK', 'ZERO_STOCK'
   const [compSort, setCompSort] = useState('NAME') // 'NAME', 'PRODUCTS', 'STOCK', 'VALUE'
   const [customCompanies, setCustomCompanies] = useState([])
@@ -89,6 +91,21 @@ export default function Medicines() {
     // Default top companies expanded
     return { 'GSK Pakistan': true, 'Abbott Laboratories': true, 'Getz Pharma': true }
   })
+
+  // Synchronize on URL query change
+  useEffect(() => {
+    if (requestedView) {
+      setViewMode(requestedView)
+    }
+    const qParam = urlParams.get('search') || urlParams.get('q')
+    if (qParam !== null && qParam !== undefined && qParam !== '') {
+      setCompSearch(qParam)
+      setQ(qParam)
+      if (qParam.toLowerCase().includes('gsk')) {
+        setExpandedCompanies((prev) => ({ ...prev, 'GSK Pakistan': true }))
+      }
+    }
+  }, [search])
 
   const distinctCompanies = useMemo(() => getDistinctCompanies(db.medicines || [], customCompanies), [db.medicines, customCompanies])
 
@@ -272,7 +289,7 @@ export default function Medicines() {
               }`}
             >
               <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-              <span>Company Directory</span>
+              <span>🏢 کمپنی ڈائریکٹری (Companies)</span>
             </button>
             <button
               type="button"
@@ -284,7 +301,7 @@ export default function Medicines() {
               }`}
             >
               <Layers className="w-3.5 h-3.5 text-emerald-600" />
-              <span>All Products Table</span>
+              <span>📋 تمام لسٹ (All Items)</span>
             </button>
           </div>
 
@@ -294,14 +311,14 @@ export default function Medicines() {
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5 shrink-0"
             title="Add medicines grouped by pharma manufacturer"
           >
-            <Building2 className="w-3.5 h-3.5" /> Add by Company
+            <Building2 className="w-3.5 h-3.5" /> + کمپنی وائز میڈیسن ایڈ کریں
           </button>
 
           <button
             onClick={() => setEditing({})}
             className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5 shrink-0"
           >
-            <Plus className="w-3.5 h-3.5" /> Add Single
+            <Plus className="w-3.5 h-3.5" /> + اکیلی دوا ایڈ کریں
           </button>
         </div>
       </div>
@@ -368,7 +385,7 @@ export default function Medicines() {
                 <input
                   value={compSearch}
                   onChange={(e) => setCompSearch(e.target.value)}
-                  placeholder="Search company, brand, medicine name, formula..."
+                  placeholder="کمپنی، برانڈ یا دوا تلاش کریں... (Search GSK, Abbott, Panadol...)"
                   className="w-full bg-slate-50 border border-slate-300 rounded-sm pl-9 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500"
                 />
                 {compSearch && (
@@ -380,6 +397,19 @@ export default function Medicines() {
                   </button>
                 )}
               </div>
+
+              {compSearch && (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-sm text-xs font-bold shrink-0">
+                  <span>فلٹر: {compSearch}</span>
+                  <button
+                    onClick={() => setCompSearch('')}
+                    className="p-0.5 hover:bg-indigo-100 rounded text-indigo-600 cursor-pointer"
+                    title="فلٹر ختم کریں (Clear filter)"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
 
               {/* Status Filter */}
               <select

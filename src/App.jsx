@@ -91,6 +91,8 @@ import {
   Monitor,
   Laptop,
   ExternalLink,
+  Layers,
+  Zap,
 } from 'lucide-react'
 
 const MobileInventory = lazy(() => import('./pages/MobileInventory'))
@@ -118,14 +120,14 @@ const navGroups = [
   {
     title: 'INVENTORY',
     items: [
-      { to: '/medicines?view=companies', label: 'Company-Wise Medicines', icon: Building2 },
+      { to: '/medicines?view=companies', label: 'Company-Wise Medicines', icon: Building2, badge: 'کمپنی وائز', badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
       { to: '/medicines', label: 'Medicines Catalogue', icon: Pill },
       { to: '/inventory', label: 'Stock Management', icon: Package },
-      { to: '/inventory?tab=COMPANIES', label: 'Company Stock Breakdown', icon: Layers },
-      { to: '/inventory?tab=audit', label: 'Stock Audit (Kam/Zyada)', icon: ClipboardCheck },
+      { to: '/inventory?tab=COMPANIES', label: 'Company Stock Breakdown', icon: Layers, badge: 'کمپنی سٹاک', badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+      { to: '/inventory?tab=audit', label: 'Stock Audit (Kam/Zyada)', icon: ClipboardCheck, badge: 'کم / زیادہ', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200' },
       { to: '/inventory?tab=NEAR_EXPIRY', label: 'Batch & Expiry', icon: Clock },
-      { to: '/purchases', label: 'Purchases & PO', icon: ShoppingBag },
-      { to: '/purchases?tab=returns', label: 'Purchase Returns', icon: RotateCcw },
+      { to: '/purchases', label: 'Purchases & GRN', icon: ShoppingBag, badge: 'GRN + ٹیکس', badgeColor: 'bg-blue-50 text-blue-700 border-blue-200' },
+      { to: '/purchases?tab=returns', label: 'Purchase Returns', icon: RotateCcw, badge: 'واپسی', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
       { to: '/suppliers', label: 'Suppliers', icon: Truck },
     ],
   },
@@ -252,6 +254,7 @@ function Shell({ children }) {
   const [shiftModalOpen, setShiftModalOpen] = useState(false)
   const [roleMenuOpen, setRoleMenuOpen] = useState(false)
   const [downloadMenuOpen, setDownloadMenuOpen] = useState(false)
+  const [quickHubOpen, setQuickHubOpen] = useState(false)
 
   // Real-time clock update
   useEffect(() => {
@@ -353,7 +356,7 @@ function Shell({ children }) {
                           <Icon className={`w-4 h-4 shrink-0 ${isNavActive ? 'text-[#00A09D]' : 'text-slate-500'}`} />
                           <span className="truncate flex-1">{n.label}</span>
                           {n.badge && (
-                            <span className="px-1.5 py-0.2 text-[9px] uppercase font-bold rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-md border shrink-0 ${n.badgeColor || 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
                               {n.badge}
                             </span>
                           )}
@@ -497,7 +500,129 @@ function Shell({ children }) {
           </div>
 
           {/* Right Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* ⚡ اہم آپشنز (Quick Hub) Dropdown Button */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setQuickHubOpen((open) => !open)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm cursor-pointer transition-all active:scale-95"
+                title="اہم اور ضروری شارٹ کٹس (Quick Actions)"
+              >
+                <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                <span className="font-bold">اہم آپشنز</span>
+                <span className="text-[10px] bg-white/20 px-1 py-0.2 rounded font-mono hidden sm:inline">Hub</span>
+                <ChevronDown className={`w-3 h-3 text-white/80 transition-transform ${quickHubOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {quickHubOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setQuickHubOpen(false)}
+                  />
+                  <div className="absolute right-0 sm:right-auto sm:left-0 top-full mt-2 z-50 w-72 sm:w-84 rounded-2xl border border-slate-200 bg-white p-2.5 shadow-2xl space-y-1.5 font-sans">
+                    <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between bg-slate-50 rounded-xl">
+                      <div>
+                        <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                          <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+                          <span>فوری رسائی (Quick Hub)</span>
+                        </div>
+                        <p className="text-[10px] text-slate-500">کسی بھی آپشن پر کلک کر کے فوراً جائیں</p>
+                      </div>
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">Direct</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-1 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => { navigate('/medicines?view=companies'); setQuickHubOpen(false) }}
+                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
+                          <Building2 className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-bold text-slate-800 group-hover:text-indigo-900 leading-tight">🏢 کمپنی وائز میڈیسن</div>
+                          <div className="text-[10px] text-slate-500 truncate">Company Medicines & Add</div>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => { navigate('/inventory?tab=COMPANIES'); setQuickHubOpen(false) }}
+                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                          <Layers className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-bold text-slate-800 group-hover:text-emerald-900 leading-tight">📦 کمپنی وائز سٹاک</div>
+                          <div className="text-[10px] text-slate-500 truncate">Company Stock Breakdown</div>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => { navigate('/inventory?tab=audit'); setQuickHubOpen(false) }}
+                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-amber-200 hover:bg-amber-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+                          <ClipboardCheck className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-bold text-slate-800 group-hover:text-amber-900 leading-tight">⚖️ سٹاک آڈٹ (کم/زیادہ)</div>
+                          <div className="text-[10px] text-slate-500 truncate">Stock Audit (Kam/Zyada)</div>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => { navigate('/purchases?tab=returns'); setQuickHubOpen(false) }}
+                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+                          <RotateCcw className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-bold text-slate-800 group-hover:text-rose-900 leading-tight">🔄 خریداری واپسی (ڈیبٹ نوٹ)</div>
+                          <div className="text-[10px] text-slate-500 truncate">Purchase Returns & Debit Note</div>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => { navigate('/purchases'); setQuickHubOpen(false) }}
+                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                          <ShoppingBag className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-bold text-slate-800 group-hover:text-blue-900 leading-tight">🧾 خریداری بل اور GRN</div>
+                          <div className="text-[10px] text-slate-500 truncate">PO, GST, Tax & Batches</div>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => { navigate('/medicines?view=companies&search=GSK'); setQuickHubOpen(false) }}
+                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-teal-200 hover:bg-teal-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center shrink-0">
+                          <Sparkles className="w-4 h-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-bold text-slate-800 group-hover:text-teal-900 leading-tight">💊 جی ایس کے دوائیاں</div>
+                          <div className="text-[10px] text-slate-500 truncate">GSK Pakistan Products</div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
             {/* Branch Selector Dropdown */}
             <div className="relative hidden sm:block">
               <button
