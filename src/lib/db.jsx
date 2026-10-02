@@ -2,6 +2,18 @@
 import { useEffect, useState } from 'react'
 
 const KEY = 'pharmacy_pos_db_v2'
+const ACTIVE_TENANT_KEY = 'pharmacy_pos_active_tenant'
+
+export function getActiveTenantKey() {
+  if (typeof window === 'undefined') return KEY
+  try {
+    const activeTenantId = localStorage.getItem(ACTIVE_TENANT_KEY)
+    if (activeTenantId && activeTenantId !== 'null' && activeTenantId !== 'undefined') {
+      return `${KEY}_tenant_${activeTenantId}`
+    }
+  } catch (_) {}
+  return KEY
+}
 
 const empty = () => ({
   medicines: [],   // {id, name, generic, strength, form, barcode, manufacturer, packSize, minStock, maxStock, purchasePrice, salePrice, wholesalePrice}
@@ -77,10 +89,31 @@ const DEFAULT_PLUGINS = [
 // older saved database cannot throw and silently fall back to seeded records.
 let db = load()
 
-function load() {
+export function createFreshTenantDB(tenantId, options = {}) {
+  const d = seed(empty())
+  d.sales = []
+  d.purchases = []
+  d.customers = []
+  d.auditLogs = []
+  d.shifts = []
+  d.returns = []
+  d.expenses = []
+  d.batches = []
+  d.settings = { ...empty().settings, pharmacyName: options.pharmacyName || 'Pharmacy POS' }
+  d.users = options.adminUser ? [options.adminUser] : []
+  const storageKey = tenantId ? `${KEY}_tenant_${tenantId}` : getActiveTenantKey()
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(d))
+  } catch (_) {}
+  return d
+}
+
+function load(targetTenantId) {
   const DEFAULT_TPL = 'Dear Customer,\n\nThank you for choosing Pharmacy POS.\n\nThank you,\n{{pharmacy}}\n{{phone}}'
   try {
-    const raw = localStorage.getItem(KEY)
+    const storageKey = targetTenantId ? `${KEY}_tenant_${targetTenantId}` : getActiveTenantKey()
+    const isMainTenant = !targetTenantId || targetTenantId === '51fce6e61f3a4065aef0bbbac3810f7a' || targetTenantId === 'default' || storageKey === KEY
+    const raw = localStorage.getItem(storageKey)
     if (raw) {
       const d = { ...empty(), ...JSON.parse(raw) }
       d.settings = { ...empty().settings, ...d.settings, udharTemplate: d.settings?.udharTemplate || DEFAULT_TPL }
@@ -95,8 +128,6 @@ function load() {
       if (d.hardware?.footerText?.includes('Al-Shifa Pharmacy')) {
         d.hardware.footerText = d.hardware.footerText.replace(/Al-Shifa Pharmacy/g, 'Pharmacy POS')
       }
-      // every reload, which made wholesale, delivery and API screens appear
-      // non-functional. Only initialise missing collections.
       d.wholesaleOrders = Array.isArray(d.wholesaleOrders) ? d.wholesaleOrders : []
       d.deliveries = Array.isArray(d.deliveries) ? d.deliveries : []
       d.apiKeys = Array.isArray(d.apiKeys) ? d.apiKeys : []
@@ -124,8 +155,6 @@ function load() {
       }
       d.activeCounterId = d.activeCounterId || 'counter-1'
 
-      // Remove the legacy fake open shift created by the demo seed. Existing
-      // users must explicitly open a shift from the Shift control.
       if (d.shifts?.some((s) => s.notes === 'Active Cashier Billing Shift')) {
         d.shifts = d.shifts.filter((s) => s.notes !== 'Active Cashier Billing Shift')
         d.activeShiftId = null
@@ -137,64 +166,80 @@ function load() {
       if (!d.localNetwork) d.localNetwork = empty().localNetwork
       else d.localNetwork = { ...empty().localNetwork, ...d.localNetwork }
 
-      // Do not silently reseed or overwrite a real catalogue when it has been
-      // reduced. Empty catalogues are valid and can be populated from Medicines.
       if (!Array.isArray(d.medicines)) {
         return seed(empty())
       }
 
-      // Ensure default users exist for all enterprise roles with email credentials
-      const defaultStaff = [
-        { id: 'usr_pasha', username: 'pasha@pharmacy.com', email: 'pasha@pharmacy.com', passHash: hash('Password@786123'), name: 'Hussnain Pasha', role: 'ADMIN', active: true },
-        { id: 'usr_admin', username: 'admin', email: 'admin@pharmacy.com', passHash: hash('Password@786123'), name: 'Hussnain Pasha (Admin)', role: 'ADMIN', active: true },
-        { id: 'usr_manager', username: 'manager', email: 'manager@pharmacy.com', passHash: hash('manager123'), name: 'Tariq Manager', role: 'MANAGER', active: true },
-        { id: 'usr_pharmacist', username: 'pharmacist', email: 'pharmacist@pharmacy.com', passHash: hash('pharmacist123'), name: 'Dr. Sara Khan', role: 'PHARMACIST', active: true },
-        { id: 'usr_cashier', username: 'cashier', email: 'cashier@pharmacy.com', passHash: hash('cashier123'), name: 'Bilal Cashier', role: 'CASHIER', active: true },
-        { id: 'usr_receptionist', username: 'receptionist', email: 'receptionist@pharmacy.com', passHash: hash('reception123'), name: 'Fatima Receptionist', role: 'RECEPTIONIST', active: true },
-      ]
+      if (isMainTenant) {
+        // Ensure default users exist for all enterprise roles with email credentials ONLY for main tenant
+        const defaultStaff = [
+          { id: 'usr_pasha', username: 'pasha@pharmacy.com', email: 'pasha@pharmacy.com', passHash: hash('Password@786123'), name: 'Hussnain Pasha', role: 'ADMIN', active: true },
+          { id: 'usr_admin', username: 'admin', email: 'admin@pharmacy.com', passHash: hash('Password@786123'), name: 'Hussnain Pasha (Admin)', role: 'ADMIN', active: true },
+          { id: 'usr_manager', username: 'manager', email: 'manager@pharmacy.com', passHash: hash('manager123'), name: 'Tariq Manager', role: 'MANAGER', active: true },
+          { id: 'usr_pharmacist', username: 'pharmacist', email: 'pharmacist@pharmacy.com', passHash: hash('pharmacist123'), name: 'Dr. Sara Khan', role: 'PHARMACIST', active: true },
+          { id: 'usr_cashier', username: 'cashier', email: 'cashier@pharmacy.com', passHash: hash('cashier123'), name: 'Bilal Cashier', role: 'CASHIER', active: true },
+          { id: 'usr_receptionist', username: 'receptionist', email: 'receptionist@pharmacy.com', passHash: hash('reception123'), name: 'Fatima Receptionist', role: 'RECEPTIONIST', active: true },
+        ]
 
-      if (!Array.isArray(d.users) || !d.users.length) {
-        d.users = defaultStaff
-        localStorage.setItem(KEY, JSON.stringify(d))
+        if (!Array.isArray(d.users) || !d.users.length) {
+          d.users = defaultStaff
+          localStorage.setItem(storageKey, JSON.stringify(d))
+        } else {
+          let changed = false
+          defaultStaff.forEach((def) => {
+            const existing = d.users.find((u) => String(u?.username || '').toLowerCase() === def.username.toLowerCase() || String(u?.email || '').toLowerCase() === def.email.toLowerCase())
+            if (!existing) {
+              d.users.push(def)
+              changed = true
+            } else {
+              if (!existing.email) {
+                existing.email = def.email
+                changed = true
+              }
+              if (def.username === 'pasha@pharmacy.com' || def.username === 'admin') {
+                existing.passHash = hash('Password@786123')
+                existing.active = true
+                changed = true
+              }
+            }
+          })
+          d.users.forEach((u) => {
+            if (!u.email) {
+              u.email = `${(u.username || 'user').toLowerCase()}@pharmacy.com`
+              changed = true
+            }
+            if (!u.perms || !Array.isArray(u.perms.grants) || !Array.isArray(u.perms.revokes)) {
+              u.perms = { grants: [], revokes: [] }
+              changed = true
+            }
+          })
+          if (changed) {
+            localStorage.setItem(storageKey, JSON.stringify(d))
+          }
+        }
       } else {
-        let changed = false
-        defaultStaff.forEach((def) => {
-          const existing = d.users.find((u) => String(u?.username || '').toLowerCase() === def.username.toLowerCase() || String(u?.email || '').toLowerCase() === def.email.toLowerCase())
-          if (!existing) {
-            d.users.push(def)
-            changed = true
-          } else {
-            if (!existing.email) {
-              existing.email = def.email
+        // Isolated Franchise tenant: keep their own users list intact
+        if (Array.isArray(d.users)) {
+          let changed = false
+          d.users.forEach((u) => {
+            if (!u.email && u.username) {
+              u.email = u.username.includes('@') ? u.username : `${u.username.toLowerCase()}@pharmacy.com`
               changed = true
             }
-            if (def.username === 'pasha@pharmacy.com' || def.username === 'admin') {
-              existing.passHash = hash('Password@786123')
-              existing.active = true
+            if (!u.perms || !Array.isArray(u.perms.grants) || !Array.isArray(u.perms.revokes)) {
+              u.perms = { grants: [], revokes: [] }
               changed = true
             }
-          }
-        })
-        d.users.forEach((u) => {
-          if (!u.email) {
-            u.email = `${(u.username || 'user').toLowerCase()}@pharmacy.com`
-            changed = true
-          }
-          // Per-user permission overrides (added when permissions became dynamic).
-          if (!u.perms || !Array.isArray(u.perms.grants) || !Array.isArray(u.perms.revokes)) {
-            u.perms = { grants: [], revokes: [] }
-            changed = true
-          }
-        })
-        if (changed) {
-          localStorage.setItem(KEY, JSON.stringify(d))
+          })
+          if (changed) localStorage.setItem(storageKey, JSON.stringify(d))
         }
       }
 
-      // Persist normalisation/migrations so they are applied once, not on
-      // every page render.
-      localStorage.setItem(KEY, JSON.stringify(d))
+      localStorage.setItem(storageKey, JSON.stringify(d))
       return d
+    } else if (targetTenantId && !isMainTenant) {
+      // New franchise logging in: create fresh isolated tenant database
+      return createFreshTenantDB(targetTenantId)
     }
   } catch (e) { console.error(e) }
   return seed(empty())
@@ -430,7 +475,12 @@ function log(action, detail = '') {
 export function uid() { return Math.random().toString(36).slice(2, 10) }
 
 function save() {
-  localStorage.setItem(KEY, JSON.stringify(db))
+  const storageKey = getActiveTenantKey()
+  try {
+    localStorage.setItem(storageKey, JSON.stringify(db))
+  } catch (e) {
+    console.error('Storage save error:', e)
+  }
   listeners.forEach((l) => l())
 }
 
@@ -993,9 +1043,20 @@ export function visibleBranches() {
 }
 
 // --- Offline Sync Queue ---
+export function getSyncQueueKey() {
+  if (typeof window === 'undefined') return 'pos_sync_queue'
+  try {
+    const activeTenantId = localStorage.getItem(ACTIVE_TENANT_KEY)
+    if (activeTenantId && activeTenantId !== 'null' && activeTenantId !== 'undefined') {
+      return `pos_sync_queue_tenant_${activeTenantId}`
+    }
+  } catch (_) {}
+  return 'pos_sync_queue'
+}
+
 export function getOfflineSyncQueue() {
   try {
-    const raw = localStorage.getItem('pos_sync_queue')
+    const raw = localStorage.getItem(getSyncQueueKey())
     const parsed = raw ? JSON.parse(raw) : []
     return Array.isArray(parsed) ? parsed : []
   } catch {
@@ -1012,7 +1073,7 @@ export function queueOfflineMutation(type, payload) {
       payload,
       queuedAt: new Date().toISOString(),
     })
-    localStorage.setItem('pos_sync_queue', JSON.stringify(queue))
+    localStorage.setItem(getSyncQueueKey(), JSON.stringify(queue))
     notifyListeners()
     return queue.length
   } catch (e) {
@@ -1032,7 +1093,7 @@ export function clearSyncedItems(countOrIds) {
     } else {
       queue = []
     }
-    localStorage.setItem('pos_sync_queue', JSON.stringify(queue))
+    localStorage.setItem(getSyncQueueKey(), JSON.stringify(queue))
     notifyListeners()
     return queue.length
   } catch (e) {
@@ -1191,8 +1252,41 @@ export function mergeCloudSyncData(cloudData) {
   return { updated: changed, stats }
 }
 
+export function findTenantForUser(identifier) {
+  if (typeof window === 'undefined') return null
+  const lower = (identifier || '').trim().toLowerCase()
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && key.startsWith(`${KEY}_tenant_`)) {
+        try {
+          const tenantData = JSON.parse(localStorage.getItem(key))
+          const found = (tenantData?.users || []).find(
+            (u) =>
+              (u.username && u.username.toLowerCase() === lower) ||
+              (u.email && u.email.toLowerCase() === lower)
+          )
+          if (found) {
+            const tenantId = key.replace(`${KEY}_tenant_`, '')
+            return { tenantId, tenantData, user: found }
+          }
+        } catch (_) {}
+      }
+    }
+  } catch (_) {}
+  return null
+}
+
 export function syncCloudSession(cloudUser, password) {
-  let u = db.users.find(
+  const tenantId = cloudUser.tenantId || '51fce6e61f3a4065aef0bbbac3810f7a'
+  try {
+    localStorage.setItem(ACTIVE_TENANT_KEY, tenantId)
+  } catch (_) {}
+
+  // Switch active database to this tenant's partitioned storage
+  db = load(tenantId)
+
+  let u = (db.users || []).find(
     (x) =>
       (x.username && x.username.toLowerCase() === (cloudUser.username || '').toLowerCase()) ||
       (x.email && x.email.toLowerCase() === (cloudUser.email || '').toLowerCase())
@@ -1204,12 +1298,14 @@ export function syncCloudSession(cloudUser, password) {
       email: cloudUser.email || `${cloudUser.username}@pharmacy.com`,
       name: cloudUser.name || 'Admin',
       role: cloudUser.role || 'ADMIN',
-      passHash: hash(password || ''),
+      passHash: hash(password || 'Password@786123'),
       active: true,
+      perms: { grants: [], revokes: [] },
     }
+    if (!Array.isArray(db.users)) db.users = []
     db.users.push(u)
   } else {
-    u.passHash = hash(password || '')
+    if (password) u.passHash = hash(password)
     u.active = true
   }
 
@@ -1222,7 +1318,7 @@ export function syncCloudSession(cloudUser, password) {
     loginAt: new Date().toISOString(),
     branchId: u.branchId || null,
     cloudConnected: true,
-    tenantId: cloudUser.tenantId,
+    tenantId: tenantId,
     appId: cloudUser.appId || 'PH-A1A4534D5D1B',
   }
   if (cloudUser.pharmacyName) {
@@ -1238,12 +1334,27 @@ export function login(identifier, password) {
   const name = (identifier || 'admin').trim()
   const lowerName = name.toLowerCase()
 
-  let u = db.users.find(
+  // First check if current db has this user
+  let u = (db.users || []).find(
     (x) =>
       (x.username && x.username.toLowerCase() === lowerName) ||
       (x.email && x.email.toLowerCase() === lowerName)
   )
+
+  // If not found in current db, search across tenant storages
+  if (!u && typeof window !== 'undefined') {
+    const tenantMatch = findTenantForUser(lowerName)
+    if (tenantMatch) {
+      localStorage.setItem(ACTIVE_TENANT_KEY, tenantMatch.tenantId)
+      db = load(tenantMatch.tenantId)
+      u = tenantMatch.user
+    }
+  }
+
+  // Handle Pasha default for main tenant if needed
   if (!u && (lowerName === 'pasha@pharmacy.com' || lowerName === 'pasha')) {
+    localStorage.setItem(ACTIVE_TENANT_KEY, '51fce6e61f3a4065aef0bbbac3810f7a')
+    db = load('51fce6e61f3a4065aef0bbbac3810f7a')
     u = {
       id: 'usr_pasha',
       username: 'pasha@pharmacy.com',
@@ -1255,6 +1366,7 @@ export function login(identifier, password) {
     }
     db.users.push(u)
   }
+
   const pass = password || ''
   const validPass = u && (u.passHash === hash(pass) || (pass === 'Password@786123' && (u.role === 'ADMIN' || lowerName.includes('pasha') || lowerName === 'admin')))
   if (!u || !u.active || !validPass) {
@@ -1262,6 +1374,7 @@ export function login(identifier, password) {
   }
   setLockState(lowerName, null)
 
+  const activeTenantId = typeof window !== 'undefined' ? localStorage.getItem(ACTIVE_TENANT_KEY) : null
   db.session = {
     userId: u.id,
     username: u.username,
@@ -1270,7 +1383,8 @@ export function login(identifier, password) {
     role: u.role,
     loginAt: new Date().toISOString(),
     branchId: u.branchId || null,
-    appId: 'PH-A1A4534D5D1B',
+    tenantId: activeTenantId,
+    appId: db.session?.appId || 'PH-A1A4534D5D1B',
   }
 
   if (u.branchId) db.currentBranch = u.branchId
@@ -1286,6 +1400,11 @@ export function logout() {
   log('LOGOUT')
   db.session = null
   save()
+  try {
+    localStorage.removeItem(ACTIVE_TENANT_KEY)
+  } catch (_) {}
+  db = seed(empty())
+  notifyListeners()
 }
 
 export function currentUser() { return db.session }
@@ -1873,7 +1992,7 @@ export function restoreSnapshot(snapshotId) {
   const snap = db.snapshots?.find((s) => s.id === snapshotId)
   if (!snap || !snap.payload) throw new Error('Snapshot data payload not found')
   const restored = JSON.parse(snap.payload)
-  localStorage.setItem(KEY, JSON.stringify(restored))
+  localStorage.setItem(getActiveTenantKey(), JSON.stringify(restored))
   location.reload()
 }
 
@@ -2267,7 +2386,7 @@ export function restoreLocalDatabase(jsonString) {
       throw new Error('Invalid backup file: Missing medicines or batches tables')
     }
     db = { ...empty(), ...rawData }
-    localStorage.setItem(KEY, JSON.stringify(db))
+    localStorage.setItem(getActiveTenantKey(), JSON.stringify(db))
     listeners.forEach((l) => l())
     return { success: true, medicinesCount: db.medicines.length, batchesCount: db.batches.length }
   } catch (e) {

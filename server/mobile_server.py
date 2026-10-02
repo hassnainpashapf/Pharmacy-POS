@@ -128,6 +128,35 @@ USER_SELECT = "SELECT u.*, t.app_id, t.name AS pharmacy_name, t.disabled AS tena
 SCHEMA_VERSION = 2
 LEGACY_TENANT_ID = "00000000000000000000000000000001"
 
+DEFAULT_STARTER_MEDICINES = [
+    ("Panadol 500mg", "Paracetamol", "8964000123011", "Tablet", "500mg", "GSK Pakistan", 20, 23400, 30000),
+    ("Panadol Extra", "Paracetamol + Caffeine", "8964000123028", "Tablet", "500mg/65mg", "GSK Pakistan", 20, 28000, 36000),
+    ("Panadol CF", "Paracetamol + Pseudoephedrine", "8964000123035", "Tablet", "Multi-Action", "GSK Pakistan", 20, 32700, 42000),
+    ("Augmentin 625mg", "Amoxicillin + Clavulanic Acid", "8964000123042", "Tablet", "625mg", "GSK Pakistan", 10, 66300, 85000),
+    ("Augmentin 1g", "Amoxicillin + Clavulanic Acid", "8964000123059", "Tablet", "1000mg", "GSK Pakistan", 14, 113100, 145000),
+    ("Brufen 400mg", "Ibuprofen", "8964000123073", "Tablet", "400mg", "Abbott Laboratories", 30, 14000, 18000),
+    ("Disprin 300mg", "Aspirin (Soluble)", "8964000123080", "Tablet", "300mg", "Reckitt Benckiser", 100, 19500, 25000),
+    ("Arinac Forte", "Ibuprofen + Pseudoephedrine", "8964000123097", "Tablet", "400mg/60mg", "Abbott Laboratories", 10, 17100, 22000),
+    ("Flagyl 400mg", "Metronidazole", "8964000123103", "Tablet", "400mg", "Sanofi Aventis", 20, 10900, 14000),
+    ("Risek 20mg", "Omeprazole", "8964000123134", "Capsule", "20mg", "Getz Pharma", 14, 28000, 36000),
+    ("Risek 40mg", "Omeprazole", "8964000123141", "Capsule", "40mg", "Getz Pharma", 14, 45200, 58000),
+    ("Flygel Suspension", "Metronidazole", "8964000123202", "Suspension", "200mg/5ml", "Sanofi Aventis", 1, 9300, 12000),
+    ("Polyfax Eye Ointment", "Polymyxin B + Bacitracin", "8964000123301", "Ointment", "6g", "GSK Pakistan", 1, 7000, 9000),
+    ("Polyfax Skin Ointment", "Polymyxin B + Bacitracin", "8964000123318", "Ointment", "20g", "GSK Pakistan", 1, 10900, 14000),
+    ("Gravinate 50mg", "Dimenhydrinate", "8964000123325", "Tablet", "50mg", "Searle Company Ltd", 100, 31200, 40000),
+    ("Surbex Z", "Zinc + Vitamin B-Complex + C + E", "8964000123332", "Tablet", "High-Potency", "Abbott Laboratories", 30, 32700, 42000),
+    ("CAC 1000 Plus", "Calcium Lactate + Carbonate + Vit C", "8964000123349", "Effervescent", "1000mg", "Novartis / Haleon", 20, 35100, 45000),
+]
+
+
+def seed_tenant_medicines(db, tenant_id):
+    for name, generic, barcode, form, strength, manufacturer, pack_size, purchase_cents, sale_cents in DEFAULT_STARTER_MEDICINES:
+        med_id = uuid.uuid4().hex
+        db.execute("""
+            INSERT OR IGNORE INTO medicines (id, name, generic, barcode, form, strength, manufacturer, pack_size, purchase_cents, sale_cents, tenant_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (med_id, name, generic, barcode, form, strength, manufacturer, pack_size, purchase_cents, sale_cents, tenant_id))
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS tenants (
  id TEXT PRIMARY KEY, app_id TEXT NOT NULL UNIQUE, name TEXT NOT NULL,
@@ -170,6 +199,21 @@ CREATE TABLE IF NOT EXISTS stock_receipts (
  FOREIGN KEY(tenant_id, user_id) REFERENCES users(tenant_id, id),
  PRIMARY KEY(tenant_id, user_id, request_id)
 );
+CREATE TABLE IF NOT EXISTS sales (
+ id TEXT PRIMARY KEY,
+ receipt_no TEXT NOT NULL,
+ total_cents INTEGER NOT NULL,
+ subtotal_cents INTEGER NOT NULL,
+ discount_cents INTEGER NOT NULL DEFAULT 0,
+ tax_cents INTEGER NOT NULL DEFAULT 0,
+ items_json TEXT NOT NULL,
+ customer_json TEXT,
+ created_at TEXT NOT NULL,
+ payment_method TEXT,
+ tenant_id TEXT NOT NULL REFERENCES tenants(id),
+ user_id TEXT REFERENCES users(id),
+ UNIQUE(tenant_id, receipt_no)
+);
 """
 
 
@@ -183,6 +227,28 @@ def initialize_database(db, db_path):
             cols = {row[1] for row in db.execute("PRAGMA table_info(users)")}
             if "email" not in cols:
                 db.execute("ALTER TABLE users ADD COLUMN email TEXT")
+            db.execute("""
+                CREATE TABLE IF NOT EXISTS sales (
+                    id TEXT PRIMARY KEY,
+                    receipt_no TEXT NOT NULL,
+                    total_cents INTEGER NOT NULL,
+                    subtotal_cents INTEGER NOT NULL,
+                    discount_cents INTEGER NOT NULL DEFAULT 0,
+                    tax_cents INTEGER NOT NULL DEFAULT 0,
+                    items_json TEXT NOT NULL,
+                    customer_json TEXT,
+                    created_at TEXT NOT NULL,
+                    payment_method TEXT,
+                    tenant_id TEXT NOT NULL REFERENCES tenants(id),
+                    user_id TEXT REFERENCES users(id),
+                    UNIQUE(tenant_id, receipt_no)
+                )
+            """)
+            # Ensure starter medicines exist for existing tenants with 0 medicines
+            for (t_id,) in db.execute("SELECT id FROM tenants").fetchall():
+                cnt = db.execute("SELECT COUNT(*) FROM medicines WHERE tenant_id=?", (t_id,)).fetchone()[0]
+                if cnt == 0:
+                    seed_tenant_medicines(db, t_id)
             db.commit()
             return
         if version not in (0, 1):
@@ -371,6 +437,11 @@ class Handler(BaseHTTPRequestHandler):
                 + ("; Secure" if secure else ""))
 
     def token_hash(self):
+        auth_header = self.headers.get("Authorization", "")
+        if auth_header.startswith("Bearer "):
+            token = auth_header[7:].strip()
+            if token:
+                return hashlib.sha256(token.encode()).hexdigest()
         cookies = SimpleCookie()
         try:
             cookies.load(self.headers.get("Cookie", ""))
@@ -487,8 +558,8 @@ class Handler(BaseHTTPRequestHandler):
             if set(data) - {"username", "password", "name"}:
                 fail("Setup accepts username, password and name")
             user = self.create_user(db, data, tenant_id=None, first=True)
-            cookie = self.new_session(db, user["id"])
-            return 201, {"user": user}, cookie
+            token, cookie = self.new_session(db, user["id"])
+            return 201, {"user": user, "token": token}, cookie
         if path == "/login" and method == "POST":
             self.server.rate_limit_login(self.client_address[0])
             name = username(data)
@@ -515,8 +586,8 @@ class Handler(BaseHTTPRequestHandler):
                 valid = False
             if not valid or user["disabled"] or (user["tenant_id"] and user["tenant_disabled"]):
                 fail("Invalid username or password", 401)
-            cookie = self.new_session(db, user["id"])
-            return 200, {"user": public_user(user)}, cookie
+            token, cookie = self.new_session(db, user["id"])
+            return 200, {"user": public_user(user), "token": token}, cookie
         if path == "/sync" and method == "POST":
             user = self.authenticate(db)
             tenant_id = user["tenant_id"]
@@ -525,9 +596,45 @@ class Handler(BaseHTTPRequestHandler):
             offline_sales = data.get("offlineSales", []) if isinstance(data, dict) else []
             if not isinstance(offline_sales, list):
                 fail("offlineSales must be a list")
+            
+            # Save offline sales into isolated tenant sales table and deduct stock
+            for sale in offline_sales:
+                if not isinstance(sale, dict):
+                    continue
+                receipt_no = str(sale.get("receiptNo") or sale.get("id") or uuid.uuid4().hex)
+                sale_id = str(sale.get("id") or uuid.uuid4().hex)
+                total_cents = int(round(float(sale.get("total") or 0) * 100))
+                subtotal_cents = int(round(float(sale.get("subtotal") or 0) * 100))
+                discount_cents = int(round(float(sale.get("discount") or 0) * 100))
+                tax_cents = int(round(float(sale.get("tax") or 0) * 100))
+                items_json = json.dumps(sale.get("items") or [])
+                customer_json = json.dumps(sale.get("customer") or {})
+                created_at = str(sale.get("date") or dt.datetime.now(dt.timezone.utc).isoformat())
+                payment_method = str(sale.get("payMethod") or sale.get("paymentMethod") or "CASH")
+                
+                try:
+                    db.execute("""
+                        INSERT OR IGNORE INTO sales 
+                        (id, receipt_no, total_cents, subtotal_cents, discount_cents, tax_cents, items_json, customer_json, created_at, payment_method, tenant_id, user_id)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (sale_id, receipt_no, total_cents, subtotal_cents, discount_cents, tax_cents, items_json, customer_json, created_at, payment_method, tenant_id, user["id"]))
+                    
+                    items = sale.get("items") or []
+                    for item in items:
+                        batch_id = item.get("batchId")
+                        qty_sold = int(item.get("qty") or 0)
+                        if batch_id and qty_sold > 0:
+                            db.execute("UPDATE batches SET qty = MAX(0, qty - ?) WHERE id=? AND tenant_id=?", (qty_sold, batch_id, tenant_id))
+                except Exception as ex:
+                    print("Error syncing sale:", ex)
+            
+            db.commit()
+
             meds = [medicine(row) for row in db.execute("SELECT * FROM medicines WHERE tenant_id=? ORDER BY name, id", (tenant_id,))]
             batches = [batch(row) for row in db.execute("SELECT * FROM batches WHERE tenant_id=? ORDER BY expiry, id", (tenant_id,))]
             users = [public_user(row) for row in db.execute(USER_SELECT + "WHERE u.tenant_id=? AND u.disabled=0 ORDER BY u.username", (tenant_id,))]
+            tenant_sales_count = db.execute("SELECT COUNT(*) FROM sales WHERE tenant_id=?", (tenant_id,)).fetchone()[0]
+            
             return 200, {
                 "ok": True,
                 "serverTime": dt.datetime.now(dt.timezone.utc).isoformat(),
@@ -535,6 +642,7 @@ class Handler(BaseHTTPRequestHandler):
                 "batches": batches,
                 "users": users,
                 "syncedSalesCount": len(offline_sales),
+                "totalSalesCount": tenant_sales_count,
                 "permissions": {
                     "canManageInventory": public_user(user)["canManageInventory"],
                     "canManageUsers": user["role"] == "ADMIN"
@@ -576,6 +684,25 @@ class Handler(BaseHTTPRequestHandler):
         if re.fullmatch(r"/users/[a-f0-9]{32}", path) and method == "PATCH":
             user = self.authenticate(db, admin=True)
             return 200, {"user": self.update_user(db, path.rsplit("/", 1)[1], data, user["tenant_id"])}, None
+        if path == "/sales" and method == "GET":
+            user = self.authenticate(db)
+            rows = db.execute("SELECT * FROM sales WHERE tenant_id=? ORDER BY created_at DESC LIMIT 200", (user["tenant_id"],)).fetchall()
+            sales_list = []
+            for r in rows:
+                sales_list.append({
+                    "id": r["id"],
+                    "receiptNo": r["receipt_no"],
+                    "total": r["total_cents"] / 100,
+                    "subtotal": r["subtotal_cents"] / 100,
+                    "discount": r["discount_cents"] / 100,
+                    "tax": r["tax_cents"] / 100,
+                    "items": json.loads(r["items_json"]) if r["items_json"] else [],
+                    "customer": json.loads(r["customer_json"]) if r["customer_json"] else {},
+                    "createdAt": r["created_at"],
+                    "paymentMethod": r["payment_method"],
+                    "userId": r["user_id"]
+                })
+            return 200, {"sales": sales_list}, None
         fail("Endpoint not found", 404)
 
     def tenant_summary(self, db, ident):
@@ -603,6 +730,7 @@ class Handler(BaseHTTPRequestHandler):
                 admin = self.create_user(db, {"username": user_email, "email": user_email, "password": data.get("password"),
                                              "name": text(data, "adminName", 120, True), "role": "ADMIN"}, ident)
                 db.execute("UPDATE tenants SET admin_user_id=? WHERE id=?", (admin["id"], ident))
+                seed_tenant_medicines(db, ident)
                 return 201, {"tenant": self.tenant_summary(db, ident), "admin": admin}, None
         match = re.fullmatch(r"/platform/tenants/([a-f0-9]{32})(/reset-admin)?", path)
         if match:
@@ -644,7 +772,7 @@ class Handler(BaseHTTPRequestHandler):
         token = secrets.token_urlsafe(32)
         db.execute("INSERT INTO sessions VALUES (?,?,?)", (
             hashlib.sha256(token.encode()).hexdigest(), user_id, int(time.time()) + SESSION_SECONDS))
-        return self.cookie(token)
+        return token, self.cookie(token)
 
     def create_user(self, db, data, tenant_id, first=False):
         if set(data) - {"username", "email", "password", "name", "role", "canManageInventory", "disabled"}:

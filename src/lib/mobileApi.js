@@ -24,6 +24,20 @@ export class MobileApiError extends Error {
   }
 }
 
+export function getCloudToken() {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('pharmacy_cloud_token') || ''
+  }
+  return ''
+}
+
+export function setCloudToken(token) {
+  if (typeof window !== 'undefined') {
+    if (token) localStorage.setItem('pharmacy_cloud_token', token)
+    else localStorage.removeItem('pharmacy_cloud_token')
+  }
+}
+
 // Cookies belong to the shared server. Never read legacy login/localStorage.
 export async function mobileApi(path, { method = 'GET', body, signal } = {}) {
   if (globalThis.navigator?.onLine === false) {
@@ -36,12 +50,17 @@ export async function mobileApi(path, { method = 'GET', body, signal } = {}) {
   const timer = setTimeout(abort, 20000)
   const writing = method !== 'GET'
   const base = getBase()
+  const token = getCloudToken()
   try {
     const response = await fetch(`${base}${path}`, {
       method,
       credentials: getCredentialsMode(),
       cache: 'no-store',
-      headers: { Accept: 'application/json', ...(writing ? { 'Content-Type': 'application/json' } : {}) },
+      headers: {
+        Accept: 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(writing ? { 'Content-Type': 'application/json' } : {}),
+      },
       ...(writing ? { body: JSON.stringify(body ?? {}) } : {}),
       signal: controller.signal,
     })
@@ -57,6 +76,12 @@ export async function mobileApi(path, { method = 'GET', body, signal } = {}) {
       throw new MobileApiError(typeof data?.error === 'string' ? data.error : 'The shared server could not complete the request.', {
         status: response.status, uncertain: writing && response.status >= 500,
       })
+    }
+    if (data?.token) {
+      setCloudToken(data.token)
+    }
+    if (path === '/logout') {
+      setCloudToken(null)
     }
     return data
   } catch (error) {

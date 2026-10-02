@@ -26,7 +26,7 @@ export default function Login() {
     setLoading(true)
     clearLock()
 
-    // 1. Automatic Cloud Login (App ID: PH-A1A4534D5D1B is passed automatically)
+    // 1. Automatic Cloud Login (resolves franchise tenant automatically from username/email)
     try {
       const cloudData = await mobileApi('/login', {
         method: 'POST',
@@ -34,7 +34,6 @@ export default function Login() {
           username: trimmed,
           email: trimmed,
           password,
-          appId: 'PH-A1A4534D5D1B',
         },
       })
       if (cloudData?.user) {

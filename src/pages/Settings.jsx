@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import AuditLogs from './AuditLogs'
 import Users from './Users'
-import { useDB, updateSettings, fmt, loyaltyTiers, LOYALTY_TIERS, can } from '../lib/db'
+import { useDB, updateSettings, fmt, loyaltyTiers, LOYALTY_TIERS, can, getActiveTenantKey } from '../lib/db'
 import { Input } from './Medicines'
 import { Save, Download, Upload, CheckCircle2, Settings as SettingsIcon, UserCog, ClipboardList } from 'lucide-react'
 
@@ -163,7 +163,7 @@ function BackupRestore() {
         const data = JSON.parse(reader.result)
         if (!data.medicines || !data.users) throw new Error('Invalid pharmacy backup file structure')
         if (!confirm('Restoring will replace all current inventory, sales, and accounts data. Proceed?')) return
-        localStorage.setItem('pharmacy_pos_db_v2', JSON.stringify(data))
+        localStorage.setItem(getActiveTenantKey(), JSON.stringify(data))
         location.reload()
       } catch (ex) {
         setMsg('✕ ' + ex.message)
