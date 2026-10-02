@@ -312,10 +312,10 @@ function Shell({ children }) {
       >
         {/* Brand Header */}
         <div className="brand-header p-4 border-b border-slate-100 flex items-center gap-3">
-          <span className="brand-mark" aria-hidden="true"><Pill size={20} /></span>
+          <img src="/icon.svg" alt="Pharmacy Logo" className="w-8 h-8 rounded-lg shrink-0 shadow-sm" />
           <div className="min-w-0">
-            <div className="brand-name">System Optix</div>
-            <div className="brand-caption">Pharmacy POS</div>
+            <div className="brand-name">{db.settings.pharmacyName || 'System Optix'}</div>
+            <div className="brand-caption">Pharmacy Station</div>
           </div>
         </div>
 
