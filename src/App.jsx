@@ -21,8 +21,12 @@ import Dashboard from './pages/Dashboard'
 import POS from './pages/POS'
 import SalesHistory from './pages/SalesHistory'
 import Medicines from './pages/Medicines'
-import Inventory, { CompanyStockPage, StockAuditPage, ExpiryManagementPage } from './pages/Inventory'
-import Purchases, { PurchaseReturnsPage } from './pages/Purchases'
+import Inventory from './pages/Inventory'
+import Purchases from './pages/Purchases'
+import CompanyStockHub from './pages/CompanyStockHub'
+import StockAuditDashboard from './pages/StockAuditDashboard'
+import ExpiryDashboard from './pages/ExpiryDashboard'
+import PurchaseReturnsDashboard from './pages/PurchaseReturnsDashboard'
 import { Suppliers, Customers } from './pages/People'
 import Reports from './pages/Reports'
 import Returns from './pages/Returns'
@@ -118,16 +122,20 @@ const navGroups = [
     ],
   },
   {
-    title: 'INVENTORY',
+    title: 'STOCKS & DISCREPANCIES',
     items: [
-      { to: '/medicines?view=companies', label: 'Company-Wise Medicines', icon: Building2, badge: 'کمپنی وائز', badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-      { to: '/medicines', label: 'Medicines Catalogue', icon: Pill },
-      { to: '/inventory', label: 'Stock Management', icon: Package },
-      { to: '/company-stock', label: 'Company Stock Breakdown', icon: Layers, badge: 'کمپنی سٹاک', badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+      { to: '/company-stock', label: 'Company Stock Hub', icon: Building2, badge: 'کمپنی وائز', badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
       { to: '/stock-audit', label: 'Stock Audit (Kam/Zyada)', icon: ClipboardCheck, badge: 'کم / زیادہ', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200' },
-      { to: '/expiry-management', label: 'Batch & Expiry Management', icon: Clock, badge: 'ایکسپائری', badgeColor: 'bg-orange-50 text-orange-700 border-orange-200' },
-      { to: '/purchases', label: 'Purchases & GRN', icon: ShoppingBag, badge: 'GRN + ٹیکس', badgeColor: 'bg-blue-50 text-blue-700 border-blue-200' },
-      { to: '/purchase-returns', label: 'Purchase Returns', icon: RotateCcw, badge: 'واپسی', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
+      { to: '/expiry-management', label: 'Batch & Expiry Action', icon: Clock, badge: 'ایکسپائری', badgeColor: 'bg-orange-50 text-orange-700 border-orange-200' },
+      { to: '/purchase-returns', label: 'Purchase Returns (Debit)', icon: RotateCcw, badge: 'خریداری واپسی', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
+    ],
+  },
+  {
+    title: 'INVENTORY & PROCUREMENT',
+    items: [
+      { to: '/inventory', label: 'Stock Master Inventory', icon: Package },
+      { to: '/medicines', label: 'Medicines Catalogue', icon: Pill },
+      { to: '/purchases', label: 'Purchases & Invoices', icon: ShoppingBag, badge: 'GRN + ٹیکس', badgeColor: 'bg-blue-50 text-blue-700 border-blue-200' },
       { to: '/suppliers', label: 'Suppliers', icon: Truck },
     ],
   },
@@ -501,127 +509,7 @@ function Shell({ children }) {
 
           {/* Right Controls */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* ⚡ اہم آپشنز (Quick Hub) Dropdown Button */}
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setQuickHubOpen((open) => !open)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm cursor-pointer transition-all active:scale-95"
-                title="اہم اور ضروری شارٹ کٹس (Quick Actions)"
-              >
-                <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
-                <span className="font-bold">اہم آپشنز</span>
-                <span className="text-[10px] bg-white/20 px-1 py-0.2 rounded font-mono hidden sm:inline">Hub</span>
-                <ChevronDown className={`w-3 h-3 text-white/80 transition-transform ${quickHubOpen ? 'rotate-180' : ''}`} />
-              </button>
 
-              {quickHubOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-40"
-                    onClick={() => setQuickHubOpen(false)}
-                  />
-                  <div className="absolute right-0 sm:right-auto sm:left-0 top-full mt-2 z-50 w-72 sm:w-84 rounded-2xl border border-slate-200 bg-white p-2.5 shadow-2xl space-y-1.5 font-sans">
-                    <div className="px-3 py-2 border-b border-slate-100 flex items-center justify-between bg-slate-50 rounded-xl">
-                      <div>
-                        <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-                          <Zap className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-                          <span>فوری رسائی (Quick Hub)</span>
-                        </div>
-                        <p className="text-[10px] text-slate-500">کسی بھی آپشن پر کلک کر کے فوراً جائیں</p>
-                      </div>
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">Direct</span>
-                    </div>
-
-                    <div className="grid grid-cols-1 gap-1 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => { navigate('/medicines?view=companies'); setQuickHubOpen(false) }}
-                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center shrink-0">
-                          <Building2 className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-bold text-slate-800 group-hover:text-indigo-900 leading-tight">🏢 کمپنی وائز میڈیسن</div>
-                          <div className="text-[10px] text-slate-500 truncate">Company Medicines & Add</div>
-                        </div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => { navigate('/company-stock'); setQuickHubOpen(false) }}
-                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                          <Layers className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-bold text-slate-800 group-hover:text-emerald-900 leading-tight">📦 کمپنی وائز سٹاک</div>
-                          <div className="text-[10px] text-slate-500 truncate">Company Stock Breakdown</div>
-                        </div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => { navigate('/stock-audit'); setQuickHubOpen(false) }}
-                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-amber-200 hover:bg-amber-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                          <ClipboardCheck className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-bold text-slate-800 group-hover:text-amber-900 leading-tight">⚖️ سٹاک آڈٹ (کم/زیادہ)</div>
-                          <div className="text-[10px] text-slate-500 truncate">Stock Audit (Kam/Zyada)</div>
-                        </div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => { navigate('/purchase-returns'); setQuickHubOpen(false) }}
-                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-rose-200 hover:bg-rose-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-                          <RotateCcw className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-bold text-slate-800 group-hover:text-rose-900 leading-tight">🔄 خریداری واپسی (ڈیبٹ نوٹ)</div>
-                          <div className="text-[10px] text-slate-500 truncate">Purchase Returns & Debit Note</div>
-                        </div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => { navigate('/purchases'); setQuickHubOpen(false) }}
-                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
-                          <ShoppingBag className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-bold text-slate-800 group-hover:text-blue-900 leading-tight">🧾 خریداری بل اور GRN</div>
-                          <div className="text-[10px] text-slate-500 truncate">PO, GST, Tax & Batches</div>
-                        </div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => { navigate('/medicines?view=companies&search=GSK'); setQuickHubOpen(false) }}
-                        className="w-full text-left p-2 rounded-xl border border-slate-100 hover:border-teal-200 hover:bg-teal-50/70 transition-colors flex items-center gap-2.5 cursor-pointer group"
-                      >
-                        <div className="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center shrink-0">
-                          <Sparkles className="w-4 h-4" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-xs font-bold text-slate-800 group-hover:text-teal-900 leading-tight">💊 جی ایس کے دوائیاں</div>
-                          <div className="text-[10px] text-slate-500 truncate">GSK Pakistan Products</div>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
 
             {/* Branch Selector Dropdown */}
             <div className="relative hidden sm:block">
@@ -861,85 +749,6 @@ function Shell({ children }) {
           </div>
         </header>
 
-        {/* Universal Top Quick Links Strip (اہم آپشنز کی فوری رسائی پٹی) */}
-        {loc.pathname !== '/pos' && (
-          <div className="bg-slate-900 border-b border-slate-800 text-white px-4 py-1.5 flex items-center justify-between gap-3 text-xs shrink-0 shadow-sm overflow-x-auto custom-scroll z-10">
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="flex items-center gap-1 font-bold text-amber-300 text-[11px] uppercase tracking-wider">
-                <Zap className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
-                <span>فوری شارٹ کٹس:</span>
-              </span>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 overflow-x-auto text-[11px]">
-              <Link
-                to="/company-stock"
-                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
-                  loc.pathname === '/company-stock'
-                    ? 'bg-emerald-600 text-white shadow-xs'
-                    : 'bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30'
-                }`}
-              >
-                <span>📦 کمپنی وائز سٹاک</span>
-              </Link>
-
-              <Link
-                to="/stock-audit"
-                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
-                  loc.pathname === '/stock-audit'
-                    ? 'bg-amber-600 text-white shadow-xs'
-                    : 'bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30'
-                }`}
-              >
-                <span>⚖️ سٹاک آڈٹ (کم/زیادہ)</span>
-              </Link>
-
-              <Link
-                to="/expiry-management"
-                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
-                  loc.pathname === '/expiry-management'
-                    ? 'bg-orange-600 text-white shadow-xs'
-                    : 'bg-slate-800 hover:bg-slate-700 text-orange-300 border border-orange-500/30'
-                }`}
-              >
-                <span>⏳ ایکسپائری مینجمنٹ</span>
-              </Link>
-
-              <Link
-                to="/medicines?view=companies"
-                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
-                  loc.pathname === '/medicines' && loc.search.includes('view=companies')
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-indigo-500/30'
-                }`}
-              >
-                <span>🏢 کمپنی وائز میڈیسن</span>
-              </Link>
-
-              <Link
-                to="/purchase-returns"
-                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
-                  loc.pathname === '/purchase-returns'
-                    ? 'bg-rose-600 text-white shadow-xs'
-                    : 'bg-slate-800 hover:bg-slate-700 text-rose-300 border border-rose-500/30'
-                }`}
-              >
-                <span>🔄 خریداری واپسی (ڈیبٹ)</span>
-              </Link>
-
-              <Link
-                to="/purchases"
-                className={`px-2.5 py-1 rounded-lg font-bold transition-colors flex items-center gap-1.5 ${
-                  loc.pathname === '/purchases'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'bg-slate-800 hover:bg-slate-700 text-blue-300 border border-blue-500/30'
-                }`}
-              >
-                <span>🛍️ خریداری و GRN</span>
-              </Link>
-            </div>
-          </div>
-        )}
-
         {/* Content Area */}
         <main
           className={`desktop-content flex-1 min-h-0 w-full h-full ${
@@ -978,16 +787,16 @@ function LegacyApp() {
         <Route path="/sales-history" element={<SalesHistory />} />
         <Route path="/medicines" element={<Medicines />} />
         <Route path="/inventory" element={<Inventory />} />
-        <Route path="/company-stock" element={<CompanyStockPage />} />
-        <Route path="/inventory/companies" element={<CompanyStockPage />} />
-        <Route path="/stock-audit" element={<StockAuditPage />} />
-        <Route path="/inventory/audit" element={<StockAuditPage />} />
-        <Route path="/expiry-management" element={<ExpiryManagementPage />} />
-        <Route path="/inventory/expiry" element={<ExpiryManagementPage />} />
+        <Route path="/company-stock" element={<CompanyStockHub />} />
+        <Route path="/inventory/companies" element={<CompanyStockHub />} />
+        <Route path="/stock-audit" element={<StockAuditDashboard />} />
+        <Route path="/inventory/audit" element={<StockAuditDashboard />} />
+        <Route path="/expiry-management" element={<ExpiryDashboard />} />
+        <Route path="/inventory/expiry" element={<ExpiryDashboard />} />
         <Route path="/smart" element={<SmartInventory />} />
         <Route path="/accounting" element={<Accounting />} />
         <Route path="/purchases" element={<Purchases />} />
-        <Route path="/purchase-returns" element={<PurchaseReturnsPage />} />
+        <Route path="/purchase-returns" element={<PurchaseReturnsDashboard />} />
         <Route path="/suppliers" element={<Suppliers />} />
         <Route path="/customers" element={<Customers />} />
         <Route path="/returns" element={<Returns />} />

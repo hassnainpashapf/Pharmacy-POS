@@ -1,0 +1,682 @@
+import { useState, useMemo } from 'react'
+import { useNavigate } from 'react-router'
+import {
+  useDB,
+  fmt,
+  medicineById,
+  supplierById,
+  savePurchaseReturn,
+  adjustStockStatus,
+  todayStr,
+} from '../lib/db'
+import {
+  Clock,
+  AlertTriangle,
+  RotateCcw,
+  Trash2,
+  Tag,
+  Search,
+  Printer,
+  Calendar,
+  Building2,
+  CheckCircle2,
+  Package,
+  Layers,
+  ArrowRight,
+  Filter,
+  DollarSign,
+  TrendingDown,
+} from 'lucide-react'
+
+export default function ExpiryDashboard() {
+  const db = useDB()
+  const navigate = useNavigate()
+  const [filterTab, setFilterTab] = useState('CRITICAL') // 'ALL' | 'EXPIRED' | 'CRITICAL' | 'NEAR' | 'SAFE'
+  const [search, setSearch] = useState('')
+  const [companyFilter, setCompanyFilter] = useState('ALL')
+  const [returnModalBatch, setReturnModalBatch] = useState(null)
+  const [returnQty, setReturnQty] = useState(1)
+  const [returnSupplierId, setReturnSupplierId] = useState('')
+  const [returnNote, setReturnNote] = useState('')
+  const [actionSuccess, setActionSuccess] = useState('')
+
+  const medicines = db.medicines || []
+  const batches = db.batches || []
+  const suppliers = db.suppliers || []
+  const now = new Date()
+
+  // Process all batches with days left and status
+  const analyzedBatches = useMemo(() => {
+    return batches.map((b) => {
+      const med = medicineById(b.medicineId)
+      const qty = Number(b.qty) || 0
+      const cost = Number(b.purchasePrice) || Number(med?.purchasePrice) || 0
+      const sale = Number(b.salePrice) || Number(med?.salePrice) || 0
+      const company = (med?.manufacturer || med?.company || 'Unassigned').trim()
+
+      let daysLeft = 999
+      let isExpired = false
+      let isCritical = false // 0 - 30 days
+      let isNear = false // 31 - 90 days
+      let isSafe = false // > 90 days
+
+      if (b.expiry) {
+        const exp = new Date(b.expiry)
+        daysLeft = Math.round((exp - now) / (1000 * 60 * 60 * 24))
+        if (daysLeft < 0) {
+          isExpired = true
+        } else if (daysLeft <= 30) {
+          isCritical = true
+        } else if (daysLeft <= 90) {
+          isNear = true
+        } else {
+          isSafe = true
+        }
+      }
+
+      return {
+        ...b,
+        medicineName: med?.name || 'Unknown Medicine',
+        generic: med?.generic || '',
+        company,
+        qty,
+        cost,
+        sale,
+        totalCost: qty * cost,
+        totalSale: qty * sale,
+        daysLeft,
+        isExpired,
+        isCritical,
+        isNear,
+        isSafe,
+      }
+    })
+  }, [batches, medicines])
+
+  // Top summary KPIs
+  const stats = useMemo(() => {
+    let expiredBatches = 0
+    let expiredCost = 0
+    let expiredUnits = 0
+
+    let criticalBatches = 0
+    let criticalCost = 0
+    let criticalUnits = 0
+
+    let nearBatches = 0
+    let nearCost = 0
+    let nearUnits = 0
+
+    let safeBatches = 0
+    let safeCost = 0
+    let safeUnits = 0
+
+    for (const b of analyzedBatches) {
+      if (b.qty <= 0) continue
+      if (b.isExpired) {
+        expiredBatches++
+        expiredCost += b.totalCost
+        expiredUnits += b.qty
+      } else if (b.isCritical) {
+        criticalBatches++
+        criticalCost += b.totalCost
+        criticalUnits += b.qty
+      } else if (b.isNear) {
+        nearBatches++
+        nearCost += b.totalCost
+        nearUnits += b.qty
+      } else {
+        safeBatches++
+        safeCost += b.totalCost
+        safeUnits += b.qty
+      }
+    }
+
+    return {
+      expiredBatches,
+      expiredCost,
+      expiredUnits,
+      criticalBatches,
+      criticalCost,
+      criticalUnits,
+      nearBatches,
+      nearCost,
+      nearUnits,
+      safeBatches,
+      safeCost,
+      safeUnits,
+      totalRiskCost: expiredCost + criticalCost,
+    }
+  }, [analyzedBatches])
+
+  // Distinct companies in batches
+  const distinctCompanies = useMemo(() => {
+    const s = new Set()
+    for (const b of analyzedBatches) {
+      if (b.company) s.add(b.company)
+    }
+    return Array.from(s).sort()
+  }, [analyzedBatches])
+
+  // Filtered batch records
+  const filteredBatches = useMemo(() => {
+    return analyzedBatches.filter((b) => {
+      // Must have qty > 0 to be actionable
+      if (b.qty <= 0) return false
+
+      // Tab filter
+      if (filterTab === 'EXPIRED' && !b.isExpired) return false
+      if (filterTab === 'CRITICAL' && !b.isCritical) return false
+      if (filterTab === 'NEAR' && !b.isNear) return false
+      if (filterTab === 'SAFE' && !b.isSafe) return false
+
+      // Company filter
+      if (companyFilter !== 'ALL' && b.company !== companyFilter) return false
+
+      // Search filter
+      if (search.trim()) {
+        const q = search.toLowerCase()
+        return (
+          b.medicineName.toLowerCase().includes(q) ||
+          b.batchNo.toLowerCase().includes(q) ||
+          b.company.toLowerCase().includes(q)
+        );
+      }
+
+      return true
+    }).sort((a, b) => a.daysLeft - b.daysLeft)
+  }, [analyzedBatches, filterTab, companyFilter, search])
+
+  // Handle Return to Supplier submit
+  const handleReturnSubmit = (e) => {
+    e.preventDefault()
+    if (!returnModalBatch) return
+
+    try {
+      const supId = returnSupplierId || (suppliers[0]?.id || '')
+      if (!supId) {
+        alert('براہ کرم سپلائر منتخب کریں۔')
+        return
+      }
+
+      savePurchaseReturn({
+        supplierId: supId,
+        items: [
+          {
+            medicineId: returnModalBatch.medicineId,
+            medicineName: returnModalBatch.medicineName,
+            batchId: returnModalBatch.id,
+            batchNo: returnModalBatch.batchNo,
+            expiry: returnModalBatch.expiry,
+            qty: Number(returnQty),
+            purchasePrice: returnModalBatch.cost,
+            reason: returnModalBatch.isExpired ? 'Expired Stock' : 'Near Expiry Return',
+            note: returnNote || 'Action from Expiry Dashboard',
+          },
+        ],
+        settlementType: 'CREDIT_NOTE',
+        note: returnNote,
+      })
+
+      setActionSuccess(`بیچ ${returnModalBatch.batchNo} کے ${returnQty} یونٹس سپلائر کو کامیابی سے واپسی درج ہو گئے۔ ڈیبٹ نوٹ جاری کر دیا گیا ہے۔`)
+      setTimeout(() => setActionSuccess(''), 5000)
+      setReturnModalBatch(null)
+    } catch (err) {
+      alert('Return error: ' + err.message)
+    }
+  }
+
+  // Handle Dispose / Damaged write-off
+  const handleDispose = (batch) => {
+    if (confirm(`کیا آپ واقعی ${batch.medicineName} (بیچ ${batch.batchNo}) کے تمام ${batch.qty} یونٹس ضائع شدہ قرار دینا چاہتے ہیں؟`)) {
+      try {
+        adjustStockStatus(batch.id, 'DAMAGED', batch.qty, 'Expired and Disposed / Waste')
+        setActionSuccess(`بیچ ${batch.batchNo} کو ضائع شدہ (Damaged/Disposed) کر دیا گیا ہے۔`)
+        setTimeout(() => setActionSuccess(''), 4000)
+      } catch (err) {
+        alert('Adjustment error: ' + err.message)
+      }
+    }
+  }
+
+  return (
+    <div className="space-y-6 w-full pb-16 font-sans text-slate-800">
+      {/* 1. Header Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div className="flex items-center gap-2.5">
+          <div className="w-10 h-10 rounded-xl bg-orange-600 text-white flex items-center justify-center font-black shadow-md shadow-orange-600/20">
+            <Clock className="w-5 h-5" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-slate-900">
+              ایکسپائری اور بیچ مینجمنٹ ایکشن سینٹر
+            </h1>
+            <p className="text-xs text-slate-500 font-medium">
+              FEFO Batch & Expiry Action Center (Returns, Clearance & Write-offs)
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
+          >
+            <Printer className="w-4 h-4 text-slate-500" />
+            <span>پرنٹ شیٹ (Print)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/purchase-returns')}
+            className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 flex items-center gap-1.5 transition-all"
+          >
+            <RotateCcw className="w-4 h-4" />
+            <span>خریداری واپسی ڈیش بورڈ کھولیں</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Success Notification */}
+      {actionSuccess && (
+        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-emerald-800 text-xs font-bold animate-in fade-in">
+          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+          <span>{actionSuccess}</span>
+        </div>
+      )}
+
+      {/* 2. Top Summary KPI Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
+        {/* Expired Batches (Red) */}
+        <div
+          onClick={() => setFilterTab('EXPIRED')}
+          className={`border rounded-2xl p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all ${
+            filterTab === 'EXPIRED'
+              ? 'bg-rose-600 text-white border-rose-600 ring-2 ring-rose-300'
+              : 'bg-white border-slate-200 hover:border-rose-300'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold">زائد المیعاد (Expired)</span>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
+              filterTab === 'EXPIRED' ? 'bg-white/20 text-white' : 'bg-rose-50 text-rose-600'
+            }`}>
+              ⚠️
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className={`text-2xl font-black ${filterTab === 'EXPIRED' ? 'text-white' : 'text-rose-600'}`}>
+              {stats.expiredBatches} بیجز
+            </div>
+            <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'EXPIRED' ? 'text-rose-100' : 'text-slate-400'}`}>
+              نقصان مالیت: {fmt(stats.expiredCost)}
+            </div>
+          </div>
+        </div>
+
+        {/* Critical (0-30 Days) */}
+        <div
+          onClick={() => setFilterTab('CRITICAL')}
+          className={`border rounded-2xl p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all ${
+            filterTab === 'CRITICAL'
+              ? 'bg-orange-600 text-white border-orange-600 ring-2 ring-orange-300'
+              : 'bg-white border-slate-200 hover:border-orange-300'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold">فوری ایکشن (0–30 دن)</span>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
+              filterTab === 'CRITICAL' ? 'bg-white/20 text-white' : 'bg-orange-50 text-orange-600'
+            }`}>
+              ⏳
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className={`text-2xl font-black ${filterTab === 'CRITICAL' ? 'text-white' : 'text-orange-600'}`}>
+              {stats.criticalBatches} بیجز
+            </div>
+            <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'CRITICAL' ? 'text-orange-100' : 'text-slate-400'}`}>
+              مالیت: {fmt(stats.criticalCost)}
+            </div>
+          </div>
+        </div>
+
+        {/* Near Expiry (31-90 Days) */}
+        <div
+          onClick={() => setFilterTab('NEAR')}
+          className={`border rounded-2xl p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all ${
+            filterTab === 'NEAR'
+              ? 'bg-amber-500 text-white border-amber-500 ring-2 ring-amber-300'
+              : 'bg-white border-slate-200 hover:border-amber-300'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold">قریبی میعاد (31–90 دن)</span>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
+              filterTab === 'NEAR' ? 'bg-white/20 text-white' : 'bg-amber-50 text-amber-600'
+            }`}>
+              <Clock className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className={`text-2xl font-black ${filterTab === 'NEAR' ? 'text-white' : 'text-amber-700'}`}>
+              {stats.nearBatches} بیجز
+            </div>
+            <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'NEAR' ? 'text-amber-100' : 'text-slate-400'}`}>
+              مالیت: {fmt(stats.nearCost)}
+            </div>
+          </div>
+        </div>
+
+        {/* Safe Stock (>90 Days) */}
+        <div
+          onClick={() => setFilterTab('SAFE')}
+          className={`border rounded-2xl p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all ${
+            filterTab === 'SAFE'
+              ? 'bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-300'
+              : 'bg-white border-slate-200 hover:border-emerald-300'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold">محفوظ سٹاک (&gt;90 دن)</span>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
+              filterTab === 'SAFE' ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-600'
+            }`}>
+              ✓
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className={`text-2xl font-black ${filterTab === 'SAFE' ? 'text-white' : 'text-emerald-700'}`}>
+              {stats.safeBatches} بیجز
+            </div>
+            <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'SAFE' ? 'text-emerald-100' : 'text-slate-400'}`}>
+              مالیت: {fmt(stats.safeCost)}
+            </div>
+          </div>
+        </div>
+
+        {/* Total Financial Risk */}
+        <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white border border-slate-700 rounded-2xl p-4 shadow-sm flex flex-col justify-between col-span-2 sm:col-span-1">
+          <div className="flex items-center justify-between text-slate-300">
+            <span className="text-xs font-bold">کل مالیاتی رسک</span>
+            <div className="w-8 h-8 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold">
+              💰
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-xl font-black text-amber-300">
+              {fmt(stats.totalRiskCost)}
+            </div>
+            <div className="text-[10px] text-slate-300 mt-0.5">
+              Expired + 30 Days Risk
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Filters & Batch Table */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/70 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          {/* Status Tabs */}
+          <div className="flex flex-wrap items-center gap-1.5 bg-slate-200/60 p-1 rounded-xl">
+            {[
+              ['CRITICAL', `فوری ایکشن (${stats.criticalBatches})`],
+              ['EXPIRED', `زائد المیعاد (${stats.expiredBatches})`],
+              ['NEAR', `31–90 دن (${stats.nearBatches})`],
+              ['SAFE', `محفوظ سٹاک (${stats.safeBatches})`],
+              ['ALL', `تمام بیجز (${analyzedBatches.filter(b => b.qty > 0).length})`],
+            ].map(([tabKey, tabLabel]) => (
+              <button
+                key={tabKey}
+                type="button"
+                onClick={() => setFilterTab(tabKey)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                  filterTab === tabKey
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {tabLabel}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Company Dropdown */}
+            <div className="flex items-center gap-1.5 bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs">
+              <Building2 className="w-3.5 h-3.5 text-slate-400" />
+              <select
+                value={companyFilter}
+                onChange={(e) => setCompanyFilter(e.target.value)}
+                className="bg-transparent font-bold text-slate-700 outline-none cursor-pointer max-w-[150px] truncate"
+              >
+                <option value="ALL">🏢 تمام کمپنیاں ({distinctCompanies.length})</option>
+                {distinctCompanies.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Search */}
+            <div className="relative flex-1 sm:w-60">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="دوا یا بیچ نمبر تلاش کریں..."
+                className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Batches Table */}
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold">
+                <th className="py-3 px-4">دوا اور کمپنی (Medicine & Company)</th>
+                <th className="py-3 px-3">بیچ نمبر (Batch No)</th>
+                <th className="py-3 px-3">ایکسپائری تاریخ</th>
+                <th className="py-3 px-3 text-center">باقی دن (Remaining)</th>
+                <th className="py-3 px-3 text-right">سٹاک (Units)</th>
+                <th className="py-3 px-3 text-right">خریداری قیمت</th>
+                <th className="py-3 px-3 text-right">کل مالیت (PKR)</th>
+                <th className="py-3 px-4 text-center">فوری ایکشن (Action)</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {!filteredBatches.length && (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center text-slate-400">
+                    اس فلٹر میں کوئی بیچ موجود نہیں ہے۔
+                  </td>
+                </tr>
+              )}
+              {filteredBatches.map((b) => (
+                <tr key={b.id} className="hover:bg-slate-50/70 transition-colors">
+                  <td className="py-3 px-4">
+                    <div className="font-bold text-slate-900 text-sm leading-tight">{b.medicineName}</div>
+                    <div className="text-[11px] text-indigo-700 font-semibold mt-0.5">{b.company}</div>
+                  </td>
+
+                  <td className="py-3 px-3 font-mono font-bold text-slate-700">
+                    {b.batchNo}
+                  </td>
+
+                  <td className="py-3 px-3 font-mono text-slate-600 font-medium">
+                    {b.expiry || 'N/A'}
+                  </td>
+
+                  {/* Days Left Badge */}
+                  <td className="py-3 px-3 text-center">
+                    <span
+                      className={`inline-block px-2.5 py-1 rounded-full text-[11px] font-black ${
+                        b.isExpired
+                          ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                          : b.isCritical
+                          ? 'bg-orange-100 text-orange-800 border border-orange-300'
+                          : b.isNear
+                          ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                          : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                      }`}
+                    >
+                      {b.isExpired ? '⚠️ Expired' : `${b.daysLeft} دن باقی`}
+                    </span>
+                  </td>
+
+                  <td className="py-3 px-3 text-right font-black text-sm text-slate-900">
+                    {b.qty}
+                  </td>
+
+                  <td className="py-3 px-3 text-right font-mono font-bold text-slate-700">
+                    {fmt(b.cost)}
+                  </td>
+
+                  <td className="py-3 px-3 text-right font-mono font-black text-slate-900">
+                    {fmt(b.totalCost)}
+                  </td>
+
+                  {/* Action Buttons */}
+                  <td className="py-3 px-4 text-center">
+                    <div className="flex items-center justify-center gap-1.5">
+                      {/* Return to Supplier Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReturnModalBatch(b)
+                          setReturnQty(b.qty)
+                          setReturnSupplierId(b.supplierId || suppliers[0]?.id || '')
+                          setReturnNote(`Expiry Return (${b.daysLeft} days remaining)`)
+                        }}
+                        className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-bold flex items-center gap-1 transition-all"
+                        title="سپلائر کو واپسی کا ڈیبٹ نوٹ جاری کریں"
+                      >
+                        <RotateCcw className="w-3 h-3" />
+                        <span>واپسی</span>
+                      </button>
+
+                      {/* Dispose / Damaged write-off */}
+                      <button
+                        type="button"
+                        onClick={() => handleDispose(b)}
+                        className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
+                        title="ضائع شدہ / خراب درج کریں"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Return to Supplier Modal */}
+      {returnModalBatch && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-5 border-b border-slate-100 bg-rose-50/50 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+                  <RotateCcw className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">سپلائر کو واپسی کا اندراج</h3>
+                  <p className="text-[11px] text-slate-500">Create Supplier Return & Debit Note</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setReturnModalBatch(null)}
+                className="w-8 h-8 rounded-full hover:bg-slate-200 text-slate-400 hover:text-slate-700 flex items-center justify-center text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleReturnSubmit} className="p-5 space-y-4 text-xs font-sans">
+              <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 space-y-1">
+                <div className="font-bold text-slate-900 text-sm">{returnModalBatch.medicineName}</div>
+                <div className="text-slate-500">
+                  کمپنی: <strong>{returnModalBatch.company}</strong> · بیچ: <strong className="font-mono">{returnModalBatch.batchNo}</strong>
+                </div>
+                <div className="text-slate-500">
+                  موجود سٹاک: <strong>{returnModalBatch.qty} Units</strong> · خریداری ریٹ: <strong className="font-mono">{fmt(returnModalBatch.cost)}</strong>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">ڈسٹری بیوٹر / سپلائر منتخب کریں</label>
+                <select
+                  value={returnSupplierId}
+                  onChange={(e) => setReturnSupplierId(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white font-bold text-slate-800"
+                >
+                  {suppliers.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name} ({s.company || 'Distributor'})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">واپسی تعداد (Return Qty)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max={returnModalBatch.qty}
+                    required
+                    value={returnQty}
+                    onChange={(e) => setReturnQty(Math.min(returnModalBatch.qty, parseInt(e.target.value, 10) || 1))}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold text-rose-700 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">کل ریفنڈ رقم (Debit Note)</label>
+                  <div className="px-3 py-2 border border-slate-200 bg-slate-50 rounded-xl font-mono font-black text-rose-700 text-sm">
+                    {fmt(returnQty * returnModalBatch.cost)}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">وجہ یا نوٹ (Return Reason)</label>
+                <input
+                  type="text"
+                  value={returnNote}
+                  onChange={(e) => setReturnNote(e.target.value)}
+                  placeholder="Near expiry / Expired return claim..."
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setReturnModalBatch(null)}
+                  className="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 font-bold hover:bg-slate-100"
+                >
+                  منسوخ کریں
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-md shadow-rose-600/20"
+                >
+                  ڈیبٹ نوٹ جاری کریں (Create Debit Note)
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

@@ -39,198 +39,6 @@ import {
   ArrowUpRight,
 } from 'lucide-react'
 
-export function DashboardQuickActionsHub({ nav }) {
-  return (
-    <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-4 sm:p-5 text-white shadow-xl border border-slate-700/80 mb-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-700/60">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold">
-            <Zap className="w-5 h-5 text-amber-400" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">اہم اور ضروری شارٹ کٹس</h2>
-              <span className="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
-                Quick Access Hub
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-300">
-              تمام نئے اور ضروری آپشنز تک 1 کلک میں فوراً پہنچیں
-            </p>
-          </div>
-        </div>
-        <span className="text-[11px] text-slate-400 font-medium hidden sm:inline-block">
-          Click any card to open directly
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
-        {/* 1. Company Medicines */}
-        <button
-          type="button"
-          onClick={() => nav('/medicines?view=companies')}
-          className="group relative text-left bg-slate-800/90 hover:bg-indigo-600/90 hover:border-indigo-400 border border-slate-700 rounded-xl p-3 sm:p-3.5 transition-all shadow-sm hover:shadow-indigo-500/20 flex flex-col justify-between cursor-pointer"
-        >
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-lg bg-indigo-500/20 text-indigo-300 group-hover:bg-white group-hover:text-indigo-600 flex items-center justify-center transition-colors">
-                <Building2 className="w-4 h-4" />
-              </div>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
-            </div>
-            <div className="text-[13px] font-bold text-white group-hover:text-white leading-tight">
-              کمپنی وائز میڈیسن
-            </div>
-            <div className="text-[11px] text-indigo-200/90 group-hover:text-indigo-100 font-semibold mt-0.5">
-              Company Medicines
-            </div>
-          </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-700/50 group-hover:border-indigo-400/50">
-            <span className="inline-block text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-indigo-400/20 text-indigo-200 group-hover:bg-white/20 group-hover:text-white">
-              کمپنی لسٹ + Add
-            </span>
-          </div>
-        </button>
-
-        {/* 2. Company Stock Breakdown */}
-        <button
-          type="button"
-          onClick={() => nav('/company-stock')}
-          className="group relative text-left bg-slate-800/90 hover:bg-emerald-600/90 hover:border-emerald-400 border border-slate-700 rounded-xl p-3 sm:p-3.5 transition-all shadow-sm hover:shadow-emerald-500/20 flex flex-col justify-between cursor-pointer"
-        >
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-lg bg-emerald-500/20 text-emerald-300 group-hover:bg-white group-hover:text-emerald-600 flex items-center justify-center transition-colors">
-                <Layers className="w-4 h-4" />
-              </div>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
-            </div>
-            <div className="text-[13px] font-bold text-white group-hover:text-white leading-tight">
-              کمپنی وائز سٹاک
-            </div>
-            <div className="text-[11px] text-emerald-200/90 group-hover:text-emerald-100 font-semibold mt-0.5">
-              Company Stock Breakdown
-            </div>
-          </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-700/50 group-hover:border-emerald-400/50">
-            <span className="inline-block text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-emerald-400/20 text-emerald-200 group-hover:bg-white/20 group-hover:text-white">
-              سٹاک اور مالیت
-            </span>
-          </div>
-        </button>
-
-        {/* 3. Stock Audit: Kam / Zyada */}
-        <button
-          type="button"
-          onClick={() => nav('/stock-audit')}
-          className="group relative text-left bg-slate-800/90 hover:bg-amber-600/90 hover:border-amber-400 border border-slate-700 rounded-xl p-3 sm:p-3.5 transition-all shadow-sm hover:shadow-amber-500/20 flex flex-col justify-between cursor-pointer"
-        >
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-lg bg-amber-500/20 text-amber-300 group-hover:bg-white group-hover:text-amber-600 flex items-center justify-center transition-colors">
-                <ClipboardCheck className="w-4 h-4" />
-              </div>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
-            </div>
-            <div className="text-[13px] font-bold text-white group-hover:text-white leading-tight">
-              سٹاک آڈٹ (کم/زیادہ)
-            </div>
-            <div className="text-[11px] text-amber-200/90 group-hover:text-amber-100 font-semibold mt-0.5">
-              Audit: Kam / Zyada
-            </div>
-          </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-700/50 group-hover:border-amber-400/50">
-            <span className="inline-block text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-200 group-hover:bg-white/20 group-hover:text-white">
-              گنتی اور برابری
-            </span>
-          </div>
-        </button>
-
-        {/* 4. Purchase Returns */}
-        <button
-          type="button"
-          onClick={() => nav('/purchase-returns')}
-          className="group relative text-left bg-slate-800/90 hover:bg-rose-600/90 hover:border-rose-400 border border-slate-700 rounded-xl p-3 sm:p-3.5 transition-all shadow-sm hover:shadow-rose-500/20 flex flex-col justify-between cursor-pointer"
-        >
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-lg bg-rose-500/20 text-rose-300 group-hover:bg-white group-hover:text-rose-600 flex items-center justify-center transition-colors">
-                <RotateCcw className="w-4 h-4" />
-              </div>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
-            </div>
-            <div className="text-[13px] font-bold text-white group-hover:text-white leading-tight">
-              خریداری واپسی
-            </div>
-            <div className="text-[11px] text-rose-200/90 group-hover:text-rose-100 font-semibold mt-0.5">
-              Purchase Returns (Debit)
-            </div>
-          </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-700/50 group-hover:border-rose-400/50">
-            <span className="inline-block text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-rose-400/20 text-rose-200 group-hover:bg-white/20 group-hover:text-white">
-              مال واپسی و ڈیبٹ
-            </span>
-          </div>
-        </button>
-
-        {/* 5. Purchase & GRN with Tax */}
-        <button
-          type="button"
-          onClick={() => nav('/purchases')}
-          className="group relative text-left bg-slate-800/90 hover:bg-blue-600/90 hover:border-blue-400 border border-slate-700 rounded-xl p-3 sm:p-3.5 transition-all shadow-sm hover:shadow-blue-500/20 flex flex-col justify-between cursor-pointer"
-        >
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-lg bg-blue-500/20 text-blue-300 group-hover:bg-white group-hover:text-blue-600 flex items-center justify-center transition-colors">
-                <ShoppingBag className="w-4 h-4" />
-              </div>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
-            </div>
-            <div className="text-[13px] font-bold text-white group-hover:text-white leading-tight">
-              خریداری بل اور GRN
-            </div>
-            <div className="text-[11px] text-blue-200/90 group-hover:text-blue-100 font-semibold mt-0.5">
-              PO, GST, Tax & Batch
-            </div>
-          </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-700/50 group-hover:border-blue-400/50">
-            <span className="inline-block text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-blue-400/20 text-blue-200 group-hover:bg-white/20 group-hover:text-white">
-              GRN + ٹیکس اینٹری
-            </span>
-          </div>
-        </button>
-
-        {/* 6. GSK Pakistan Direct Filter */}
-        <button
-          type="button"
-          onClick={() => nav('/medicines?view=companies&search=GSK')}
-          className="group relative text-left bg-slate-800/90 hover:bg-teal-600/90 hover:border-teal-400 border border-slate-700 rounded-xl p-3 sm:p-3.5 transition-all shadow-sm hover:shadow-teal-500/20 flex flex-col justify-between cursor-pointer"
-        >
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-9 h-9 rounded-lg bg-teal-500/20 text-teal-300 group-hover:bg-white group-hover:text-teal-600 flex items-center justify-center transition-colors">
-                <Sparkles className="w-4 h-4" />
-              </div>
-              <ArrowUpRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-colors" />
-            </div>
-            <div className="text-[13px] font-bold text-white group-hover:text-white leading-tight">
-              جی ایس کے دوائیاں
-            </div>
-            <div className="text-[11px] text-teal-200/90 group-hover:text-teal-100 font-semibold mt-0.5">
-              GSK Pakistan
-            </div>
-          </div>
-          <div className="mt-2.5 pt-2 border-t border-slate-700/50 group-hover:border-teal-400/50">
-            <span className="inline-block text-[9.5px] font-bold px-1.5 py-0.5 rounded bg-teal-400/20 text-teal-200 group-hover:bg-white/20 group-hover:text-white">
-              Panadol, Augmentin...
-            </span>
-          </div>
-        </button>
-      </div>
-    </div>
-  )
-}
-
 export default function Dashboard() {
   const db = useDB()
   const nav = useNavigate()
@@ -317,8 +125,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ⚡ DIRECT QUICK ACTIONS HUB (اہم اور ضروری شارٹ کٹس) */}
-      <DashboardQuickActionsHub nav={nav} />
+
 
       {/* 2. Quick Action Cards Strip (5 Cards) */}
       <div className="quick-actions grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
@@ -911,8 +718,7 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
         </div>
       </div>
 
-      {/* ⚡ DIRECT QUICK ACTIONS HUB (اہم اور ضروری شارٹ کٹس) */}
-      <DashboardQuickActionsHub nav={nav} />
+
 
       <div className="kpi-grid grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         {cards.map(([label, value, hint], index) => {
