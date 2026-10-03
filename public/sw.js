@@ -7,6 +7,12 @@ const PUBLIC_FILES = new Set([
   '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png',
 ])
 
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  }
+})
+
 function publicResponse(response) {
   return response.ok && !response.redirected && response.type === 'basic' &&
     !/no-store|private/i.test(response.headers.get('cache-control') || '') &&

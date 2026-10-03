@@ -32,6 +32,8 @@ import {
   Package,
   Layers,
   ArrowRight,
+  Clock,
+  Sparkles,
 } from 'lucide-react'
 import MedicineGroupFilter from '../components/MedicineGroupFilter'
 import {
@@ -123,7 +125,58 @@ export default function Inventory({ forcedTab }) {
 
   return (
     <div className="space-y-4 w-full pb-8">
+      {/* Standalone Dashboards Quick Launch Bar */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-3.5 sm:p-4 text-white shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 border border-slate-700">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400 shrink-0">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+              <span>Dedicated Stock Action Dashboards</span>
+              <span className="text-[11px] font-normal text-emerald-300">مخصوص صفحات</span>
+            </h2>
+            <p className="text-[11px] text-slate-300 mt-0.5">
+              ہر آپریشن کے لیے الگ مکمل ڈیش بورڈ کھولیں:
+            </p>
+          </div>
+        </div>
 
+        <div className="flex flex-wrap items-center gap-2">
+          <a
+            href="/company-stock"
+            className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+          >
+            <Building2 className="w-3.5 h-3.5" />
+            <span>Company Stock</span>
+            <span className="text-[10px] opacity-80 font-normal">کمپنی</span>
+          </a>
+          <a
+            href="/stock-audit"
+            className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+          >
+            <ClipboardCheck className="w-3.5 h-3.5" />
+            <span>Stock Audit</span>
+            <span className="text-[10px] opacity-80 font-normal">آڈٹ</span>
+          </a>
+          <a
+            href="/expiry-management"
+            className="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+          >
+            <Clock className="w-3.5 h-3.5" />
+            <span>Expiry Action</span>
+            <span className="text-[10px] opacity-80 font-normal">ایکسپائری</span>
+          </a>
+          <a
+            href="/purchase-returns"
+            className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Purchase Returns</span>
+            <span className="text-[10px] opacity-80 font-normal">واپسی</span>
+          </a>
+        </div>
+      </div>
 
       {/* Compact row-based inventory toolbar */}
       <div className="pb-4 border-b border-slate-200 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">

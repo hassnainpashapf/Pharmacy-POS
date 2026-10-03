@@ -26,7 +26,26 @@ if ('serviceWorker' in navigator) {
   } else {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' })
+        .then((reg) => {
+          reg.onupdatefound = () => {
+            const installing = reg.installing
+            if (installing) {
+              installing.onstatechange = () => {
+                if (installing.state === 'installed' && navigator.serviceWorker.controller) {
+                  installing.postMessage({ type: 'SKIP_WAITING' })
+                }
+              }
+            }
+          }
+        })
         .catch((error) => console.warn('Service worker registration failed:', error))
+    })
+    let refreshing = false
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true
+        window.location.reload()
+      }
     })
   }
 }

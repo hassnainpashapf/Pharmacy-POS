@@ -1830,8 +1830,11 @@ function entrySpecificity(entry) {
 export function canAccess(path, user) {
   const u = user || db.session
   if (!u) return false
+  if (u.role === 'ADMIN') return true
 
   const target = splitTarget(path)
+  if (!target.path || target.path === '/') return true
+
   let best = null
   for (const entry of PERMISSION_CATALOG) {
     if (!entry.to || !matchesEntry(entry, target)) continue
@@ -1839,7 +1842,7 @@ export function canAccess(path, user) {
   }
   if (!best) return true
   // Always permit core operational and inventory management paths so staff are never locked out
-  if (['companyStock', 'stockAudit', 'batches', 'purchaseReturns', 'medicines', 'inventory', 'purchases'].includes(best.key)) {
+  if (['dashboard', 'companyStock', 'stockAudit', 'batches', 'purchaseReturns', 'medicines', 'inventory', 'purchases', 'pos', 'salesHistory'].includes(best.key)) {
     return true
   }
   return permissionsFor(u).has(best.key)

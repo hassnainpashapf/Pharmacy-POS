@@ -495,16 +495,75 @@ function Shell({ children }) {
               <Menu className="w-4 h-4" />
             </button>
 
-            <div className="relative">
+            <div className="relative hidden md:block">
               <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 onClick={() => setCmdOpen(true)}
                 placeholder="Search medicines, patients..."
                 readOnly
-                className="w-64 sm:w-80 md:w-96 pl-9 pr-4 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none cursor-pointer transition-colors"
+                className="w-48 xl:w-64 pl-9 pr-4 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none cursor-pointer transition-colors"
               />
             </div>
+
+            {/* Quick Access to Dedicated Independent Dashboards */}
+            <nav className="flex items-center gap-1 sm:gap-1.5" aria-label="Quick Dashboards">
+              <Link
+                to="/company-stock"
+                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-all border shrink-0 ${
+                  loc.pathname === '/company-stock'
+                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
+                    : 'bg-indigo-50/80 hover:bg-indigo-100 text-indigo-800 border-indigo-200/90'
+                }`}
+                title="Company Stock Hub (کمپنی وائز اسٹاک)"
+              >
+                <Building2 className="w-3.5 h-3.5 text-indigo-600 group-hover:text-indigo-800" />
+                <span className="hidden sm:inline">Company Stock</span>
+                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-indigo-900 sm:ml-0.5">کمپنی</span>
+              </Link>
+
+              <Link
+                to="/stock-audit"
+                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-all border shrink-0 ${
+                  loc.pathname === '/stock-audit'
+                    ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
+                    : 'bg-amber-50/80 hover:bg-amber-100 text-amber-800 border-amber-200/90'
+                }`}
+                title="Stock Audit (کم / زیادہ فزیکل کاؤنٹ)"
+              >
+                <ClipboardCheck className="w-3.5 h-3.5 text-amber-600" />
+                <span className="hidden sm:inline">Stock Audit</span>
+                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-amber-900 sm:ml-0.5">آڈٹ</span>
+              </Link>
+
+              <Link
+                to="/expiry-management"
+                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-all border shrink-0 ${
+                  loc.pathname === '/expiry-management'
+                    ? 'bg-orange-600 text-white border-orange-700 shadow-xs'
+                    : 'bg-orange-50/80 hover:bg-orange-100 text-orange-800 border-orange-200/90'
+                }`}
+                title="Batch Expiry Action Center (FEFO)"
+              >
+                <Clock className="w-3.5 h-3.5 text-orange-600" />
+                <span className="hidden sm:inline">Expiry Hub</span>
+                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-orange-900 sm:ml-0.5">ایکسپائری</span>
+              </Link>
+
+              <Link
+                to="/purchase-returns"
+                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-all border shrink-0 ${
+                  loc.pathname === '/purchase-returns'
+                    ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
+                    : 'bg-rose-50/80 hover:bg-rose-100 text-rose-800 border-rose-200/90'
+                }`}
+                title="Purchase Returns & Debit Notes (خریداری واپسی)"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
+                <span className="hidden sm:inline">Returns</span>
+                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-rose-900 sm:ml-0.5">واپسی</span>
+              </Link>
+            </nav>
           </div>
 
           {/* Right Controls */}
