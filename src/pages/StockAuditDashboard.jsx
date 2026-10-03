@@ -249,28 +249,44 @@ export default function StockAuditDashboard() {
         </div>
       )}
 
-      {/* Top Header Card */}
-      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23]">
-            <ClipboardCheck className="w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-              <span>Physical Stock Audit (Count & Variance)</span>
-              <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-200">
-                Kam vs Zyada
-              </span>
-            </h1>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Physical count vs system inventory verification. Detect shortages & surpluses, and generate Purchase Orders.
-            </p>
-          </div>
+      {/* Top Navigation Switcher & Action Toolbar */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 pb-2 border-b border-slate-200">
+        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+          <button
+            type="button"
+            onClick={() => setSubTab('worksheet')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition whitespace-nowrap ${
+              subTab === 'worksheet'
+                ? 'bg-purple-50 text-purple-900 border border-purple-200 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
+            }`}
+          >
+            <ClipboardCheck className="w-3.5 h-3.5 text-[#3b1734]" />
+            Live Audit Worksheet
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full bg-purple-100 text-purple-800">
+              {auditData.length}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSubTab('history')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition whitespace-nowrap ${
+              subTab === 'history'
+                ? 'bg-slate-100 text-slate-900 border border-slate-300 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
+            }`}
+          >
+            <Calendar className="w-3.5 h-3.5 text-slate-500" />
+            Past Audit History
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full bg-slate-200 text-slate-700">
+              {pastAudits.length}
+            </span>
+          </button>
         </div>
 
         {/* Global Action Buttons */}
-        <div className="flex flex-wrap items-center gap-1.5 w-full lg:w-auto">
-          {/* Generate Purchase Order Button */}
+        <div className="flex items-center gap-1.5 flex-wrap shrink-0">
           <button
             type="button"
             onClick={handleOpenPOModalForKam}
@@ -281,173 +297,125 @@ export default function StockAuditDashboard() {
             <span>⚡ Generate PO ({kamItems.length} Kam)</span>
           </button>
 
-          {/* Save Audit Button */}
           <button
             type="button"
             onClick={() => handleSaveAudit(false)}
-            className="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            className="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
             title="Save this audit count record without adjusting system stock"
           >
             <CheckCircle2 className="w-3.5 h-3.5" /> Save Audit
           </button>
 
-          {/* Reconcile Batches Button */}
           <button
             type="button"
             onClick={() => setReconciledConfirmOpen(true)}
-            className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            className="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
             title="Adjust system inventory batches to match physical count"
           >
             <RotateCcw className="w-3.5 h-3.5" /> Reconcile Stock
           </button>
 
-          {/* Print & CSV */}
           <button
             type="button"
             onClick={handleExportCSV}
-            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
+            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-2 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" /> CSV
           </button>
           <button
             type="button"
             onClick={() => window.print()}
-            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
+            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-2 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5 text-slate-500" /> Print
           </button>
         </div>
       </div>
 
-      {/* 4 KPI Summary Cards (Kam vs Zyada) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+      {/* 4 Clean Uniform KPI Summary Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
         {/* Card 1: Kam Medicines (Shortages) */}
-        <div className="bg-rose-50/70 border border-rose-200 rounded-xl p-3 shadow-2xs">
+        <div className="bg-white rounded-xl border border-rose-200 p-3 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-rose-700 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
-              <TrendingDown className="w-3.5 h-3.5" /> 🔻 Kam Medicines (Shortages)
+              <TrendingDown className="w-3.5 h-3.5" /> Shortages (Kam)
             </span>
-            <span className="text-[10px] font-bold bg-rose-200/80 px-2 py-0.2 rounded-full">
+            <span className="text-[10px] font-bold bg-rose-50 text-rose-700 px-1.5 py-0.2 rounded border border-rose-200">
               Deficit
             </span>
           </div>
-          <div className="text-2xl font-black text-rose-900 tracking-tight">
-            {kamItems.length} <span className="text-xs font-semibold text-rose-700">Products</span>
+          <div className="text-2xl font-black text-rose-900 my-0.5">
+            {kamItems.length} <span className="text-xs font-semibold text-rose-600">Products</span>
           </div>
-          <div className="flex justify-between items-center text-xs mt-2 text-rose-800 font-medium pt-2 border-t border-rose-200/60">
-            <span>Missing Units: <b>-{totalKamUnits}</b></span>
-            <span>Cost Loss: <b>Rs. {fmt(totalKamLoss)}</b></span>
+          <div className="text-[11px] text-slate-500 border-t border-slate-100 pt-1.5 flex items-center justify-between">
+            <span>Missing: <b className="text-rose-700">-{totalKamUnits}</b></span>
+            <span>Loss: <b className="text-rose-700">{fmt(totalKamLoss)}</b></span>
           </div>
         </div>
 
-        {/* Card 2: Zyada Medicines (Surplus / Excess) */}
-        <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 shadow-2xs">
+        {/* Card 2: Zyada Medicines (Surplus) */}
+        <div className="bg-white rounded-xl border border-emerald-200 p-3 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-emerald-700 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5" /> 🔺 Zyada Medicines (Surplus)
+              <TrendingUp className="w-3.5 h-3.5" /> Surplus (Zyada)
             </span>
-            <span className="text-[10px] font-bold bg-emerald-200/80 px-2 py-0.2 rounded-full">
+            <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-1.5 py-0.2 rounded border border-emerald-200">
               Excess
             </span>
           </div>
-          <div className="text-2xl font-black text-emerald-900 tracking-tight">
-            {zyadaItems.length} <span className="text-xs font-semibold text-emerald-700">Products</span>
+          <div className="text-2xl font-black text-emerald-900 my-0.5">
+            {zyadaItems.length} <span className="text-xs font-semibold text-emerald-600">Products</span>
           </div>
-          <div className="flex justify-between items-center text-xs mt-2 text-emerald-800 font-medium pt-2 border-t border-emerald-200/60">
-            <span>Surplus Units: <b>+{totalZyadaUnits}</b></span>
-            <span>Excess Value: <b>Rs. {fmt(totalZyadaSurplus)}</b></span>
+          <div className="text-[11px] text-slate-500 border-t border-slate-100 pt-1.5 flex items-center justify-between">
+            <span>Surplus: <b className="text-emerald-700">+{totalZyadaUnits}</b></span>
+            <span>Value: <b className="text-emerald-700">{fmt(totalZyadaSurplus)}</b></span>
           </div>
         </div>
 
         {/* Card 3: Matched Stock */}
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 shadow-2xs">
+        <div className="bg-white rounded-xl border border-slate-200 p-3 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-600 mb-1">
             <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
-              <Check className="w-3.5 h-3.5 text-emerald-600" /> ✓ Matched Stock (Accurate)
+              <Check className="w-3.5 h-3.5 text-emerald-600" /> Matched (Accurate)
             </span>
-            <span className="text-[10px] font-bold bg-slate-200 px-2 py-0.2 rounded-full text-slate-700">
+            <span className="text-[10px] font-bold bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded border border-slate-200">
               0 Variance
             </span>
           </div>
-          <div className="text-2xl font-black text-slate-900 tracking-tight">
+          <div className="text-2xl font-black text-slate-900 my-0.5">
             {matchedItems.length} <span className="text-xs font-semibold text-slate-500">Products</span>
           </div>
-          <div className="flex justify-between items-center text-xs mt-2 text-slate-600 font-medium pt-2 border-t border-slate-200">
-            <span>Accuracy Rate: <b>{medicines.length ? Math.round((matchedItems.length / medicines.length) * 100) : 100}%</b></span>
-            <span>Net Discrepancy: <b>Rs. {fmt(netVarianceValuation)}</b></span>
+          <div className="text-[11px] text-slate-500 border-t border-slate-100 pt-1.5 flex items-center justify-between">
+            <span>Accuracy: <b className="text-slate-800">{medicines.length ? Math.round((matchedItems.length / medicines.length) * 100) : 100}%</b></span>
+            <span>Net: <b className="text-slate-800">{fmt(netVarianceValuation)}</b></span>
           </div>
         </div>
 
-        {/* Card 4: Purchase Order Call-to-Action */}
-        <div className="bg-indigo-50/80 border border-indigo-200 rounded-xl p-3 shadow-2xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between text-indigo-700 mb-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
-                <ShoppingBag className="w-3.5 h-3.5" /> 📋 Purchase Order Ready
-              </span>
-              <span className="text-[10px] font-bold bg-indigo-200/70 px-2 py-0.2 rounded-full text-indigo-900">
-                Action
-              </span>
-            </div>
-            <p className="text-xs text-indigo-900 font-bold mt-1">
-              {kamItems.length > 0 ? `${kamItems.length} medicines need restocking` : 'All inventory levels verified'}
-            </p>
+        {/* Card 4: Restock PO */}
+        <div className="bg-white rounded-xl border border-indigo-200 p-3 shadow-2xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-indigo-700 mb-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
+              <ShoppingBag className="w-3.5 h-3.5" /> Restock PO
+            </span>
+            <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded border border-indigo-200">
+              Action
+            </span>
           </div>
-          <button
-            type="button"
-            onClick={handleOpenPOModalForKam}
-            disabled={kamItems.length === 0}
-            className={`mt-2 w-full py-1.5 rounded-lg font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${
-              kamItems.length > 0
-                ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs cursor-pointer'
-                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-            }`}
-          >
-            <span>Draft Purchase Order</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Sub Tabs: Live Worksheet vs Audit History */}
-      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-        <div className="flex gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
-          <button
-            type="button"
-            onClick={() => setSubTab('worksheet')}
-            className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-              subTab === 'worksheet'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Live Audit Worksheet ({auditData.length})
-          </button>
-          <button
-            type="button"
-            onClick={() => setSubTab('history')}
-            className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
-              subTab === 'history'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Past Audit History ({pastAudits.length})
-          </button>
-        </div>
-
-        {subTab === 'worksheet' && (
-          <div className="flex items-center gap-2">
+          <div className="text-2xl font-black text-indigo-950 my-0.5">
+            {kamItems.length} <span className="text-xs font-semibold text-indigo-700">Need Order</span>
+          </div>
+          <div className="text-[11px] text-slate-500 border-t border-slate-100 pt-1.5 flex items-center justify-between">
+            <span>Auto-PO Ready</span>
             <button
               type="button"
-              onClick={handleResetAll}
-              className="text-xs font-bold text-slate-500 hover:text-rose-600 transition"
-              title="Reset all counts to system stock"
+              onClick={handleOpenPOModalForKam}
+              disabled={kamItems.length === 0}
+              className="font-bold text-indigo-600 hover:text-indigo-800 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
             >
-              Reset Counts
+              Draft PO →
             </button>
           </div>
-        )}
+        </div>
       </div>
 
       {/* SUB-TAB 1: LIVE AUDIT WORKSHEET */}
@@ -516,6 +484,15 @@ export default function StockAuditDashboard() {
                 ))}
               </div>
             </div>
+
+            <button
+              type="button"
+              onClick={handleResetAll}
+              className="text-xs font-bold text-slate-500 hover:text-rose-600 px-2.5 py-1 rounded-lg border border-slate-200 hover:border-rose-200 bg-white hover:bg-rose-50 transition shrink-0 self-end md:self-auto cursor-pointer"
+              title="Reset all entered counts back to current system stock"
+            >
+              Reset Counts
+            </button>
           </div>
 
           {/* Worksheet Table */}
