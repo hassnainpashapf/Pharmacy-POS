@@ -147,6 +147,7 @@ export default function Purchases({ forcedTab }) {
   }, [allPOs])
 
   // Inward Purchases & GRN Filters
+  const [grnView, setGrnView] = useState('invoices') // 'invoices' | 'suppliers'
   const [grnSearch, setGrnSearch] = useState('')
   const [grnStatusFilter, setGrnStatusFilter] = useState('ALL') // 'ALL' | 'PAID' | 'DUE'
   const [grnDateFilter, setGrnDateFilter] = useDateFilterState('all')
@@ -170,6 +171,16 @@ export default function Purchases({ forcedTab }) {
       return matchDate && matchStatus && matchSearch
     })
   }, [db.purchases, grnDateFilter, grnStatusFilter, grnSearch])
+
+  const filteredSupReport = useMemo(() => {
+    if (!grnSearch.trim()) return supReport
+    const q = grnSearch.toLowerCase().trim()
+    return supReport.filter((s) =>
+      s.name?.toLowerCase().includes(q) ||
+      s.company?.toLowerCase().includes(q) ||
+      s.phone?.includes(q)
+    )
+  }, [supReport, grnSearch])
 
   // Purchase Returns Data & Filters
   const [returnSearch, setReturnSearch] = useState('')
@@ -609,6 +620,20 @@ export default function Purchases({ forcedTab }) {
         <div className="space-y-4">
           {/* Top KPIs Cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {/* Total Invoices */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Total Invoices</span>
+                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                  <Receipt className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{invoiceStats.totalInvoices}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">GRN stock entries</div>
+              </div>
+            </div>
+
             {/* Suppliers */}
             <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
               <div className="flex items-center justify-between text-slate-500">
@@ -620,20 +645,6 @@ export default function Purchases({ forcedTab }) {
               <div className="mt-3">
                 <div className="text-2xl font-black text-slate-900">{invoiceStats.totalSuppliers}</div>
                 <div className="text-[11px] text-slate-400 mt-0.5">Registered vendors</div>
-              </div>
-            </div>
-
-            {/* Total Invoices */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
-              <div className="flex items-center justify-between text-slate-500">
-                <span className="text-xs font-semibold text-slate-600">Inward Invoices</span>
-                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
-                  <Receipt className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="mt-3">
-                <div className="text-2xl font-black text-slate-900">{invoiceStats.totalInvoices}</div>
-                <div className="text-[11px] text-slate-400 mt-0.5">GRN stock entries</div>
               </div>
             </div>
 
@@ -680,65 +691,14 @@ export default function Purchases({ forcedTab }) {
             </div>
           </div>
 
-          {/* Supplier-wise Outstanding Balance Report */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-              <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm">
-                🏢 Supplier-wise Outstanding Balance
-              </h3>
-              <div className="text-xs">
-                Total Payable: <b className="text-red-600 text-sm ml-1">{fmt(totalOutstanding)}</b>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
-                  <tr>
-                    <th className="p-2.5 text-left">Supplier</th>
-                    <th>Company</th>
-                    <th>Phone</th>
-                    <th>Invoices</th>
-                    <th>Total Purchases</th>
-                    <th>Total Paid</th>
-                    <th>Outstanding Due</th>
-                    <th>Last Purchase</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {supReport.map((s) => (
-                    <tr key={s.id} className={`text-center ${s.outstanding > 0 ? 'bg-red-50/40' : 'hover:bg-slate-50'}`}>
-                      <td className="p-2.5 text-left font-bold text-slate-800">{s.name}</td>
-                      <td>{s.company || '—'}</td>
-                      <td>{s.phone || '—'}</td>
-                      <td>{s.invoices}</td>
-                      <td>{fmt(s.totalPurchases)}</td>
-                      <td className="text-emerald-700 font-semibold">{fmt(s.totalPaid)}</td>
-                      <td className={s.outstanding > 0 ? 'text-red-600 font-black' : 'text-emerald-600 font-semibold'}>
-                        {fmt(s.outstanding)}
-                      </td>
-                      <td className="text-[11px] text-slate-500">{s.lastDate || '—'}</td>
-                    </tr>
-                  ))}
-                  {!supReport.length && (
-                    <tr>
-                      <td colSpan="8" className="p-4 text-center text-slate-400">
-                        No suppliers registered yet
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Search & Filter Toolbar */}
+          {/* Search & Filter Toolbar (Directly under KPI cards) */}
           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
-                  placeholder="Search GRN #, invoice #, supplier, or medicine..."
+                  placeholder={grnView === 'invoices' ? "Search GRN #, invoice #, supplier, or medicine..." : "Search supplier name, company, or phone..."}
                   value={grnSearch}
                   onChange={(e) => setGrnSearch(e.target.value)}
                   className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
@@ -779,89 +739,218 @@ export default function Purchases({ forcedTab }) {
             </div>
           </div>
 
-          {/* Inward Purchases & GRN Invoices Ledger */}
+          {/* Unified Bills & GRN Ledger Card with Mode Switcher Header */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-              <span className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
-                <Receipt className="w-4 h-4 text-emerald-600" />
-                Goods Received Notes (GRN) & Invoices ({filteredPurchases.length})
-              </span>
-              <button
-                onClick={() => {
-                  setReceivingPO(null)
-                  setShowNewPurchase(true)
-                }}
-                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                + Add GRN / Inward Stock
-              </button>
+            <div className="p-3 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-slate-50">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <span className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
+                  <Receipt className="w-4 h-4 text-emerald-600" />
+                  Bills & GRN Ledger
+                </span>
+
+                {/* Ledger View Switcher Pills */}
+                <div className="flex items-center bg-slate-200/80 p-0.5 rounded-lg text-xs font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setGrnView('invoices')}
+                    className={`px-2.5 py-0.5 rounded-md transition cursor-pointer flex items-center gap-1.5 ${
+                      grnView === 'invoices' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <span>Inward Invoices</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-emerald-100 text-emerald-800">
+                      {filteredPurchases.length}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGrnView('suppliers')}
+                    className={`px-2.5 py-0.5 rounded-md transition cursor-pointer flex items-center gap-1.5 ${
+                      grnView === 'suppliers' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    <span>Supplier Dues</span>
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-rose-100 text-rose-800">
+                      {filteredSupReport.length}
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Action Button / Summary */}
+              {grnView === 'invoices' ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReceivingPO(null)
+                    setShowNewPurchase(true)
+                  }}
+                  className="px-3 py-1.5 bg-[#3b1734] hover:bg-[#280c23] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1 cursor-pointer transition-all"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  + Add GRN / Inward Stock
+                </button>
+              ) : (
+                <div className="text-xs font-semibold text-slate-600">
+                  Total Payable: <b className="text-red-600 text-sm ml-1 font-mono">{fmt(totalOutstanding)}</b>
+                </div>
+              )}
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
-                  <tr>
-                    <th className="p-2.5 text-left">Date</th>
-                    <th className="p-2.5 text-left">GRN #</th>
-                    <th className="p-2.5 text-left">Invoice / Challan</th>
-                    <th className="p-2.5 text-left">Supplier</th>
-                    <th className="p-2.5 text-center">Items</th>
-                    <th className="p-2.5 text-right">Subtotal</th>
-                    <th className="p-2.5 text-right">Discount</th>
-                    <th className="p-2.5 text-right">GST & Tax</th>
-                    <th className="p-2.5 text-right">Net Total</th>
-                    <th className="p-2.5 text-right">Paid Advance</th>
-                    <th className="p-2.5 text-right">Balance Due</th>
-                    <th className="p-2.5 text-center">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {[...filteredPurchases].reverse().map((p) => {
-                    const sup = supplierById(p.supplierId)
-                    const taxes = (Number(p.gstAmount) || 0) + (Number(p.advanceTaxAmount) || 0) + (Number(p.otherTax) || 0)
-                    const due = p.due !== undefined ? p.due : (p.total - (p.paid || 0))
-                    return (
-                      <tr key={p.id} className="hover:bg-slate-50 transition text-center">
-                        <td className="p-2.5 text-left text-slate-600">{p.date}</td>
-                        <td className="p-2.5 text-left font-mono font-bold text-blue-700">{p.grnNo || '—'}</td>
-                        <td className="p-2.5 text-left font-mono text-slate-800 font-semibold">{p.invoiceNo}</td>
-                        <td className="p-2.5 text-left font-semibold text-slate-700">{sup?.name || '—'}</td>
-                        <td className="p-2.5">{p.items?.length || 0}</td>
-                        <td className="p-2.5 text-right text-slate-600 font-mono">{fmt(p.subtotal || p.total)}</td>
-                        <td className="p-2.5 text-right text-amber-700 font-mono font-semibold">
-                          {p.discountAmount ? `-${fmt(p.discountAmount)}` : '—'}
-                        </td>
-                        <td className="p-2.5 text-right text-purple-700 font-mono">
-                          {taxes > 0 ? `+${fmt(taxes)}` : '—'}
-                        </td>
-                        <td className="p-2.5 text-right font-black text-slate-900 font-mono">{fmt(p.total)}</td>
-                        <td className="p-2.5 text-right text-emerald-700 font-bold font-mono">{fmt(p.paid || 0)}</td>
-                        <td className={`p-2.5 text-right font-bold font-mono ${due > 0 ? 'text-red-600 font-black' : 'text-slate-400'}`}>
-                          {fmt(due)}
-                        </td>
-                        <td className="p-2.5 text-center">
-                          <button
-                            onClick={() => setViewingGRN(p)}
-                            title="View / Print GRN Voucher"
-                            className="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg transition"
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
+            {/* VIEW A: Inward Invoices & GRN Table */}
+            {grnView === 'invoices' && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
+                    <tr>
+                      <th className="p-3 text-left">GRN / Invoice #</th>
+                      <th className="p-3 text-left">Date</th>
+                      <th className="p-3 text-left">Supplier / Distributor</th>
+                      <th className="p-3 text-center">Items</th>
+                      <th className="p-3 text-right">Net Bill</th>
+                      <th className="p-3 text-right">Paid Advance</th>
+                      <th className="p-3 text-center">Status / Due</th>
+                      <th className="p-3 text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {[...filteredPurchases].reverse().map((p) => {
+                      const sup = supplierById(p.supplierId)
+                      const due = p.due !== undefined ? p.due : (p.total - (p.paid || 0))
+                      const hasDiscount = Boolean(p.discountAmount)
+                      const taxes = (Number(p.gstAmount) || 0) + (Number(p.advanceTaxAmount) || 0) + (Number(p.otherTax) || 0)
+
+                      return (
+                        <tr key={p.id} className="hover:bg-slate-50 transition">
+                          <td className="p-3">
+                            <div className="font-mono font-bold text-blue-700">{p.grnNo || 'GRN-AUTO'}</div>
+                            <div className="text-[11px] text-slate-500 font-mono mt-0.5">Inv: {p.invoiceNo || '—'}</div>
+                          </td>
+                          <td className="p-3 text-slate-600">
+                            {p.date}
+                          </td>
+                          <td className="p-3">
+                            <div className="font-bold text-slate-800">{sup?.name || 'Direct / General Supplier'}</div>
+                            <div className="text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5">
+                              {sup?.company && <span>{sup.company}</span>}
+                              {sup?.phone && <span className="text-slate-400">({sup.phone})</span>}
+                            </div>
+                          </td>
+                          <td className="p-3 text-center">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                              {p.items?.length || 0} items
+                            </span>
+                          </td>
+                          <td className="p-3 text-right">
+                            <div className="font-black text-slate-900 font-mono">{fmt(p.total)}</div>
+                            {(hasDiscount || taxes > 0) && (
+                              <div className="text-[10px] text-slate-400 font-mono">
+                                {hasDiscount && `disc: -${fmt(p.discountAmount)} `}
+                                {taxes > 0 && `tax: +${fmt(taxes)}`}
+                              </div>
+                            )}
+                          </td>
+                          <td className="p-3 text-right font-bold text-emerald-700 font-mono">
+                            {fmt(p.paid || 0)}
+                          </td>
+                          <td className="p-3 text-center">
+                            {due <= 0 ? (
+                              <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                ✓ Fully Paid
+                              </span>
+                            ) : (
+                              <span className="inline-block px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-rose-100 text-rose-800 border border-rose-300">
+                                Due: {fmt(due)}
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={() => setViewingGRN(p)}
+                              title="View / Print GRN Voucher"
+                              className="px-2.5 py-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition inline-flex items-center gap-1 cursor-pointer"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>View Slip</span>
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    })}
+
+                    {!filteredPurchases.length && (
+                      <tr>
+                        <td colSpan="8" className="p-8 text-center text-slate-400">
+                          <Receipt className="w-10 h-10 mx-auto text-slate-300 mb-2" />
+                          <div className="font-bold text-slate-600">No Inward Invoices or GRNs Found</div>
+                          <div className="text-xs text-slate-400 mt-1">
+                            No matching goods received notes found for the selected filters.
+                          </div>
+                          <div className="mt-4 flex items-center justify-center gap-2">
+                            <button
+                              onClick={() => {
+                                setReceivingPO(null)
+                                setShowNewPurchase(true)
+                              }}
+                              className="px-3.5 py-1.5 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg shadow-sm cursor-pointer"
+                            >
+                              + Add GRN / Inward Stock
+                            </button>
+                          </div>
                         </td>
                       </tr>
-                    )
-                  })}
-                  {!db.purchases.length && (
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* VIEW B: Supplier-wise Outstanding Balance Table */}
+            {grnView === 'suppliers' && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
                     <tr>
-                      <td colSpan="12" className="p-6 text-center text-slate-400">
-                        No GRN / purchase records logged yet. Click "+ Add GRN / Inward Stock" to register your first delivery.
-                      </td>
+                      <th className="p-3 text-left">Supplier</th>
+                      <th className="p-3 text-left">Company</th>
+                      <th className="p-3 text-left">Phone</th>
+                      <th className="p-3 text-center">Invoices</th>
+                      <th className="p-3 text-right">Total Purchases</th>
+                      <th className="p-3 text-right">Total Paid</th>
+                      <th className="p-3 text-right">Outstanding Due</th>
+                      <th className="p-3 text-center">Last Purchase</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredSupReport.map((s) => (
+                      <tr key={s.id} className={`hover:bg-slate-50 transition ${s.outstanding > 0 ? 'bg-red-50/30' : ''}`}>
+                        <td className="p-3 font-bold text-slate-800">{s.name}</td>
+                        <td className="p-3 text-slate-600">{s.company || '—'}</td>
+                        <td className="p-3 text-slate-600 font-mono">{s.phone || '—'}</td>
+                        <td className="p-3 text-center">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700">
+                            {s.invoices} bills
+                          </span>
+                        </td>
+                        <td className="p-3 text-right font-mono text-slate-700">{fmt(s.totalPurchases)}</td>
+                        <td className="p-3 text-right font-mono text-emerald-700 font-semibold">{fmt(s.totalPaid)}</td>
+                        <td className={`p-3 text-right font-mono font-black ${s.outstanding > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
+                          {fmt(s.outstanding)}
+                        </td>
+                        <td className="p-3 text-center text-[11px] text-slate-500">{s.lastDate || '—'}</td>
+                      </tr>
+                    ))}
+                    {!filteredSupReport.length && (
+                      <tr>
+                        <td colSpan="8" className="p-6 text-center text-slate-400">
+                          No matching suppliers registered or found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
       )}
