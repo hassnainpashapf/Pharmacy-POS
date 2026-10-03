@@ -32,6 +32,7 @@ import {
 export default function CompanyStockHub() {
   const db = useDB()
   const [selectedCompany, setSelectedCompany] = useState('ALL')
+  const [filterTab, setFilterTab] = useState('ALL')
   const [search, setSearch] = useState('')
   const [showAddMedModal, setShowAddMedModal] = useState(false)
   const [showStockInModal, setShowStockInModal] = useState(false)
@@ -148,13 +149,53 @@ export default function CompanyStockHub() {
     }
   }, [companyStats, medicines])
 
+  // Batch stats for status tabs (matches Expiry Ledger pills)
+  const batchExpiryStats = useMemo(() => {
+    let expired = 0
+    let critical = 0
+    let near = 0
+    let safe = 0
+    const now = new Date()
+
+    const relevantBatches = batches.filter((b) => {
+      if (b.qty <= 0) return false
+      if (selectedCompany !== 'ALL') {
+        const med = medicines.find((m) => m.id === b.medicineId)
+        const comp = (med?.manufacturer || med?.company || 'Unassigned').trim()
+        if (comp !== selectedCompany) return false
+      }
+      return true
+    })
+
+    for (const b of relevantBatches) {
+      if (b.expiry) {
+        const expDate = new Date(b.expiry)
+        const days = Math.round((expDate - now) / (1000 * 60 * 60 * 24))
+        if (days < 0) expired++
+        else if (days <= 30) critical++
+        else if (days <= 90) near++
+        else safe++
+      } else {
+        safe++
+      }
+    }
+
+    return {
+      critical,
+      expired,
+      near,
+      safe,
+      total: relevantBatches.length,
+    }
+  }, [batches, medicines, selectedCompany])
+
   // Active company data
   const activeCompanyData = useMemo(() => {
     if (selectedCompany === 'ALL') return null
     return companyStats.find((c) => c.name === selectedCompany) || null
   }, [companyStats, selectedCompany])
 
-  // Medicines for active company or all
+  // Medicines for active company or all, filtered by search and filterTab
   const displayedMedicines = useMemo(() => {
     let list = []
     if (activeCompanyData) {
@@ -163,18 +204,43 @@ export default function CompanyStockHub() {
       list = medicines
     }
 
+    // Filter by Expiry Status tab
+    if (filterTab !== 'ALL') {
+      const now = new Date()
+      list = list.filter((m) => {
+        const medBatches = batches.filter((b) => b.medicineId === m.id && b.qty > 0)
+        if (!medBatches.length) return false
+        return medBatches.some((b) => {
+          if (!b.expiry) return filterTab === 'SAFE'
+          const expDate = new Date(b.expiry)
+          const days = Math.round((expDate - now) / (1000 * 60 * 60 * 24))
+          if (filterTab === 'EXPIRED') return days < 0
+          if (filterTab === 'CRITICAL') return days >= 0 && days <= 30
+          if (filterTab === 'NEAR') return days > 30 && days <= 90
+          if (filterTab === 'SAFE') return days > 90
+          return true
+        })
+      })
+    }
+
+    // Filter by search query (medicine name, generic, manufacturer, barcode, batch number)
     if (search.trim()) {
       const q = search.toLowerCase()
-      list = list.filter(
-        (m) =>
+      list = list.filter((m) => {
+        const medBatches = batches.filter((b) => b.medicineId === m.id)
+        const matchBatch = medBatches.some((b) => b.batchNo?.toLowerCase().includes(q))
+        return (
           m.name.toLowerCase().includes(q) ||
           m.generic?.toLowerCase().includes(q) ||
-          (m.manufacturer || '').toLowerCase().includes(q)
-      )
+          (m.manufacturer || '').toLowerCase().includes(q) ||
+          (m.barcode && m.barcode.toLowerCase().includes(q)) ||
+          matchBatch
+        )
+      })
     }
 
     return list
-  }, [activeCompanyData, medicines, search])
+  }, [activeCompanyData, medicines, search, filterTab, batches])
 
   // Handle Add Medicine under current or chosen company
   const handleAddMedicineSubmit = (e) => {
@@ -346,48 +412,70 @@ export default function CompanyStockHub() {
         </div>
       </div>
 
-      {/* 3. Search & Manufacturer Filter Toolbar */}
-      <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
-          <div className="flex flex-wrap items-center gap-2 flex-1">
-            {/* Direct Search Bar */}
-            <div className="relative flex-1 min-w-[240px]">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search company or medicine name, generic chemical..."
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs focus:ring-1 focus:ring-[#714B67] focus:outline-none"
-              />
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => setSearch('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            {/* Manufacturer Dropdown Menu */}
-            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
-              <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-              <select
-                value={selectedCompany}
-                onChange={(e) => setSelectedCompany(e.target.value)}
-                className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[240px] truncate"
-                aria-label="Filter by manufacturer"
+      {/* ── Search & Filter Toolbar ── */}
+      <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+          {/* Direct Search Bar */}
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search medicine name or batch number..."
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
               >
-                <option value="ALL">🏢 All Manufacturers ({companyStats.length})</option>
-                {companyStats.map((c) => (
-                  <option key={c.name} value={c.name}>
-                    {c.name} ({c.totalUnits} Units · {fmt(c.totalCost)})
-                  </option>
-                ))}
-              </select>
-            </div>
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Company Filter Dropdown */}
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+            <Building2 className="w-3.5 h-3.5 text-[#714B67]" />
+            <select
+              value={selectedCompany}
+              onChange={(e) => setSelectedCompany(e.target.value)}
+              className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
+              aria-label="Filter by manufacturer"
+            >
+              <option value="ALL">🏢 All Companies ({companyStats.length})</option>
+              {companyStats.map((c) => (
+                <option key={c.name} value={c.name}>
+                  {c.name} ({c.totalUnits} Units)
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Status Tabs / Filter Pills */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0 overflow-x-auto">
+            {[
+              ['CRITICAL', `0–30 Days (${batchExpiryStats.critical})`],
+              ['EXPIRED', `Expired (${batchExpiryStats.expired})`],
+              ['NEAR', `31–90 Days (${batchExpiryStats.near})`],
+              ['SAFE', `Safe (${batchExpiryStats.safe})`],
+              ['ALL', `All (${batchExpiryStats.total})`],
+            ].map(([tabKey, tabLabel]) => (
+              <button
+                key={tabKey}
+                type="button"
+                onClick={() => setFilterTab(tabKey)}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer whitespace-nowrap ${
+                  filterTab === tabKey
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                {tabLabel}
+              </button>
+            ))}
           </div>
         </div>
       </div>
