@@ -33,6 +33,7 @@ import {
   Layers,
   ArrowRight,
   Clock,
+  X,
 } from 'lucide-react'
 import MedicineGroupFilter from '../components/MedicineGroupFilter'
 import {
@@ -130,10 +131,10 @@ export default function Inventory({ forcedTab }) {
 
   return (
     <div className="space-y-4 w-full pb-8">
-      {/* Compact row-based inventory toolbar */}
-      <div className="pb-4 border-b border-slate-200 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
+      {/* Top Header Card */}
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+          <h2 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
             <span>
               {tab === 'COMPANIES'
                 ? '🏢 Company Stock Hub & Breakdown'
@@ -155,9 +156,45 @@ export default function Inventory({ forcedTab }) {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+        <div className="flex items-center gap-2">
+          {/* Stock In by Company Button */}
+          <button
+            type="button"
+            onClick={() => setCompanyStockInOpen(true)}
+            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            title="Stock in batches grouped by pharma manufacturer delivery invoice"
+          >
+            <Building2 className="w-4 h-4" /> Stock In by Company
+          </button>
+        </div>
+      </div>
+
+      {/* ── Search & Filter Toolbar ── */}
+      <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+          {/* Direct Search Bar */}
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search batch #, medicine name, generic chemical, brand, or barcode..."
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
           {/* Company Filter Dropdown */}
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-sm px-2.5 py-1.5 shrink-0">
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
             <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
             <select
               value={companyFilter}
@@ -174,26 +211,29 @@ export default function Inventory({ forcedTab }) {
             </select>
           </div>
 
-          <div className="relative flex-1 sm:w-64 min-w-[180px]">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              aria-label="Search inventory"
-              placeholder="Batch, medicine, barcode, form..."
-              className="w-full bg-slate-50 border border-slate-300 rounded-sm pl-9 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500"
-            />
+          {/* Status Filter Pills */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0 overflow-x-auto">
+            {[
+              { id: 'ALL', label: `All (${allBatches.length})` },
+              { id: 'AVAILABLE', label: `Available (${summary.availableBatches})` },
+              { id: 'NEAR_EXPIRY', label: `Near Expiry (${summary.nearExpiryBatches})` },
+              { id: 'EXPIRED', label: `Expired (${summary.expiredBatches})` },
+              { id: 'DAMAGED', label: `Damaged (${summary.damagedBatches})` },
+            ].map((st) => (
+              <button
+                key={st.id}
+                type="button"
+                onClick={() => setTab(st.id)}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer whitespace-nowrap ${
+                  tab === st.id
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                {st.label}
+              </button>
+            ))}
           </div>
-
-          {/* Stock In by Company Button */}
-          <button
-            type="button"
-            onClick={() => setCompanyStockInOpen(true)}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
-            title="Stock in batches grouped by pharma manufacturer delivery invoice"
-          >
-            <Building2 className="w-4 h-4" /> Stock In by Company
-          </button>
         </div>
       </div>
 
