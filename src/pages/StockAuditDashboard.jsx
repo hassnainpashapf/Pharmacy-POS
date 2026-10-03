@@ -247,7 +247,7 @@ export default function StockAuditDashboard() {
   }, [pastAudits, auditDateFilter, auditSearch])
 
   return (
-    <div className="space-y-4 w-full pb-16 font-sans text-slate-800">
+    <div className="space-y-6 w-full pb-16 font-sans text-slate-800">
       {/* Feedback Banner */}
       {feedbackMsg && (
         <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl text-xs font-bold flex items-center justify-between shadow-xs">
@@ -255,91 +255,117 @@ export default function StockAuditDashboard() {
             <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             {feedbackMsg}
           </span>
-          <button onClick={() => setFeedbackMsg('')} className="text-emerald-700 hover:text-emerald-900">✕</button>
+          <button onClick={() => setFeedbackMsg('')} className="text-emerald-700 hover:text-emerald-900 cursor-pointer">✕</button>
         </div>
       )}
 
-      {/* Top Navigation Switcher & Action Toolbar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 pb-2 border-b border-slate-200">
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-          <button
-            type="button"
-            onClick={() => setSubTab('worksheet')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition whitespace-nowrap ${
-              subTab === 'worksheet'
-                ? 'bg-purple-50 text-purple-900 border border-purple-200 shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
-            }`}
-          >
-            <ClipboardCheck className="w-3.5 h-3.5 text-[#3b1734]" />
-            Live Audit Worksheet
-            <span className="ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full bg-purple-100 text-purple-800">
-              {auditData.length}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setSubTab('history')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition whitespace-nowrap ${
-              subTab === 'history'
-                ? 'bg-slate-100 text-slate-900 border border-slate-300 shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
-            }`}
-          >
-            <Calendar className="w-3.5 h-3.5 text-slate-500" />
-            Past Audit History
-            <span className="ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full bg-slate-200 text-slate-700">
-              {pastAudits.length}
-            </span>
-          </button>
+      {/* 1. Header Banner (Merged into page layout like Company Stock Hub) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
+              <ClipboardCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                Physical Stock Audit
+              </h1>
+              <p className="text-xs text-slate-400 font-medium">
+                Physical stock verification, count reconciliation & variance ledger
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Global Action Buttons */}
-        <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+        <div className="flex items-center gap-2 flex-wrap shrink-0">
           <button
             type="button"
             onClick={handleOpenPOModalForKam}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
             title="Automatically create a Purchase Order for all deficit medicines"
           >
-            <ShoppingBag className="w-3.5 h-3.5" />
+            <ShoppingBag className="w-4 h-4" />
             <span>⚡ Generate PO ({kamItems.length} Kam)</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleSaveAudit(false)}
-            className="bg-slate-800 hover:bg-slate-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
+            className="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
             title="Save this audit count record without adjusting system stock"
           >
-            <CheckCircle2 className="w-3.5 h-3.5" /> Save Audit
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Save Audit</span>
           </button>
 
           <button
             type="button"
             onClick={() => setReconciledConfirmOpen(true)}
-            className="bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
+            className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
             title="Adjust system inventory batches to match physical count"
           >
-            <RotateCcw className="w-3.5 h-3.5" /> Reconcile Stock
+            <RotateCcw className="w-4 h-4" />
+            <span>Reconcile Stock</span>
           </button>
 
           <button
             type="button"
             onClick={handleExportCSV}
-            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-2 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
+            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5 text-slate-500" /> CSV
+            <Download className="w-4 h-4 text-slate-500" />
+            <span>CSV</span>
           </button>
+
           <button
             type="button"
             onClick={() => window.print()}
-            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-2 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
+            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
           >
-            <Printer className="w-3.5 h-3.5 text-slate-500" /> Print
+            <Printer className="w-4 h-4 text-slate-500" />
+            <span>Print</span>
           </button>
         </div>
+      </div>
+
+      {/* 2. SubTab Navigation Switcher */}
+      <div className="flex items-center gap-2 overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => setSubTab('worksheet')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-xl transition whitespace-nowrap cursor-pointer ${
+            subTab === 'worksheet'
+              ? 'bg-[#3b1734] text-white shadow-sm'
+              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+          }`}
+        >
+          <ClipboardCheck className="w-3.5 h-3.5" />
+          <span>Live Audit Worksheet</span>
+          <span className={`ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full ${
+            subTab === 'worksheet' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'
+          }`}>
+            {auditData.length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setSubTab('history')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-xl transition whitespace-nowrap cursor-pointer ${
+            subTab === 'history'
+              ? 'bg-[#3b1734] text-white shadow-sm'
+              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+          }`}
+        >
+          <Calendar className="w-3.5 h-3.5" />
+          <span>Past Audit History</span>
+          <span className={`ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full ${
+            subTab === 'history' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'
+          }`}>
+            {pastAudits.length}
+          </span>
+        </button>
       </div>
 
       {/* 4 Clean Uniform KPI Summary Cards */}
@@ -471,27 +497,20 @@ export default function StockAuditDashboard() {
                 </select>
               </div>
 
-              {/* Status Filter Buttons */}
-              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0">
-                {[
-                  { id: 'ALL', label: `All (${auditData.length})` },
-                  { id: 'KAM', label: `🔻 Shortages (${kamItems.length})` },
-                  { id: 'ZYADA', label: `🔺 Excess (${zyadaItems.length})` },
-                  { id: 'MATCHED', label: `✓ Matched (${matchedItems.length})` },
-                ].map((f) => (
-                  <button
-                    key={f.id}
-                    type="button"
-                    onClick={() => setVarianceFilter(f.id)}
-                    className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
-                      varianceFilter === f.id
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    {f.label}
-                  </button>
-                ))}
+              {/* Status Filter Dropdown Menu */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <select
+                  value={varianceFilter}
+                  onChange={(e) => setVarianceFilter(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[175px] truncate"
+                  aria-label="Filter audit by variance status"
+                >
+                  <option value="ALL">⚖️ All Status ({auditData.length})</option>
+                  <option value="KAM">🔻 Shortages / Kam ({kamItems.length})</option>
+                  <option value="ZYADA">🔺 Excess / Zyada ({zyadaItems.length})</option>
+                  <option value="MATCHED">✓ Matched ({matchedItems.length})</option>
+                </select>
               </div>
 
               <button
@@ -669,16 +688,27 @@ export default function StockAuditDashboard() {
         <div className="space-y-3">
           {/* Search & Date Filter Card */}
           <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-            <DateFilterBar filterState={auditDateFilter} onChange={setAuditDateFilter} />
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search audit #, title, or auditor name..."
-                value={auditSearch}
-                onChange={(e) => setAuditSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
-              />
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+              <div className="relative flex-1">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search audit #, title, or auditor name..."
+                  value={auditSearch}
+                  onChange={(e) => setAuditSearch(e.target.value)}
+                  className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                />
+                {auditSearch && (
+                  <button
+                    type="button"
+                    onClick={() => setAuditSearch('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+              <DateFilterBar filterState={auditDateFilter} onChange={setAuditDateFilter} asDropdown />
             </div>
           </div>
 
