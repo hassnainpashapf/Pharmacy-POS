@@ -124,10 +124,10 @@ const navGroups = [
   {
     title: 'STOCKS & DISCREPANCIES',
     items: [
-      { to: '/company-stock', label: 'Company Stock Hub', icon: Building2, badge: 'By Company', badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-      { to: '/stock-audit', label: 'Stock Audit (Physical Count)', icon: ClipboardCheck, badge: 'Audit', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200' },
-      { to: '/expiry-management', label: 'Batch & Expiry Action', icon: Clock, badge: 'Expiry', badgeColor: 'bg-orange-50 text-orange-700 border-orange-200' },
-      { to: '/purchase-returns', label: 'Purchase Returns (Debit Note)', icon: RotateCcw, badge: 'Returns', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
+      { to: '/company-stock', label: 'Company Stock Hub', icon: Building2 },
+      { to: '/stock-audit', label: 'Stock Audit', icon: ClipboardCheck },
+      { to: '/expiry-management', label: 'Batch & Expiry Action', icon: Clock },
+      { to: '/purchase-returns', label: 'Purchase Returns', icon: RotateCcw },
     ],
   },
   {
@@ -135,7 +135,7 @@ const navGroups = [
     items: [
       { to: '/inventory', label: 'Stock Master Inventory', icon: Package },
       { to: '/medicines', label: 'Medicines Catalogue', icon: Pill },
-      { to: '/purchases', label: 'Purchases & Invoices', icon: ShoppingBag, badge: 'GRN + Tax', badgeColor: 'bg-blue-50 text-blue-700 border-blue-200' },
+      { to: '/purchases', label: 'Purchases & Invoices', icon: ShoppingBag },
       { to: '/suppliers', label: 'Suppliers', icon: Truck },
     ],
   },
