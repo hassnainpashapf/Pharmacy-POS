@@ -7,6 +7,7 @@ import {
   getStockAudits,
   todayStr,
 } from '../lib/db'
+import DateFilterBar, { matchesDateFilter, useDateFilterState } from '../components/DateFilterBar'
 import {
   ClipboardCheck,
   Search,
@@ -184,8 +185,12 @@ export default function StockAuditDashboard() {
     }
   }
 
-  // Past Audits List
+  // Past Audits List & Filter
+  const [auditDateFilter, setAuditDateFilter] = useDateFilterState('all')
   const pastAudits = getStockAudits()
+  const filteredAudits = useMemo(() => {
+    return pastAudits.filter((a) => matchesDateFilter(a.date, auditDateFilter))
+  }, [pastAudits, auditDateFilter])
 
   return (
     <div className="space-y-6 w-full pb-16 font-sans text-slate-800">
@@ -506,20 +511,22 @@ export default function StockAuditDashboard() {
 
       {/* 4. Past Audit History Table */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 space-y-3">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
           <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <Calendar className="w-4 h-4 text-[#714B67]" />
             <span>Past Audit History</span>
           </h2>
-          <span className="text-xs text-slate-400">{pastAudits.length} audit sessions recorded</span>
+          <span className="text-xs text-slate-400">{filteredAudits.length} audit sessions recorded</span>
         </div>
 
-        {!pastAudits.length && (
-          <p className="text-xs text-slate-400 py-6 text-center">No past audit sessions found.</p>
+        <DateFilterBar filterState={auditDateFilter} onChange={setAuditDateFilter} />
+
+        {!filteredAudits.length && (
+          <p className="text-xs text-slate-400 py-6 text-center">No past audit sessions found for the selected date range.</p>
         )}
 
         <div className="divide-y divide-slate-100">
-          {pastAudits.map((a) => (
+          {filteredAudits.map((a) => (
             <div key={a.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
               <div>
                 <div className="font-bold text-slate-800 flex items-center gap-2">

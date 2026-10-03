@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useDB, findSaleByInvoice, returnSaleItem, medicineById, fmt, returnsHistory, customerById } from '../lib/db'
 import { Search, RotateCcw, AlertCircle, CheckCircle2 } from 'lucide-react'
+import DateFilterBar, { matchesDateFilter, useDateFilterState } from '../components/DateFilterBar'
 
 export default function Returns() {
   const db = useDB()
@@ -8,7 +9,12 @@ export default function Returns() {
   const [sale, setSale] = useState(null)
   const [err, setErr] = useState('')
   const [done, setDone] = useState('')
+  const [historyDateFilter, setHistoryDateFilter] = useDateFilterState('all')
   const history = returnsHistory()
+
+  const filteredHistory = useMemo(() => {
+    return history.filter((r) => matchesDateFilter(r.date, historyDateFilter))
+  }, [history, historyDateFilter])
 
   function search() {
     setErr('')
@@ -158,39 +164,44 @@ export default function Returns() {
       )}
 
       {/* Return Logs History */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-        <div className="p-4 border-b border-slate-100">
-          <h3 className="font-bold text-slate-900 text-sm">Return & Refund History ({history.length})</h3>
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-3 p-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
+          <h3 className="font-bold text-slate-900 text-sm">Return & Refund History ({filteredHistory.length})</h3>
         </div>
-        <table className="w-full text-xs">
-          <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
-            <tr>
-              <th className="p-3 text-left">Date & Time</th>
-              <th className="p-3 text-left">Invoice No</th>
-              <th className="p-3 text-left">Restored Items</th>
-              <th className="p-3 text-right">Refund Total</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {history.map((r) => (
-              <tr key={r.id} className="hover:bg-slate-50/50">
-                <td className="p-3 text-left text-slate-500">{new Date(r.date).toLocaleString()}</td>
-                <td className="p-3 text-left font-mono font-bold text-slate-800">{r.invoiceNo}</td>
-                <td className="p-3 text-left text-slate-600">
-                  {r.items.map((x) => `${medicineById(x.medicineId)?.name} ×${x.qty}`).join(', ')}
-                </td>
-                <td className="p-3 text-right font-bold text-rose-600">{fmt(r.refund)}</td>
-              </tr>
-            ))}
-            {!history.length && (
+
+        <DateFilterBar filterState={historyDateFilter} onChange={setHistoryDateFilter} />
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
               <tr>
-                <td colSpan="4" className="p-6 text-center text-slate-400">
-                  No return transactions processed yet
-                </td>
+                <th className="p-3 text-left">Date & Time</th>
+                <th className="p-3 text-left">Invoice No</th>
+                <th className="p-3 text-left">Restored Items</th>
+                <th className="p-3 text-right">Refund Total</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredHistory.map((r) => (
+                <tr key={r.id} className="hover:bg-slate-50/50">
+                  <td className="p-3 text-left text-slate-500">{new Date(r.date).toLocaleString()}</td>
+                  <td className="p-3 text-left font-mono font-bold text-slate-800">{r.invoiceNo}</td>
+                  <td className="p-3 text-left text-slate-600">
+                    {r.items.map((x) => `${medicineById(x.medicineId)?.name} ×${x.qty}`).join(', ')}
+                  </td>
+                  <td className="p-3 text-right font-bold text-rose-600">{fmt(r.refund)}</td>
+                </tr>
+              ))}
+              {!filteredHistory.length && (
+                <tr>
+                  <td colSpan="4" className="p-6 text-center text-slate-400">
+                    No return transactions match the selected filter
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )

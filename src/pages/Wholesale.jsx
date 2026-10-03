@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useDB, fmt, createWholesaleOrder, updateWholesaleOrderStatus } from '../lib/db'
 import { Building2, ShoppingBag, Plus, CheckCircle, Truck, FileText, Search } from 'lucide-react'
+import DateFilterBar, { matchesDateFilter, useDateFilterState } from '../components/DateFilterBar'
 
 export default function Wholesale() {
   const db = useDB()
@@ -12,6 +13,11 @@ export default function Wholesale() {
 
   const medicines = db.medicines || []
   const wholesaleOrders = db.wholesaleOrders || []
+  const [orderDateFilter, setOrderDateFilter] = useDateFilterState('all')
+
+  const filteredOrders = useMemo(() => {
+    return wholesaleOrders.filter((o) => matchesDateFilter(o.createdAt || o.date, orderDateFilter))
+  }, [wholesaleOrders, orderDateFilter])
 
   // Add carton to B2B cart
   const addBulk = (med, cartonQty = 1) => {
@@ -86,24 +92,28 @@ export default function Wholesale() {
 
       {/* Orders Tab */}
       {tab === 'orders' && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-          <div className="p-4 border-b border-slate-100 flex justify-between items-center">
-            <h3 className="font-bold text-slate-900 text-sm">Commercial Wholesale Invoices</h3>
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-3 p-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <h3 className="font-bold text-slate-900 text-sm">Commercial Wholesale Invoices ({filteredOrders.length})</h3>
             <span className="text-xs text-slate-500">Authorized B2B dispatches</span>
           </div>
-          <table className="w-full text-xs">
-            <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
-              <tr>
-                <th className="p-3 text-left">Invoice No</th>
-                <th className="p-3 text-left">Institution / Client</th>
-                <th className="p-3 text-left">Ordered Cartons</th>
-                <th className="p-3 text-right">Invoice Value</th>
-                <th className="p-3 text-center">Status</th>
-                <th className="p-3 text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {wholesaleOrders.map((o) => (
+
+          <DateFilterBar filterState={orderDateFilter} onChange={setOrderDateFilter} />
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
+                <tr>
+                  <th className="p-3 text-left">Invoice No</th>
+                  <th className="p-3 text-left">Institution / Client</th>
+                  <th className="p-3 text-left">Ordered Cartons</th>
+                  <th className="p-3 text-right">Invoice Value</th>
+                  <th className="p-3 text-center">Status</th>
+                  <th className="p-3 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredOrders.map((o) => (
                 <tr key={o.id} className="hover:bg-slate-50/50">
                   <td className="p-3 font-mono font-bold text-slate-800 text-left">{o.orderNo}</td>
                   <td className="p-3 text-left">

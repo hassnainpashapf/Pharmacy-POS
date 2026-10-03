@@ -6,6 +6,7 @@ import {
 import {
   useDB, fmt, allSalesInScope, deleteSale, updateSale, can, currentUser,
 } from '../lib/db'
+import DateFilterBar, { matchesDateFilter, useDateFilterState } from '../components/DateFilterBar'
 
 /* ─── helpers ─────────────────────────────────────── */
 const today   = () => new Date().toISOString().slice(0, 10)
@@ -251,7 +252,7 @@ export default function SalesHistory() {
   const canDel = can('deleteSales')
 
   const [search, setSearch] = useState('')
-  const [filter, setFilter] = useState('all') // all | today | week | month
+  const [dateFilter, setDateFilter] = useDateFilterState('all')
   const [viewSale, setViewSale] = useState(null)
   const [editSale, setEditSale] = useState(null)
   const [delSale,  setDelSale]  = useState(null)
@@ -269,10 +270,7 @@ export default function SalesHistory() {
 
   // Filtered list
   const filtered = useMemo(() => {
-    let list = all
-    if (filter === 'today') list = list.filter(s => dateKey(s.date) === t)
-    if (filter === 'week')  list = list.filter(s => dateKey(s.date) >= w && dateKey(s.date) <= t)
-    if (filter === 'month') list = list.filter(s => dateKey(s.date) >= m && dateKey(s.date) <= t)
+    let list = all.filter(s => matchesDateFilter(s.date, dateFilter))
     if (search.trim()) {
       const q = search.toLowerCase()
       list = list.filter(s =>
@@ -282,7 +280,7 @@ export default function SalesHistory() {
       )
     }
     return list
-  }, [all, filter, search, refresh])
+  }, [all, dateFilter, search, refresh])
 
   const bump = () => setRefresh(r => r + 1)
 
@@ -336,22 +334,16 @@ export default function SalesHistory() {
       </div>
 
       {/* ── Filters & Search ── */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
+      <div className="space-y-3">
+        <DateFilterBar filterState={dateFilter} onChange={setDateFilter} />
+
+        <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text" placeholder="Search invoice, customer, medicine…"
             value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00A09D]/30 focus:border-[#00A09D]"
+            className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#714B67]/30 focus:border-[#714B67]"
           />
-        </div>
-        <div className="inline-flex rounded-xl border border-slate-200 bg-white overflow-hidden text-xs font-semibold">
-          {[['all','All'],['today','Today'],['week','7 Days'],['month','30 Days']].map(([val, lbl]) => (
-            <button
-              key={val} onClick={() => setFilter(val)}
-              className={`px-3 py-2.5 transition-colors cursor-pointer ${filter === val ? 'bg-[#714B67] text-white' : 'text-slate-500 hover:bg-slate-50'}`}
-            >{lbl}</button>
-          ))}
         </div>
       </div>
 

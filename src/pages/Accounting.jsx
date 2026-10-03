@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useLocation } from 'react-router'
 import { useDB, profitAndLoss, fmt, addExpense } from '../lib/db'
+import DateFilterBar, { matchesDateFilter, useDateFilterState } from '../components/DateFilterBar'
 
 export default function Accounting() {
   const db = useDB()
@@ -89,6 +90,11 @@ function ExpensesPanel({ db }) {
   const [note, setNote] = useState('')
   const [amount, setAmount] = useState('')
   const [message, setMessage] = useState('')
+  const [expenseDateFilter, setExpenseDateFilter] = useDateFilterState('all')
+
+  const filteredExpenses = useMemo(() => {
+    return (db.expenses || []).filter((e) => matchesDateFilter(e.date, expenseDateFilter))
+  }, [db.expenses, expenseDateFilter])
 
   function saveExpense(e) {
     e.preventDefault()
@@ -110,15 +116,48 @@ function ExpensesPanel({ db }) {
           <label className="block text-xs font-bold">Category<select value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl p-2 bg-slate-50"><option>Operations</option><option>Utilities</option><option>Rent</option><option>Transport</option><option>Payroll</option><option>Other</option></select></label>
           <label className="block text-xs font-bold">Description<input value={note} onChange={(e) => setNote(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl p-2 bg-slate-50" placeholder="e.g. electricity bill" /></label>
           <label className="block text-xs font-bold">Amount<input type="number" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl p-2 bg-slate-50" placeholder="0" /></label>
-          <button className="w-full bg-[#714b67] hover:bg-[#5c3c54] text-white rounded-xl py-2 font-bold">Save Expense</button>
+          <button className="w-full bg-[#714b67] hover:bg-[#5c3c54] text-white rounded-xl py-2 font-bold cursor-pointer">Save Expense</button>
           {message && <p className="text-xs font-semibold text-[#008f8b]">{message}</p>}
         </form>
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-auto">
-          <div className="p-5 border-b border-slate-100"><h3 className="font-bold text-slate-900">Recent Expenses</h3></div>
-          <table className="w-full text-xs"><thead className="bg-slate-50 text-slate-700"><tr><th className="p-3 text-left">Date</th><th className="p-3 text-left">Category</th><th className="p-3 text-left">Description</th><th className="p-3 text-right">Amount</th></tr></thead><tbody>
-            {(db.expenses || []).slice().reverse().map((e) => <tr key={e.id} className="border-t border-slate-100"><td className="p-3">{new Date(e.date).toLocaleDateString()}</td><td className="p-3">{e.category}</td><td className="p-3">{e.note}</td><td className="p-3 text-right font-bold">{fmt(e.amount)}</td></tr>)}
-            {!db.expenses?.length && <tr><td colSpan="4" className="p-8 text-center text-slate-500">No expenses recorded yet.</td></tr>}
-          </tbody></table>
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-5 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+            <h3 className="font-bold text-slate-900">Recent Expenses ({filteredExpenses.length})</h3>
+            <span className="text-xs text-slate-500 font-semibold">
+              Total: {fmt(filteredExpenses.reduce((s, e) => s + Number(e.amount || 0), 0))}
+            </span>
+          </div>
+
+          <DateFilterBar filterState={expenseDateFilter} onChange={setExpenseDateFilter} />
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-slate-50 text-slate-700">
+                <tr>
+                  <th className="p-3 text-left">Date</th>
+                  <th className="p-3 text-left">Category</th>
+                  <th className="p-3 text-left">Description</th>
+                  <th className="p-3 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredExpenses.slice().reverse().map((e) => (
+                  <tr key={e.id} className="border-t border-slate-100 hover:bg-slate-50">
+                    <td className="p-3">{new Date(e.date).toLocaleDateString()}</td>
+                    <td className="p-3 font-semibold text-[#714B67]">{e.category}</td>
+                    <td className="p-3">{e.note}</td>
+                    <td className="p-3 text-right font-bold text-slate-900">{fmt(e.amount)}</td>
+                  </tr>
+                ))}
+                {!filteredExpenses.length && (
+                  <tr>
+                    <td colSpan="4" className="p-8 text-center text-slate-500">
+                      No expenses match the selected date.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

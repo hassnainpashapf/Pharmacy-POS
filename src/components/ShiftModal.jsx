@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   useDB,
   getCurrentShift,
@@ -11,6 +11,7 @@ import {
   setActiveCounter,
   fmt,
 } from '../lib/db'
+import DateFilterBar, { matchesDateFilter, useDateFilterState } from './DateFilterBar'
 import {
   Clock,
   Coins,
@@ -32,6 +33,10 @@ export default function ShiftModal({ isOpen, onClose }) {
   const currentShift = getCurrentShift()
   const counters = getCounters()
   const history = getShiftHistory()
+  const [shiftDateFilter, setShiftDateFilter] = useDateFilterState('all')
+  const filteredHistory = useMemo(() => {
+    return history.filter((s) => matchesDateFilter(s.openedAt || s.date, shiftDateFilter))
+  }, [history, shiftDateFilter])
 
   const [activeTab, setActiveTab] = useState(currentShift ? 'active' : 'start')
   const [selectedCounter, setSelectedCounter] = useState(activeCounter())
@@ -572,59 +577,70 @@ export default function ShiftModal({ isOpen, onClose }) {
           {/* TAB: SHIFT HISTORY */}
           {activeTab === 'history' && (
             <div className="space-y-3">
-              <table className="w-full text-xs">
-                <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
-                  <tr>
-                    <th className="p-2.5 text-left">Shift #</th>
-                    <th className="p-2.5 text-left">Counter</th>
-                    <th className="p-2.5 text-left">Cashier</th>
-                    <th className="p-2.5 text-right">Opening</th>
-                    <th className="p-2.5 text-right">Cash Sales</th>
-                    <th className="p-2.5 text-right">Expected</th>
-                    <th className="p-2.5 text-right">Declared</th>
-                    <th className="p-2.5 text-center">Status</th>
-                    <th className="p-2.5 text-center">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {history.map((s) => (
-                    <tr key={s.id} className="hover:bg-slate-50">
-                      <td className="p-2.5 font-bold font-mono text-slate-900">{s.shiftNo}</td>
-                      <td className="p-2.5 text-slate-700">{s.counterName}</td>
-                      <td className="p-2.5 text-slate-600">{s.cashierName}</td>
-                      <td className="p-2.5 text-right font-mono">{fmt(s.openingCash)}</td>
-                      <td className="p-2.5 text-right font-mono font-bold text-emerald-700">{fmt(s.cashSales)}</td>
-                      <td className="p-2.5 text-right font-mono font-semibold">{fmt(s.closingCashCalculated)}</td>
-                      <td className="p-2.5 text-right font-mono font-bold">
-                        {s.closingCashDeclared !== null ? fmt(s.closingCashDeclared) : '—'}
-                      </td>
-                      <td className="p-2.5 text-center">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            s.status === 'OPEN'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-slate-100 text-slate-600'
-                          }`}
-                        >
-                          {s.status}
-                        </span>
-                      </td>
-                      <td className="p-2.5 text-center">
-                        <button
-                          onClick={() => {
-                            const z = generateZReport(s.id)
-                            setZReportData(z)
-                            setActiveTab('zreport')
-                          }}
-                          className="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px]"
-                        >
-                          Z-Slip
-                        </button>
-                      </td>
+              <DateFilterBar filterState={shiftDateFilter} onChange={setShiftDateFilter} />
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                    <tr>
+                      <th className="p-2.5 text-left">Shift #</th>
+                      <th className="p-2.5 text-left">Counter</th>
+                      <th className="p-2.5 text-left">Cashier</th>
+                      <th className="p-2.5 text-right">Opening</th>
+                      <th className="p-2.5 text-right">Cash Sales</th>
+                      <th className="p-2.5 text-right">Expected</th>
+                      <th className="p-2.5 text-right">Declared</th>
+                      <th className="p-2.5 text-center">Status</th>
+                      <th className="p-2.5 text-center">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredHistory.map((s) => (
+                      <tr key={s.id} className="hover:bg-slate-50">
+                        <td className="p-2.5 font-bold font-mono text-slate-900">{s.shiftNo}</td>
+                        <td className="p-2.5 text-slate-700">{s.counterName}</td>
+                        <td className="p-2.5 text-slate-600">{s.cashierName}</td>
+                        <td className="p-2.5 text-right font-mono">{fmt(s.openingCash)}</td>
+                        <td className="p-2.5 text-right font-mono font-bold text-emerald-700">{fmt(s.cashSales)}</td>
+                        <td className="p-2.5 text-right font-mono font-semibold">{fmt(s.closingCashCalculated)}</td>
+                        <td className="p-2.5 text-right font-mono font-bold">
+                          {s.closingCashDeclared !== null ? fmt(s.closingCashDeclared) : '—'}
+                        </td>
+                        <td className="p-2.5 text-center">
+                          <span
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                              s.status === 'OPEN'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-slate-100 text-slate-600'
+                            }`}
+                          >
+                            {s.status}
+                          </span>
+                        </td>
+                        <td className="p-2.5 text-center">
+                          <button
+                            onClick={() => {
+                              const z = generateZReport(s.id)
+                              setZReportData(z)
+                              setActiveTab('zreport')
+                            }}
+                            className="px-2 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[10px] cursor-pointer"
+                          >
+                            Z-Slip
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {!filteredHistory.length && (
+                      <tr>
+                        <td colSpan="9" className="p-6 text-center text-slate-400">
+                          No shift records found for the selected date.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </div>

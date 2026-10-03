@@ -9,6 +9,7 @@ import {
   deletePurchaseReturn,
   todayStr,
 } from '../lib/db'
+import DateFilterBar, { matchesDateFilter, useDateFilterState } from '../components/DateFilterBar'
 import {
   RotateCcw,
   Plus,
@@ -32,6 +33,7 @@ export default function PurchaseReturnsDashboard() {
   const [showNewModal, setShowNewModal] = useState(false)
   const [selectedSupplierId, setSelectedSupplierId] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
+  const [dateFilter, setDateFilter] = useDateFilterState('all')
   const [settlementType, setSettlementType] = useState('CREDIT_NOTE')
   const [returnNote, setReturnNote] = useState('')
   const [viewingVoucher, setViewingVoucher] = useState(null)
@@ -72,15 +74,16 @@ export default function PurchaseReturnsDashboard() {
 
   // Filtered returns list
   const filteredReturns = useMemo(() => {
-    if (!searchQuery.trim()) return allReturns
+    let list = allReturns.filter((r) => matchesDateFilter(r.date || r.createdAt, dateFilter))
+    if (!searchQuery.trim()) return list
     const q = searchQuery.toLowerCase()
-    return allReturns.filter(
+    return list.filter(
       (r) =>
         r.returnNo.toLowerCase().includes(q) ||
         r.supplierName.toLowerCase().includes(q) ||
         (r.items || []).some((it) => it.medicineName.toLowerCase().includes(q))
     )
-  }, [allReturns, searchQuery])
+  }, [allReturns, dateFilter, searchQuery])
 
   // Available batches for selected supplier or general
   const eligibleBatches = useMemo(() => {
@@ -300,21 +303,25 @@ export default function PurchaseReturnsDashboard() {
       {/* 3. Returns List Table */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {/* Table Toolbar */}
-        <div className="p-3 sm:p-4 border-b border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-sm font-bold text-slate-900">Debit Notes & Returns</h2>
+        <div className="p-3 sm:p-4 border-b border-slate-100 bg-slate-50/70 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">Debit Notes & Returns ({filteredReturns.length})</h2>
+            </div>
+
+            <div className="relative w-full sm:w-72">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search return or supplier..."
+                className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
+              />
+            </div>
           </div>
 
-          <div className="relative w-full sm:w-72">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search return or supplier..."
-              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
-            />
-          </div>
+          <DateFilterBar filterState={dateFilter} onChange={setDateFilter} />
         </div>
 
         {/* Table */}

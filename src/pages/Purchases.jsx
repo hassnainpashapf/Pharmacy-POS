@@ -15,6 +15,7 @@ import {
   savePurchaseReturn,
   deletePurchaseReturn,
 } from '../lib/db'
+import DateFilterBar, { matchesDateFilter, useDateFilterState } from '../components/DateFilterBar'
 import { Modal, Input } from './Medicines'
 import {
   ShoppingBag,
@@ -104,11 +105,13 @@ export default function Purchases({ forcedTab }) {
   // Purchase Orders Data & Filters
   const [poSearch, setPoSearch] = useState('')
   const [poStatusFilter, setPoStatusFilter] = useState('ALL') // ALL | DRAFT | SENT | RECEIVED | CANCELLED
+  const [poDateFilter, setPoDateFilter] = useDateFilterState('all')
 
   const allPOs = purchaseOrders()
 
   const filteredPOs = useMemo(() => {
     return allPOs.filter((po) => {
+      const matchDate = matchesDateFilter(po.createdAt || po.date, poDateFilter)
       const matchStatus = poStatusFilter === 'ALL' || po.status === poStatusFilter
       const sup = supplierById(po.supplierId)
       const q = poSearch.toLowerCase().trim()
@@ -118,9 +121,9 @@ export default function Purchases({ forcedTab }) {
         sup?.name?.toLowerCase().includes(q) ||
         sup?.company?.toLowerCase().includes(q) ||
         po.items?.some((it) => it.name?.toLowerCase().includes(q))
-      return matchStatus && matchSearch
+      return matchDate && matchStatus && matchSearch
     })
-  }, [allPOs, poStatusFilter, poSearch])
+  }, [allPOs, poDateFilter, poStatusFilter, poSearch])
 
   // PO KPIs
   const poStats = useMemo(() => {
@@ -132,14 +135,35 @@ export default function Purchases({ forcedTab }) {
     return { total, draft, sent, received, totalValue }
   }, [allPOs])
 
+  // Inward Purchases & GRN Filters
+  const [grnSearch, setGrnSearch] = useState('')
+  const [grnDateFilter, setGrnDateFilter] = useDateFilterState('all')
+
+  const filteredPurchases = useMemo(() => {
+    return (db.purchases || []).filter((p) => {
+      const matchDate = matchesDateFilter(p.date, grnDateFilter)
+      const sup = supplierById(p.supplierId)
+      const q = grnSearch.toLowerCase().trim()
+      const matchSearch =
+        !q ||
+        p.grnNo?.toLowerCase().includes(q) ||
+        p.invoiceNo?.toLowerCase().includes(q) ||
+        sup?.name?.toLowerCase().includes(q) ||
+        (p.items || []).some((it) => it.name?.toLowerCase().includes(q) || it.batchNo?.toLowerCase().includes(q))
+      return matchDate && matchSearch
+    })
+  }, [db.purchases, grnDateFilter, grnSearch])
+
   // Purchase Returns Data & Filters
   const [returnSearch, setReturnSearch] = useState('')
   const [returnReasonFilter, setReturnReasonFilter] = useState('ALL')
+  const [returnDateFilter, setReturnDateFilter] = useDateFilterState('all')
 
   const allReturns = purchaseReturns()
 
   const filteredReturns = useMemo(() => {
     return allReturns.filter((pr) => {
+      const matchDate = matchesDateFilter(pr.date || pr.createdAt, returnDateFilter)
       const sup = supplierById(pr.supplierId)
       const q = returnSearch.toLowerCase().trim()
       const matchSearch =
@@ -153,9 +177,9 @@ export default function Purchases({ forcedTab }) {
         returnReasonFilter === 'ALL' ||
         pr.items?.some((it) => it.reason === returnReasonFilter)
 
-      return matchSearch && matchReason
+      return matchDate && matchSearch && matchReason
     })
-  }, [allReturns, returnSearch, returnReasonFilter])
+  }, [allReturns, returnDateFilter, returnSearch, returnReasonFilter])
 
   // Returns KPIs
   const returnStats = useMemo(() => {
@@ -338,33 +362,37 @@ export default function Purchases({ forcedTab }) {
           </div>
 
           {/* Search & Filter Toolbar */}
-          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search PO #, supplier name, company, or medicine..."
-                value={poSearch}
-                onChange={(e) => setPoSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+          <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <DateFilterBar filterState={poDateFilter} onChange={setPoDateFilter} />
 
-            {/* Status Filter Pills */}
-            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
-              {['ALL', 'DRAFT', 'SENT', 'RECEIVED'].map((st) => (
-                <button
-                  key={st}
-                  onClick={() => setPoStatusFilter(st)}
-                  className={`px-3 py-1 text-xs font-bold rounded-md transition ${
-                    poStatusFilter === st
-                      ? 'bg-white text-slate-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  {st === 'ALL' ? 'All POs' : st}
-                </button>
-              ))}
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search PO #, supplier name, company, or medicine..."
+                  value={poSearch}
+                  onChange={(e) => setPoSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              {/* Status Filter Pills */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+                {['ALL', 'DRAFT', 'SENT', 'RECEIVED'].map((st) => (
+                  <button
+                    key={st}
+                    onClick={() => setPoStatusFilter(st)}
+                    className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
+                      poStatusFilter === st
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {st === 'ALL' ? 'All POs' : st}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -600,19 +628,35 @@ export default function Purchases({ forcedTab }) {
             <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
               <span className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
                 <Receipt className="w-4 h-4 text-emerald-600" />
-                Goods Received Notes (GRN) & Invoices ({(db.purchases || []).length})
+                Goods Received Notes (GRN) & Invoices ({filteredPurchases.length})
               </span>
               <button
                 onClick={() => {
                   setReceivingPO(null)
                   setShowNewPurchase(true)
                 }}
-                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
+                className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
                 + Add GRN / Inward Stock
               </button>
             </div>
+
+            {/* GRN Date Filter & Search */}
+            <div className="p-3 border-b border-slate-200 bg-white space-y-2.5">
+              <DateFilterBar filterState={grnDateFilter} onChange={setGrnDateFilter} />
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search GRN #, invoice #, supplier, or medicine..."
+                  value={grnSearch}
+                  onChange={(e) => setGrnSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+            </div>
+
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
@@ -632,7 +676,7 @@ export default function Purchases({ forcedTab }) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {[...db.purchases].reverse().map((p) => {
+                  {[...filteredPurchases].reverse().map((p) => {
                     const sup = supplierById(p.supplierId)
                     const taxes = (Number(p.gstAmount) || 0) + (Number(p.advanceTaxAmount) || 0) + (Number(p.otherTax) || 0)
                     const due = p.due !== undefined ? p.due : (p.total - (p.paid || 0))
@@ -720,40 +764,44 @@ export default function Purchases({ forcedTab }) {
           </div>
 
           {/* Search & Reason Filter Toolbar */}
-          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search PR #, supplier, company, medicine, or batch..."
-                value={returnSearch}
-                onChange={(e) => setReturnSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-            </div>
+          <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <DateFilterBar filterState={returnDateFilter} onChange={setReturnDateFilter} />
 
-            {/* Reason Filter Pills */}
-            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg flex-wrap">
-              {[
-                { id: 'ALL', label: 'All Reasons' },
-                { id: 'EXPIRED', label: '⏰ Expired' },
-                { id: 'NEAR_EXPIRY', label: '⌛ Near Expiry' },
-                { id: 'DAMAGED', label: '💥 Damaged' },
-                { id: 'WRONG_ITEM', label: '❌ Wrong Item' },
-                { id: 'OVER_STOCKED', label: '📦 Excess' },
-              ].map((rf) => (
-                <button
-                  key={rf.id}
-                  onClick={() => setReturnReasonFilter(rf.id)}
-                  className={`px-2.5 py-1 text-xs font-bold rounded-md transition ${
-                    returnReasonFilter === rf.id
-                      ? 'bg-white text-purple-900 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800'
-                  }`}
-                >
-                  {rf.label}
-                </button>
-              ))}
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search PR #, supplier, company, medicine, or batch..."
+                  value={returnSearch}
+                  onChange={(e) => setReturnSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+
+              {/* Reason Filter Pills */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg flex-wrap">
+                {[
+                  { id: 'ALL', label: 'All Reasons' },
+                  { id: 'EXPIRED', label: '⏰ Expired' },
+                  { id: 'NEAR_EXPIRY', label: '⌛ Near Expiry' },
+                  { id: 'DAMAGED', label: '💥 Damaged' },
+                  { id: 'WRONG_ITEM', label: '❌ Wrong Item' },
+                  { id: 'OVER_STOCKED', label: '📦 Excess' },
+                ].map((rf) => (
+                  <button
+                    key={rf.id}
+                    onClick={() => setReturnReasonFilter(rf.id)}
+                    className={`px-2.5 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
+                      returnReasonFilter === rf.id
+                        ? 'bg-white text-purple-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {rf.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 

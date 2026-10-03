@@ -9,6 +9,7 @@ import {
   stockOf,
   customerById,
 } from '../lib/db'
+import DateFilterBar, { matchesDateFilter, useDateFilterState } from './DateFilterBar'
 import {
   Search,
   Printer,
@@ -37,7 +38,7 @@ export default function SalesHistory({ onReprint }) {
   const sales = allSalesInScope()
 
   const [search, setSearch] = useState('')
-  const [dateFilter, setDateFilter] = useState('ALL') // ALL | TODAY | YESTERDAY | WEEK
+  const [dateFilter, setDateFilter] = useDateFilterState('all')
   const [payFilter, setPayFilter] = useState('ALL') // ALL | CASH | CARD | CREDIT
   const [expandedSaleId, setExpandedSaleId] = useState(null)
   const [editingSale, setEditingSale] = useState(null)
@@ -47,23 +48,13 @@ export default function SalesHistory({ onReprint }) {
   // Filter sales
   const filteredSales = useMemo(() => {
     const q = search.trim().toLowerCase()
-    const now = new Date()
-    const todayStr = now.toDateString()
-    const yest = new Date(now)
-    yest.setDate(now.getDate() - 1)
-    const yestStr = yest.toDateString()
 
     return sales.filter((s) => {
       // Payment filter
       if (payFilter !== 'ALL' && s.payMethod !== payFilter) return false
 
       // Date filter
-      if (dateFilter !== 'ALL') {
-        const sDate = new Date(s.date)
-        if (dateFilter === 'TODAY' && sDate.toDateString() !== todayStr) return false
-        if (dateFilter === 'YESTERDAY' && sDate.toDateString() !== yestStr) return false
-        if (dateFilter === 'WEEK' && now.getTime() - sDate.getTime() > 7 * 86400000) return false
-      }
+      if (!matchesDateFilter(s.date, dateFilter)) return false
 
       // Search query
       if (!q) return true
@@ -189,69 +180,51 @@ export default function SalesHistory({ onReprint }) {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-2.5 rounded-xl border border-slate-300 shadow-2xs mb-2.5 flex flex-wrap items-center justify-between gap-2 shrink-0">
-        {/* Search Input */}
-        <div className="relative flex-1 min-w-[240px]">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Invoice # (INV-00001), Medicine, Batch, Customer, or Cashier..."
-            className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-8 py-2 text-xs font-medium focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:border-emerald-600"
-          />
-          {search && (
-            <button
-              onClick={() => setSearch('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-        </div>
+      <div className="bg-white p-2.5 rounded-xl border border-slate-300 shadow-2xs mb-2.5 space-y-2.5 shrink-0">
+        <DateFilterBar filterState={dateFilter} onChange={setDateFilter} />
 
-        {/* Date Filter Buttons */}
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
-          {[
-            { id: 'ALL', label: 'All Dates' },
-            { id: 'TODAY', label: 'Today' },
-            { id: 'YESTERDAY', label: 'Yesterday' },
-            { id: 'WEEK', label: '7 Days' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setDateFilter(tab.id)}
-              className={`px-2.5 py-1 rounded-md font-bold text-xs transition-colors ${
-                dateFilter === tab.id
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-[240px]">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by Invoice # (INV-00001), Medicine, Batch, Customer, or Cashier..."
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-8 py-2 text-xs font-medium focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:border-emerald-600"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
 
-        {/* Payment Filter */}
-        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
-          {[
-            { id: 'ALL', label: 'All Methods' },
-            { id: 'CASH', label: 'Cash' },
-            { id: 'CARD', label: 'Card' },
-            { id: 'CREDIT', label: 'Credit' },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setPayFilter(tab.id)}
-              className={`px-2.5 py-1 rounded-md font-bold text-xs transition-colors ${
-                payFilter === tab.id
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
+          {/* Payment Filter */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
+            {[
+              { id: 'ALL', label: 'All Methods' },
+              { id: 'CASH', label: 'Cash' },
+              { id: 'CARD', label: 'Card' },
+              { id: 'CREDIT', label: 'Credit' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setPayFilter(tab.id)}
+                className={`px-2.5 py-1 rounded-md font-bold text-xs transition-colors cursor-pointer ${
+                  payFilter === tab.id
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
