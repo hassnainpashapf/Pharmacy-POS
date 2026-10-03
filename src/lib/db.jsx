@@ -1237,6 +1237,25 @@ export function deleteSupplier(id) {
   return true
 }
 export function addCustomer(c) { const x = { id: uid(), balance: 0, points: 0, ...c }; db.customers.push(x); save(); return x }
+export function updateCustomer(id, patch) {
+  const c = db.customers.find((x) => x.id === id)
+  if (!c) return null
+  Object.assign(c, patch)
+  log('CUSTOMER_UPDATE', `Updated customer ${c.name}`)
+  save()
+  notifyListeners()
+  return c
+}
+export function deleteCustomer(id) {
+  if (id === 'walkin') return false
+  const idx = db.customers.findIndex((x) => x.id === id)
+  if (idx === -1) return false
+  const [removed] = db.customers.splice(idx, 1)
+  log('CUSTOMER_DELETE', `Deleted customer ${removed?.name || id}`)
+  save()
+  notifyListeners()
+  return true
+}
 
 export function updateSettings(patch) {
   db.settings = { ...db.settings, ...patch }
