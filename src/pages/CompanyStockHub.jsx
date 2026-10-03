@@ -386,17 +386,18 @@ export default function CompanyStockHub() {
           <button
             type="button"
             onClick={() => setSelectedCompany('ALL')}
-            className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
+            className={`relative h-[115px] p-3 rounded-2xl border transition-all flex flex-col justify-between cursor-pointer text-center ${
               selectedCompany === 'ALL'
                 ? 'bg-[#e9f5f2] border-[#00A09D] text-[#006d69] shadow-xs'
-                : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800'
+                : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 hover:shadow-xs'
             }`}
           >
-            <div>
-              <div className="text-[11px] font-bold opacity-80">Overview</div>
-              <div className="text-sm font-black mt-0.5">All Medicines</div>
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-1 my-auto">
+              <div className="text-sm font-black text-center leading-snug">
+                All Medicines
+              </div>
             </div>
-            <div className="mt-3 pt-2 border-t border-current/10 flex items-center justify-between text-[11px]">
+            <div className="mt-auto pt-2 border-t border-current/10 flex items-center justify-between text-[11px] w-full shrink-0">
               <span>{overall.totalMedicines} items</span>
               <span className="font-bold">{fmt(overall.totalCost)}</span>
             </div>
@@ -410,29 +411,31 @@ export default function CompanyStockHub() {
                 key={c.name}
                 type="button"
                 onClick={() => setSelectedCompany(c.name)}
-                className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
+                className={`relative h-[115px] p-3 rounded-2xl border transition-all flex flex-col justify-between cursor-pointer text-center ${
                   isSelected
                     ? 'bg-[#e9f5f2] border-[#00A09D] text-[#006d69] shadow-xs'
-                    : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800'
+                    : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 hover:shadow-xs'
                 }`}
               >
-                <div>
-                  {c.nearExpiryCount > 0 && (
-                    <div className="flex justify-end mb-1">
-                      <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 ${
-                        isSelected ? 'bg-amber-400 text-slate-900' : 'bg-amber-100 text-amber-800'
-                      }`}>
-                        <Clock className="w-2.5 h-2.5" />
-                        {c.nearExpiryCount}
-                      </span>
-                    </div>
-                  )}
-                  <div className="text-sm font-black truncate" title={c.name}>
+                {c.nearExpiryCount > 0 && (
+                  <span
+                    title={`${c.nearExpiryCount} near expiry batches`}
+                    className={`absolute top-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 z-10 ${
+                      isSelected ? 'bg-amber-400 text-slate-900 font-extrabold' : 'bg-amber-100 text-amber-800 border border-amber-200/80'
+                    }`}
+                  >
+                    <Clock className="w-2.5 h-2.5" />
+                    {c.nearExpiryCount}
+                  </span>
+                )}
+
+                <div className="flex-1 flex flex-col items-center justify-center text-center px-1 my-auto">
+                  <div className="text-sm font-black text-center leading-snug break-words line-clamp-2" title={c.name}>
                     {c.name}
                   </div>
                 </div>
 
-                <div className="mt-3 pt-2 border-t border-current/10 flex items-center justify-between text-[11px]">
+                <div className="mt-auto pt-2 border-t border-current/10 flex items-center justify-between text-[11px] w-full shrink-0">
                   <span>{c.totalUnits} Units</span>
                   <span className="font-bold">{fmt(c.totalCost)}</span>
                 </div>
