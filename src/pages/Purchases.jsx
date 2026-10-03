@@ -223,11 +223,48 @@ export default function Purchases({ forcedTab }) {
               <ShoppingBag className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-slate-900">
-                Purchases & Invoices
-              </h1>
-              <p className="text-xs text-slate-400 font-medium">
-                Purchase orders, inward stock bills (GRN), and supplier returns
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                  Purchases & Invoices
+                </h1>
+                {/* Mode Switcher Segmented Pills */}
+                <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setTabAndUrl('orders')}
+                    className={`px-2.5 py-0.5 rounded-md font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                      tab === 'orders'
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    <span>Purchase Orders</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      tab === 'orders' ? 'bg-[#3b1734] text-white' : 'bg-slate-200 text-slate-600'
+                    }`}>
+                      {allPOs.length}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTabAndUrl('invoices')}
+                    className={`px-2.5 py-0.5 rounded-md font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                      tab === 'invoices'
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    <span>Bills & GRN</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      tab === 'invoices' ? 'bg-[#3b1734] text-white' : 'bg-slate-200 text-slate-600'
+                    }`}>
+                      {(db.purchases || []).length}
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400 font-medium mt-0.5">
+                Purchase orders, inward stock bills (GRN), and supplier deliveries
               </p>
             </div>
           </div>
@@ -243,7 +280,6 @@ export default function Purchases({ forcedTab }) {
             <Printer className="w-4 h-4 text-slate-500" />
             <span>Print</span>
           </button>
-
 
           <button
             type="button"
@@ -266,41 +302,6 @@ export default function Purchases({ forcedTab }) {
             <span>+ New GRN</span>
           </button>
         </div>
-      </div>
-
-      {/* Sub-tab Navigation Switcher */}
-      <div className="flex items-center gap-2 p-1 bg-slate-100/80 rounded-xl w-fit border border-slate-200/60">
-        <button
-          type="button"
-          onClick={() => setTabAndUrl('orders')}
-          className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-            tab === 'orders'
-              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-          }`}
-        >
-          <ShoppingBag className="w-3.5 h-3.5 text-[#714B67]" />
-          <span>Purchase Orders</span>
-          <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-[#f5eef4] text-[#714B67]">
-            {allPOs.length}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setTabAndUrl('invoices')}
-          className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-            tab === 'invoices'
-              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-          }`}
-        >
-          <Receipt className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Bills & GRN</span>
-          <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-emerald-100 text-emerald-700">
-            {(db.purchases || []).length}
-          </span>
-        </button>
       </div>
 
       {/* ======================================================== */}
@@ -384,7 +385,7 @@ export default function Purchases({ forcedTab }) {
           {/* Search & Filter Toolbar */}
           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-              <div className="relative flex-1 min-w-[240px]">
+              <div className="relative flex-1 min-w-[200px]">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
@@ -393,6 +394,20 @@ export default function Purchases({ forcedTab }) {
                   onChange={(e) => setPoSearch(e.target.value)}
                   className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
                 />
+              </div>
+
+              {/* View Mode Dropdown */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+                <ShoppingBag className="w-3.5 h-3.5 text-[#3b1734] shrink-0" />
+                <select
+                  value={tab}
+                  onChange={(e) => setTabAndUrl(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[185px] truncate"
+                  aria-label="Switch purchase view mode"
+                >
+                  <option value="orders">📦 Purchase Orders ({allPOs.length})</option>
+                  <option value="invoices">🧾 Bills & GRN ({(db.purchases || []).length})</option>
+                </select>
               </div>
 
               {/* Date Filter Dropdown */}
@@ -719,7 +734,7 @@ export default function Purchases({ forcedTab }) {
           {/* Search & Filter Toolbar */}
           <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-              <div className="relative flex-1 min-w-[240px]">
+              <div className="relative flex-1 min-w-[200px]">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
@@ -728,6 +743,20 @@ export default function Purchases({ forcedTab }) {
                   onChange={(e) => setGrnSearch(e.target.value)}
                   className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
                 />
+              </div>
+
+              {/* View Mode Dropdown */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+                <ShoppingBag className="w-3.5 h-3.5 text-[#3b1734] shrink-0" />
+                <select
+                  value={tab}
+                  onChange={(e) => setTabAndUrl(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[185px] truncate"
+                  aria-label="Switch purchase view mode"
+                >
+                  <option value="orders">📦 Purchase Orders ({allPOs.length})</option>
+                  <option value="invoices">🧾 Bills & GRN ({(db.purchases || []).length})</option>
+                </select>
               </div>
 
               {/* Date Filter Dropdown */}
