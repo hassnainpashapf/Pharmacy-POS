@@ -687,61 +687,53 @@ export function CompanyStockGraph({ db, nav }) {
     }
   }, [db?.medicines, db?.batches])
 
-  const colors = ['bg-[#714B67]', 'bg-[#008f8b]', 'bg-[#8c6783]', 'bg-slate-400']
+  const colors = ['bg-[#714B67]', 'bg-[#008f8b]', 'bg-[#8c6783]', 'bg-slate-300']
 
   return (
     <div
       onClick={() => nav('/company-stock')}
-      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#714B67] leading-none">
-                Company Stock
-              </h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">{stats.totalCompanies} manufacturers</p>
-            </div>
+            <h3 className="text-xs font-bold text-slate-800 group-hover:text-[#714B67]">
+              Company Stock
+            </h3>
           </div>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#714B67] bg-[#f5eef4] border border-[#714B67]/20 px-2 py-0.5 rounded-full group-hover:bg-[#714B67] group-hover:text-white transition-colors">
-            Open <ArrowUpRight className="w-3 h-3" />
-          </span>
+          <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
-        {/* Valuation Metric */}
-        <div className="mt-2.5 pb-2.5 border-b border-slate-100">
-          <div className="text-[11px] font-medium text-slate-500">Total Stock Valuation</div>
-          <div className="text-lg font-black text-slate-900 tracking-tight flex items-baseline gap-1.5">
-            <span>PKR {fmt(stats.totalStockValuation)}</span>
-            <span className="text-[11px] font-normal text-slate-400">({fmt(stats.totalStockUnits)} units)</span>
+        <div className="mb-3">
+          <div className="text-xl font-black text-slate-900 tracking-tight">
+            {fmt(stats.totalStockValuation)}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">
+            {stats.totalStockUnits.toLocaleString()} units · {stats.totalCompanies} brands
           </div>
         </div>
 
-        {/* Horizontal Distribution Bars */}
-        <div className="mt-3 space-y-2">
+        <div className="space-y-2 pt-2 border-t border-slate-100">
           {stats.list.length === 0 ? (
-            <div className="text-xs text-slate-400 py-3 text-center">No company stock recorded</div>
+            <div className="text-xs text-slate-400 py-2 text-center">No stock recorded</div>
           ) : (
             stats.list.map((c, i) => {
               const pct = stats.totalStockValuation > 0 ? Math.round((c.valuation / stats.totalStockValuation) * 100) : 0
               return (
                 <div key={i} className="space-y-1">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="font-semibold text-slate-700 truncate max-w-[130px]" title={c.name}>
+                    <span className="text-slate-600 truncate max-w-[140px]" title={c.name}>
                       {c.name}
                     </span>
-                    <span className="text-slate-500 font-medium tabular-nums">
-                      {pct}% <span className="text-slate-400 text-[10px]">({fmt(c.units)})</span>
-                    </span>
+                    <span className="font-semibold text-slate-800 tabular-nums">{pct}%</span>
                   </div>
                   <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                     <div
-                      className={`h-full ${colors[i % colors.length]} rounded-full transition-all duration-500`}
-                      style={{ width: `${Math.max(pct, 3)}%` }}
+                      className={`h-full ${colors[i % colors.length]} rounded-full`}
+                      style={{ width: `${Math.max(pct, 2)}%` }}
                     />
                   </div>
                 </div>
@@ -749,11 +741,6 @@ export function CompanyStockGraph({ db, nav }) {
             })
           )}
         </div>
-      </div>
-
-      <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
-        <span>Company-wise inventory</span>
-        <span className="text-[#714B67] font-bold group-hover:underline">View Hub</span>
       </div>
     </div>
   )
@@ -812,88 +799,67 @@ export function StockAuditGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/stock-audit')}
-      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-xl bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
               <ClipboardCheck className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#008f8b] leading-none">
-                Stock Audit & Count
-              </h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">{stats.lastAuditDate}</p>
-            </div>
+            <h3 className="text-xs font-bold text-slate-800 group-hover:text-[#008f8b]">
+              Stock Audit
+            </h3>
           </div>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#008f8b] bg-[#e6f7f2] border border-[#b7e5dc] px-2 py-0.5 rounded-full group-hover:bg-[#008f8b] group-hover:text-white transition-colors">
-            Open <ArrowUpRight className="w-3 h-3" />
-          </span>
+          <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#008f8b] transition-colors" />
         </div>
 
-        {/* Accuracy Metric */}
-        <div className="mt-2.5 pb-2.5 border-b border-slate-100">
-          <div className="text-[11px] font-medium text-slate-500">Count Accuracy Rate</div>
-          <div className="text-lg font-black text-slate-900 tracking-tight flex items-baseline gap-1.5">
-            <span className="text-[#008f8b]">{stats.accuracy}%</span>
-            <span className="text-[11px] font-normal text-slate-400">({stats.totalItems} audited items)</span>
+        <div className="mb-3">
+          <div className="text-xl font-black text-[#008f8b] tracking-tight">
+            {stats.accuracy}%
+          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">
+            {stats.totalItems.toLocaleString()} items counted
           </div>
         </div>
 
-        {/* Stacked Progress Bar */}
-        <div className="mt-3 space-y-2">
-          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
+        <div className="space-y-3 pt-2 border-t border-slate-100">
+          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
             {stats.matchedPct > 0 && (
               <div
-                className="bg-[#008f8b] h-full transition-all duration-500"
+                className="bg-[#008f8b] h-full"
                 style={{ width: `${stats.matchedPct}%` }}
-                title={`Matched: ${stats.matched} items (${stats.matchedPct}%)`}
               />
             )}
             {stats.shortagePct > 0 && (
               <div
-                className="bg-rose-500 h-full transition-all duration-500"
+                className="bg-rose-500 h-full"
                 style={{ width: `${stats.shortagePct}%` }}
-                title={`Shortage: ${stats.shortage} items (${stats.shortagePct}%)`}
               />
             )}
             {stats.surplusPct > 0 && (
               <div
-                className="bg-[#714B67] h-full transition-all duration-500"
+                className="bg-[#714B67] h-full"
                 style={{ width: `${stats.surplusPct}%` }}
-                title={`Surplus: ${stats.surplus} items (${stats.surplusPct}%)`}
               />
             )}
           </div>
 
-          {/* Breakdown Stats */}
-          <div className="grid grid-cols-3 gap-1 pt-1">
-            <div className="bg-[#e6f7f2]/80 border border-[#b7e5dc] rounded-lg p-1.5 text-center">
-              <div className="text-[10px] font-bold text-[#008f8b]">{stats.matched}</div>
-              <div className="text-[9px] text-[#008f8b] font-medium">Matched</div>
+          <div className="grid grid-cols-3 gap-1.5 pt-1">
+            <div className="bg-[#e6f7f2]/80 border border-[#b7e5dc] rounded-xl p-1.5 text-center">
+              <div className="text-xs font-bold text-[#008f8b]">{stats.matched}</div>
+              <div className="text-[10px] text-[#008f8b] font-medium">Matched</div>
             </div>
-            <div className="bg-rose-50/70 border border-rose-100 rounded-lg p-1.5 text-center">
-              <div className="text-[10px] font-bold text-rose-800">
-                {stats.shortageUnits > 0 ? `-${stats.shortageUnits}` : stats.shortage}
-              </div>
-              <div className="text-[9px] text-rose-600 font-medium">Shortage</div>
+            <div className="bg-rose-50/80 border border-rose-100 rounded-xl p-1.5 text-center">
+              <div className="text-xs font-bold text-rose-700">{stats.shortage}</div>
+              <div className="text-[10px] text-rose-600 font-medium">Shortage</div>
             </div>
-            <div className="bg-[#f5eef4]/80 border border-[#decddd] rounded-lg p-1.5 text-center">
-              <div className="text-[10px] font-bold text-[#714B67]">
-                {stats.surplusUnits > 0 ? `+${stats.surplusUnits}` : stats.surplus}
-              </div>
-              <div className="text-[9px] text-[#714B67] font-medium">Excess</div>
+            <div className="bg-[#f5eef4]/80 border border-[#decddd] rounded-xl p-1.5 text-center">
+              <div className="text-xs font-bold text-[#714B67]">{stats.surplus}</div>
+              <div className="text-[10px] text-[#714B67] font-medium">Excess</div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
-        <span>
-          {stats.shortageCost > 0 ? `Shortage: -PKR ${fmt(stats.shortageCost)}` : '1-click reconciliation'}
-        </span>
-        <span className="text-[#008f8b] font-bold group-hover:underline">Start Audit</span>
       </div>
     </div>
   )
@@ -966,106 +932,82 @@ export function ExpiryActionGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/expiry-management')}
-      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
               <Clock className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#714B67] leading-none">
-                Batch & Expiry Action
-              </h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">FEFO Aging Radar</p>
-            </div>
+            <h3 className="text-xs font-bold text-slate-800 group-hover:text-[#714B67]">
+              Expiry Action
+            </h3>
           </div>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#714B67] bg-[#f5eef4] border border-[#714B67]/20 px-2 py-0.5 rounded-full group-hover:bg-[#714B67] group-hover:text-white transition-colors">
-            Open <ArrowUpRight className="w-3 h-3" />
-          </span>
+          <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
-        {/* Capital At Risk Metric */}
-        <div className="mt-2.5 pb-2.5 border-b border-slate-100">
-          <div className="text-[11px] font-medium text-slate-500">Capital at Expiry Risk</div>
-          <div className="text-lg font-black text-slate-900 tracking-tight flex items-baseline gap-1.5">
-            <span className={stats.capitalAtRisk > 0 ? 'text-rose-700' : 'text-[#008f8b]'}>
-              PKR {fmt(stats.capitalAtRisk)}
-            </span>
-            <span className="text-[11px] font-normal text-slate-400">
-              ({fmt(stats.expiredUnits + stats.criticalUnits)} units)
-            </span>
+        <div className="mb-3">
+          <div className={`text-xl font-black tracking-tight ${stats.capitalAtRisk > 0 ? 'text-rose-600' : 'text-[#008f8b]'}`}>
+            {fmt(stats.capitalAtRisk)}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">
+            {(stats.expiredUnits + stats.criticalUnits).toLocaleString()} units at risk
           </div>
         </div>
 
-        {/* Stacked FEFO Aging Progress Bar */}
-        <div className="mt-3 space-y-2">
-          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
+        <div className="space-y-3 pt-2 border-t border-slate-100">
+          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
             {stats.expiredPct > 0 && (
               <div
-                className="bg-rose-500 h-full transition-all duration-500"
+                className="bg-rose-500 h-full"
                 style={{ width: `${stats.expiredPct}%` }}
-                title={`Expired: ${stats.expiredUnits} units (${stats.expiredPct}%)`}
               />
             )}
             {stats.criticalPct > 0 && (
               <div
-                className="bg-amber-500 h-full transition-all duration-500"
+                className="bg-amber-500 h-full"
                 style={{ width: `${stats.criticalPct}%` }}
-                title={`Critical (0-30d): ${stats.criticalUnits} units (${stats.criticalPct}%)`}
-              />
-            )}
-            {stats.nearPct > 0 && (
-              <div
-                className="bg-yellow-400 h-full transition-all duration-500"
-                style={{ width: `${stats.nearPct}%` }}
-                title={`Near Expiry (31-90d): ${stats.nearUnits} units (${stats.nearPct}%)`}
               />
             )}
             {stats.safePct > 0 && (
               <div
-                className="bg-[#008f8b] h-full transition-all duration-500"
+                className="bg-[#008f8b] h-full"
                 style={{ width: `${stats.safePct}%` }}
-                title={`Safe (>90d): ${stats.safeUnits} units (${stats.safePct}%)`}
               />
             )}
           </div>
 
-          {/* Breakdown Mini Legend */}
-          <div className="space-y-1 pt-1">
-            <div className="flex items-center justify-between text-[10px]">
+          <div className="space-y-1.5 pt-0.5">
+            <div className="flex items-center justify-between text-[11px]">
               <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-rose-500 inline-block" />
-                <span>Expired (&lt; 0d)</span>
+                <span className="w-2 h-2 rounded-full bg-rose-500" />
+                <span>Expired</span>
               </span>
-              <span className="font-bold text-rose-700 tabular-nums">
-                {stats.expiredUnits} units <span className="font-normal text-slate-400">(PKR {fmt(stats.expiredCost)})</span>
+              <span className="font-semibold text-rose-600 tabular-nums">
+                {stats.expiredUnits.toLocaleString()} units
               </span>
             </div>
-            <div className="flex items-center justify-between text-[10px]">
+            <div className="flex items-center justify-between text-[11px]">
               <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
+                <span className="w-2 h-2 rounded-full bg-amber-500" />
                 <span>Critical (0–30d)</span>
               </span>
-              <span className="font-bold text-amber-700 tabular-nums">
-                {stats.criticalUnits} units <span className="font-normal text-slate-400">(PKR {fmt(stats.criticalCost)})</span>
+              <span className="font-semibold text-amber-700 tabular-nums">
+                {stats.criticalUnits.toLocaleString()} units
               </span>
             </div>
-            <div className="flex items-center justify-between text-[10px]">
+            <div className="flex items-center justify-between text-[11px]">
               <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-[#008f8b] inline-block" />
-                <span>Safe Stock (&gt;90d)</span>
+                <span className="w-2 h-2 rounded-full bg-[#008f8b]" />
+                <span>Safe Stock</span>
               </span>
-              <span className="font-bold text-[#008f8b] tabular-nums">{fmt(stats.safeUnits)} units</span>
+              <span className="font-semibold text-[#008f8b] tabular-nums">
+                {stats.safeUnits.toLocaleString()} units
+              </span>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
-        <span>FEFO Actions &amp; Clearance</span>
-        <span className="text-[#714B67] font-bold group-hover:underline">Manage Batches</span>
       </div>
     </div>
   )
@@ -1110,81 +1052,63 @@ export function PurchaseReturnsGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/purchase-returns')}
-      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
               <RotateCcw className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#714B67] leading-none">
-                Purchase Returns
-              </h3>
-              <p className="text-[10px] text-slate-400 mt-0.5">{stats.totalReturns} debit vouchers</p>
-            </div>
+            <h3 className="text-xs font-bold text-slate-800 group-hover:text-[#714B67]">
+              Purchase Returns
+            </h3>
           </div>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#714B67] bg-[#f5eef4] border border-[#714B67]/20 px-2 py-0.5 rounded-full group-hover:bg-[#714B67] group-hover:text-white transition-colors">
-            Open <ArrowUpRight className="w-3 h-3" />
-          </span>
+          <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
-        {/* Claims Metric */}
-        <div className="mt-2.5 pb-2.5 border-b border-slate-100">
-          <div className="text-[11px] font-medium text-slate-500">Recovered Claims (Debit Notes)</div>
-          <div className="text-lg font-black text-slate-900 tracking-tight flex items-baseline gap-1.5">
-            <span className="text-[#714B67]">PKR {fmt(stats.totalClaims)}</span>
-            <span className="text-[11px] font-normal text-slate-400">({stats.totalUnits} units)</span>
+        <div className="mb-3">
+          <div className="text-xl font-black text-slate-900 tracking-tight">
+            {fmt(stats.totalClaims)}
+          </div>
+          <div className="text-[11px] text-slate-400 mt-0.5">
+            {stats.totalReturns} debit notes · {stats.totalUnits.toLocaleString()} units
           </div>
         </div>
 
-        {/* Stacked Settlement Progress Bar */}
-        <div className="mt-3 space-y-2">
-          <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
+        <div className="space-y-3 pt-2 border-t border-slate-100">
+          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
             <div
-              className="bg-[#714B67] h-full transition-all duration-500"
+              className="bg-[#714B67] h-full"
               style={{ width: `${stats.totalClaims > 0 ? stats.creditPct : 80}%` }}
-              title={`Credit Notes: PKR ${fmt(stats.creditNotes)} (${stats.creditPct}%)`}
             />
             <div
-              className="bg-[#008f8b] h-full transition-all duration-500"
+              className="bg-[#008f8b] h-full"
               style={{ width: `${stats.totalClaims > 0 ? stats.cashPct : 20}%` }}
-              title={`Cash Refunds: PKR ${fmt(stats.cashRefunds)} (${stats.cashPct}%)`}
             />
           </div>
 
-          {/* Breakdown Mini Rows */}
-          <div className="space-y-1 pt-1">
-            <div className="flex items-center justify-between text-[10px]">
+          <div className="space-y-1.5 pt-0.5">
+            <div className="flex items-center justify-between text-[11px]">
               <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-[#714B67] inline-block" />
+                <span className="w-2 h-2 rounded-full bg-[#714B67]" />
                 <span>Credit Notes</span>
               </span>
-              <span className="font-bold text-[#714B67] tabular-nums">
-                PKR {fmt(stats.creditNotes)} <span className="font-normal text-slate-400">({stats.creditPct}%)</span>
+              <span className="font-semibold text-[#714B67] tabular-nums">
+                {fmt(stats.creditNotes)}
               </span>
             </div>
-            <div className="flex items-center justify-between text-[10px]">
+            <div className="flex items-center justify-between text-[11px]">
               <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-[#008f8b] inline-block" />
+                <span className="w-2 h-2 rounded-full bg-[#008f8b]" />
                 <span>Cash Refunds</span>
               </span>
-              <span className="font-bold text-[#008f8b] tabular-nums">
-                PKR {fmt(stats.cashRefunds)} <span className="font-normal text-slate-400">({stats.cashPct}%)</span>
+              <span className="font-semibold text-[#008f8b] tabular-nums">
+                {fmt(stats.cashRefunds)}
               </span>
-            </div>
-            <div className="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
-              <span>Dispatched to Distributors:</span>
-              <span className="font-semibold text-slate-700 tabular-nums">{fmt(stats.totalUnits)} units</span>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
-        <span>Supplier Account Ledgers</span>
-        <span className="text-[#714B67] font-bold group-hover:underline">Return Items</span>
       </div>
     </div>
   )
@@ -1196,14 +1120,10 @@ export function StockOperationsGraphs({ db, nav }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-2 h-4 bg-[#714B67] rounded-full" />
-          <h2 className="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
-            <span>Stock & Operations Analytics</span>
-            <span className="text-xs font-normal text-slate-400 hidden sm:inline">
-              | Live Inventory, FEFO & Supply Chain Graphs
-            </span>
+          <h2 className="text-sm font-bold text-slate-800 tracking-tight">
+            Inventory &amp; Stock Operations
           </h2>
         </div>
-        <span className="text-[11px] font-medium text-slate-500">Live Visual Metrics</span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
