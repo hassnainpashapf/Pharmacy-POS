@@ -250,7 +250,7 @@ export default function Purchases({ forcedTab }) {
         {/* Action Buttons Toolbar */}
         <div className="flex items-center gap-1.5 flex-wrap shrink-0">
           <button
-            onClick={() => navigate('/inventory?tab=audit')}
+            onClick={() => navigate('/stock-audit')}
             className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition"
             title="Stock audit worksheet for physical counting and auto PO generation"
           >

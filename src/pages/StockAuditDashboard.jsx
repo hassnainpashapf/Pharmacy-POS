@@ -2,17 +2,17 @@ import { useState, useMemo } from 'react'
 import {
   useDB,
   fmt,
-  medicineById,
   recordStockAudit,
   getStockAudits,
   todayStr,
+  savePurchaseOrder,
 } from '../lib/db'
 import DateFilterBar, { matchesDateFilter, useDateFilterState } from '../components/DateFilterBar'
 import {
   ClipboardCheck,
   Search,
   Plus,
-  Trash2,
+  Minus,
   CheckCircle2,
   AlertTriangle,
   ArrowRight,
@@ -20,6 +20,7 @@ import {
   TrendingUp,
   RotateCcw,
   Printer,
+  Download,
   Calendar,
   User,
   Package,
@@ -28,463 +29,993 @@ import {
   Check,
   FileSpreadsheet,
   DollarSign,
+  ShoppingBag,
+  X,
+  Building2,
+  Eye,
 } from 'lucide-react'
 
 export default function StockAuditDashboard() {
   const db = useDB()
+  const [q, setQ] = useState('')
+  const [companyFilter, setCompanyFilter] = useState('all')
+  const [varianceFilter, setVarianceFilter] = useState('ALL') // 'ALL' | 'KAM' | 'ZYADA' | 'MATCHED'
+  const [subTab, setSubTab] = useState('worksheet') // 'worksheet' | 'history'
+  const [auditTitle, setAuditTitle] = useState(`Physical Stock Audit — ${todayStr()}`)
   const [auditorName, setAuditorName] = useState(db.session?.name || 'Dr. Pharmacist')
-  const [auditNotes, setAuditNotes] = useState('')
-  const [searchQuery, setSearchQuery] = useState('')
-  const [filterReason, setFilterReason] = useState('ALL')
-  const [successMsg, setSuccessMsg] = useState('')
+  const [physicalCounts, setPhysicalCounts] = useState({})
+  const [reasons, setReasons] = useState({})
+  const [selectedForPO, setSelectedForPO] = useState(new Set())
+  const [poModalOpen, setPoModalOpen] = useState(false)
+  const [feedbackMsg, setFeedbackMsg] = useState('')
+  const [reconciledConfirmOpen, setReconciledConfirmOpen] = useState(false)
+  const [viewingAudit, setViewingAudit] = useState(null)
 
-  // Active worksheet of items being audited right now
-  // [{ medicineId, medicineName, company, systemStock, physicalStock, variance, costPrice, salePrice, reason, note }]
-  const [worksheet, setWorksheet] = useState(() => {
-    // Pre-populate with first 10 medicines so user immediately sees live items to count
-    return (db.medicines || []).slice(0, 8).map((m) => {
-      const bList = (db.batches || []).filter((b) => b.medicineId === m.id && b.qty > 0)
-      const sysUnits = bList.reduce((acc, b) => acc + Number(b.qty || 0), 0)
+  const medicines = db.medicines || []
+  const batches = db.batches || []
+  const suppliers = db.suppliers || []
+  const pastAudits = getStockAudits()
+
+  // Distinct companies for filtering
+  const distinctCompanies = useMemo(() => {
+    const set = new Set()
+    for (const m of medicines) {
+      if (m.manufacturer) set.add(m.manufacturer.trim())
+    }
+    return Array.from(set).sort()
+  }, [medicines])
+
+  // Calculate live system stock vs physical count for all medicines
+  const auditData = useMemo(() => {
+    return medicines.map((m) => {
+      const activeBatches = batches.filter(
+        (b) => b.medicineId === m.id && b.qty > 0 && b.status !== 'EXPIRED' && b.status !== 'DAMAGED'
+      )
+      const systemStock = activeBatches.reduce((a, b) => a + Number(b.qty || 0), 0)
+      const countEntered = physicalCounts[m.id]
+      const physicalStock = countEntered !== undefined && countEntered !== '' ? Number(countEntered) : systemStock
+      const variance = physicalStock - systemStock
+      const costPrice = m.purchasePrice != null ? m.purchasePrice : Math.round((m.salePrice || 100) * 0.75)
+      const salePrice = m.salePrice || 0
+      const financialImpact = variance * costPrice
+
+      let varianceType = 'MATCHED'
+      if (variance < 0) varianceType = 'KAM'
+      else if (variance > 0) varianceType = 'ZYADA'
+
+      const userReason = reasons[m.id] || (variance < 0 ? 'Damage / Broken' : variance > 0 ? 'Excess / Found' : 'Matched')
+
       return {
-        medicineId: m.id,
-        medicineName: m.name,
-        company: m.manufacturer || 'General',
-        systemStock: sysUnits,
-        physicalStock: sysUnits, // Initially matching
-        variance: 0,
-        costPrice: Number(m.purchasePrice) || 0,
-        salePrice: Number(m.salePrice) || 0,
-        reason: 'Matched',
-        note: '',
+        medicine: m,
+        systemStock,
+        physicalStock,
+        variance,
+        varianceType,
+        costPrice,
+        salePrice,
+        financialImpact,
+        reason: userReason,
       }
     })
-  })
+  }, [medicines, batches, physicalCounts, reasons])
 
-  // Medicines available to add into worksheet
-  const availableMedicines = useMemo(() => {
-    const inWorksheetIds = new Set(worksheet.map((w) => w.medicineId))
-    const list = (db.medicines || []).filter((m) => !inWorksheetIds.has(m.id))
-    if (!searchQuery.trim()) return list.slice(0, 15)
-    const q = searchQuery.toLowerCase()
-    return list.filter(
-      (m) =>
-        m.name.toLowerCase().includes(q) ||
-        m.generic?.toLowerCase().includes(q) ||
-        (m.manufacturer || '').toLowerCase().includes(q)
-    )
-  }, [db.medicines, worksheet, searchQuery])
+  // Summary Metrics
+  const kamItems = useMemo(() => auditData.filter((x) => x.variance < 0), [auditData])
+  const zyadaItems = useMemo(() => auditData.filter((x) => x.variance > 0), [auditData])
+  const matchedItems = useMemo(() => auditData.filter((x) => x.variance === 0), [auditData])
 
-  // Add medicine to worksheet
-  const addMedicineToWorksheet = (m) => {
-    const bList = (db.batches || []).filter((b) => b.medicineId === m.id && b.qty > 0)
-    const sysUnits = bList.reduce((acc, b) => acc + Number(b.qty || 0), 0)
-    setWorksheet((prev) => [
-      ...prev,
-      {
-        medicineId: m.id,
-        medicineName: m.name,
-        company: m.manufacturer || 'General',
-        systemStock: sysUnits,
-        physicalStock: sysUnits,
-        variance: 0,
-        costPrice: Number(m.purchasePrice) || 0,
-        salePrice: Number(m.salePrice) || 0,
-        reason: 'Matched',
-        note: '',
-      },
-    ])
-    setSearchQuery('')
-  }
+  const totalKamUnits = useMemo(() => kamItems.reduce((a, b) => a + Math.abs(b.variance), 0), [kamItems])
+  const totalZyadaUnits = useMemo(() => zyadaItems.reduce((a, b) => a + b.variance, 0), [zyadaItems])
+  const totalKamLoss = useMemo(() => kamItems.reduce((a, b) => a + Math.abs(b.financialImpact), 0), [kamItems])
+  const totalZyadaSurplus = useMemo(() => zyadaItems.reduce((a, b) => a + b.financialImpact, 0), [zyadaItems])
+  const netVarianceValuation = totalZyadaSurplus - totalKamLoss
 
-  // Update physical count for an item
-  const updatePhysicalCount = (medicineId, val) => {
-    const physical = Math.max(0, parseInt(val, 10) || 0)
-    setWorksheet((prev) =>
-      prev.map((item) => {
-        if (item.medicineId !== medicineId) return item
-        const variance = physical - item.systemStock
-        let defaultReason = 'Matched'
-        if (variance < 0) defaultReason = 'Damage / Broken'
-        else if (variance > 0) defaultReason = 'Excess / Found'
-        return {
-          ...item,
-          physicalStock: physical,
-          variance,
-          reason: item.reason === 'Matched' ? defaultReason : item.reason,
-        }
-      })
-    )
-  }
-
-  // Update reason
-  const updateReason = (medicineId, reason) => {
-    setWorksheet((prev) =>
-      prev.map((item) => (item.medicineId === medicineId ? { ...item, reason } : item))
-    )
-  }
-
-  // Remove item from worksheet
-  const removeItem = (medicineId) => {
-    setWorksheet((prev) => prev.filter((item) => item.medicineId !== medicineId))
-  }
-
-  // Worksheet summary calculations
-  const summary = useMemo(() => {
-    let matched = 0
-    let kamItems = 0
-    let zyadaItems = 0
-    let kamUnits = 0
-    let zyadaUnits = 0
-    let netVarianceCost = 0
-
-    for (const it of worksheet) {
-      const v = it.variance
-      const cost = it.costPrice || 0
-      if (v === 0) {
-        matched++
-      } else if (v < 0) {
-        kamItems++
-        kamUnits += Math.abs(v)
-        netVarianceCost -= Math.abs(v) * cost
-      } else {
-        zyadaItems++
-        zyadaUnits += v
-        netVarianceCost += v * cost
+  // Filtered rows for active worksheet
+  const displayRows = useMemo(() => {
+    return auditData.filter((row) => {
+      const m = row.medicine
+      // Company filter
+      if (companyFilter !== 'all') {
+        const c = (m.manufacturer || 'Unassigned').trim().toLowerCase()
+        if (c !== companyFilter.trim().toLowerCase()) return false
       }
-    }
+      // Status filter
+      if (varianceFilter === 'KAM' && row.varianceType !== 'KAM') return false
+      if (varianceFilter === 'ZYADA' && row.varianceType !== 'ZYADA') return false
+      if (varianceFilter === 'MATCHED' && row.varianceType !== 'MATCHED') return false
 
-    return {
-      total: worksheet.length,
-      matched,
-      kamItems,
-      zyadaItems,
-      kamUnits,
-      zyadaUnits,
-      netVarianceCost,
-    }
-  }, [worksheet])
+      // Search query
+      if (q.trim()) {
+        const query = q.toLowerCase()
+        const text = `${m.name} ${m.generic || ''} ${m.barcode || ''} ${m.manufacturer || ''}`.toLowerCase()
+        if (!text.includes(query)) return false
+      }
+      return true
+    })
+  }, [auditData, companyFilter, varianceFilter, q])
 
-  // Commit and Reconcile Stock
-  const handleReconcileAndSave = () => {
-    if (!worksheet.length) {
-      alert('The audit sheet is empty. Please add at least one medicine.')
+  function handleCountChange(medId, val) {
+    const num = val === '' ? '' : Math.max(0, parseInt(val, 10) || 0)
+    setPhysicalCounts((prev) => ({
+      ...prev,
+      [medId]: num,
+    }))
+  }
+
+  function adjustCount(medId, currentPhysical, delta) {
+    const nextVal = Math.max(0, currentPhysical + delta)
+    handleCountChange(medId, nextVal)
+  }
+
+  function handleReasonChange(medId, val) {
+    setReasons((prev) => ({ ...prev, [medId]: val }))
+  }
+
+  function handleResetAll() {
+    if (confirm('Reset all entered counts back to current system stock?')) {
+      setPhysicalCounts({})
+      setReasons({})
+      setSelectedForPO(new Set())
+    }
+  }
+
+  function handleOpenPOModalForKam() {
+    if (kamItems.length === 0) {
+      alert('No shortage (Kam) items detected in this audit!')
       return
     }
-
-    try {
-      const auditResult = recordStockAudit({
-        title: `Physical Audit (${todayStr()})`,
-        auditor: auditorName,
-        items: worksheet,
-        reconcile: true, // Updates batches in db
-      })
-
-      setSuccessMsg(`Stock audit completed successfully! Computer stock has been reconciled with physical count.`)
-      setTimeout(() => setSuccessMsg(''), 5000)
-    } catch (err) {
-      alert('Error saving audit: ' + err.message)
-    }
+    const nextSet = new Set(kamItems.map((x) => x.medicine.id))
+    setSelectedForPO(nextSet)
+    setPoModalOpen(true)
   }
 
-  // Past Audits List & Filter
+  function togglePOSelect(medId) {
+    setSelectedForPO((prev) => {
+      const next = new Set(prev)
+      if (next.has(medId)) next.delete(medId)
+      else next.add(medId)
+      return next
+    })
+  }
+
+  function handleSaveAudit(reconcile = false) {
+    const itemsToSave = auditData.map((d) => ({
+      medicineId: d.medicine.id,
+      medicineName: `${d.medicine.name} ${d.medicine.strength || ''}`,
+      systemStock: d.systemStock,
+      physicalStock: d.physicalStock,
+      variance: d.variance,
+      costPrice: d.costPrice,
+      salePrice: d.salePrice,
+      note: d.reason,
+    }))
+
+    const record = recordStockAudit({
+      title: auditTitle,
+      auditor: auditorName,
+      items: itemsToSave,
+      reconcile,
+    })
+
+    setReconciledConfirmOpen(false)
+    setFeedbackMsg(
+      `✓ Stock Audit ${record.auditNo} successfully saved! (${record.kamCount} Kam, ${record.zyadaCount} Zyada)${
+        reconcile ? ' · Inventory Batches Reconciled' : ''
+      }`
+    )
+    setTimeout(() => setFeedbackMsg(''), 6000)
+  }
+
+  function handleExportCSV() {
+    const header = ['Medicine', 'Strength', 'Generic', 'Manufacturer', 'System Stock', 'Physical Count', 'Discrepancy (Units)', 'Status', 'Unit Cost', 'Financial Impact (Rs.)']
+    const rows = displayRows.map((r) => [
+      `"${r.medicine.name}"`,
+      `"${r.medicine.strength || ''}"`,
+      `"${r.medicine.generic || ''}"`,
+      `"${r.medicine.manufacturer || 'Unassigned'}"`,
+      r.systemStock,
+      r.physicalStock,
+      r.variance,
+      r.varianceType === 'KAM' ? 'KAM (Shortage)' : r.varianceType === 'ZYADA' ? 'ZYADA (Surplus)' : 'MATCHED (OK)',
+      r.costPrice,
+      r.financialImpact,
+    ])
+    const csvContent = 'data:text/csv;charset=utf-8,' + [header.join(','), ...rows.map((row) => row.join(','))].join('\n')
+    const encoded = encodeURI(csvContent)
+    const link = document.createElement('a')
+    link.setAttribute('href', encoded)
+    link.setAttribute('download', `Stock_Audit_${new Date().toISOString().slice(0, 10)}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  // Past audits date filtering
   const [auditDateFilter, setAuditDateFilter] = useDateFilterState('all')
-  const pastAudits = getStockAudits()
   const filteredAudits = useMemo(() => {
     return pastAudits.filter((a) => matchesDateFilter(a.date, auditDateFilter))
   }, [pastAudits, auditDateFilter])
 
   return (
-    <div className="space-y-6 w-full pb-16 font-sans text-slate-800">
-      {/* 1. Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+    <div className="space-y-4 w-full pb-16 font-sans text-slate-800">
+      {/* Feedback Banner */}
+      {feedbackMsg && (
+        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl text-xs font-bold flex items-center justify-between shadow-xs">
+          <span className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            {feedbackMsg}
+          </span>
+          <button onClick={() => setFeedbackMsg('')} className="text-emerald-700 hover:text-emerald-900">✕</button>
+        </div>
+      )}
+
+      {/* Top Header Card */}
+      <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
         <div className="flex items-center gap-2.5">
           <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23]">
             <ClipboardCheck className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              Stock Audit Dashboard
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+              <span>Physical Stock Audit (Count & Variance)</span>
+              <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded border border-indigo-200">
+                Kam vs Zyada
+              </span>
             </h1>
-            <p className="text-xs text-slate-400 font-medium">
-              Physical Stock Count & Reconciliation
+            <p className="text-xs text-slate-500 mt-0.5">
+              Physical count vs system inventory verification. Detect shortages & surpluses, and generate Purchase Orders.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        {/* Global Action Buttons */}
+        <div className="flex flex-wrap items-center gap-1.5 w-full lg:w-auto">
+          {/* Generate Purchase Order Button */}
+          <button
+            type="button"
+            onClick={handleOpenPOModalForKam}
+            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            title="Automatically create a Purchase Order for all deficit medicines"
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            <span>⚡ Generate PO ({kamItems.length} Kam)</span>
+          </button>
+
+          {/* Save Audit Button */}
+          <button
+            type="button"
+            onClick={() => handleSaveAudit(false)}
+            className="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            title="Save this audit count record without adjusting system stock"
+          >
+            <CheckCircle2 className="w-3.5 h-3.5" /> Save Audit
+          </button>
+
+          {/* Reconcile Batches Button */}
+          <button
+            type="button"
+            onClick={() => setReconciledConfirmOpen(true)}
+            className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            title="Adjust system inventory batches to match physical count"
+          >
+            <RotateCcw className="w-3.5 h-3.5" /> Reconcile Stock
+          </button>
+
+          {/* Print & CSV */}
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-500" /> CSV
+          </button>
           <button
             type="button"
             onClick={() => window.print()}
-            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
+            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1 shrink-0 cursor-pointer"
           >
-            <Printer className="w-4 h-4 text-slate-500" />
-            <span>Print</span>
+            <Printer className="w-3.5 h-3.5 text-slate-500" /> Print
           </button>
+        </div>
+      </div>
 
+      {/* 4 KPI Summary Cards (Kam vs Zyada) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+        {/* Card 1: Kam Medicines (Shortages) */}
+        <div className="bg-rose-50/70 border border-rose-200 rounded-xl p-3 shadow-2xs">
+          <div className="flex items-center justify-between text-rose-700 mb-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
+              <TrendingDown className="w-3.5 h-3.5" /> 🔻 Kam Medicines (Shortages)
+            </span>
+            <span className="text-[10px] font-bold bg-rose-200/80 px-2 py-0.2 rounded-full">
+              Deficit
+            </span>
+          </div>
+          <div className="text-2xl font-black text-rose-900 tracking-tight">
+            {kamItems.length} <span className="text-xs font-semibold text-rose-700">Products</span>
+          </div>
+          <div className="flex justify-between items-center text-xs mt-2 text-rose-800 font-medium pt-2 border-t border-rose-200/60">
+            <span>Missing Units: <b>-{totalKamUnits}</b></span>
+            <span>Cost Loss: <b>Rs. {fmt(totalKamLoss)}</b></span>
+          </div>
+        </div>
+
+        {/* Card 2: Zyada Medicines (Surplus / Excess) */}
+        <div className="bg-emerald-50/70 border border-emerald-200 rounded-xl p-3 shadow-2xs">
+          <div className="flex items-center justify-between text-emerald-700 mb-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
+              <TrendingUp className="w-3.5 h-3.5" /> 🔺 Zyada Medicines (Surplus)
+            </span>
+            <span className="text-[10px] font-bold bg-emerald-200/80 px-2 py-0.2 rounded-full">
+              Excess
+            </span>
+          </div>
+          <div className="text-2xl font-black text-emerald-900 tracking-tight">
+            {zyadaItems.length} <span className="text-xs font-semibold text-emerald-700">Products</span>
+          </div>
+          <div className="flex justify-between items-center text-xs mt-2 text-emerald-800 font-medium pt-2 border-t border-emerald-200/60">
+            <span>Surplus Units: <b>+{totalZyadaUnits}</b></span>
+            <span>Excess Value: <b>Rs. {fmt(totalZyadaSurplus)}</b></span>
+          </div>
+        </div>
+
+        {/* Card 3: Matched Stock */}
+        <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 shadow-2xs">
+          <div className="flex items-center justify-between text-slate-600 mb-1">
+            <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
+              <Check className="w-3.5 h-3.5 text-emerald-600" /> ✓ Matched Stock (Accurate)
+            </span>
+            <span className="text-[10px] font-bold bg-slate-200 px-2 py-0.2 rounded-full text-slate-700">
+              0 Variance
+            </span>
+          </div>
+          <div className="text-2xl font-black text-slate-900 tracking-tight">
+            {matchedItems.length} <span className="text-xs font-semibold text-slate-500">Products</span>
+          </div>
+          <div className="flex justify-between items-center text-xs mt-2 text-slate-600 font-medium pt-2 border-t border-slate-200">
+            <span>Accuracy Rate: <b>{medicines.length ? Math.round((matchedItems.length / medicines.length) * 100) : 100}%</b></span>
+            <span>Net Discrepancy: <b>Rs. {fmt(netVarianceValuation)}</b></span>
+          </div>
+        </div>
+
+        {/* Card 4: Purchase Order Call-to-Action */}
+        <div className="bg-indigo-50/80 border border-indigo-200 rounded-xl p-3 shadow-2xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between text-indigo-700 mb-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider flex items-center gap-1">
+                <ShoppingBag className="w-3.5 h-3.5" /> 📋 Purchase Order Ready
+              </span>
+              <span className="text-[10px] font-bold bg-indigo-200/70 px-2 py-0.2 rounded-full text-indigo-900">
+                Action
+              </span>
+            </div>
+            <p className="text-xs text-indigo-900 font-bold mt-1">
+              {kamItems.length > 0 ? `${kamItems.length} medicines need restocking` : 'All inventory levels verified'}
+            </p>
+          </div>
           <button
             type="button"
-            onClick={handleReconcileAndSave}
-            className="px-3.5 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+            onClick={handleOpenPOModalForKam}
+            disabled={kamItems.length === 0}
+            className={`mt-2 w-full py-1.5 rounded-lg font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${
+              kamItems.length > 0
+                ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs cursor-pointer'
+                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+            }`}
           >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Reconcile Stock</span>
+            <span>Draft Purchase Order</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Success Banner */}
-      {successMsg && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2.5 text-emerald-800 text-xs font-bold animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>{successMsg}</span>
-        </div>
-      )}
-
-      {/* 2. Top Summary KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        {/* Total Items Under Audit */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold text-slate-600">Items Audited</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
-              <ClipboardCheck className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-slate-900">{summary.total}</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">In worksheet</div>
-          </div>
-        </div>
-
-        {/* Matched Count */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold text-slate-600">Matched Stock</span>
-            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center font-bold">
-              <Check className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-[#008f8b]">{summary.matched}</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Zero variance</div>
-          </div>
+      {/* Sub Tabs: Live Worksheet vs Audit History */}
+      <div className="flex items-center justify-between border-b border-slate-200 pb-2">
+        <div className="flex gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+          <button
+            type="button"
+            onClick={() => setSubTab('worksheet')}
+            className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+              subTab === 'worksheet'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Live Audit Worksheet ({auditData.length})
+          </button>
+          <button
+            type="button"
+            onClick={() => setSubTab('history')}
+            className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all ${
+              subTab === 'history'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Past Audit History ({pastAudits.length})
+          </button>
         </div>
 
-        {/* Shortage */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold text-slate-600">Shortage</span>
-            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
-              <TrendingDown className="w-4 h-4" />
-            </div>
+        {subTab === 'worksheet' && (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleResetAll}
+              className="text-xs font-bold text-slate-500 hover:text-rose-600 transition"
+              title="Reset all counts to system stock"
+            >
+              Reset Counts
+            </button>
           </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-rose-600">{summary.kamItems} items</div>
-            <div className="text-[11px] text-rose-500 font-medium mt-0.5">-{summary.kamUnits} units</div>
-          </div>
-        </div>
-
-        {/* Surplus */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold text-slate-600">Excess</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
-              <TrendingUp className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-[#714B67]">{summary.zyadaItems} items</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">+{summary.zyadaUnits} units</div>
-          </div>
-        </div>
-
-        {/* Financial Variance Impact */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold text-slate-600">Net Variance</span>
-            <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
-              <DollarSign className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className={`text-xl font-black ${summary.netVarianceCost < 0 ? 'text-rose-600' : 'text-slate-900'}`}>
-              {summary.netVarianceCost < 0 ? `- ${fmt(Math.abs(summary.netVarianceCost))}` : `+ ${fmt(summary.netVarianceCost)}`}
-            </div>
-            <div className="text-[11px] text-slate-400 mt-0.5">
-              {summary.netVarianceCost < 0 ? 'Deficit impact' : 'Surplus impact'}
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* 3. Live Counting & Audit Sheet */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        {/* Auditor & Search Toolbar */}
-        <div className="p-3 sm:p-4 border-b border-slate-100 bg-slate-50/60 flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4 text-slate-400" />
-              <label className="text-xs font-bold text-slate-700">Auditor:</label>
-              <input
-                type="text"
-                value={auditorName}
-                onChange={(e) => setAuditorName(e.target.value)}
-                className="px-2.5 py-1 border border-slate-300 rounded-lg text-xs font-bold text-slate-800 bg-white"
-              />
-            </div>
-          </div>
-
-          {/* Quick Search & Add Medicine */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search medicine to add..."
-              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
-            />
-
-            {/* Dropdown with search matches */}
-            {searchQuery.trim() && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-60 overflow-y-auto divide-y divide-slate-100">
-                {!availableMedicines.length && (
-                  <div className="p-3 text-xs text-slate-400 text-center">No medicine found</div>
-                )}
-                {availableMedicines.map((m) => (
+      {/* SUB-TAB 1: LIVE AUDIT WORKSHEET */}
+      {subTab === 'worksheet' && (
+        <div className="space-y-3">
+          {/* Controls Bar: Search, Filters, Variance Pills */}
+          <div className="bg-white p-2.5 border border-slate-200 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-2 shadow-2xs">
+            <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
+              {/* Direct Search Bar */}
+              <div className="relative flex-1 min-w-[220px]">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Search medicine, generic, barcode, company..."
+                  className="w-full bg-slate-50 border border-slate-300 rounded-sm pl-9 pr-8 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500"
+                />
+                {q && (
                   <button
-                    key={m.id}
                     type="button"
-                    onClick={() => addMedicineToWorksheet(m)}
-                    className="w-full p-2.5 text-left hover:bg-[#f5eef4]/50 flex items-center justify-between text-xs transition-colors"
+                    onClick={() => setQ('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
-                    <div>
-                      <div className="font-bold text-slate-900">{m.name}</div>
-                      <div className="text-[10px] text-slate-400">{m.manufacturer || 'General'}</div>
-                    </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#f5eef4] text-[#714B67] border border-[#decddd]">
-                      + Add to Sheet
-                    </span>
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Company Filter Dropdown */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-sm px-2.5 py-1.5 shrink-0">
+                <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                <select
+                  value={companyFilter}
+                  onChange={(e) => setCompanyFilter(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
+                  aria-label="Filter audit by pharmaceutical company"
+                >
+                  <option value="all">🏢 All Companies ({distinctCompanies.length})</option>
+                  {distinctCompanies.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Status Filter Buttons */}
+              <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 shrink-0">
+                {[
+                  { id: 'ALL', label: `All (${auditData.length})` },
+                  { id: 'KAM', label: `🔻 Shortages (${kamItems.length})`, color: 'text-rose-700 bg-rose-50 border-rose-200' },
+                  { id: 'ZYADA', label: `🔺 Excess (${zyadaItems.length})`, color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+                  { id: 'MATCHED', label: `✓ Matched (${matchedItems.length})`, color: 'text-slate-700 bg-slate-50 border-slate-200' },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setVarianceFilter(f.id)}
+                    className={`px-2.5 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
+                      varianceFilter === f.id
+                        ? f.color || 'bg-white text-slate-900 shadow-2xs border border-slate-200'
+                        : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    {f.label}
                   </button>
                 ))}
               </div>
-            )}
+            </div>
+          </div>
+
+          {/* Worksheet Table */}
+          <div className="bg-white border border-slate-200 rounded-xl overflow-x-auto shadow-xs">
+            <table className="w-full min-w-[1100px] text-xs text-left">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-700 font-bold">
+                <tr>
+                  <th className="p-3 w-10 text-center">PO</th>
+                  <th className="p-3">Medicine & Strength</th>
+                  <th className="p-3">Company</th>
+                  <th className="p-3 text-right">System Stock</th>
+                  <th className="p-3 text-center">Physical Count</th>
+                  <th className="p-3 text-center">Variance (Discrepancy)</th>
+                  <th className="p-3 text-right">Cost Price</th>
+                  <th className="p-3 text-right">Financial Impact</th>
+                  <th className="p-3">Audit Reason / Note</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {displayRows.map((r) => {
+                  const m = r.medicine
+                  const isKam = r.varianceType === 'KAM'
+                  const isZyada = r.varianceType === 'ZYADA'
+                  const isSelectedForPO = selectedForPO.has(m.id)
+
+                  return (
+                    <tr
+                      key={m.id}
+                      className={`hover:bg-slate-50/80 transition ${
+                        isKam ? 'bg-rose-50/20' : isZyada ? 'bg-emerald-50/20' : ''
+                      }`}
+                    >
+                      {/* PO Checkbox */}
+                      <td className="p-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={isSelectedForPO}
+                          onChange={() => togglePOSelect(m.id)}
+                          className="w-4 h-4 rounded text-[#3b1734] focus:ring-[#3b1734] cursor-pointer"
+                          title="Select for Purchase Order drafting"
+                        />
+                      </td>
+
+                      {/* Medicine Info */}
+                      <td className="p-3">
+                        <div className="font-bold text-slate-900">{m.name} {m.strength}</div>
+                        <div className="text-[10px] text-slate-400">
+                          {m.generic || '—'} · Barcode: {m.barcode || '—'}
+                        </div>
+                      </td>
+
+                      {/* Company */}
+                      <td className="p-3 text-slate-600 font-medium">
+                        {m.manufacturer || 'Unassigned'}
+                      </td>
+
+                      {/* System Stock */}
+                      <td className="p-3 text-right font-mono font-bold text-slate-700 text-sm">
+                        {r.systemStock}
+                      </td>
+
+                      {/* Physical Count with quick adjusters */}
+                      <td className="p-3">
+                        <div className="flex items-center justify-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => adjustCount(m.id, r.physicalStock, -1)}
+                            className="w-7 h-7 rounded border border-slate-300 bg-white hover:bg-slate-100 font-black text-slate-700 flex items-center justify-center cursor-pointer transition active:scale-95"
+                            title="Decrement count by 1"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <input
+                            type="number"
+                            min="0"
+                            value={physicalCounts[m.id] !== undefined ? physicalCounts[m.id] : r.systemStock}
+                            onChange={(e) => handleCountChange(m.id, e.target.value)}
+                            className={`w-16 text-center py-1 font-mono font-black text-sm border rounded ${
+                              isKam
+                                ? 'border-rose-400 bg-rose-50 text-rose-800'
+                                : isZyada
+                                ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
+                                : 'border-slate-300 bg-white text-slate-900'
+                            }`}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => adjustCount(m.id, r.physicalStock, 1)}
+                            className="w-7 h-7 rounded border border-slate-300 bg-white hover:bg-slate-100 font-black text-slate-700 flex items-center justify-center cursor-pointer transition active:scale-95"
+                            title="Increment count by 1"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </td>
+
+                      {/* Variance */}
+                      <td className="p-3 text-center">
+                        {r.variance === 0 ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-slate-100 text-slate-600">
+                            ✓ Matched
+                          </span>
+                        ) : isKam ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-black bg-rose-100 text-rose-700 border border-rose-200">
+                            🔻 {r.variance} (Kam)
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            🔺 +{r.variance} (Zyada)
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Cost Price */}
+                      <td className="p-3 text-right font-mono text-slate-600">
+                        {fmt(r.costPrice)}
+                      </td>
+
+                      {/* Financial Impact */}
+                      <td className="p-3 text-right font-mono font-bold">
+                        {r.variance === 0 ? (
+                          <span className="text-slate-400">—</span>
+                        ) : isKam ? (
+                          <span className="text-rose-600">- {fmt(Math.abs(r.financialImpact))}</span>
+                        ) : (
+                          <span className="text-emerald-700">+ {fmt(r.financialImpact)}</span>
+                        )}
+                      </td>
+
+                      {/* Reason */}
+                      <td className="p-3">
+                        <select
+                          value={r.reason}
+                          onChange={(e) => handleReasonChange(m.id, e.target.value)}
+                          className="w-full bg-white border border-slate-300 rounded px-2 py-1 text-[11px] font-semibold text-slate-700 outline-none"
+                        >
+                          <option value="Matched">Matched</option>
+                          <option value="Damage / Broken">Damage / Broken</option>
+                          <option value="Theft / Shrinkage">Theft / Shrinkage</option>
+                          <option value="Expired">Expired</option>
+                          <option value="Mislabeled">Mislabeled</option>
+                          <option value="Excess / Found">Excess / Found</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </td>
+                    </tr>
+                  )
+                })}
+                {!displayRows.length && (
+                  <tr>
+                    <td colSpan={9} className="p-8 text-center text-slate-400 font-medium">
+                      No medicines match the selected filter and search criteria.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* SUB-TAB 2: PAST AUDIT HISTORY */}
+      {subTab === 'history' && (
+        <div className="bg-white border border-slate-200 rounded-xl shadow-xs p-4 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
+            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-[#3b1734]" />
+              <span>Past Audit History Sessions</span>
+            </h2>
+            <span className="text-xs text-slate-400">{filteredAudits.length} recorded sessions</span>
+          </div>
+
+          <DateFilterBar filterState={auditDateFilter} onChange={setAuditDateFilter} />
+
+          {!filteredAudits.length && (
+            <p className="text-xs text-slate-400 py-8 text-center">
+              No past stock audit sessions found. Perform and save an audit from the Live Worksheet tab!
+            </p>
+          )}
+
+          <div className="divide-y divide-slate-100">
+            {filteredAudits.map((a) => (
+              <div key={a.id || a.auditNo} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <div>
+                  <div className="font-bold text-slate-900 flex items-center gap-2">
+                    <span className="font-mono text-indigo-700">{a.auditNo}</span>
+                    <span>·</span>
+                    <span>{a.title || 'Physical Stock Audit'}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
+                      Auditor: {a.auditor || 'Pharmacist'}
+                    </span>
+                  </div>
+                  <div className="text-slate-400 text-[11px] mt-0.5">
+                    Date: {new Date(a.date).toLocaleDateString('en-PK')} · Total Items Audited: {a.totalItemsChecked || a.items?.length || 0}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <div className="font-bold text-slate-700">
+                      Shortage: <span className="text-rose-600 font-bold">{a.kamCount || a.kamItemsCount || 0}</span> · Excess: <span className="text-emerald-700 font-bold">{a.zyadaCount || a.zyadaItemsCount || 0}</span>
+                    </div>
+                    <div className="text-[11px] font-mono text-slate-500">
+                      Net: {fmt(a.netVarianceCost || 0)}
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setViewingAudit(a)}
+                    className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <Eye className="w-3.5 h-3.5" /> View
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Modal for Inventory Reconciliation */}
+      {reconciledConfirmOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-5 w-full max-w-md shadow-2xl border border-slate-300 space-y-3 text-xs">
+            <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+              <RotateCcw className="w-5 h-5 text-amber-600" />
+              Confirm Inventory Reconciliation
+            </h3>
+            <p className="text-slate-600">
+              Are you sure you want to adjust system inventory batches to match your entered physical counts?
+            </p>
+            <div className="bg-amber-50 border border-amber-200 p-3 rounded-lg space-y-1 text-amber-900">
+              <div>• <b>{kamItems.length} Kam items</b> will have their batches reduced by <b>{totalKamUnits} units</b>.</div>
+              <div>• <b>{zyadaItems.length} Zyada items</b> will have surplus batches added (<b>+{totalZyadaUnits} units</b>).</div>
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setReconciledConfirmOpen(false)}
+                className="flex-1 py-2 rounded-lg border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSaveAudit(true)}
+                className="flex-1 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-bold shadow-xs cursor-pointer"
+              >
+                Yes, Reconcile Batches
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Generate Purchase Order Modal for Kam items */}
+      {poModalOpen && (
+        <AuditPOModal
+          kamItems={kamItems}
+          selectedIds={selectedForPO}
+          onToggleId={togglePOSelect}
+          suppliers={suppliers}
+          onClose={() => setPoModalOpen(false)}
+          onSuccess={(po) => {
+            setPoModalOpen(false)
+            setFeedbackMsg(`✓ Purchase Order ${po.poNo} created for ${po.items.length} items! You can view or print it in Purchases & PO.`)
+            setTimeout(() => setFeedbackMsg(''), 6000)
+          }}
+        />
+      )}
+
+      {/* View Past Audit Details Modal */}
+      {viewingAudit && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-5 w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scroll shadow-2xl border border-slate-300 space-y-3 text-xs">
+            <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+              <div>
+                <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+                  <ClipboardCheck className="w-5 h-5 text-indigo-600" />
+                  {viewingAudit.auditNo} — {viewingAudit.title || 'Stock Audit Report'}
+                </h3>
+                <p className="text-slate-500 text-[11px] mt-0.5">
+                  Auditor: <b>{viewingAudit.auditor || 'Pharmacist'}</b> · Date: {new Date(viewingAudit.date).toLocaleDateString('en-PK')}
+                </p>
+              </div>
+              <button onClick={() => setViewingAudit(null)} className="p-1 rounded text-slate-400 hover:text-slate-600 font-bold">✕</button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 p-3 bg-slate-50 rounded-lg text-center font-bold">
+              <div>
+                <span className="block text-[10px] text-slate-400 font-normal">Shortage (Kam)</span>
+                <span className="text-rose-600 font-black">{viewingAudit.kamCount || 0} items</span>
+              </div>
+              <div>
+                <span className="block text-[10px] text-slate-400 font-normal">Excess (Zyada)</span>
+                <span className="text-emerald-700 font-black">{viewingAudit.zyadaCount || 0} items</span>
+              </div>
+              <div>
+                <span className="block text-[10px] text-slate-400 font-normal">Reconciliation</span>
+                <span className="text-indigo-700 font-black">{viewingAudit.reconciled ? 'Reconciled' : 'Record Only'}</span>
+              </div>
+            </div>
+
+            <div className="max-h-72 overflow-y-auto border border-slate-200 rounded-lg">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-100 font-bold text-slate-700 border-b border-slate-200">
+                  <tr>
+                    <th className="p-2.5">Medicine</th>
+                    <th className="p-2.5 text-right">System</th>
+                    <th className="p-2.5 text-right">Physical</th>
+                    <th className="p-2.5 text-center">Variance</th>
+                    <th className="p-2.5">Note</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {(viewingAudit.items || []).map((it, idx) => (
+                    <tr key={idx} className={it.variance < 0 ? 'bg-rose-50/20' : it.variance > 0 ? 'bg-emerald-50/20' : ''}>
+                      <td className="p-2.5 font-bold text-slate-900">{it.medicineName}</td>
+                      <td className="p-2.5 text-right font-mono">{it.systemStock}</td>
+                      <td className="p-2.5 text-right font-mono font-bold">{it.physicalStock}</td>
+                      <td className="p-2.5 text-center font-mono font-bold">
+                        {it.variance === 0 ? (
+                          <span className="text-slate-500">0</span>
+                        ) : it.variance < 0 ? (
+                          <span className="text-rose-600">{it.variance}</span>
+                        ) : (
+                          <span className="text-emerald-700">+{it.variance}</span>
+                        )}
+                      </td>
+                      <td className="p-2.5 text-slate-500 text-[11px]">{it.note || '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="px-3.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs inline-flex items-center gap-1 cursor-pointer"
+              >
+                <Printer className="w-3.5 h-3.5" /> Print
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewingAudit(null)}
+                className="px-4 py-1.5 rounded-lg bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function AuditPOModal({ kamItems = [], selectedIds = new Set(), onToggleId, suppliers = [], onClose, onSuccess }) {
+  const [supplierId, setSupplierId] = useState(suppliers[0]?.id || '')
+  const [poNote, setPoNote] = useState('Stock audit shortage replenishment')
+  const [orderQtys, setOrderQtys] = useState(() => {
+    const map = {}
+    kamItems.forEach((it) => {
+      map[it.medicine.id] = Math.abs(it.variance)
+    })
+    return map
+  })
+
+  const selectedItems = kamItems.filter((it) => selectedIds.has(it.medicine.id))
+
+  const totalCost = selectedItems.reduce((acc, it) => {
+    const q = Number(orderQtys[it.medicine.id]) || Math.abs(it.variance)
+    return acc + q * it.costPrice
+  }, 0)
+
+  function handleCreate() {
+    if (selectedItems.length === 0) {
+      alert('Please select at least one medicine for the Purchase Order.')
+      return
+    }
+
+    const poItems = selectedItems.map((it) => ({
+      medicineId: it.medicine.id,
+      name: `${it.medicine.name} ${it.medicine.strength || ''}`,
+      qty: Number(orderQtys[it.medicine.id]) || Math.abs(it.variance),
+      purchasePrice: it.costPrice,
+      salePrice: it.salePrice,
+      note: `Audit shortage: ${Math.abs(it.variance)} units deficit`,
+    }))
+
+    const po = savePurchaseOrder({
+      supplierId,
+      items: poItems,
+      source: 'AUDIT',
+      note: poNote,
+    })
+
+    onSuccess(po)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl p-5 w-full max-w-2xl max-h-[92vh] overflow-y-auto custom-scroll shadow-2xl border border-slate-300 space-y-4 text-xs">
+        <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+          <div>
+            <h3 className="font-extrabold text-base text-slate-900 flex items-center gap-2">
+              <ShoppingBag className="w-5 h-5 text-indigo-600" />
+              ⚡ Generate Purchase Order for Kam Medicines (Shortages)
+            </h3>
+            <p className="text-slate-500 text-[11px] mt-0.5">
+              Review and auto-generate supplier PO for all medicines detected as deficit in the physical audit.
+            </p>
+          </div>
+          <button onClick={onClose} className="p-1 rounded text-slate-400 hover:text-slate-600 font-bold cursor-pointer">✕</button>
+        </div>
+
+        {/* Supplier Selector */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-indigo-50/70 rounded-xl border border-indigo-200">
+          <div>
+            <label className="block font-extrabold text-indigo-950 mb-1">
+              Select Supplier / Distributor *
+            </label>
+            <select
+              value={supplierId}
+              onChange={(e) => setSupplierId(e.target.value)}
+              className="w-full bg-white border border-indigo-300 rounded px-2.5 py-1.5 font-bold text-indigo-950"
+            >
+              {suppliers.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name} ({s.company || 'Distributor'})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block font-extrabold text-indigo-950 mb-1">
+              PO Notes / Instructions
+            </label>
+            <input
+              type="text"
+              value={poNote}
+              onChange={(e) => setPoNote(e.target.value)}
+              className="w-full bg-white border border-indigo-300 rounded px-2.5 py-1.5 text-xs text-slate-800"
+            />
           </div>
         </div>
 
-        {/* Worksheet Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold">
-                <th className="py-3 px-4">Medicine</th>
-                <th className="py-3 px-3">Company</th>
-                <th className="py-3 px-3 text-center">System Stock</th>
-                <th className="py-3 px-4 text-center">Physical Count</th>
-                <th className="py-3 px-3 text-center">Variance</th>
-                <th className="py-3 px-3 text-right">Impact (PKR)</th>
-                <th className="py-3 px-3">Reason / Action</th>
-                <th className="py-3 px-3 text-center">Action</th>
+        {/* Selected Items Table */}
+        <div className="border border-slate-200 rounded-lg max-h-60 overflow-y-auto">
+          <table className="w-full text-xs text-left">
+            <thead className="bg-slate-50 font-bold text-slate-700 border-b border-slate-200 sticky top-0">
+              <tr>
+                <th className="p-2.5">Medicine</th>
+                <th className="p-2.5 text-center">Shortage Units</th>
+                <th className="p-2.5 text-center">Order Qty</th>
+                <th className="p-2.5 text-right">Cost Price</th>
+                <th className="p-2.5 text-right">Line Total</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {!worksheet.length && (
-                <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400">
-                    Worksheet is empty. Search medicines above to add items.
-                  </td>
-                </tr>
-              )}
-              {worksheet.map((item) => {
-                const isShortage = item.variance < 0
-                const isSurplus = item.variance > 0
-                const isMatch = item.variance === 0
-                const varianceValue = item.variance * item.costPrice
+              {kamItems.map((it) => {
+                const isSelected = selectedIds.has(it.medicine.id)
+                const qVal = orderQtys[it.medicine.id] || Math.abs(it.variance)
+                const lineTotal = Number(qVal) * it.costPrice
 
                 return (
-                  <tr key={item.medicineId} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="py-3 px-4 font-bold text-slate-900 text-sm">
-                      {item.medicineName}
-                    </td>
-
-                    <td className="py-3 px-3 text-slate-600 font-medium">
-                      <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px]">
-                        {item.company}
-                      </span>
-                    </td>
-
-                    <td className="py-3 px-3 text-center font-mono font-bold text-slate-700">
-                      {item.systemStock} Units
-                    </td>
-
-                    {/* Physical Count Input */}
-                    <td className="py-2 px-4 text-center">
-                      <div className="inline-flex items-center justify-center">
+                  <tr key={it.medicine.id} className={isSelected ? 'bg-indigo-50/30' : 'opacity-40'}>
+                    <td className="p-2.5">
+                      <label className="flex items-center gap-2 cursor-pointer">
                         <input
-                          type="number"
-                          min="0"
-                          value={item.physicalStock}
-                          onChange={(e) => updatePhysicalCount(item.medicineId, e.target.value)}
-                          className={`w-20 px-2.5 py-1.5 border rounded-xl text-center font-black text-sm transition-all focus:outline-none focus:ring-2 ${
-                            isShortage
-                              ? 'border-rose-400 bg-rose-50/60 text-rose-700 focus:ring-rose-500/20'
-                              : isSurplus
-                              ? 'border-[#b7e5dc] bg-[#e6f7f2] text-[#008f8b] focus:ring-[#008f8b]/20'
-                              : 'border-slate-300 bg-white text-slate-900 focus:ring-[#714B67]/20 focus:border-[#714B67]'
-                          }`}
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => onToggleId(it.medicine.id)}
+                          className="w-4 h-4 rounded text-[#3b1734]"
                         />
-                      </div>
+                        <span className="font-bold text-slate-900">{it.medicine.name}</span>
+                      </label>
                     </td>
-
-                    {/* Variance Badge */}
-                    <td className="py-3 px-3 text-center">
-                      <span
-                        className={`inline-block px-2.5 py-1 rounded-full text-xs font-black ${
-                          isShortage
-                            ? 'bg-rose-100 text-rose-800'
-                            : isSurplus
-                            ? 'bg-[#e6f7f2] text-[#008f8b] border border-[#b7e5dc]'
-                            : 'bg-slate-100 text-slate-700'
-                        }`}
-                      >
-                        {isMatch ? '✓ 0' : (item.variance > 0 ? `+${item.variance}` : `${item.variance}`)}
-                      </span>
+                    <td className="p-2.5 text-center font-mono font-bold text-rose-600">
+                      -{Math.abs(it.variance)}
                     </td>
-
-                    {/* Cost Impact */}
-                    <td className="py-3 px-3 text-right font-mono font-bold">
-                      <span className={isShortage ? 'text-rose-600' : isSurplus ? 'text-[#008f8b]' : 'text-slate-400'}>
-                        {isMatch ? '—' : fmt(varianceValue)}
-                      </span>
+                    <td className="p-2.5 text-center">
+                      <input
+                        type="number"
+                        min="1"
+                        disabled={!isSelected}
+                        value={qVal}
+                        onChange={(e) => {
+                          const v = Math.max(1, parseInt(e.target.value, 10) || 1)
+                          setOrderQtys((prev) => ({ ...prev, [it.medicine.id]: v }))
+                        }}
+                        className="w-16 px-1.5 py-0.5 text-center border border-slate-300 rounded font-bold font-mono"
+                      />
                     </td>
-
-                    {/* Reason Selector */}
-                    <td className="py-3 px-3">
-                      <select
-                        value={item.reason}
-                        onChange={(e) => updateReason(item.medicineId, e.target.value)}
-                        className="px-2 py-1 border border-slate-300 rounded-lg text-xs font-medium bg-white text-slate-700"
-                      >
-                        <option value="Matched">Matched</option>
-                        <option value="Damage / Broken">Damaged</option>
-                        <option value="Theft / Missing">Missing / Theft</option>
-                        <option value="Expired Disposed">Expired</option>
-                        <option value="Supplier Less Delivered">Short Delivery</option>
-                        <option value="Counting Error">Count Error</option>
-                        <option value="Excess / Found">Excess Found</option>
-                      </select>
-                    </td>
-
-                    {/* Action delete */}
-                    <td className="py-3 px-3 text-center">
-                      <button
-                        type="button"
-                        onClick={() => removeItem(item.medicineId)}
-                        className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50"
-                        title="Remove item"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <td className="p-2.5 text-right font-mono text-slate-600">{fmt(it.costPrice)}</td>
+                    <td className="p-2.5 text-right font-mono font-bold text-slate-900">
+                      {fmt(lineTotal)}
                     </td>
                   </tr>
                 )
@@ -493,70 +1024,33 @@ export default function StockAuditDashboard() {
           </table>
         </div>
 
-        {/* Bottom Action Footer */}
-        <div className="p-4 bg-slate-50/80 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-xs text-slate-500">
-            Total Items: <strong className="text-slate-800">{worksheet.length}</strong> · Shortage: <strong className="text-rose-600">{summary.kamItems}</strong> · Excess: <strong className="text-blue-600">{summary.zyadaItems}</strong>
+        {/* PO Footer Summary */}
+        <div className="flex flex-col sm:flex-row justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-200 gap-3">
+          <div>
+            <span className="text-xs text-slate-600 font-semibold">
+              Selected <b>{selectedItems.length} of {kamItems.length}</b> deficit products
+            </span>
+            <div className="text-base font-black text-slate-900 font-mono mt-0.5">
+              Est. Total Demand: <span className="text-[#3b1734]">{fmt(totalCost)}</span>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleReconcileAndSave}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer"
-          >
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Save Audit & Reconcile Stock</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 4. Past Audit History Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
-          <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-[#714B67]" />
-            <span>Past Audit History</span>
-          </h2>
-          <span className="text-xs text-slate-400">{filteredAudits.length} audit sessions recorded</span>
-        </div>
-
-        <DateFilterBar filterState={auditDateFilter} onChange={setAuditDateFilter} />
-
-        {!filteredAudits.length && (
-          <p className="text-xs text-slate-400 py-6 text-center">No past audit sessions found for the selected date range.</p>
-        )}
-
-        <div className="divide-y divide-slate-100">
-          {filteredAudits.map((a) => (
-            <div key={a.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-              <div>
-                <div className="font-bold text-slate-800 flex items-center gap-2">
-                  <span>{a.title || 'Physical Stock Audit'}</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
-                    Auditor: {a.auditor}
-                  </span>
-                </div>
-                <div className="text-slate-400 text-[11px] mt-0.5">
-                  Date: {new Date(a.date).toLocaleDateString('en-PK')} · Total Items: {a.totalItemsChecked || a.items?.length || 0}
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="text-right">
-                  <div className="font-bold text-slate-700">
-                    Shortage: <span className="text-rose-600 font-bold">{a.kamItemsCount || 0}</span> · Excess: <span className="text-blue-600 font-bold">{a.zyadaItemsCount || 0}</span>
-                  </div>
-                  <div className="text-[11px] font-mono text-slate-500">
-                    Net Variance: {fmt(a.netVarianceCost || 0)}
-                  </div>
-                </div>
-
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                  Reconciled
-                </span>
-              </div>
-            </div>
-          ))}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-lg border border-slate-300 font-bold text-slate-700 hover:bg-slate-100 cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleCreate}
+              className="px-5 py-2 rounded-lg bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold shadow-sm transition-all cursor-pointer"
+            >
+              ✓ Create Purchase Order
+            </button>
+          </div>
         </div>
       </div>
     </div>

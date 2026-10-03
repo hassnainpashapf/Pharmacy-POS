@@ -57,6 +57,7 @@ export function ExpiryManagementPage() {
 
 export default function Inventory({ forcedTab }) {
   const db = useDB()
+  const navigate = useNavigate()
   let location = { search: '', pathname: '' }
   try {
     location = useLocation()
@@ -95,8 +96,13 @@ export default function Inventory({ forcedTab }) {
 
   // Synchronize tab based on props, URL path or query params
   useEffect(() => {
+    const requested = new URLSearchParams(location.search).get('tab')
+    if (requested === 'audit' || location.pathname === '/stock-audit' || location.pathname === '/inventory/audit') {
+      navigate('/stock-audit', { replace: true })
+      return
+    }
     setTab(computeTab())
-  }, [location.search, location.pathname, forcedTab])
+  }, [location.search, location.pathname, forcedTab, navigate])
 
   const summary = getStockStatusSummary()
 

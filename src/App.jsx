@@ -125,7 +125,6 @@ const navGroups = [
     title: 'STOCKS & DISCREPANCIES',
     items: [
       { to: '/company-stock', label: 'Company Stock Hub', icon: Building2 },
-      { to: '/stock-audit', label: 'Stock Audit', icon: ClipboardCheck },
       { to: '/expiry-management', label: 'Batch & Expiry Action', icon: Clock },
       { to: '/purchase-returns', label: 'Purchase Returns', icon: RotateCcw },
     ],
@@ -134,6 +133,7 @@ const navGroups = [
     title: 'INVENTORY & PROCUREMENT',
     items: [
       { to: '/inventory', label: 'Stock Master Inventory', icon: Package },
+      { to: '/stock-audit', label: 'Physical Stock Audit', icon: ClipboardCheck },
       { to: '/medicines', label: 'Medicines Catalogue', icon: Pill },
       { to: '/purchases', label: 'Purchases & Invoices', icon: ShoppingBag },
       { to: '/suppliers', label: 'Suppliers', icon: Truck },
