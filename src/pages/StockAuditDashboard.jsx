@@ -165,7 +165,7 @@ export default function StockAuditDashboard() {
   // Commit and Reconcile Stock
   const handleReconcileAndSave = () => {
     if (!worksheet.length) {
-      alert('آڈٹ شیٹ خالی ہے۔ کم از کم ایک دوا شامل کریں۔')
+      alert('The audit sheet is empty. Please add at least one medicine.')
       return
     }
 
@@ -177,7 +177,7 @@ export default function StockAuditDashboard() {
         reconcile: true, // Updates batches in db
       })
 
-      setSuccessMsg(`سٹاک آڈٹ کامیابی سے مکمل ہو گیا! کمپیوٹر سٹاک فزیکل گنتی کے مطابق اپ ڈیٹ کر دیا گیا ہے۔`)
+      setSuccessMsg(`Stock audit completed successfully! Computer stock has been reconciled with physical count.`)
       setTimeout(() => setSuccessMsg(''), 5000)
     } catch (err) {
       alert('Error saving audit: ' + err.message)
@@ -197,10 +197,10 @@ export default function StockAuditDashboard() {
           </div>
           <div>
             <h1 className="text-2xl font-black tracking-tight text-slate-900">
-              فزیکل سٹاک آڈٹ اور پڑتال ڈیش بورڈ
+              Stock Audit & Discrepancy Dashboard
             </h1>
             <p className="text-xs text-slate-500 font-medium">
-              Physical Stock Count vs Computer Stock Reconciliation (Kam / Zyada)
+              Physical Stock Count vs Computer Stock Reconciliation (Shortage / Excess)
             </p>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function StockAuditDashboard() {
             className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
           >
             <Printer className="w-4 h-4 text-slate-500" />
-            <span>پرنٹ شیٹ (Print)</span>
+            <span>Print Audit Sheet</span>
           </button>
 
           <button
@@ -221,7 +221,7 @@ export default function StockAuditDashboard() {
             className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all active:scale-95"
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>سٹاک برابر کریں (Reconcile System)</span>
+            <span>Reconcile System Stock</span>
           </button>
         </div>
       </div>
@@ -239,63 +239,63 @@ export default function StockAuditDashboard() {
         {/* Total Items Under Audit */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">زیرِ آڈٹ آئٹمز</span>
+            <span className="text-xs font-bold">Items Under Audit</span>
             <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
               <ClipboardCheck className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-slate-900">{summary.total}</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">گنتی میں شامل ادویات</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Medicines in physical count</div>
           </div>
         </div>
 
         {/* Matched Count */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">برابر سٹاک (Matched)</span>
+            <span className="text-xs font-bold">Matched Stock</span>
             <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
               <Check className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-emerald-700">{summary.matched}</div>
-            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">کمپیوٹر اور دکان برابر</div>
+            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Physical matches computer</div>
           </div>
         </div>
 
         {/* Shortage (Kam Stock) */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">کم مال (Shortage)</span>
+            <span className="text-xs font-bold">Stock Shortage</span>
             <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
               <TrendingDown className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-rose-600">{summary.kamItems} آئٹمز</div>
-            <div className="text-[11px] text-rose-600 font-semibold mt-0.5">-{summary.kamUnits} Units غائب/خراب</div>
+            <div className="text-2xl font-black text-rose-600">{summary.kamItems} items</div>
+            <div className="text-[11px] text-rose-600 font-semibold mt-0.5">-{summary.kamUnits} units shortage</div>
           </div>
         </div>
 
         {/* Surplus (Zyada Stock) */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">زیادہ مال (Excess)</span>
+            <span className="text-xs font-bold">Stock Excess</span>
             <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-blue-700">{summary.zyadaItems} آئٹمز</div>
-            <div className="text-[11px] text-blue-600 font-semibold mt-0.5">+{summary.zyadaUnits} Units فالتو گنتی</div>
+            <div className="text-2xl font-black text-blue-700">{summary.zyadaItems} items</div>
+            <div className="text-[11px] text-blue-600 font-semibold mt-0.5">+{summary.zyadaUnits} units surplus</div>
           </div>
         </div>
 
         {/* Financial Variance Impact */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">مالی فرق (Net Variance)</span>
+            <span className="text-xs font-bold">Net Financial Variance</span>
             <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
               💰
             </div>
@@ -305,7 +305,7 @@ export default function StockAuditDashboard() {
               {summary.netVarianceCost < 0 ? `- ${fmt(Math.abs(summary.netVarianceCost))}` : `+ ${fmt(summary.netVarianceCost)}`}
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">
-              {summary.netVarianceCost < 0 ? 'نقصان / کمی' : 'منافع / اضافی'}
+              {summary.netVarianceCost < 0 ? 'Shortage / Loss' : 'Surplus / Gain'}
             </div>
           </div>
         </div>
@@ -318,7 +318,7 @@ export default function StockAuditDashboard() {
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4 text-slate-400" />
-              <label className="text-xs font-bold text-slate-700">آڈیٹر کا نام:</label>
+              <label className="text-xs font-bold text-slate-700">Auditor Name:</label>
               <input
                 type="text"
                 value={auditorName}
@@ -335,7 +335,7 @@ export default function StockAuditDashboard() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="آڈٹ شیٹ میں شامل کرنے کے لیے دوا کا نام لکھیں..."
+              placeholder="Search medicine to add to audit worksheet..."
               className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
             />
 
@@ -343,7 +343,7 @@ export default function StockAuditDashboard() {
             {searchQuery.trim() && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-20 max-h-60 overflow-y-auto divide-y divide-slate-100">
                 {!availableMedicines.length && (
-                  <div className="p-3 text-xs text-slate-400 text-center">کوئی دوا نہیں ملی</div>
+                  <div className="p-3 text-xs text-slate-400 text-center">No medicine found</div>
                 )}
                 {availableMedicines.map((m) => (
                   <button
@@ -357,7 +357,7 @@ export default function StockAuditDashboard() {
                       <div className="text-[10px] text-slate-400">{m.manufacturer || 'General'}</div>
                     </div>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">
-                      + شیٹ میں شامل کریں
+                      + Add to Sheet
                     </span>
                   </button>
                 ))}
@@ -371,21 +371,21 @@ export default function StockAuditDashboard() {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold">
-                <th className="py-3 px-4">دوا کا نام (Medicine)</th>
-                <th className="py-3 px-3">کمپنی (Company)</th>
-                <th className="py-3 px-3 text-center">کمپیوٹر سٹاک</th>
-                <th className="py-3 px-4 text-center">فزیکل گنتی (Physical Count)</th>
-                <th className="py-3 px-3 text-center">فرق (Variance)</th>
-                <th className="py-3 px-3 text-right">نقصان / منافع (PKR)</th>
-                <th className="py-3 px-3">وجہ (Reason / Action)</th>
-                <th className="py-3 px-3 text-center">حذف</th>
+                <th className="py-3 px-4">Medicine</th>
+                <th className="py-3 px-3">Company</th>
+                <th className="py-3 px-3 text-center">System Stock</th>
+                <th className="py-3 px-4 text-center">Physical Count</th>
+                <th className="py-3 px-3 text-center">Variance</th>
+                <th className="py-3 px-3 text-right">Impact (PKR)</th>
+                <th className="py-3 px-3">Reason / Action</th>
+                <th className="py-3 px-3 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {!worksheet.length && (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-slate-400">
-                    شیٹ خالی ہے۔ ادویات شامل کرنے کے لیے اوپر سرچ کریں۔
+                    Worksheet is empty. Search medicines above to add items.
                   </td>
                 </tr>
               )}
@@ -441,7 +441,7 @@ export default function StockAuditDashboard() {
                             : 'bg-emerald-100 text-emerald-800'
                         }`}
                       >
-                        {isMatch ? '✓ 0 (برابر)' : (item.variance > 0 ? `+${item.variance} (زیادہ)` : `${item.variance} (کم)`)}
+                        {isMatch ? '✓ 0 (Matched)' : (item.variance > 0 ? `+${item.variance} (Excess)` : `${item.variance} (Shortage)`)}
                       </span>
                     </td>
 
@@ -459,13 +459,13 @@ export default function StockAuditDashboard() {
                         onChange={(e) => updateReason(item.medicineId, e.target.value)}
                         className="px-2 py-1 border border-slate-300 rounded-lg text-xs font-medium bg-white text-slate-700"
                       >
-                        <option value="Matched">برابر (No Discrepancy)</option>
-                        <option value="Damage / Broken">ٹوٹ پھوٹ (Damage/Broken)</option>
-                        <option value="Theft / Missing">گمشدہ یا چوری (Missing/Theft)</option>
-                        <option value="Expired Disposed">ایکسپائر ضائع شدہ (Expired)</option>
-                        <option value="Supplier Less Delivered">سپلائر نے کم بھیجا (Invoice Issue)</option>
-                        <option value="Counting Error">پہلے گنتی کی غلطی تھی (Count Error)</option>
-                        <option value="Excess / Found">اضافی مال ملا (Found in store)</option>
+                        <option value="Matched">Matched (No Discrepancy)</option>
+                        <option value="Damage / Broken">Damage / Broken</option>
+                        <option value="Theft / Missing">Missing / Theft</option>
+                        <option value="Expired Disposed">Expired / Disposed</option>
+                        <option value="Supplier Less Delivered">Supplier Short Delivery (Invoice Issue)</option>
+                        <option value="Counting Error">Previous Count Error</option>
+                        <option value="Excess / Found">Found in Store (Excess)</option>
                       </select>
                     </td>
 
@@ -490,7 +490,7 @@ export default function StockAuditDashboard() {
         {/* Bottom Action Footer */}
         <div className="p-4 bg-slate-50/80 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="text-xs text-slate-500">
-            کل آئٹمز: <strong className="text-slate-800">{worksheet.length}</strong> · کم مال: <strong className="text-rose-600">{summary.kamItems}</strong> · زیادہ مال: <strong className="text-blue-600">{summary.zyadaItems}</strong>
+            Total Items: <strong className="text-slate-800">{worksheet.length}</strong> · Shortage: <strong className="text-rose-600">{summary.kamItems}</strong> · Excess: <strong className="text-blue-600">{summary.zyadaItems}</strong>
           </div>
 
           <button
@@ -499,7 +499,7 @@ export default function StockAuditDashboard() {
             className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 active:scale-95 transition-all"
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>آڈٹ محفوظ کریں اور سٹاک برابر کریں (Reconcile Stock)</span>
+            <span>Save Audit & Reconcile Stock</span>
           </button>
         </div>
       </div>
@@ -509,13 +509,13 @@ export default function StockAuditDashboard() {
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <Calendar className="w-4 h-4 text-amber-500" />
-            <span>گزشتہ آڈٹ ریکارڈز (Past Audit History)</span>
+            <span>Past Audit History</span>
           </h2>
-          <span className="text-xs text-slate-400">{pastAudits.length} آڈٹ سیشنز محفوظ ہیں</span>
+          <span className="text-xs text-slate-400">{pastAudits.length} audit sessions recorded</span>
         </div>
 
         {!pastAudits.length && (
-          <p className="text-xs text-slate-400 py-6 text-center">ابھی تک کوئی آڈٹ ریکارڈ محفوظ نہیں ہوا۔</p>
+          <p className="text-xs text-slate-400 py-6 text-center">No past audit sessions found.</p>
         )}
 
         <div className="divide-y divide-slate-100">
@@ -525,21 +525,21 @@ export default function StockAuditDashboard() {
                 <div className="font-bold text-slate-800 flex items-center gap-2">
                   <span>{a.title || 'Physical Stock Audit'}</span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
-                    بذریعہ: {a.auditor}
+                    Auditor: {a.auditor}
                   </span>
                 </div>
                 <div className="text-slate-400 text-[11px] mt-0.5">
-                  تاریخ: {new Date(a.date).toLocaleDateString('en-PK')} · کل آئٹمز: {a.totalItemsChecked || a.items?.length || 0}
+                  Date: {new Date(a.date).toLocaleDateString('en-PK')} · Total Items: {a.totalItemsChecked || a.items?.length || 0}
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 <div className="text-right">
                   <div className="font-bold text-slate-700">
-                    کم مال: <span className="text-rose-600 font-bold">{a.kamItemsCount || 0}</span> · زیادہ: <span className="text-blue-600 font-bold">{a.zyadaItemsCount || 0}</span>
+                    Shortage: <span className="text-rose-600 font-bold">{a.kamItemsCount || 0}</span> · Excess: <span className="text-blue-600 font-bold">{a.zyadaItemsCount || 0}</span>
                   </div>
                   <div className="text-[11px] font-mono text-slate-500">
-                    نیٹ فرق: {fmt(a.netVarianceCost || 0)}
+                    Net Variance: {fmt(a.netVarianceCost || 0)}
                   </div>
                 </div>
 

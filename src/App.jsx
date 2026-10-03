@@ -124,10 +124,10 @@ const navGroups = [
   {
     title: 'STOCKS & DISCREPANCIES',
     items: [
-      { to: '/company-stock', label: 'Company Stock Hub', icon: Building2, badge: 'کمپنی وائز', badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-      { to: '/stock-audit', label: 'Stock Audit (Kam/Zyada)', icon: ClipboardCheck, badge: 'کم / زیادہ', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200' },
-      { to: '/expiry-management', label: 'Batch & Expiry Action', icon: Clock, badge: 'ایکسپائری', badgeColor: 'bg-orange-50 text-orange-700 border-orange-200' },
-      { to: '/purchase-returns', label: 'Purchase Returns (Debit)', icon: RotateCcw, badge: 'خریداری واپسی', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
+      { to: '/company-stock', label: 'Company Stock Hub', icon: Building2, badge: 'By Company', badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+      { to: '/stock-audit', label: 'Stock Audit (Physical Count)', icon: ClipboardCheck, badge: 'Audit', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200' },
+      { to: '/expiry-management', label: 'Batch & Expiry Action', icon: Clock, badge: 'Expiry', badgeColor: 'bg-orange-50 text-orange-700 border-orange-200' },
+      { to: '/purchase-returns', label: 'Purchase Returns (Debit Note)', icon: RotateCcw, badge: 'Returns', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
     ],
   },
   {
@@ -135,7 +135,7 @@ const navGroups = [
     items: [
       { to: '/inventory', label: 'Stock Master Inventory', icon: Package },
       { to: '/medicines', label: 'Medicines Catalogue', icon: Pill },
-      { to: '/purchases', label: 'Purchases & Invoices', icon: ShoppingBag, badge: 'GRN + ٹیکس', badgeColor: 'bg-blue-50 text-blue-700 border-blue-200' },
+      { to: '/purchases', label: 'Purchases & Invoices', icon: ShoppingBag, badge: 'GRN + Tax', badgeColor: 'bg-blue-50 text-blue-700 border-blue-200' },
       { to: '/suppliers', label: 'Suppliers', icon: Truck },
     ],
   },
@@ -515,11 +515,11 @@ function Shell({ children }) {
                     ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
                     : 'bg-indigo-50/80 hover:bg-indigo-100 text-indigo-800 border-indigo-200/90'
                 }`}
-                title="Company Stock Hub (کمپنی وائز اسٹاک)"
+                title="Company Stock Hub"
               >
                 <Building2 className="w-3.5 h-3.5 text-indigo-600 group-hover:text-indigo-800" />
                 <span className="hidden sm:inline">Company Stock</span>
-                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-indigo-900 sm:ml-0.5">کمپنی</span>
+                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-indigo-900 sm:ml-0.5">Hub</span>
               </Link>
 
               <Link
@@ -529,11 +529,11 @@ function Shell({ children }) {
                     ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
                     : 'bg-amber-50/80 hover:bg-amber-100 text-amber-800 border-amber-200/90'
                 }`}
-                title="Stock Audit (کم / زیادہ فزیکل کاؤنٹ)"
+                title="Stock Audit & Physical Count"
               >
                 <ClipboardCheck className="w-3.5 h-3.5 text-amber-600" />
                 <span className="hidden sm:inline">Stock Audit</span>
-                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-amber-900 sm:ml-0.5">آڈٹ</span>
+                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-amber-900 sm:ml-0.5">Audit</span>
               </Link>
 
               <Link
@@ -547,7 +547,7 @@ function Shell({ children }) {
               >
                 <Clock className="w-3.5 h-3.5 text-orange-600" />
                 <span className="hidden sm:inline">Expiry Hub</span>
-                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-orange-900 sm:ml-0.5">ایکسپائری</span>
+                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-orange-900 sm:ml-0.5">FEFO</span>
               </Link>
 
               <Link
@@ -557,11 +557,11 @@ function Shell({ children }) {
                     ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
                     : 'bg-rose-50/80 hover:bg-rose-100 text-rose-800 border-rose-200/90'
                 }`}
-                title="Purchase Returns & Debit Notes (خریداری واپسی)"
+                title="Purchase Returns & Debit Notes"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
                 <span className="hidden sm:inline">Returns</span>
-                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-rose-900 sm:ml-0.5">واپسی</span>
+                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-rose-900 sm:ml-0.5">Debit</span>
               </Link>
             </nav>
           </div>

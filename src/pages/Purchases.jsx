@@ -180,15 +180,15 @@ export default function Purchases({ forcedTab }) {
           <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
             <ShoppingBag className="w-6 h-6 text-emerald-600" />
             {tab === 'returns'
-              ? '🔄 خریداری واپسی و ڈیبٹ نوٹ (Purchase Returns & Debit Notes)'
+              ? 'Purchase Returns & Debit Notes'
               : tab === 'orders'
-              ? '📋 خریداری آرڈرز (Purchase Orders)'
-              : '🧾 خریداری بل اور GRN (Purchases & Inward Goods)'}
+              ? 'Purchase Orders'
+              : 'Purchases & Inward Goods (GRN)'}
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
             {tab === 'returns'
-              ? 'سپلائر کو زائد المیعاد یا خراب مال کی واپسی کا اندراج اور ڈیبٹ نوٹ جاری کریں۔'
-              : 'Goods Received Note (GRN) بنائیں، GST، Advance Tax، Discounts، Batches اور Expiry manage کریں۔'}
+              ? 'Record supplier returns for expired or damaged items and issue debit notes.'
+              : 'Create Goods Received Notes (GRN), manage GST, Advance Tax, discounts, batches, and expiry dates.'}
           </p>
         </div>
 
@@ -197,10 +197,10 @@ export default function Purchases({ forcedTab }) {
           <button
             onClick={() => navigate('/inventory?tab=audit')}
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition"
-            title="Stock audit worksheet jahan se kam medicines ka auto-PO banta hai"
+            title="Stock audit worksheet for physical counting and auto PO generation"
           >
             <ClipboardCheck className="w-4 h-4" />
-            📋 Stock Audit (Kam/Zyada)
+            Stock Audit (Variance)
           </button>
           <button
             onClick={() => setShowNewPO(true)}
@@ -229,16 +229,16 @@ export default function Purchases({ forcedTab }) {
         </div>
       </div>
 
-      {/* 💡 آسان خریداری و GRN گائیڈ (Easy Purchase Guide Banner) */}
+      {/* Easy Purchase Guide Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-3.5 rounded-xl border border-blue-900/60 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold text-sm shrink-0">
             🧾
           </div>
           <div className="text-xs">
-            <span className="font-bold text-blue-300">آسان خریداری اینٹری (Easy Purchase Guide):</span>{' '}
+            <span className="font-bold text-blue-300">Easy Purchase Guide:</span>{' '}
             <span className="text-slate-200">
-              سپلائر کا نیا بل درج کرنے کے لیے <b>"+ New GRN / Purchase Inward"</b> دبائیں ➜ GST، ایڈوانس ٹیکس (236G/H)، اور ڈسکاؤنٹ درج کریں ➜ مال خودبخود دکان کے سٹاک میں شامل ہو جائے گا۔
+              Click <b>"+ New GRN / Purchase Inward"</b> to record a supplier invoice ➜ enter GST, Advance Tax (236G/H), and discount ➜ goods will automatically be added to shop inventory.
             </span>
           </div>
         </div>
@@ -247,7 +247,7 @@ export default function Purchases({ forcedTab }) {
           onClick={() => { setReceivingPO(null); setShowNewPurchase(true) }}
           className="self-start sm:self-auto px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer active:scale-95"
         >
-          <span>+ نیا خریداری بل درج کریں</span>
+          <span>+ Record New Purchase Invoice</span>
         </button>
       </div>
 
@@ -262,7 +262,7 @@ export default function Purchases({ forcedTab }) {
           }`}
         >
           <ShoppingBag className="w-4 h-4" />
-          📋 خریداری آرڈرز (Purchase Orders)
+          Purchase Orders
           <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-blue-100 text-blue-700">
             {allPOs.length}
           </span>
@@ -277,7 +277,7 @@ export default function Purchases({ forcedTab }) {
           }`}
         >
           <Receipt className="w-4 h-4" />
-          🧾 خریداری بل، ٹیکس اور GRN
+          Purchase Bills, Tax & GRN
           <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-emerald-100 text-emerald-700">
             {(db.purchases || []).length}
           </span>
@@ -292,7 +292,7 @@ export default function Purchases({ forcedTab }) {
           }`}
         >
           <RotateCcw className="w-4 h-4" />
-          🔄 Purchase Returns (خریداری واپسی)
+          Purchase Returns
           <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-purple-100 text-purple-700">
             {allReturns.length}
           </span>
@@ -548,7 +548,7 @@ export default function Purchases({ forcedTab }) {
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-800 flex items-center gap-2 text-sm">
-                🏢 Supplier-wise Outstanding Balance (سپلائر کے بقایاجات)
+                🏢 Supplier-wise Outstanding Balance
               </h3>
               <div className="text-xs">
                 Total Payable: <b className="text-red-600 text-sm ml-1">{fmt(totalOutstanding)}</b>
@@ -682,7 +682,7 @@ export default function Purchases({ forcedTab }) {
       )}
 
       {/* ======================================================== */}
-      {/* TAB 3: PURCHASE RETURNS (خریداری واپسی / سپلائر ریٹرنز)    */}
+      {/* TAB 3: PURCHASE RETURNS & DEBIT NOTES                     */}
       {/* ======================================================== */}
       {tab === 'returns' && (
         <div className="space-y-4">
@@ -1212,7 +1212,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
   }
 
   return (
-    <Modal title={initialPO ? `Receive Purchase Order as GRN: ${initialPO.poNo}` : 'New Goods Received Note (GRN / خریداری رسید)'} onClose={onClose}>
+    <Modal title={initialPO ? `Receive Purchase Order as GRN: ${initialPO.poNo}` : 'New Goods Received Note (GRN)'} onClose={onClose}>
       <div className="space-y-3.5 text-xs max-h-[85vh] overflow-y-auto pr-1">
         {initialPO && (
           <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-900 flex items-center justify-between">
@@ -1275,7 +1275,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
         {/* Step 2: Add Medicine Line (Batch, Expiry, Billed Qty, Bonus, Cost, MRP) */}
         <div className="p-3 bg-emerald-50/50 border border-emerald-200 rounded-xl space-y-2">
           <span className="font-bold text-emerald-950 block text-xs">
-            Add Medicine with Batch No & Expire Date (بیچ اور تاریخ تنسیخ)
+            Add Medicine with Batch No & Expiry Date
           </span>
 
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
@@ -1295,7 +1295,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Batch No (بیچ نمبر)</label>
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Batch No</label>
               <input
                 type="text"
                 placeholder="e.g. B-01"
@@ -1305,7 +1305,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
               />
             </div>
             <div>
-              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Expire Date (میعاد)</label>
+              <label className="text-[10px] font-bold text-slate-500 block mb-0.5">Expiry Date</label>
               <input
                 type="date"
                 value={lineExpiry}
@@ -1485,7 +1485,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
           <div className="font-bold text-slate-800 flex items-center justify-between border-b pb-1.5">
             <span className="flex items-center gap-1.5">
               <DollarSign className="w-4 h-4 text-emerald-600" />
-              Invoice Taxes, Discount & Financials (ٹیکس، ڈسکاؤنٹ اور حساب)
+              Invoice Taxes, Discount & Financials
             </span>
             <span className="text-slate-600">
               Gross Subtotal: <b className="text-slate-900 font-mono text-sm ml-1">{fmt(subtotal)}</b>
@@ -1496,7 +1496,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
             {/* 1. Discount (Desiccant Amount) */}
             <div className="p-2.5 bg-white border border-amber-200 rounded-lg space-y-1">
               <div className="font-bold text-amber-900 flex justify-between">
-                <span>Desiccant / Discount (ڈسکاؤنٹ)</span>
+                <span>Discount</span>
                 <span className="text-[10px] text-amber-700 font-mono">{discountPct}%</span>
               </div>
               <div className="grid grid-cols-2 gap-1.5">
@@ -1527,7 +1527,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
             {/* 2. GST (General Sales Tax) */}
             <div className="p-2.5 bg-white border border-purple-200 rounded-lg space-y-1">
               <div className="font-bold text-purple-900 flex justify-between items-center">
-                <span>GST (سیلز ٹیکس)</span>
+                <span>GST (Sales Tax)</span>
                 <div className="flex gap-1">
                   {[0, 1, 18].map((p) => (
                     <button
@@ -1613,7 +1613,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
 
             {/* 4. Other Tax / WHT */}
             <div className="p-2.5 bg-white border border-slate-200 rounded-lg space-y-1">
-              <div className="font-bold text-slate-800">Other Tax / WHT (دیگر ٹیکس)</div>
+              <div className="font-bold text-slate-800">Other Tax / WHT</div>
               <div>
                 <label className="text-[10px] text-slate-500 block">Amount (Rs.)</label>
                 <input
@@ -1632,7 +1632,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-200 items-center">
             <div>
               <label className="text-[11px] font-bold text-slate-700 block mb-1">
-                Advance Paid / Paid Now (ادا شدہ رقم)
+                Advance Paid / Paid Now
               </label>
               <input
                 type="number"
@@ -1644,7 +1644,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
             </div>
 
             <div className="text-center sm:text-right">
-              <span className="text-slate-500 block text-[11px]">Net Payable Total (کل واجب الادا)</span>
+              <span className="text-slate-500 block text-[11px]">Net Payable Total</span>
               <b className="text-lg text-emerald-800 font-black font-mono">{fmt(netTotal)}</b>
             </div>
 
@@ -1672,7 +1672,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
           className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-lg font-bold text-xs shadow transition flex items-center justify-center gap-1.5"
         >
           <CheckCircle2 className="w-4 h-4" />
-          Save GRN & Update Inventory Batches (اسٹاک درج کریں)
+          Save GRN & Update Inventory Batches
         </button>
       </div>
     </Modal>
@@ -1706,7 +1706,7 @@ function GRNDetailModal({ grn, onClose }) {
     msg += `*Date:* ${grn.date || todayStr()}\n`
     msg += `*Supplier:* ${sup?.name || 'Distributor'} ${sup?.company ? `(${sup.company})` : ''}\n`
     msg += `*Supplier Inv #:* ${grn.invoiceNo}\n\n`
-    msg += `*RECEIVED ITEMS (موصولہ ادویات):*\n`
+    msg += `*RECEIVED ITEMS:*\n`
 
     ;(grn.items || []).forEach((it, idx) => {
       msg += `${idx + 1}. *${it.medicineName || 'Medicine'}*\n`
@@ -2137,7 +2137,7 @@ function PODetailModal({ po, onClose, onReceive }) {
     if (pharmacyPhone) msg += `*Contact:* ${pharmacyPhone}\n`
     msg += `*Date:* ${po.date || todayStr()}\n`
     msg += `*To:* ${sup?.name || 'Distributor'} ${sup?.company ? `(${sup.company})` : ''}\n\n`
-    msg += `*ITEMS REQUIRED (طلب ادویات):*\n`
+    msg += `*ITEMS REQUIRED:*\n`
 
     ;(po.items || []).forEach((it, idx) => {
       msg += `${idx + 1}. *${it.name}* — Qty: *${it.qty} packs/units*`
@@ -2296,7 +2296,7 @@ function PODetailModal({ po, onClose, onReceive }) {
 }
 
 // ----------------------------------------------------------------------
-// MODAL: CREATE NEW PURCHASE RETURN (خریداری واپسی)
+// MODAL: CREATE NEW PURCHASE RETURN
 // ----------------------------------------------------------------------
 function NewPurchaseReturnModal({ onClose, onCreated }) {
   const db = useDB()
@@ -2414,7 +2414,7 @@ function NewPurchaseReturnModal({ onClose, onCreated }) {
   }
 
   return (
-    <Modal title="New Purchase Return (سپلائر کو خریداری واپسی)" onClose={onClose}>
+    <Modal title="New Purchase Return" onClose={onClose}>
       <div className="space-y-4 text-xs">
         {/* Step 1: Supplier Selector & Balance info */}
         <div className="grid grid-cols-2 gap-3 p-3 bg-purple-50/60 border border-purple-200 rounded-xl">
@@ -2521,12 +2521,12 @@ function NewPurchaseReturnModal({ onClose, onCreated }) {
                 onChange={(e) => setReturnReason(e.target.value)}
                 className="w-full border rounded-lg px-2 py-1 text-xs bg-white font-semibold"
               >
-                <option value="EXPIRED">⏰ Expired Stock (تاریخ ختم)</option>
-                <option value="NEAR_EXPIRY">⌛ Near Expiry (قریب المیعاد)</option>
-                <option value="DAMAGED">💥 Damaged / Broken (خراب یا ٹوٹا ہوا)</option>
-                <option value="WRONG_ITEM">❌ Wrong Item Delivered (غلط دوائی)</option>
-                <option value="OVER_STOCKED">📦 Slow Moving / Excess (اضافی اسٹاک)</option>
-                <option value="OTHER">📝 Other (دیگر)</option>
+                <option value="EXPIRED">⏰ Expired Stock</option>
+                <option value="NEAR_EXPIRY">⌛ Near Expiry</option>
+                <option value="DAMAGED">💥 Damaged / Broken</option>
+                <option value="WRONG_ITEM">❌ Wrong Item Delivered</option>
+                <option value="OVER_STOCKED">📦 Slow Moving / Excess</option>
+                <option value="OTHER">📝 Other Reason</option>
               </select>
             </div>
             <div className="sm:col-span-2 flex gap-2 items-end">
@@ -2592,7 +2592,7 @@ function NewPurchaseReturnModal({ onClose, onCreated }) {
               {!items.length && (
                 <tr>
                   <td colSpan="8" className="p-6 text-center text-slate-400">
-                    Koi item return list mein shamil nahi. Upar batch chunein aur "+ Add to Return" dabayein.
+                    No items in return list yet. Select a batch above and click "+ Add to Return".
                   </td>
                 </tr>
               )}
@@ -2614,9 +2614,9 @@ function NewPurchaseReturnModal({ onClose, onCreated }) {
                 className="mt-0.5 text-purple-600"
               />
               <div>
-                <b className="text-slate-800">💳 Debit Note / Adjust in Balance (کھاتے سے منہا)</b>
+                <b className="text-slate-800">💳 Debit Note / Adjust in Balance</b>
                 <p className="text-[11px] text-slate-500">
-                  Return amount ({fmt(grandTotal)}) supplier ke payable balance mein se deduct ho jayegi.
+                  Return amount ({fmt(grandTotal)}) will be deducted from the supplier's payable balance.
                 </p>
               </div>
             </label>
@@ -2630,9 +2630,9 @@ function NewPurchaseReturnModal({ onClose, onCreated }) {
                 className="mt-0.5 text-emerald-600"
               />
               <div>
-                <b className="text-slate-800">💵 Cash Refund Received (نقد رقم وصول کی)</b>
+                <b className="text-slate-800">💵 Cash Refund Received</b>
                 <p className="text-[11px] text-slate-500">
-                  Supplier ne delivery rider ke zariye foran cash refund ada kar diya hai.
+                  Supplier or delivery rider has handed over instant cash refund.
                 </p>
               </div>
             </label>
@@ -2667,7 +2667,7 @@ function NewPurchaseReturnModal({ onClose, onCreated }) {
           className="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-lg shadow transition flex items-center justify-center gap-1.5 text-xs"
         >
           <RotateCcw className="w-4 h-4" />
-          Submit Purchase Return & Deduct Inventory Stock (واپسی مکمل کریں)
+          Submit Purchase Return & Deduct Inventory Stock
         </button>
       </div>
     </Modal>
@@ -2693,7 +2693,7 @@ function PurchaseReturnSlipModal({ pr, onClose }) {
     if (pharmacyPhone) msg += `*Contact:* ${pharmacyPhone}\n`
     msg += `*Date:* ${pr.date || todayStr()}\n`
     msg += `*Vendor/Distributor:* ${sup?.name || pr.supplierName || 'Distributor'} ${sup?.company ? `(${sup.company})` : ''}\n\n`
-    msg += `*RETURNED MEDICINES (واپس کی گئی ادویات):*\n`
+    msg += `*RETURNED MEDICINES:*\n`
 
     ;(pr.items || []).forEach((it, idx) => {
       msg += `${idx + 1}. *${it.medicineName}*\n`

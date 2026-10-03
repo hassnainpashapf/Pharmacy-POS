@@ -195,7 +195,7 @@ export default function ExpiryDashboard() {
     try {
       const supId = returnSupplierId || (suppliers[0]?.id || '')
       if (!supId) {
-        alert('براہ کرم سپلائر منتخب کریں۔')
+        alert('Please select a supplier.')
         return
       }
 
@@ -218,7 +218,7 @@ export default function ExpiryDashboard() {
         note: returnNote,
       })
 
-      setActionSuccess(`بیچ ${returnModalBatch.batchNo} کے ${returnQty} یونٹس سپلائر کو کامیابی سے واپسی درج ہو گئے۔ ڈیبٹ نوٹ جاری کر دیا گیا ہے۔`)
+      setActionSuccess(`Successfully returned ${returnQty} units of batch ${returnModalBatch.batchNo} to supplier. Debit note generated.`)
       setTimeout(() => setActionSuccess(''), 5000)
       setReturnModalBatch(null)
     } catch (err) {
@@ -228,10 +228,10 @@ export default function ExpiryDashboard() {
 
   // Handle Dispose / Damaged write-off
   const handleDispose = (batch) => {
-    if (confirm(`کیا آپ واقعی ${batch.medicineName} (بیچ ${batch.batchNo}) کے تمام ${batch.qty} یونٹس ضائع شدہ قرار دینا چاہتے ہیں؟`)) {
+    if (confirm(`Are you sure you want to write off all ${batch.qty} units of ${batch.medicineName} (Batch ${batch.batchNo}) as damaged/disposed?`)) {
       try {
         adjustStockStatus(batch.id, 'DAMAGED', batch.qty, 'Expired and Disposed / Waste')
-        setActionSuccess(`بیچ ${batch.batchNo} کو ضائع شدہ (Damaged/Disposed) کر دیا گیا ہے۔`)
+        setActionSuccess(`Batch ${batch.batchNo} written off as damaged/disposed.`)
         setTimeout(() => setActionSuccess(''), 4000)
       } catch (err) {
         alert('Adjustment error: ' + err.message)
@@ -249,7 +249,7 @@ export default function ExpiryDashboard() {
           </div>
           <div>
             <h1 className="text-2xl font-black tracking-tight text-slate-900">
-              ایکسپائری اور بیچ مینجمنٹ ایکشن سینٹر
+              Batch Expiry & FEFO Action Center
             </h1>
             <p className="text-xs text-slate-500 font-medium">
               FEFO Batch & Expiry Action Center (Returns, Clearance & Write-offs)
@@ -264,7 +264,7 @@ export default function ExpiryDashboard() {
             className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
           >
             <Printer className="w-4 h-4 text-slate-500" />
-            <span>پرنٹ شیٹ (Print)</span>
+            <span>Print Sheet</span>
           </button>
 
           <button
@@ -273,7 +273,7 @@ export default function ExpiryDashboard() {
             className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 flex items-center gap-1.5 transition-all"
           >
             <RotateCcw className="w-4 h-4" />
-            <span>خریداری واپسی ڈیش بورڈ کھولیں</span>
+            <span>Purchase Returns Hub</span>
           </button>
         </div>
       </div>
@@ -298,7 +298,7 @@ export default function ExpiryDashboard() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">زائد المیعاد (Expired)</span>
+            <span className="text-xs font-bold">Expired Batches</span>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
               filterTab === 'EXPIRED' ? 'bg-white/20 text-white' : 'bg-rose-50 text-rose-600'
             }`}>
@@ -307,10 +307,10 @@ export default function ExpiryDashboard() {
           </div>
           <div className="mt-3">
             <div className={`text-2xl font-black ${filterTab === 'EXPIRED' ? 'text-white' : 'text-rose-600'}`}>
-              {stats.expiredBatches} بیجز
+              {stats.expiredBatches} batches
             </div>
             <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'EXPIRED' ? 'text-rose-100' : 'text-slate-400'}`}>
-              نقصان مالیت: {fmt(stats.expiredCost)}
+              Cost loss: {fmt(stats.expiredCost)}
             </div>
           </div>
         </div>
@@ -325,7 +325,7 @@ export default function ExpiryDashboard() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">فوری ایکشن (0–30 دن)</span>
+            <span className="text-xs font-bold">Critical Action (0–30 Days)</span>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
               filterTab === 'CRITICAL' ? 'bg-white/20 text-white' : 'bg-orange-50 text-orange-600'
             }`}>
@@ -334,10 +334,10 @@ export default function ExpiryDashboard() {
           </div>
           <div className="mt-3">
             <div className={`text-2xl font-black ${filterTab === 'CRITICAL' ? 'text-white' : 'text-orange-600'}`}>
-              {stats.criticalBatches} بیجز
+              {stats.criticalBatches} batches
             </div>
             <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'CRITICAL' ? 'text-orange-100' : 'text-slate-400'}`}>
-              مالیت: {fmt(stats.criticalCost)}
+              Value: {fmt(stats.criticalCost)}
             </div>
           </div>
         </div>
@@ -352,7 +352,7 @@ export default function ExpiryDashboard() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">قریبی میعاد (31–90 دن)</span>
+            <span className="text-xs font-bold">Near Expiry (31–90 Days)</span>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
               filterTab === 'NEAR' ? 'bg-white/20 text-white' : 'bg-amber-50 text-amber-600'
             }`}>
@@ -361,10 +361,10 @@ export default function ExpiryDashboard() {
           </div>
           <div className="mt-3">
             <div className={`text-2xl font-black ${filterTab === 'NEAR' ? 'text-white' : 'text-amber-700'}`}>
-              {stats.nearBatches} بیجز
+              {stats.nearBatches} batches
             </div>
             <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'NEAR' ? 'text-amber-100' : 'text-slate-400'}`}>
-              مالیت: {fmt(stats.nearCost)}
+              Value: {fmt(stats.nearCost)}
             </div>
           </div>
         </div>
@@ -379,7 +379,7 @@ export default function ExpiryDashboard() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">محفوظ سٹاک (&gt;90 دن)</span>
+            <span className="text-xs font-bold">Safe Stock (&gt;90 Days)</span>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
               filterTab === 'SAFE' ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-600'
             }`}>
@@ -388,10 +388,10 @@ export default function ExpiryDashboard() {
           </div>
           <div className="mt-3">
             <div className={`text-2xl font-black ${filterTab === 'SAFE' ? 'text-white' : 'text-emerald-700'}`}>
-              {stats.safeBatches} بیجز
+              {stats.safeBatches} batches
             </div>
             <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'SAFE' ? 'text-emerald-100' : 'text-slate-400'}`}>
-              مالیت: {fmt(stats.safeCost)}
+              Value: {fmt(stats.safeCost)}
             </div>
           </div>
         </div>
@@ -399,7 +399,7 @@ export default function ExpiryDashboard() {
         {/* Total Financial Risk */}
         <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white border border-slate-700 rounded-2xl p-4 shadow-sm flex flex-col justify-between col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-slate-300">
-            <span className="text-xs font-bold">کل مالیاتی رسک</span>
+            <span className="text-xs font-bold">Total Expiry Risk</span>
             <div className="w-8 h-8 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold">
               💰
             </div>
@@ -422,11 +422,11 @@ export default function ExpiryDashboard() {
           {/* Status Tabs */}
           <div className="flex flex-wrap items-center gap-1.5 bg-slate-200/60 p-1 rounded-xl">
             {[
-              ['CRITICAL', `فوری ایکشن (${stats.criticalBatches})`],
-              ['EXPIRED', `زائد المیعاد (${stats.expiredBatches})`],
-              ['NEAR', `31–90 دن (${stats.nearBatches})`],
-              ['SAFE', `محفوظ سٹاک (${stats.safeBatches})`],
-              ['ALL', `تمام بیجز (${analyzedBatches.filter(b => b.qty > 0).length})`],
+              ['CRITICAL', `0–30 Days (${stats.criticalBatches})`],
+              ['EXPIRED', `Expired (${stats.expiredBatches})`],
+              ['NEAR', `31–90 Days (${stats.nearBatches})`],
+              ['SAFE', `Safe Stock (${stats.safeBatches})`],
+              ['ALL', `All Batches (${analyzedBatches.filter(b => b.qty > 0).length})`],
             ].map(([tabKey, tabLabel]) => (
               <button
                 key={tabKey}
@@ -452,7 +452,7 @@ export default function ExpiryDashboard() {
                 onChange={(e) => setCompanyFilter(e.target.value)}
                 className="bg-transparent font-bold text-slate-700 outline-none cursor-pointer max-w-[150px] truncate"
               >
-                <option value="ALL">🏢 تمام کمپنیاں ({distinctCompanies.length})</option>
+                <option value="ALL">🏢 All Companies ({distinctCompanies.length})</option>
                 {distinctCompanies.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -466,7 +466,7 @@ export default function ExpiryDashboard() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="دوا یا بیچ نمبر تلاش کریں..."
+                placeholder="Search medicine or batch number..."
                 className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
               />
             </div>
@@ -478,21 +478,21 @@ export default function ExpiryDashboard() {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold">
-                <th className="py-3 px-4">دوا اور کمپنی (Medicine & Company)</th>
-                <th className="py-3 px-3">بیچ نمبر (Batch No)</th>
-                <th className="py-3 px-3">ایکسپائری تاریخ</th>
-                <th className="py-3 px-3 text-center">باقی دن (Remaining)</th>
-                <th className="py-3 px-3 text-right">سٹاک (Units)</th>
-                <th className="py-3 px-3 text-right">خریداری قیمت</th>
-                <th className="py-3 px-3 text-right">کل مالیت (PKR)</th>
-                <th className="py-3 px-4 text-center">فوری ایکشن (Action)</th>
+                <th className="py-3 px-4">Medicine & Company</th>
+                <th className="py-3 px-3">Batch No</th>
+                <th className="py-3 px-3">Expiry Date</th>
+                <th className="py-3 px-3 text-center">Remaining Days</th>
+                <th className="py-3 px-3 text-right">Stock (Units)</th>
+                <th className="py-3 px-3 text-right">Cost Price</th>
+                <th className="py-3 px-3 text-right">Total Value (PKR)</th>
+                <th className="py-3 px-4 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {!filteredBatches.length && (
                 <tr>
                   <td colSpan={8} className="py-12 text-center text-slate-400">
-                    اس فلٹر میں کوئی بیچ موجود نہیں ہے۔
+                    No batches found matching this filter.
                   </td>
                 </tr>
               )}
@@ -524,7 +524,7 @@ export default function ExpiryDashboard() {
                           : 'bg-emerald-100 text-emerald-800 border border-emerald-300'
                       }`}
                     >
-                      {b.isExpired ? '⚠️ Expired' : `${b.daysLeft} دن باقی`}
+                      {b.isExpired ? '⚠️ Expired' : `${b.daysLeft} days left`}
                     </span>
                   </td>
 
@@ -553,10 +553,10 @@ export default function ExpiryDashboard() {
                           setReturnNote(`Expiry Return (${b.daysLeft} days remaining)`)
                         }}
                         className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-[11px] font-bold flex items-center gap-1 transition-all"
-                        title="سپلائر کو واپسی کا ڈیبٹ نوٹ جاری کریں"
+                        title="Issue purchase return debit note to supplier"
                       >
                         <RotateCcw className="w-3 h-3" />
-                        <span>واپسی</span>
+                        <span>Return</span>
                       </button>
 
                       {/* Dispose / Damaged write-off */}
@@ -564,7 +564,7 @@ export default function ExpiryDashboard() {
                         type="button"
                         onClick={() => handleDispose(b)}
                         className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-colors"
-                        title="ضائع شدہ / خراب درج کریں"
+                        title="Write off as damaged / expired"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -587,7 +587,7 @@ export default function ExpiryDashboard() {
                   <RotateCcw className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900">سپلائر کو واپسی کا اندراج</h3>
+                  <h3 className="text-base font-bold text-slate-900">Return Batch to Supplier</h3>
                   <p className="text-[11px] text-slate-500">Create Supplier Return & Debit Note</p>
                 </div>
               </div>
@@ -604,15 +604,15 @@ export default function ExpiryDashboard() {
               <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 space-y-1">
                 <div className="font-bold text-slate-900 text-sm">{returnModalBatch.medicineName}</div>
                 <div className="text-slate-500">
-                  کمپنی: <strong>{returnModalBatch.company}</strong> · بیچ: <strong className="font-mono">{returnModalBatch.batchNo}</strong>
+                  Company: <strong>{returnModalBatch.company}</strong> · Batch: <strong className="font-mono">{returnModalBatch.batchNo}</strong>
                 </div>
                 <div className="text-slate-500">
-                  موجود سٹاک: <strong>{returnModalBatch.qty} Units</strong> · خریداری ریٹ: <strong className="font-mono">{fmt(returnModalBatch.cost)}</strong>
+                  Current Stock: <strong>{returnModalBatch.qty} Units</strong> · Cost Rate: <strong className="font-mono">{fmt(returnModalBatch.cost)}</strong>
                 </div>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">ڈسٹری بیوٹر / سپلائر منتخب کریں</label>
+                <label className="block font-bold text-slate-700 mb-1">Select Supplier / Distributor</label>
                 <select
                   value={returnSupplierId}
                   onChange={(e) => setReturnSupplierId(e.target.value)}
@@ -628,7 +628,7 @@ export default function ExpiryDashboard() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">واپسی تعداد (Return Qty)</label>
+                  <label className="block font-bold text-slate-700 mb-1">Return Quantity (Units)</label>
                   <input
                     type="number"
                     min="1"
@@ -640,7 +640,7 @@ export default function ExpiryDashboard() {
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">کل ریفنڈ رقم (Debit Note)</label>
+                  <label className="block font-bold text-slate-700 mb-1">Total Refund Value (Debit Note)</label>
                   <div className="px-3 py-2 border border-slate-200 bg-slate-50 rounded-xl font-mono font-black text-rose-700 text-sm">
                     {fmt(returnQty * returnModalBatch.cost)}
                   </div>
@@ -648,7 +648,7 @@ export default function ExpiryDashboard() {
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">وجہ یا نوٹ (Return Reason)</label>
+                <label className="block font-bold text-slate-700 mb-1">Return Reason / Note</label>
                 <input
                   type="text"
                   value={returnNote}
@@ -664,13 +664,13 @@ export default function ExpiryDashboard() {
                   onClick={() => setReturnModalBatch(null)}
                   className="px-4 py-2 rounded-xl border border-slate-300 text-slate-600 font-bold hover:bg-slate-100"
                 >
-                  منسوخ کریں
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-md shadow-rose-600/20"
                 >
-                  ڈیبٹ نوٹ جاری کریں (Create Debit Note)
+                  Generate Debit Note
                 </button>
               </div>
             </form>

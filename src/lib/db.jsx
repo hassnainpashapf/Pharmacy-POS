@@ -2152,16 +2152,16 @@ export function deletePurchaseOrder(id) {
 
 export function purchaseOrders() { return [...(db.purchaseOrders || [])].reverse() }
 
-// ---------- Purchase Returns (سپلائر کو خریداری واپسی) ----------
+// ---------- Purchase Returns (Supplier Returns & Debit Notes) ----------
 export function savePurchaseReturn({
   supplierId,
   items = [], // [{ medicineId, medicineName, batchId, batchNo, expiry, qty, purchasePrice, total, reason, note }]
   settlementType = 'CREDIT_NOTE', // 'CREDIT_NOTE' | 'CASH_REFUND'
   note = '',
 }) {
-  if (!items || !items.length) throw new Error('Return list mein kam az kam ek item hona zaroori hai.')
+  if (!items || !items.length) throw new Error('At least one item is required in the return list.')
   const sup = supplierById(supplierId)
-  if (!sup) throw new Error('Supplier select karein.')
+  if (!sup) throw new Error('Please select a supplier.')
 
   let totalAmount = 0
 

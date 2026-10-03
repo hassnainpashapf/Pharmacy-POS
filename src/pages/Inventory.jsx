@@ -134,10 +134,9 @@ export default function Inventory({ forcedTab }) {
           <div>
             <h2 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
               <span>Dedicated Stock Action Dashboards</span>
-              <span className="text-[11px] font-normal text-emerald-300">مخصوص صفحات</span>
             </h2>
             <p className="text-[11px] text-slate-300 mt-0.5">
-              ہر آپریشن کے لیے الگ مکمل ڈیش بورڈ کھولیں:
+              Direct access to dedicated inventory action centers:
             </p>
           </div>
         </div>
@@ -149,7 +148,7 @@ export default function Inventory({ forcedTab }) {
           >
             <Building2 className="w-3.5 h-3.5" />
             <span>Company Stock</span>
-            <span className="text-[10px] opacity-80 font-normal">کمپنی</span>
+            <span className="text-[10px] opacity-80 font-normal">Hub</span>
           </a>
           <a
             href="/stock-audit"
@@ -157,7 +156,7 @@ export default function Inventory({ forcedTab }) {
           >
             <ClipboardCheck className="w-3.5 h-3.5" />
             <span>Stock Audit</span>
-            <span className="text-[10px] opacity-80 font-normal">آڈٹ</span>
+            <span className="text-[10px] opacity-80 font-normal">Audit</span>
           </a>
           <a
             href="/expiry-management"
@@ -165,7 +164,7 @@ export default function Inventory({ forcedTab }) {
           >
             <Clock className="w-3.5 h-3.5" />
             <span>Expiry Action</span>
-            <span className="text-[10px] opacity-80 font-normal">ایکسپائری</span>
+            <span className="text-[10px] opacity-80 font-normal">FEFO</span>
           </a>
           <a
             href="/purchase-returns"
@@ -173,7 +172,7 @@ export default function Inventory({ forcedTab }) {
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Purchase Returns</span>
-            <span className="text-[10px] opacity-80 font-normal">واپسی</span>
+            <span className="text-[10px] opacity-80 font-normal">Debit</span>
           </a>
         </div>
       </div>
@@ -184,12 +183,12 @@ export default function Inventory({ forcedTab }) {
           <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
             <span>
               {tab === 'COMPANIES'
-                ? '🏢 کمپنی وائز سٹاک رپورٹ (Company Stock Breakdown)'
+                ? '🏢 Company Stock Hub & Breakdown'
                 : tab === 'audit'
-                ? '⚖️ فزیکل سٹاک آڈٹ (Stock Audit: Kam / Zyada)'
+                ? '⚖️ Physical Stock Audit (Count & Variance)'
                 : tab === 'NEAR_EXPIRY'
-                ? '⏳ ایکسپائری و بیچ مینجمنٹ (Batch & Expiry)'
-                : '📦 سٹاک مینجمنٹ (Stock Management)'}
+                ? '⏳ Batch & Expiry Management'
+                : '📦 Stock Master Management'}
             </span>
             <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-sm border border-indigo-200">
               {tab === 'audit' ? 'Physical Count' : tab === 'COMPANIES' ? 'Company Grouped' : 'FEFO Managed'}
@@ -197,12 +196,12 @@ export default function Inventory({ forcedTab }) {
           </h2>
           <p className="text-xs text-slate-500 mt-1">
             {tab === 'COMPANIES'
-              ? 'ہر فارما کمپنی کا دکان میں موجود کل سٹاک اور ان کی مالیت'
+              ? 'Total stock and valuation breakdown categorized by pharmaceutical company'
               : tab === 'audit'
-              ? 'کاؤنٹر پر موجود مال کی فزیکل گنتی اور کم/زیادہ کا فوری حل'
+              ? 'Physical stock verification and discrepancy reconciliation'
               : tab === 'NEAR_EXPIRY'
-              ? 'نزدیک ایکسپائر ہونے والے بیجز (90 دن سے کم) اور زائد المیعاد دواؤں کا ریکارڈ'
-              : 'دکان کی تمام ادویات اور بیجز کا لائیو سٹاک ریکارڈ'}
+              ? 'Near-expiry batches (<90 days) and expired item action log'
+              : 'Live real-time inventory and batch tracking'}
           </p>
         </div>
 
@@ -1337,16 +1336,16 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
         </div>
       </div>
 
-      {/* 💡 آسان طریقہ آڈٹ گائیڈ (Easy Audit Guide Banner) */}
+      {/* Easy Audit Guide Banner */}
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white p-3.5 rounded-2xl border border-slate-700 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold text-sm shrink-0">
             ⚖️
           </div>
           <div className="text-xs">
-            <span className="font-bold text-amber-300">آسان آڈٹ کا طریقہ (Easy Stock Audit):</span>{' '}
+            <span className="font-bold text-amber-300">Easy Stock Audit Guide:</span>{' '}
             <span className="text-slate-200">
-              دکان پر موجود مال گنیں ➜ لسٹ میں <b>[-] یا [+]</b> دبا کر یا خانے میں گنتی لکھیں ➜ کمی کی صورت میں <b>"Draft Purchase Order"</b> سے آرڈر بنائیں اور <b>"Reconcile Stock"</b> سے سٹاک برابر کریں۔
+              Count physical stock on shelves ➜ Use <b>[-] or [+]</b> or type actual count ➜ Generate purchase orders for shortages or click <b>"Reconcile Stock"</b> to synchronize balances.
             </span>
           </div>
         </div>
@@ -1356,14 +1355,14 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
             onClick={() => setVarianceFilter('KAM')}
             className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1 cursor-pointer active:scale-95"
           >
-            <span>🔻 کم مال ({kamItems.length})</span>
+            <span>🔻 Shortages ({kamItems.length})</span>
           </button>
           <button
             type="button"
             onClick={() => setVarianceFilter('ZYADA')}
             className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1 cursor-pointer active:scale-95"
           >
-            <span>🔺 زیادہ مال ({zyadaItems.length})</span>
+            <span>🔺 Excess ({zyadaItems.length})</span>
           </button>
         </div>
       </div>

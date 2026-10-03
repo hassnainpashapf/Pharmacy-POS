@@ -289,7 +289,7 @@ export default function Medicines() {
               }`}
             >
               <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-              <span>🏢 کمپنی ڈائریکٹری (Companies)</span>
+              <span>🏢 Companies Directory</span>
             </button>
             <button
               type="button"
@@ -301,7 +301,7 @@ export default function Medicines() {
               }`}
             >
               <Layers className="w-3.5 h-3.5 text-emerald-600" />
-              <span>📋 تمام لسٹ (All Items)</span>
+              <span>📋 All Medicines List</span>
             </button>
           </div>
 
@@ -311,14 +311,14 @@ export default function Medicines() {
             className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5 shrink-0"
             title="Add medicines grouped by pharma manufacturer"
           >
-            <Building2 className="w-3.5 h-3.5" /> + کمپنی وائز میڈیسن ایڈ کریں
+            <Building2 className="w-3.5 h-3.5" /> + Add by Company
           </button>
 
           <button
             onClick={() => setEditing({})}
             className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5 shrink-0"
           >
-            <Plus className="w-3.5 h-3.5" /> + اکیلی دوا ایڈ کریں
+            <Plus className="w-3.5 h-3.5" /> + Add Single Item
           </button>
         </div>
       </div>
@@ -376,14 +376,14 @@ export default function Medicines() {
       {/* VIEW 1: COMPANY-WISE MANAGEMENT DIRECTORY */}
       {viewMode === 'companies' && (
         <div className="space-y-3">
-          {/* 💡 آسان راہنمائی (Quick Easy Guide Banner) */}
+          {/* Quick Easy Guide Banner */}
           <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white p-3 rounded-xl border border-indigo-700/60 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div className="flex items-center gap-2">
               <span className="text-base">💡</span>
               <div className="text-xs">
-                <span className="font-bold text-amber-300">آسان طریقہ (Easy Guide):</span>{' '}
+                <span className="font-bold text-amber-300">Easy Guide:</span>{' '}
                 <span className="text-slate-200">
-                  1️⃣ کمپنی چنیں ➜ 2️⃣ دوا تلاش کریں ➜ 3️⃣ <b>"+ کمپنی وائز میڈیسن ایڈ کریں"</b> سے فوری نیا مال اور بیچ درج کریں۔
+                  1️⃣ Select company ➜ 2️⃣ Search medicine ➜ 3️⃣ Use <b>"+ Add by Company"</b> to quickly register products & batches.
                 </span>
               </div>
             </div>
@@ -392,7 +392,7 @@ export default function Medicines() {
               onClick={() => setCompanyAddOpen(true)}
               className="self-start sm:self-auto px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
             >
-              <span>+ فوری نئی دوا شامل کریں</span>
+              <span>+ Quick Add Product</span>
             </button>
           </div>
 
@@ -405,7 +405,7 @@ export default function Medicines() {
                 <input
                   value={compSearch}
                   onChange={(e) => setCompSearch(e.target.value)}
-                  placeholder="کمپنی، برانڈ یا دوا تلاش کریں... (Search GSK, Abbott, Panadol...)"
+                  placeholder="Search company, brand or medicine name (e.g. GSK, Abbott, Panadol)..."
                   className="w-full bg-slate-50 border border-slate-300 rounded-sm pl-9 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500"
                 />
                 {compSearch && (
@@ -420,11 +420,11 @@ export default function Medicines() {
 
               {compSearch && (
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-sm text-xs font-bold shrink-0">
-                  <span>فلٹر: {compSearch}</span>
+                  <span>Filter: {compSearch}</span>
                   <button
                     onClick={() => setCompSearch('')}
                     className="p-0.5 hover:bg-indigo-100 rounded text-indigo-600 cursor-pointer"
-                    title="فلٹر ختم کریں (Clear filter)"
+                    title="Clear filter"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -1359,17 +1359,17 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
   }
 
   return (
-    <Modal title="🏢 کمپنی کے ذریعے دوا شامل کریں (Add Medicines by Company)" onClose={onClose}>
+    <Modal title="Add Medicines by Company" onClose={onClose}>
       <div className="space-y-4 text-xs">
         {/* Step 1: Select / Switch Company */}
         <div className="p-3.5 bg-indigo-50/70 border border-indigo-200 rounded-xl space-y-2.5">
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
             <div>
               <span className="font-extrabold text-indigo-950 text-xs flex items-center gap-1.5">
-                <Building2 className="w-4 h-4 text-indigo-700" /> 1️⃣ کمپنی چنیں (1. Select Pharmaceutical Company)
+                <Building2 className="w-4 h-4 text-indigo-700" /> 1. Select Pharmaceutical Company
               </span>
               <p className="text-[11px] text-indigo-700 mt-0.5">
-                اس سیشن میں شامل کی جانے والی تمام ادویات خودبخود اس کمپنی کے کھاتے میں ٹیگ ہو جائیں گی۔
+                All medicines added in this session will automatically be tagged to this company.
               </p>
             </div>
             <button
@@ -1377,7 +1377,7 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
               onClick={() => setIsCustom(!isCustom)}
               className="text-[11px] font-bold text-indigo-700 hover:text-indigo-900 underline self-start sm:self-auto cursor-pointer"
             >
-              {isCustom ? '← لسٹ میں سے منتخب کریں' : '+ نئی کمپنی کا نام ٹائپ کریں'}
+              {isCustom ? '← Select from list' : '+ Type new company name'}
             </button>
           </div>
 
@@ -1386,7 +1386,7 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
               type="text"
               value={customCompany}
               onChange={(e) => setCustomCompany(e.target.value)}
-              placeholder="کمپنی کا نام لکھیں... (e.g. Platinum Pharma, Horizon, Bio-Labs)"
+              placeholder="Enter company name... (e.g. Platinum Pharma, Horizon, Bio-Labs)"
               className="w-full bg-white border border-indigo-300 rounded-lg px-3 py-2 text-xs font-bold text-indigo-950 focus:ring-2 focus:ring-indigo-500"
             />
           ) : (
@@ -1422,30 +1422,30 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
           )}
 
           <div className="flex items-center justify-between text-[11px] font-medium text-indigo-800 pt-1 border-t border-indigo-200/60">
-            <span>منتخب کمپنی: <strong className="font-extrabold text-indigo-950">{activeCompanyName || 'None'}</strong></span>
-            <span>{existingCompanyMeds.length} ادویات پہلے سے درج ہیں</span>
+            <span>Selected Company: <strong className="font-extrabold text-indigo-950">{activeCompanyName || 'None'}</strong></span>
+            <span>{existingCompanyMeds.length} medicines already registered</span>
           </div>
         </div>
 
         {/* Step 2: Medicine Master Details */}
         <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
           <span className="font-extrabold text-slate-900 text-xs block">
-            2️⃣ دوا کی تفصیل اور قیمتیں (Product Details & Pricing)
+            2. Product Details & Pricing
           </span>
 
           <div className="grid grid-cols-2 gap-3">
-            <Input label="دوا کا نام (Medicine Name) *" value={f.name} onChange={setMed('name')} placeholder="مثلاً Panadol, Augmentin, Risek" />
-            <Input label="برانڈ کا نام (Brand Name)" value={f.brand} onChange={setMed('brand')} placeholder="مثلاً Panadol Extra, Risek Insta" />
+            <Input label="Medicine Name *" value={f.name} onChange={setMed('name')} placeholder="e.g. Panadol, Augmentin, Risek" />
+            <Input label="Brand Name" value={f.brand} onChange={setMed('brand')} placeholder="e.g. Panadol Extra, Risek Insta" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <Input label="فارمولا / سالٹ (Generic Formula) *" value={f.generic} onChange={setMed('generic')} placeholder="مثلاً Paracetamol, Omeprazole" />
-            <Input label="طاقت (Strength)" value={f.strength} onChange={setMed('strength')} placeholder="مثلاً 500mg, 20mg, 10mg/5ml" />
+            <Input label="Generic Formula / Salt *" value={f.generic} onChange={setMed('generic')} placeholder="e.g. Paracetamol, Omeprazole" />
+            <Input label="Strength" value={f.strength} onChange={setMed('strength')} placeholder="e.g. 500mg, 20mg, 10mg/5ml" />
           </div>
 
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="block font-bold text-slate-700 mb-1">ڈوز کی قسم (Dosage Form)</label>
+              <label className="block font-bold text-slate-700 mb-1">Dosage Form</label>
               <select
                 value={f.dosageForm}
                 onChange={(e) => setF((prev) => ({ ...prev, dosageForm: e.target.value, form: e.target.value }))}
@@ -1456,13 +1456,13 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
                 ))}
               </select>
             </div>
-            <Input label="پیک سائز (Pack Size)" value={f.packSize} onChange={setMed('packSize')} placeholder="مثلاً 20 Tablets, 14 Capsules" />
-            <Input label="بارکوڈ (Barcode)" value={f.barcode} onChange={setMed('barcode')} placeholder="8964000..." />
+            <Input label="Pack Size" value={f.packSize} onChange={setMed('packSize')} placeholder="e.g. 20 Tablets, 14 Capsules" />
+            <Input label="Barcode" value={f.barcode} onChange={setMed('barcode')} placeholder="8964000..." />
           </div>
 
           <div className="grid grid-cols-3 gap-3 bg-white p-2.5 rounded-lg border border-slate-200">
             <div>
-              <label className="block font-bold text-slate-700 mb-1">خرید قیمت (Cost Price Rs.)</label>
+              <label className="block font-bold text-slate-700 mb-1">Cost Price (Rs.)</label>
               <input
                 type="number"
                 value={f.purchasePrice}
@@ -1471,7 +1471,7 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
               />
             </div>
             <div>
-              <label className="block font-bold text-slate-700 mb-1">فروخت قیمت (Retail Price Rs.) *</label>
+              <label className="block font-bold text-slate-700 mb-1">Retail Price (Rs.) *</label>
               <input
                 type="number"
                 value={f.salePrice}
@@ -1480,7 +1480,7 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
               />
             </div>
             <div>
-              <label className="block font-bold text-slate-700 mb-1">ہول سیل قیمت (Wholesale Rs.)</label>
+              <label className="block font-bold text-slate-700 mb-1">Wholesale Price (Rs.)</label>
               <input
                 type="number"
                 value={f.wholesalePrice}
@@ -1502,7 +1502,7 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
                 className="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4 cursor-pointer"
               />
               <span className="font-extrabold text-emerald-950 text-xs">
-                3️⃣ ابتدائی سٹاک فوراً دکان میں شامل کریں (Stock In Initial Batch)
+                3. Initial Batch Stock In (Optional)
               </span>
             </label>
             <span className="text-[10px] font-bold text-emerald-700 bg-white px-2 py-0.5 rounded border border-emerald-200">
@@ -1512,9 +1512,9 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
 
           {stockInBatch && (
             <div className="grid grid-cols-3 gap-3 pt-1">
-              <Input label="بیچ نمبر (Batch No) *" value={b.batchNo} onChange={setBatch('batchNo')} placeholder="مثلاً BT-8891" />
-              <Input label="ایکسپائری تاریخ (Expiry Date) *" type="date" value={b.expiry} onChange={setBatch('expiry')} />
-              <Input label="سٹاک تعداد (Quantity Units) *" type="number" value={b.qty} onChange={setBatch('qty')} />
+              <Input label="Batch Number *" value={b.batchNo} onChange={setBatch('batchNo')} placeholder="e.g. BT-8891" />
+              <Input label="Expiry Date *" type="date" value={b.expiry} onChange={setBatch('expiry')} />
+              <Input label="Stock Quantity (Units) *" type="number" value={b.qty} onChange={setBatch('qty')} />
             </div>
           )}
         </div>
@@ -1523,7 +1523,7 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
         {addedList.length > 0 && (
           <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1.5">
             <span className="text-[11px] font-bold text-slate-700 block">
-              ✓ اس سیشن میں {activeCompanyName} کی درج ادویات ({addedList.length}):
+              ✓ Added in this session for {activeCompanyName} ({addedList.length}):
             </span>
             <div className="flex flex-wrap gap-1.5">
               {addedList.map((item, idx) => (
@@ -1551,21 +1551,21 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
             onClick={() => handleSave(true)}
             className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
           >
-            <Plus className="w-4 h-4" /> محفوظ کریں اور اگلی دوا شامل کریں (+ Add Next)
+            <Plus className="w-4 h-4" /> Save & Add Next
           </button>
           <button
             type="button"
             onClick={() => handleSave(false)}
             className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
           >
-            <CheckCircle2 className="w-4 h-4" /> محفوظ کریں اور بند کریں (Save & Finish)
+            <CheckCircle2 className="w-4 h-4" /> Save & Close
           </button>
           <button
             type="button"
             onClick={onClose}
             className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-slate-100 transition-colors cursor-pointer"
           >
-            بند کریں (Close)
+            Close
           </button>
         </div>
       </div>

@@ -132,7 +132,7 @@ export default function Dashboard() {
             <div className="w-2 h-5 bg-indigo-600 rounded-full"></div>
             <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
               <span>Inventory & Stock Dedicated Dashboards</span>
-              <span className="text-xs font-normal text-slate-500 hidden sm:inline">| مخصوص اسٹاک مینجمنٹ صفحات</span>
+              <span className="text-xs font-normal text-slate-500 hidden sm:inline">| Dedicated Stock Modules</span>
             </h2>
           </div>
           <span className="text-xs font-medium text-slate-500">1-Click Direct Pages</span>
@@ -150,16 +150,16 @@ export default function Dashboard() {
                   <Building2 className="w-5 h-5" />
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  کمپنی وائز
+                  Company Hub
                 </span>
               </div>
               <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-900">Company Stock Hub</h3>
               <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                کمپنی وائز اسٹاک، کل ویلیوایشن، ادویات اور نئی ادویات شامل کرنے کا صفحہ۔
+                Company-wise stock breakdown, valuation, and catalogue management.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600 group-hover:text-indigo-700">
-              <span>اوپن کمپنی ڈیش بورڈ</span>
+              <span>Open Company Hub</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
@@ -175,16 +175,16 @@ export default function Dashboard() {
                   <ClipboardCheck className="w-5 h-5" />
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                  کم / زیادہ فزیکل
+                  Count & Variance
                 </span>
               </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-amber-900">Stock Audit (Kam/Zyada)</h3>
+              <h3 className="text-sm font-bold text-slate-900 group-hover:text-amber-900">Stock Audit & Count</h3>
               <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                دکان کی ادویات گن کر فزیکل کاؤنٹ درج کریں اور فرق 1 کلک میں درست کریں۔
+                Count physical items, record discrepancies, and reconcile in 1 click.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600 group-hover:text-amber-700">
-              <span>اوپن آڈٹ ورک شیٹ</span>
+              <span>Open Audit Worksheet</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
@@ -200,16 +200,16 @@ export default function Dashboard() {
                   <Clock className="w-5 h-5" />
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
-                  ایکسپائری ایکشن
+                  Expiry & FEFO
                 </span>
               </div>
               <h3 className="text-sm font-bold text-slate-900 group-hover:text-orange-900">Batch & Expiry Action</h3>
               <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                قریب المرگ بیچز کو ڈسکاؤنٹ پر نکالیں یا سپلائر واپسی کے لیے مارک کریں۔
+                Identify near-expiry batches, apply discounts, or return to suppliers.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-orange-600 group-hover:text-orange-700">
-              <span>اوپن ایکسپائری سینٹر</span>
+              <span>Open Expiry Center</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
@@ -225,16 +225,16 @@ export default function Dashboard() {
                   <RotateCcw className="w-5 h-5" />
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                  خریداری واپسی
+                  Debit Notes
                 </span>
               </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-rose-900">Purchase Returns (Debit)</h3>
+              <h3 className="text-sm font-bold text-slate-900 group-hover:text-rose-900">Purchase Returns (Debit Note)</h3>
               <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                سپلائر کو واپسی بھیجیں، ڈیبٹ نوٹ واؤچر اور کھاتہ ایڈجسٹمنٹ بنائیں۔
+                Send returns to suppliers, issue debit notes, and adjust accounts.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-rose-600 group-hover:text-rose-700">
-              <span>اوپن پرچیز ریٹرن</span>
+              <span>Open Returns Hub</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
@@ -837,7 +837,7 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
             <div className="w-2 h-5 bg-indigo-600 rounded-full"></div>
             <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
               <span>Inventory & Stock Dedicated Dashboards</span>
-              <span className="text-xs font-normal text-slate-500 hidden sm:inline">| مخصوص اسٹاک مینجمنٹ صفحات</span>
+              <span className="text-xs font-normal text-slate-500 hidden sm:inline">| Dedicated Stock Modules</span>
             </h2>
           </div>
           <span className="text-xs font-medium text-slate-500">1-Click Direct Pages</span>
@@ -855,16 +855,16 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
                   <Building2 className="w-5 h-5" />
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  کمپنی وائز
+                  Company Hub
                 </span>
               </div>
               <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-900">Company Stock Hub</h3>
               <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                کمپنی وائز اسٹاک، کل ویلیوایشن، ادویات اور نئی ادویات شامل کرنے کا صفحہ۔
+                Company-wise stock breakdown, valuation, and catalogue management.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600 group-hover:text-indigo-700">
-              <span>اوپن کمپنی ڈیش بورڈ</span>
+              <span>Open Company Hub</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
@@ -880,16 +880,16 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
                   <ClipboardCheck className="w-5 h-5" />
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                  کم / زیادہ فزیکل
+                  Count & Variance
                 </span>
               </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-amber-900">Stock Audit (Kam/Zyada)</h3>
+              <h3 className="text-sm font-bold text-slate-900 group-hover:text-amber-900">Stock Audit & Count</h3>
               <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                دکان کی ادویات گن کر فزیکل کاؤنٹ درج کریں اور فرق 1 کلک میں درست کریں۔
+                Count physical items, record discrepancies, and reconcile in 1 click.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600 group-hover:text-amber-700">
-              <span>اوپن آڈٹ ورک شیٹ</span>
+              <span>Open Audit Worksheet</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
@@ -905,16 +905,16 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
                   <Clock className="w-5 h-5" />
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
-                  ایکسپائری ایکشن
+                  Expiry & FEFO
                 </span>
               </div>
               <h3 className="text-sm font-bold text-slate-900 group-hover:text-orange-900">Batch & Expiry Action</h3>
               <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                قریب المرگ بیچز کو ڈسکاؤنٹ پر نکالیں یا سپلائر واپسی کے لیے مارک کریں۔
+                Identify near-expiry batches, apply discounts, or return to suppliers.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-orange-600 group-hover:text-orange-700">
-              <span>اوپن ایکسپائری سینٹر</span>
+              <span>Open Expiry Center</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
@@ -930,16 +930,16 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
                   <RotateCcw className="w-5 h-5" />
                 </div>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                  خریداری واپسی
+                  Debit Notes
                 </span>
               </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-rose-900">Purchase Returns (Debit)</h3>
+              <h3 className="text-sm font-bold text-slate-900 group-hover:text-rose-900">Purchase Returns (Debit Note)</h3>
               <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                سپلائر کو واپسی بھیجیں، ڈیبٹ نوٹ واؤچر اور کھاتہ ایڈجسٹمنٹ بنائیں۔
+                Send returns to suppliers, issue debit notes, and adjust accounts.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-rose-600 group-hover:text-rose-700">
-              <span>اوپن پرچیز ریٹرن</span>
+              <span>Open Returns Hub</span>
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
