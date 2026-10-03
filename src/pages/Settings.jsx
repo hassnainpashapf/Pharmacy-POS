@@ -215,7 +215,7 @@ export default function Settings() {
           onClick={() => setSearchParams({ tab: 'general' })}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer ${
             activeTab === 'general'
-              ? 'bg-[#714B67] text-white shadow-sm'
+              ? 'bg-[#3b1734] text-white border border-[#280c23] shadow-sm'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
           }`}
         >
@@ -229,7 +229,7 @@ export default function Settings() {
             onClick={() => setSearchParams({ tab: 'users' })}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer ${
               activeTab === 'users'
-                ? 'bg-[#714B67] text-white shadow-sm'
+                ? 'bg-[#3b1734] text-white border border-[#280c23] shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
@@ -244,7 +244,7 @@ export default function Settings() {
             onClick={() => setSearchParams({ tab: 'audit' })}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer ${
               activeTab === 'audit'
-                ? 'bg-[#714B67] text-white shadow-sm'
+                ? 'bg-[#3b1734] text-white border border-[#280c23] shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >

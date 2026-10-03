@@ -195,7 +195,7 @@ export default function PurchaseReturnsDashboard() {
       {/* 1. Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-[#714B67] text-white flex items-center justify-center font-black shadow-md shadow-[#714B67]/20">
+          <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23]">
             <RotateCcw className="w-5 h-5" />
           </div>
           <div>
@@ -225,7 +225,7 @@ export default function PurchaseReturnsDashboard() {
               setReturnItems([])
               setShowNewModal(true)
             }}
-            className="px-3.5 py-1.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white text-xs font-bold shadow-md shadow-[#714B67]/20 flex items-center gap-1.5 transition-all active:scale-95"
+            className="px-3.5 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>+ New Return</span>
@@ -634,7 +634,7 @@ export default function PurchaseReturnsDashboard() {
                 <button
                   type="submit"
                   disabled={!returnItems.length}
-                  className="px-6 py-2 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] disabled:opacity-50 text-white font-bold shadow-md shadow-[#714B67]/20 active:scale-95 transition-all"
+                  className="px-6 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] disabled:opacity-50 text-white font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
                 >
                   Generate Debit Note
                 </button>

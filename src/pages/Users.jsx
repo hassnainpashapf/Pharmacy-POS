@@ -90,7 +90,7 @@ export default function Users() {
         </div>
         <button
           onClick={() => setAdding(true)}
-          className="inline-flex items-center gap-2 bg-[#714B67] hover:bg-[#5c3c54] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all active:scale-95"
+          className="inline-flex items-center gap-2 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Staff</span>
@@ -515,7 +515,7 @@ function AddUserModal({ db, onClose, onAdd }) {
       </div>
       <button
         onClick={() => onAdd({ ...f, password: f.pw })}
-        className="mt-5 w-full bg-[#714B67] hover:bg-[#5c3c54] text-white py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all active:scale-95"
+        className="mt-5 w-full bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
       >
         Create Staff Account
       </button>
@@ -534,7 +534,7 @@ function EditUserModal({ user, onClose, onSave }) {
       </div>
       <button
         onClick={() => onSave(f)}
-        className="mt-5 w-full bg-[#714B67] hover:bg-[#5c3c54] text-white py-2.5 rounded-xl font-bold text-xs transition-all active:scale-95"
+        className="mt-5 w-full bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold text-xs transition-all active:scale-95 cursor-pointer"
       >
         Save Changes
       </button>
@@ -692,7 +692,7 @@ function PermissionModal({ user, onClose, onSave }) {
             <button
               type="button"
               onClick={save}
-              className="px-4 py-2.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white text-xs font-bold transition-all active:scale-95"
+              className="px-4 py-2.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white text-xs font-bold transition-all active:scale-95 cursor-pointer"
             >
               Save Permissions
             </button>

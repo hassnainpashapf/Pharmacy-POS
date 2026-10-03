@@ -195,8 +195,8 @@ export default function DateFilterBar({
               onClick={() => handleTypeChange(id)}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 active
-                  ? 'bg-[#714B67] text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-[#e9f5f2] text-[#006d69] font-bold border border-[#a2ded5] shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
               }`}
             >
               {Icon && <Icon className="w-3.5 h-3.5" />}

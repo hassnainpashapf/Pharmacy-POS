@@ -228,7 +228,7 @@ export default function Purchases({ forcedTab }) {
           </button>
           <button
             onClick={() => setShowNewPO(true)}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-[#714B67] hover:bg-[#5a3b52] rounded-lg shadow-sm transition"
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg shadow-sm transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             + New Purchase Order (PO)
@@ -546,7 +546,7 @@ export default function Purchases({ forcedTab }) {
                         <div className="mt-4 flex items-center justify-center gap-2">
                           <button
                             onClick={() => setShowNewPO(true)}
-                            className="px-3 py-1.5 text-xs font-bold text-white bg-[#714B67] hover:bg-[#5a3b52] rounded-lg shadow-sm"
+                            className="px-3 py-1.5 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg shadow-sm cursor-pointer"
                           >
                             + Create Manual PO
                           </button>
@@ -2056,7 +2056,7 @@ function NewPOModal({ onClose, onCreated }) {
             />
             <button
               onClick={addItem}
-              className="px-4 py-1.5 bg-[#714B67] hover:bg-[#5a3b52] text-white font-bold rounded-lg transition"
+              className="px-4 py-1.5 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold rounded-lg transition-all cursor-pointer"
             >
               + Add Line
             </button>
@@ -2154,7 +2154,7 @@ function NewPOModal({ onClose, onCreated }) {
 
         <button
           onClick={handleSave}
-          className="w-full py-2.5 bg-[#714B67] hover:bg-[#5a3b52] text-white font-bold rounded-lg shadow transition flex items-center justify-center gap-1.5 text-xs"
+          className="w-full py-2.5 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 text-xs cursor-pointer"
         >
           <ShoppingBag className="w-4 h-4" />
           Create & Save Purchase Order (PO)
@@ -2324,7 +2324,7 @@ function PODetailModal({ po, onClose, onReceive }) {
             {po.status !== 'RECEIVED' && (
               <button
                 onClick={() => onReceive(po)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#714B67] hover:bg-[#5a3b52] text-white font-bold rounded-lg shadow-sm transition"
+                className="flex items-center gap-1.5 px-4 py-2 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold rounded-lg shadow-sm transition-all cursor-pointer"
               >
                 <Package className="w-4 h-4" />
                 🚚 Receive Stock as GRN

@@ -116,7 +116,7 @@ function ExpensesPanel({ db }) {
           <label className="block text-xs font-bold">Category<select value={category} onChange={(e) => setCategory(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl p-2 bg-slate-50"><option>Operations</option><option>Utilities</option><option>Rent</option><option>Transport</option><option>Payroll</option><option>Other</option></select></label>
           <label className="block text-xs font-bold">Description<input value={note} onChange={(e) => setNote(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl p-2 bg-slate-50" placeholder="e.g. electricity bill" /></label>
           <label className="block text-xs font-bold">Amount<input type="number" min="0" value={amount} onChange={(e) => setAmount(e.target.value)} className="mt-1 w-full border border-slate-200 rounded-xl p-2 bg-slate-50" placeholder="0" /></label>
-          <button className="w-full bg-[#714b67] hover:bg-[#5c3c54] text-white rounded-xl py-2 font-bold cursor-pointer">Save Expense</button>
+          <button className="w-full bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl py-2 font-bold cursor-pointer transition-all">Save Expense</button>
           {message && <p className="text-xs font-semibold text-[#008f8b]">{message}</p>}
         </form>
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-5 space-y-3">

@@ -198,7 +198,7 @@ export default function StockAuditDashboard() {
       {/* 1. Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-[#714B67] text-white flex items-center justify-center font-black shadow-md shadow-[#714B67]/20">
+          <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23]">
             <ClipboardCheck className="w-5 h-5" />
           </div>
           <div>
@@ -224,7 +224,7 @@ export default function StockAuditDashboard() {
           <button
             type="button"
             onClick={handleReconcileAndSave}
-            className="px-3.5 py-1.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white text-xs font-bold shadow-md shadow-[#714B67]/20 flex items-center gap-1.5 transition-all active:scale-95"
+            className="px-3.5 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>Reconcile Stock</span>
@@ -502,7 +502,7 @@ export default function StockAuditDashboard() {
           <button
             type="button"
             onClick={handleReconcileAndSave}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white font-bold text-xs shadow-md shadow-[#714B67]/20 flex items-center justify-center gap-2 active:scale-95 transition-all"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 active:scale-95 transition-all cursor-pointer"
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>Save Audit & Reconcile Stock</span>

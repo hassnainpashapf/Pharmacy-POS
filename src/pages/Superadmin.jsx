@@ -3,7 +3,7 @@ import { Building2, Copy, LogOut, Plus, RefreshCw, ShieldCheck, WifiOff, Activit
 import { mobileApi, MobileApiError } from '../lib/mobileApi'
 import { pharmacyLinks, tenantTotals } from '../lib/tenantUi'
 
-const primary = 'min-h-11 inline-flex items-center justify-center gap-2 rounded-xl bg-[#714b67] px-4 py-3 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50'
+const primary = 'min-h-11 inline-flex items-center justify-center gap-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] px-4 py-3 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer transition-all'
 const secondary = 'min-h-11 inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50'
 const card = 'rounded-2xl border border-slate-200 bg-white p-5 shadow-sm'
 const emptyPharmacy = () => ({ name: '', adminName: '', email: '', password: '' })

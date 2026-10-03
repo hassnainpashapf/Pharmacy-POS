@@ -5,7 +5,7 @@ import MedicineLabelScanner from '../components/MedicineLabelScanner'
 import { mobileApi, exactBarcode, priceValue, stockPayload, verifyStockReceipt } from '../lib/mobileApi'
 import { appIdFromSearch, inventorySessionMode, DEFAULT_APP_ID, getEffectiveAppId } from '../lib/tenantUi'
 
-const primary = 'min-h-11 rounded-xl bg-[#714b67] px-4 py-3 text-sm font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2'
+const primary = 'min-h-11 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] px-4 py-3 text-sm font-bold text-white disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2 cursor-pointer transition-all'
 const secondary = 'min-h-11 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2'
 const card = 'rounded-2xl border border-slate-100 bg-white p-5 shadow-sm'
 const money = value => `Rs ${Number(value).toLocaleString('en-PK', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`

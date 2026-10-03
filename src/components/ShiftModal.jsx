@@ -346,7 +346,7 @@ export default function ShiftModal({ isOpen, onClose }) {
 
               <button
                 onClick={handleStartShift}
-                className="w-full bg-[#714B67] hover:bg-[#5a3b52] text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm flex items-center justify-center gap-2"
+                className="w-full bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>⚡ Open Shift & Unlock POS</span>
                 <ArrowRight className="w-4 h-4" />

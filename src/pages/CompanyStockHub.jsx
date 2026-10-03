@@ -243,7 +243,7 @@ export default function CompanyStockHub() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#714B67] text-white flex items-center justify-center font-black shadow-md shadow-[#714B67]/20">
+            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23]">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
@@ -273,7 +273,7 @@ export default function CompanyStockHub() {
               setMedCompany(selectedCompany !== 'ALL' ? selectedCompany : 'GSK Pakistan')
               setShowAddMedModal(true)
             }}
-            className="px-3.5 py-1.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white text-xs font-bold shadow-md shadow-[#714B67]/20 flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>+ Add Medicine</span>
@@ -388,8 +388,8 @@ export default function CompanyStockHub() {
             onClick={() => setSelectedCompany('ALL')}
             className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
               selectedCompany === 'ALL'
-                ? 'bg-[#714B67] border-[#714B67] text-white shadow-md shadow-[#714B67]/20'
-                : 'bg-white border-slate-200 hover:border-[#714B67]/40 hover:bg-[#f5eef4]/30 text-slate-800'
+                ? 'bg-[#e9f5f2] border-[#00A09D] text-[#006d69] shadow-xs'
+                : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800'
             }`}
           >
             <div>
@@ -412,14 +412,14 @@ export default function CompanyStockHub() {
                 onClick={() => setSelectedCompany(c.name)}
                 className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
                   isSelected
-                    ? 'bg-[#714B67] border-[#714B67] text-white shadow-md shadow-[#714B67]/20'
-                    : 'bg-white border-slate-200 hover:border-[#714B67]/40 hover:bg-[#f5eef4]/30 text-slate-800'
+                    ? 'bg-[#e9f5f2] border-[#00A09D] text-[#006d69] shadow-xs'
+                    : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800'
                 }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-1">
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                      isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+                      isSelected ? 'bg-[#00A09D]/15 text-[#006d69]' : 'bg-slate-100 text-slate-600'
                     }`}>
                       {c.medicines.length} SKUs
                     </span>
@@ -759,7 +759,7 @@ export default function CompanyStockHub() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white font-bold shadow-md shadow-[#714B67]/20"
+                  className="px-5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold shadow-sm transition-all cursor-pointer"
                 >
                   Save Medicine
                 </button>

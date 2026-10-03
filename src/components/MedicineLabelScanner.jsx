@@ -92,7 +92,7 @@ export default function MedicineLabelScanner({ medicines = [], onReviewed, onClo
       <p className="text-xs text-slate-600">Processed on this device. Photos are not uploaded or saved. This is text reading, not medicine identification or clinical verification.</p>
       <label className="block font-semibold text-sm">Take a photo / choose label image<input className={inputStyle} type="file" accept="image/*" capture="environment" disabled={busy} onChange={choose} /></label>
       {preview && <img src={preview} alt="Medicine label to review" className="max-h-64 w-full object-contain rounded-xl border" />}
-      <button type="button" disabled={!file || busy} onClick={scan} className="w-full p-3 bg-[#714b67] text-white rounded-xl font-bold disabled:opacity-50">{busy ? 'Reading printed text…' : 'Read name & printed price'}</button>
+      <button type="button" disabled={!file || busy} onClick={scan} className="w-full p-3 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl font-bold disabled:opacity-50 cursor-pointer transition-all">{busy ? 'Reading printed text…' : 'Read name & printed price'}</button>
       {busy && <p role="status" className="text-sm">{progress} — first load may take a moment.</p>}
       {error && <p role="alert" className="p-3 rounded-xl bg-rose-50 text-rose-800 text-sm">{error}</p>}
       {candidates && <form onSubmit={review} className="space-y-4">
@@ -103,7 +103,7 @@ export default function MedicineLabelScanner({ medicines = [], onReviewed, onClo
         <p className="text-sm">This is not the pharmacy buying price. Enter your actual purchase price in the next form. If the price is not readable, leave it blank and enter it yourself.</p>
         {printed !== '' && <><label className="block text-sm font-semibold">This printed price covers<select required className={inputStyle} value={basis} onChange={event => { setBasis(event.target.value); setConfirmed(false) }}><option value="">Choose price basis</option><option value="unit">One stock unit</option><option value="pack">A pack / strip containing several stock units</option></select></label>{basis === 'pack' && <label className="block text-sm font-semibold">How many stock units does this price cover?<input className={inputStyle} type="number" min="1" max="1000000" step="1" required value={units} onChange={event => { setUnits(event.target.value); setConfirmed(false) }} /></label>}</>}
         <label className="flex gap-3 text-sm"><input type="checkbox" checked={confirmed} required onChange={event => setConfirmed(event.target.checked)} /><span>I verified the medicine name and price against its packaging. I will check strength, form, batch and expiry before stock entry.</span></label>
-        <button disabled={!confirmed} className="w-full p-3 bg-[#714b67] text-white rounded-xl font-bold disabled:opacity-50">Use reviewed details — not saved yet</button>
+        <button disabled={!confirmed} className="w-full p-3 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl font-bold disabled:opacity-50 cursor-pointer transition-all">Use reviewed details — not saved yet</button>
       </form>}
     </section>
   </div>

@@ -192,7 +192,7 @@ function EditModal({ sale, onClose, onSave }) {
 
           <div className="flex gap-2 pt-2">
             <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 cursor-pointer">Cancel</button>
-            <button onClick={save} disabled={busy} className="flex-1 px-4 py-2.5 rounded-xl bg-[#714B67] text-white text-sm font-semibold hover:bg-[#5c3d55] disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2">
+            <button onClick={save} disabled={busy} className="flex-1 px-4 py-2.5 rounded-xl bg-[#3b1734] text-white text-sm font-semibold hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 transition-all">
               {busy ? 'Saving…' : <><Check className="w-4 h-4" /> Save</>}
             </button>
           </div>

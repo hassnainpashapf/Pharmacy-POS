@@ -117,7 +117,7 @@ export default function Dashboard() {
         <div className="flex justify-end">
           <button
             onClick={() => nav('/pos')}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white font-bold text-sm shadow-sm active:scale-95 transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold text-sm shadow-sm active:scale-95 transition-all cursor-pointer"
           >
             <span className="text-base font-light leading-none">+</span>
             <span>New Sale</span>
@@ -1347,7 +1347,7 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
           <div className="grid grid-cols-2 gap-2">
             {isCashier ? (
               <>
-                <button onClick={() => nav('/pos')} className="bg-[#714b67] hover:bg-[#5c3c54] text-white rounded-xl p-3 text-xs font-bold shadow-sm transition-all">
+                <button onClick={() => nav('/pos')} className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl p-3 text-xs font-bold shadow-sm transition-all cursor-pointer">
                   ⚡ Open POS Checkout
                 </button>
                 <button onClick={() => nav('/returns')} className="bg-[#e6f7f2] text-[#008f8b] hover:bg-[#d6f2ea] rounded-xl p-3 text-xs font-bold transition-all">
@@ -1362,7 +1362,7 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
               </>
             ) : isReceptionist ? (
               <>
-                <button onClick={() => nav('/customers')} className="bg-[#714b67] hover:bg-[#5c3c54] text-white rounded-xl p-3 text-xs font-bold shadow-sm transition-all">
+                <button onClick={() => nav('/customers')} className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl p-3 text-xs font-bold shadow-sm transition-all cursor-pointer">
                   ➕ New Patient / Customer
                 </button>
                 <button onClick={() => nav('/customers?tab=loyalty')} className="bg-[#e6f7f2] text-[#008f8b] hover:bg-[#d6f2ea] rounded-xl p-3 text-xs font-bold transition-all">
@@ -1377,7 +1377,7 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
               </>
             ) : (
               <>
-                <button onClick={() => nav('/pos')} className="bg-[#714b67] hover:bg-[#5c3c54] text-white rounded-xl p-3 text-xs font-bold">
+                <button onClick={() => nav('/pos')} className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl p-3 text-xs font-bold shadow-sm transition-all cursor-pointer">
                   Open Sales POS
                 </button>
                 <button onClick={() => nav(isManager ? '/inventory' : '/inventory?tab=NEAR_EXPIRY')} className="bg-[#e6f7f2] text-[#008f8b] rounded-xl p-3 text-xs font-bold">

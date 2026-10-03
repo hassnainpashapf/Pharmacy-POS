@@ -253,7 +253,7 @@ export default function POS() {
             onClick={() => setActiveTab('counter')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'counter'
-                ? 'bg-[#714B67] text-white shadow-xs'
+                ? 'bg-[#3b1734] text-white border border-[#280c23] shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >

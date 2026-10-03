@@ -144,28 +144,28 @@ export default function Inventory({ forcedTab }) {
         <div className="flex flex-wrap items-center gap-2">
           <Link
             to="/company-stock"
-            className="px-3.5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5a3b52] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#8a5d7e]/40 hover:shadow-md cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#280c23] hover:shadow-md cursor-pointer"
           >
             <Building2 className="w-4 h-4" />
             <span>Company Stock</span>
           </Link>
           <Link
             to="/stock-audit"
-            className="px-3.5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5a3b52] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#8a5d7e]/40 hover:shadow-md cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#280c23] hover:shadow-md cursor-pointer"
           >
             <ClipboardCheck className="w-4 h-4" />
             <span>Stock Audit</span>
           </Link>
           <Link
             to="/expiry-management"
-            className="px-3.5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5a3b52] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#8a5d7e]/40 hover:shadow-md cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#280c23] hover:shadow-md cursor-pointer"
           >
             <Clock className="w-4 h-4" />
             <span>Expiry Action</span>
           </Link>
           <Link
             to="/purchase-returns"
-            className="px-3.5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5a3b52] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#8a5d7e]/40 hover:shadow-md cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#280c23] hover:shadow-md cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
             <span>Purchase Returns</span>
@@ -232,7 +232,7 @@ export default function Inventory({ forcedTab }) {
           <button
             type="button"
             onClick={() => setCompanyStockInOpen(true)}
-            className="bg-[#714B67] hover:bg-[#5a3b52] text-white px-3.5 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5 shrink-0"
+            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
             title="Stock in batches grouped by pharma manufacturer delivery invoice"
           >
             <Building2 className="w-4 h-4" /> Stock In by Company
@@ -347,7 +347,7 @@ export default function Inventory({ forcedTab }) {
             <button
               type="button"
               onClick={() => setCompanyStockInOpen(true)}
-              className="bg-[#714B67] hover:bg-[#5a3b52] text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5"
+              className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
             >
               <Building2 className="w-3.5 h-3.5" /> Stock In by Company
             </button>
@@ -555,7 +555,7 @@ export function InventoryBatchRow({ batch, medicine, now = new Date(), onReclass
     <td className="p-3 text-right font-bold tabular-nums">{batch.qty}</td>
     <td className="p-3 text-right tabular-nums whitespace-nowrap">{fmt(batch.purchasePrice)}</td>
     <td className="p-3 text-right font-semibold tabular-nums whitespace-nowrap">{fmt(batch.salePrice)}</td>
-    <td className="p-3"><button type="button" onClick={onReclassify} aria-label={`Reclassify ${medicine?.name || 'medicine'}, batch ${batch.batchNo || 'not recorded'}`} className="rounded-lg bg-[#f5eef4] border border-[#714B67]/20 text-[#714B67] hover:bg-[#714B67] hover:text-white px-3 py-2 text-xs font-bold transition-colors">Reclassify</button></td>
+    <td className="p-3"><button type="button" onClick={onReclassify} aria-label={`Reclassify ${medicine?.name || 'medicine'}, batch ${batch.batchNo || 'not recorded'}`} className="rounded-lg bg-[#f5eef4] border border-[#3b1734]/20 text-[#3b1734] hover:bg-[#3b1734] hover:text-white px-3 py-2 text-xs font-bold transition-colors cursor-pointer">Reclassify</button></td>
   </tr>
 }
 
@@ -644,7 +644,7 @@ function ReclassifyModal({ batch, onClose }) {
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 py-2 rounded-sm bg-[#714B67] hover:bg-[#5a3b52] text-white font-bold text-xs shadow-sm"
+            className="flex-1 py-2 rounded-sm bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold text-xs shadow-sm cursor-pointer"
           >
             Confirm Reclassification
           </button>
@@ -1052,7 +1052,7 @@ export function CompanyStockInModal({ distinctCompanies = [], onClose, initialCo
           <button
             type="button"
             onClick={() => handleStockIn(true)}
-            className="flex-1 bg-[#714B67] hover:bg-[#5a3b52] text-white py-2.5 rounded-xl font-bold text-xs transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
+            className="flex-1 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold text-xs transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" /> Stock In & Add Another from {activeCompany.split(' ')[0] || 'Company'}
           </button>
@@ -1285,7 +1285,7 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
           <button
             type="button"
             onClick={handleOpenPOModalForKam}
-            className="bg-[#714B67] hover:bg-[#5a3b52] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-2 shrink-0 animate-pulse hover:animate-none"
+            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-2 shrink-0 animate-pulse hover:animate-none cursor-pointer"
             title="Automatically create a Purchase Order for all deficit medicines"
           >
             <ShoppingBag className="w-4 h-4" />
@@ -2025,7 +2025,7 @@ function AuditPOModal({ kamItems = [], selectedIds = new Set(), onToggleId, supp
           <button
             type="button"
             onClick={handleCreate}
-            className="flex-1 bg-[#714B67] hover:bg-[#5a3b52] text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
+            className="flex-1 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <ShoppingBag className="w-4 h-4" /> Generate Official Purchase Order ({selectedItems.length} Items)
           </button>
