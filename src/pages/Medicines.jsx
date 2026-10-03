@@ -376,9 +376,9 @@ export default function Medicines() {
 
       {/* VIEW 1: COMPANY-WISE MANAGEMENT DIRECTORY */}
       {viewMode === 'companies' && (
-        <div className="space-y-3">
+        <div className="bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
           {/* Controls Bar */}
-          <div className="bg-white p-2.5 border border-slate-200 rounded-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5">
+          <div className="p-2.5 bg-slate-50/70 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
             <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
               {/* Search company or inner medicine */}
               <div className="relative flex-1 min-w-[200px]">
@@ -387,7 +387,7 @@ export default function Medicines() {
                   value={compSearch}
                   onChange={(e) => setCompSearch(e.target.value)}
                   placeholder="Search company, brand or medicine name (e.g. GSK, Abbott, Panadol)..."
-                  className="w-full bg-slate-50 border border-slate-300 rounded-sm pl-9 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500"
+                  className="w-full bg-white border border-slate-300 rounded-sm pl-9 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500"
                 />
                 {compSearch && (
                   <button
@@ -416,7 +416,7 @@ export default function Medicines() {
               <select
                 value={compFilterStatus}
                 onChange={(e) => setCompFilterStatus(e.target.value)}
-                className="bg-slate-50 border border-slate-300 rounded-sm px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none cursor-pointer"
+                className="bg-white border border-slate-300 rounded-sm px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none cursor-pointer"
               >
                 <option value="ALL">🏢 All Companies ({companyData.length})</option>
                 <option value="WITH_STOCK">📦 With In-Stock Units</option>
@@ -428,7 +428,7 @@ export default function Medicines() {
               <select
                 value={compSort}
                 onChange={(e) => setCompSort(e.target.value)}
-                className="bg-slate-50 border border-slate-300 rounded-sm px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none cursor-pointer"
+                className="bg-white border border-slate-300 rounded-sm px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none cursor-pointer"
               >
                 <option value="NAME">Sort: Company Name (A-Z)</option>
                 <option value="PRODUCTS">Sort: Most Products</option>
@@ -448,7 +448,7 @@ export default function Medicines() {
               <button
                 type="button"
                 onClick={collapseAll}
-                className="text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 border border-slate-200 px-2.5 py-1 rounded-sm transition-colors"
+                className="text-[11px] font-bold text-slate-600 bg-white hover:bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-sm transition-colors"
               >
                 Collapse All
               </button>
@@ -463,7 +463,7 @@ export default function Medicines() {
           </div>
 
           {/* Company Cards List */}
-          <div className="space-y-3">
+          <div className="divide-y divide-slate-200">
             {filteredCompanyData.map((c) => {
               const isExpanded = Boolean(expandedCompanies[c.name] || compSearch.trim())
               const badgeColor = getCompanyBadgeColor(c.name)
@@ -472,19 +472,19 @@ export default function Medicines() {
               return (
                 <div
                   key={c.name}
-                  className="bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden transition-all"
+                  className="transition-all"
                 >
                   {/* Company Card Header */}
                   <div
-                    className={`p-3 border-b flex flex-wrap items-center justify-between gap-3 cursor-pointer transition-colors ${
-                      isExpanded ? 'bg-slate-50/90 border-slate-200' : 'bg-white hover:bg-slate-50/60 border-transparent'
+                    className={`px-3 py-2 flex flex-wrap items-center justify-between gap-2.5 cursor-pointer transition-colors ${
+                      isExpanded ? 'bg-slate-50/90 border-b border-slate-200' : 'bg-white hover:bg-slate-50/60'
                     }`}
                     onClick={() => toggleCompany(c.name)}
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5">
                       {/* Initials Avatar */}
                       <span
-                        className={`w-9 h-9 rounded-sm border font-extrabold text-xs flex items-center justify-center shrink-0 tracking-wider shadow-2xs ${badgeColor}`}
+                        className={`w-8 h-8 rounded-sm border font-extrabold text-[11px] flex items-center justify-center shrink-0 tracking-wider shadow-2xs ${badgeColor}`}
                       >
                         {initials}
                       </span>
@@ -687,7 +687,7 @@ export default function Medicines() {
             })}
 
             {!filteredCompanyData.length && (
-              <div className="bg-white p-8 text-center rounded-sm border border-slate-200 text-slate-500">
+              <div className="p-8 text-center text-slate-500 bg-white">
                 No pharmaceutical companies match your search and filter criteria.
               </div>
             )}
