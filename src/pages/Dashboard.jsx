@@ -636,8 +636,98 @@ export default function Dashboard() {
 }
 
 // ---------------------------------------------------------
-// Stock & Operations Visual Analytics Hubs
+// Stock & Operations Visual Analytics Hubs (Donut Charts)
 // ---------------------------------------------------------
+
+function DashboardDonutChart({
+  data = [],
+  centerMain = '',
+  centerSub = '',
+  size = 94,
+  strokeWidth = 9,
+}) {
+  const total = data.reduce((sum, d) => sum + (Number(d.value) || 0), 0)
+  const r = 38
+  const c = 2 * Math.PI * r
+
+  let accumulated = 0
+  const activeSlices = data.filter((d) => (Number(d.value) || 0) > 0)
+  const hasMultiple = activeSlices.length > 1
+  const gap = hasMultiple ? 2 : 0
+
+  const slices = data.map((d) => {
+    const val = Math.max(0, Number(d.value) || 0)
+    const pct = total > 0 ? val / total : 0
+    const rawDash = pct * c
+    const dashLength = Math.max(0, rawDash - gap)
+    const dashOffset = -accumulated
+    accumulated += rawDash
+    return {
+      ...d,
+      pct: Math.round(pct * 100),
+      dashArray: `${dashLength} ${c - dashLength}`,
+      dashOffset,
+    }
+  })
+
+  return (
+    <div className="flex justify-center my-2">
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox="0 0 100 100" className="transform -rotate-90">
+          <circle
+            cx="50"
+            cy="50"
+            r={r}
+            fill="transparent"
+            stroke="#f1f5f9"
+            strokeWidth={strokeWidth}
+          />
+          {total === 0 ? (
+            <circle
+              cx="50"
+              cy="50"
+              r={r}
+              fill="transparent"
+              stroke="#e2e8f0"
+              strokeWidth={strokeWidth}
+              strokeDasharray="4 4"
+            />
+          ) : (
+            slices.map((s, i) => {
+              if (s.value <= 0) return null
+              return (
+                <circle
+                  key={i}
+                  cx="50"
+                  cy="50"
+                  r={r}
+                  fill="transparent"
+                  stroke={s.color}
+                  strokeWidth={strokeWidth}
+                  strokeDasharray={s.dashArray}
+                  strokeDashoffset={s.dashOffset}
+                  className="transition-all duration-300"
+                >
+                  <title>{`${s.label}: ${s.displayValue || s.value} (${s.pct}%)`}</title>
+                </circle>
+              )
+            })
+          )}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none select-none px-1">
+          <span className="text-xs font-black text-slate-900 tracking-tight leading-none truncate max-w-[55px]">
+            {centerMain}
+          </span>
+          {centerSub && (
+            <span className="text-[9px] font-semibold text-slate-400 mt-1 leading-none uppercase tracking-wider truncate max-w-[55px]">
+              {centerSub}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export function CompanyStockGraph({ db, nav }) {
   const stats = useMemo(() => {
@@ -669,14 +759,15 @@ export function CompanyStockGraph({ db, nav }) {
     })
 
     const sorted = Object.values(map).sort((a, b) => b.valuation - a.valuation)
-    const top3 = sorted.slice(0, 3)
-    const others = sorted.slice(3)
-    const otherUnits = others.reduce((acc, c) => acc + c.units, 0)
-    const otherVal = others.reduce((acc, c) => acc + c.valuation, 0)
-
-    const list = [...top3]
-    if (others.length > 0) {
-      list.push({ name: `Other (${others.length} mfrs)`, units: otherUnits, valuation: otherVal })
+    let list = []
+    if (sorted.length <= 3) {
+      list = sorted
+    } else {
+      const top2 = sorted.slice(0, 2)
+      const others = sorted.slice(2)
+      const otherUnits = others.reduce((acc, c) => acc + c.units, 0)
+      const otherVal = others.reduce((acc, c) => acc + c.valuation, 0)
+      list = [...top2, { name: `Other (${others.length})`, units: otherUnits, valuation: otherVal }]
     }
 
     return {
@@ -687,7 +778,13 @@ export function CompanyStockGraph({ db, nav }) {
     }
   }, [db?.medicines, db?.batches])
 
-  const colors = ['bg-[#714B67]', 'bg-[#008f8b]', 'bg-[#8c6783]', 'bg-slate-300']
+  const donutColors = ['#714B67', '#008f8b', '#8c6783', '#94a3b8']
+  const donutData = stats.list.map((c, i) => ({
+    label: c.name,
+    value: c.valuation,
+    color: donutColors[i % donutColors.length],
+    displayValue: fmt(c.valuation),
+  }))
 
   return (
     <div
@@ -707,7 +804,7 @@ export function CompanyStockGraph({ db, nav }) {
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
-        <div className="mb-3">
+        <div className="mb-2">
           <div className="text-xl font-black text-slate-900 tracking-tight">
             {fmt(stats.totalStockValuation)}
           </div>
@@ -716,26 +813,27 @@ export function CompanyStockGraph({ db, nav }) {
           </div>
         </div>
 
-        <div className="space-y-2 pt-2 border-t border-slate-100">
+        {/* Donut Chart */}
+        <DashboardDonutChart
+          data={donutData}
+          centerMain={String(stats.totalCompanies)}
+          centerSub="brands"
+        />
+
+        {/* Legend */}
+        <div className="space-y-1.5 pt-2 border-t border-slate-100">
           {stats.list.length === 0 ? (
             <div className="text-xs text-slate-400 py-2 text-center">No stock recorded</div>
           ) : (
             stats.list.map((c, i) => {
               const pct = stats.totalStockValuation > 0 ? Math.round((c.valuation / stats.totalStockValuation) * 100) : 0
               return (
-                <div key={i} className="space-y-1">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-slate-600 truncate max-w-[140px]" title={c.name}>
-                      {c.name}
-                    </span>
-                    <span className="font-semibold text-slate-800 tabular-nums">{pct}%</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full ${colors[i % colors.length]} rounded-full`}
-                      style={{ width: `${Math.max(pct, 2)}%` }}
-                    />
-                  </div>
+                <div key={i} className="flex items-center justify-between text-[11px]">
+                  <span className="flex items-center gap-1.5 text-slate-600 truncate max-w-[130px]" title={c.name}>
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: donutColors[i % donutColors.length] }} />
+                    <span className="truncate">{c.name}</span>
+                  </span>
+                  <span className="font-semibold text-slate-800 tabular-nums">{pct}%</span>
                 </div>
               )
             })
@@ -756,9 +854,6 @@ export function StockAuditGraph({ db, nav }) {
       const surplus = latest.zyadaCount ?? (latest.items ? latest.items.filter((i) => i.variance > 0).length : 0)
       const total = matched + shortage + surplus || 1
       const accuracy = Math.round((matched / total) * 100)
-      const shortageUnits = latest.totalKamUnits || 0
-      const shortageCost = latest.totalKamCost || 0
-      const surplusUnits = latest.totalZyadaUnits || 0
 
       return {
         hasAudits: true,
@@ -767,13 +862,9 @@ export function StockAuditGraph({ db, nav }) {
         matched,
         shortage,
         surplus,
-        shortageUnits,
-        shortageCost,
-        surplusUnits,
         matchedPct: Math.round((matched / total) * 100),
         shortagePct: Math.round((shortage / total) * 100),
         surplusPct: Math.max(0, 100 - Math.round((matched / total) * 100) - Math.round((shortage / total) * 100)),
-        lastAuditDate: latest.date ? new Date(latest.date).toLocaleDateString('en-PK', { month: 'short', day: 'numeric' }) : 'Recent',
       }
     }
 
@@ -786,15 +877,17 @@ export function StockAuditGraph({ db, nav }) {
       matched: totalItems,
       shortage: 0,
       surplus: 0,
-      shortageUnits: 0,
-      shortageCost: 0,
-      surplusUnits: 0,
       matchedPct: 100,
       shortagePct: 0,
       surplusPct: 0,
-      lastAuditDate: 'Pending first audit',
     }
   }, [db?.stockAudits, db?.medicines, db?.batches])
+
+  const auditDonutData = [
+    { label: 'Matched', value: stats.matched, color: '#008f8b', displayValue: `${stats.matched} items` },
+    { label: 'Shortage', value: stats.shortage, color: '#f43f5e', displayValue: `${stats.shortage} items` },
+    { label: 'Excess', value: stats.surplus, color: '#714B67', displayValue: `${stats.surplus} items` },
+  ]
 
   return (
     <div
@@ -814,7 +907,7 @@ export function StockAuditGraph({ db, nav }) {
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#008f8b] transition-colors" />
         </div>
 
-        <div className="mb-3">
+        <div className="mb-2">
           <div className="text-xl font-black text-[#008f8b] tracking-tight">
             {stats.accuracy}%
           </div>
@@ -823,41 +916,41 @@ export function StockAuditGraph({ db, nav }) {
           </div>
         </div>
 
-        <div className="space-y-3 pt-2 border-t border-slate-100">
-          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
-            {stats.matchedPct > 0 && (
-              <div
-                className="bg-[#008f8b] h-full"
-                style={{ width: `${stats.matchedPct}%` }}
-              />
-            )}
-            {stats.shortagePct > 0 && (
-              <div
-                className="bg-rose-500 h-full"
-                style={{ width: `${stats.shortagePct}%` }}
-              />
-            )}
-            {stats.surplusPct > 0 && (
-              <div
-                className="bg-[#714B67] h-full"
-                style={{ width: `${stats.surplusPct}%` }}
-              />
-            )}
-          </div>
+        {/* Donut Chart */}
+        <DashboardDonutChart
+          data={auditDonutData}
+          centerMain={`${stats.accuracy}%`}
+          centerSub="accuracy"
+        />
 
-          <div className="grid grid-cols-3 gap-1.5 pt-1">
-            <div className="bg-[#e6f7f2]/80 border border-[#b7e5dc] rounded-xl p-1.5 text-center">
-              <div className="text-xs font-bold text-[#008f8b]">{stats.matched}</div>
-              <div className="text-[10px] text-[#008f8b] font-medium">Matched</div>
-            </div>
-            <div className="bg-rose-50/80 border border-rose-100 rounded-xl p-1.5 text-center">
-              <div className="text-xs font-bold text-rose-700">{stats.shortage}</div>
-              <div className="text-[10px] text-rose-600 font-medium">Shortage</div>
-            </div>
-            <div className="bg-[#f5eef4]/80 border border-[#decddd] rounded-xl p-1.5 text-center">
-              <div className="text-xs font-bold text-[#714B67]">{stats.surplus}</div>
-              <div className="text-[10px] text-[#714B67] font-medium">Excess</div>
-            </div>
+        {/* Legend */}
+        <div className="space-y-1.5 pt-2 border-t border-slate-100">
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2 h-2 rounded-full shrink-0 bg-[#008f8b]" />
+              <span>Matched</span>
+            </span>
+            <span className="font-semibold text-[#008f8b] tabular-nums">
+              {stats.matched} ({stats.matchedPct}%)
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2 h-2 rounded-full shrink-0 bg-rose-500" />
+              <span>Shortage</span>
+            </span>
+            <span className={`font-semibold tabular-nums ${stats.shortage > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+              {stats.shortage} ({stats.shortagePct}%)
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2 h-2 rounded-full shrink-0 bg-[#714B67]" />
+              <span>Excess</span>
+            </span>
+            <span className={`font-semibold tabular-nums ${stats.surplus > 0 ? 'text-[#714B67]' : 'text-slate-400'}`}>
+              {stats.surplus} ({stats.surplusPct}%)
+            </span>
           </div>
         </div>
       </div>
@@ -929,6 +1022,14 @@ export function ExpiryActionGraph({ db, nav }) {
     }
   }, [db?.batches, db?.medicines])
 
+  const expiryDonutData = [
+    { label: 'Expired', value: stats.expiredUnits, color: '#f43f5e', displayValue: `${stats.expiredUnits.toLocaleString()} units` },
+    { label: 'Critical', value: stats.criticalUnits, color: '#f59e0b', displayValue: `${stats.criticalUnits.toLocaleString()} units` },
+    { label: 'Safe Stock', value: stats.safeUnits + stats.nearUnits, color: '#008f8b', displayValue: `${(stats.safeUnits + stats.nearUnits).toLocaleString()} units` },
+  ]
+
+  const totalAtRisk = stats.expiredUnits + stats.criticalUnits
+
   return (
     <div
       onClick={() => nav('/expiry-management')}
@@ -947,65 +1048,50 @@ export function ExpiryActionGraph({ db, nav }) {
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
-        <div className="mb-3">
+        <div className="mb-2">
           <div className={`text-xl font-black tracking-tight ${stats.capitalAtRisk > 0 ? 'text-rose-600' : 'text-[#008f8b]'}`}>
             {fmt(stats.capitalAtRisk)}
           </div>
           <div className="text-[11px] text-slate-400 mt-0.5">
-            {(stats.expiredUnits + stats.criticalUnits).toLocaleString()} units at risk
+            {totalAtRisk.toLocaleString()} units at risk
           </div>
         </div>
 
-        <div className="space-y-3 pt-2 border-t border-slate-100">
-          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
-            {stats.expiredPct > 0 && (
-              <div
-                className="bg-rose-500 h-full"
-                style={{ width: `${stats.expiredPct}%` }}
-              />
-            )}
-            {stats.criticalPct > 0 && (
-              <div
-                className="bg-amber-500 h-full"
-                style={{ width: `${stats.criticalPct}%` }}
-              />
-            )}
-            {stats.safePct > 0 && (
-              <div
-                className="bg-[#008f8b] h-full"
-                style={{ width: `${stats.safePct}%` }}
-              />
-            )}
-          </div>
+        {/* Donut Chart */}
+        <DashboardDonutChart
+          data={expiryDonutData}
+          centerMain={totalAtRisk > 0 ? `${totalAtRisk.toLocaleString()}` : '0'}
+          centerSub="at risk"
+        />
 
-          <div className="space-y-1.5 pt-0.5">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-rose-500" />
-                <span>Expired</span>
-              </span>
-              <span className="font-semibold text-rose-600 tabular-nums">
-                {stats.expiredUnits.toLocaleString()} units
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-amber-500" />
-                <span>Critical (0–30d)</span>
-              </span>
-              <span className="font-semibold text-amber-700 tabular-nums">
-                {stats.criticalUnits.toLocaleString()} units
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-[#008f8b]" />
-                <span>Safe Stock</span>
-              </span>
-              <span className="font-semibold text-[#008f8b] tabular-nums">
-                {stats.safeUnits.toLocaleString()} units
-              </span>
-            </div>
+        {/* Legend */}
+        <div className="space-y-1.5 pt-2 border-t border-slate-100">
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2 h-2 rounded-full shrink-0 bg-rose-500" />
+              <span>Expired</span>
+            </span>
+            <span className={`font-semibold tabular-nums ${stats.expiredUnits > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+              {stats.expiredUnits.toLocaleString()} units
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2 h-2 rounded-full shrink-0 bg-amber-500" />
+              <span>Critical (0–30d)</span>
+            </span>
+            <span className={`font-semibold tabular-nums ${stats.criticalUnits > 0 ? 'text-amber-600' : 'text-slate-400'}`}>
+              {stats.criticalUnits.toLocaleString()} units
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2 h-2 rounded-full shrink-0 bg-[#008f8b]" />
+              <span>Safe Stock</span>
+            </span>
+            <span className="font-semibold text-[#008f8b] tabular-nums">
+              {(stats.safeUnits + stats.nearUnits).toLocaleString()} units
+            </span>
           </div>
         </div>
       </div>
@@ -1049,6 +1135,11 @@ export function PurchaseReturnsGraph({ db, nav }) {
     }
   }, [db?.purchaseReturns])
 
+  const returnsDonutData = [
+    { label: 'Credit Notes', value: stats.creditNotes, color: '#714B67', displayValue: fmt(stats.creditNotes) },
+    { label: 'Cash Refunds', value: stats.cashRefunds, color: '#008f8b', displayValue: fmt(stats.cashRefunds) },
+  ]
+
   return (
     <div
       onClick={() => nav('/purchase-returns')}
@@ -1067,7 +1158,7 @@ export function PurchaseReturnsGraph({ db, nav }) {
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
-        <div className="mb-3">
+        <div className="mb-2">
           <div className="text-xl font-black text-slate-900 tracking-tight">
             {fmt(stats.totalClaims)}
           </div>
@@ -1076,37 +1167,41 @@ export function PurchaseReturnsGraph({ db, nav }) {
           </div>
         </div>
 
-        <div className="space-y-3 pt-2 border-t border-slate-100">
-          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden flex">
-            <div
-              className="bg-[#714B67] h-full"
-              style={{ width: `${stats.totalClaims > 0 ? stats.creditPct : 80}%` }}
-            />
-            <div
-              className="bg-[#008f8b] h-full"
-              style={{ width: `${stats.totalClaims > 0 ? stats.cashPct : 20}%` }}
-            />
-          </div>
+        {/* Donut Chart */}
+        <DashboardDonutChart
+          data={returnsDonutData}
+          centerMain={`${stats.totalReturns}`}
+          centerSub="debit notes"
+        />
 
-          <div className="space-y-1.5 pt-0.5">
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-[#714B67]" />
-                <span>Credit Notes</span>
-              </span>
-              <span className="font-semibold text-[#714B67] tabular-nums">
-                {fmt(stats.creditNotes)}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-[11px]">
-              <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-[#008f8b]" />
-                <span>Cash Refunds</span>
-              </span>
-              <span className="font-semibold text-[#008f8b] tabular-nums">
-                {fmt(stats.cashRefunds)}
-              </span>
-            </div>
+        {/* Legend */}
+        <div className="space-y-1.5 pt-2 border-t border-slate-100">
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2 h-2 rounded-full shrink-0 bg-[#714B67]" />
+              <span>Credit Notes</span>
+            </span>
+            <span className="font-semibold text-[#714B67] tabular-nums">
+              {fmt(stats.creditNotes)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2 h-2 rounded-full shrink-0 bg-[#008f8b]" />
+              <span>Cash Refunds</span>
+            </span>
+            <span className="font-semibold text-[#008f8b] tabular-nums">
+              {fmt(stats.cashRefunds)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-[11px]">
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2 h-2 rounded-full shrink-0 bg-slate-300" />
+              <span>Items Returned</span>
+            </span>
+            <span className="font-semibold text-slate-600 tabular-nums">
+              {stats.totalUnits.toLocaleString()} units
+            </span>
           </div>
         </div>
       </div>
