@@ -316,9 +316,10 @@ export default function Medicines() {
 
           <button
             onClick={() => setEditing({})}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5 shrink-0"
+            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            title="Quickly add a single medicine product"
           >
-            <Plus className="w-3.5 h-3.5" /> + Add Single Item
+            <Plus className="w-3.5 h-3.5" /> + Quick Add Product
           </button>
         </div>
       </div>
@@ -376,26 +377,6 @@ export default function Medicines() {
       {/* VIEW 1: COMPANY-WISE MANAGEMENT DIRECTORY */}
       {viewMode === 'companies' && (
         <div className="space-y-3">
-          {/* Quick Easy Guide Banner */}
-          <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white p-3 rounded-xl border border-indigo-700/60 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-            <div className="flex items-center gap-2">
-              <span className="text-base">💡</span>
-              <div className="text-xs">
-                <span className="font-bold text-amber-300">Easy Guide:</span>{' '}
-                <span className="text-slate-200">
-                  1️⃣ Select company ➜ 2️⃣ Search medicine ➜ 3️⃣ Use <b>"+ Add by Company"</b> to quickly register products & batches.
-                </span>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => setCompanyAddOpen(true)}
-              className="self-start sm:self-auto px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-xs transition-colors shrink-0 flex items-center gap-1 cursor-pointer"
-            >
-              <span>+ Quick Add Product</span>
-            </button>
-          </div>
-
           {/* Controls Bar */}
           <div className="bg-white p-2.5 border border-slate-200 rounded-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5">
             <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
