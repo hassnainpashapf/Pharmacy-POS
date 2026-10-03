@@ -144,7 +144,7 @@ export default function Inventory({ forcedTab }) {
         <div className="flex flex-wrap items-center gap-2">
           <a
             href="/company-stock"
-            className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+            className="px-3 py-1.5 rounded-xl bg-[#714B67] hover:bg-[#5a3b52] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
           >
             <Building2 className="w-3.5 h-3.5" />
             <span>Company Stock</span>
@@ -236,7 +236,7 @@ export default function Inventory({ forcedTab }) {
           <button
             type="button"
             onClick={() => setCompanyStockInOpen(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-3.5 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5 shrink-0"
+            className="bg-[#714B67] hover:bg-[#5a3b52] text-white px-3.5 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5 shrink-0"
             title="Stock in batches grouped by pharma manufacturer delivery invoice"
           >
             <Building2 className="w-4 h-4" /> Stock In by Company
@@ -351,7 +351,7 @@ export default function Inventory({ forcedTab }) {
             <button
               type="button"
               onClick={() => setCompanyStockInOpen(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5"
+              className="bg-[#714B67] hover:bg-[#5a3b52] text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5"
             >
               <Building2 className="w-3.5 h-3.5" /> Stock In by Company
             </button>
@@ -648,7 +648,7 @@ function ReclassifyModal({ batch, onClose }) {
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 py-2 rounded-sm bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm"
+            className="flex-1 py-2 rounded-sm bg-[#714B67] hover:bg-[#5a3b52] text-white font-bold text-xs shadow-sm"
           >
             Confirm Reclassification
           </button>
@@ -1056,7 +1056,7 @@ export function CompanyStockInModal({ distinctCompanies = [], onClose, initialCo
           <button
             type="button"
             onClick={() => handleStockIn(true)}
-            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-bold text-xs transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
+            className="flex-1 bg-[#714B67] hover:bg-[#5a3b52] text-white py-2.5 rounded-xl font-bold text-xs transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
           >
             <Plus className="w-4 h-4" /> Stock In & Add Another from {activeCompany.split(' ')[0] || 'Company'}
           </button>
@@ -1289,7 +1289,7 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
           <button
             type="button"
             onClick={handleOpenPOModalForKam}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-2 shrink-0 animate-pulse hover:animate-none"
+            className="bg-[#714B67] hover:bg-[#5a3b52] text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-2 shrink-0 animate-pulse hover:animate-none"
             title="Automatically create a Purchase Order for all deficit medicines"
           >
             <ShoppingBag className="w-4 h-4" />
@@ -2029,7 +2029,7 @@ function AuditPOModal({ kamItems = [], selectedIds = new Set(), onToggleId, supp
           <button
             type="button"
             onClick={handleCreate}
-            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
+            className="flex-1 bg-[#714B67] hover:bg-[#5a3b52] text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5"
           >
             <ShoppingBag className="w-4 h-4" /> Generate Official Purchase Order ({selectedItems.length} Items)
           </button>

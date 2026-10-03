@@ -755,7 +755,7 @@ function EditSaleModal({ sale, onClose, onSave }) {
           <button
             type="button"
             onClick={handleSave}
-            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-900/20 transition-all flex items-center gap-1.5"
+            className="px-5 py-2 bg-[#714B67] hover:bg-[#5a3b52] text-white rounded-xl text-xs font-bold shadow-md shadow-[#714B67]/20 transition-all flex items-center gap-1.5"
           >
             <Check className="w-3.5 h-3.5" /> Save Changes & Update Stock
           </button>

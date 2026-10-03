@@ -266,7 +266,7 @@ export default function Branches() {
                     <td className="p-3 text-center">
                       <button
                         onClick={() => handleAutoTransfer(rec)}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-xl font-bold text-xs inline-flex items-center gap-1 transition-colors shadow-sm"
+                        className="bg-[#714B67] hover:bg-[#5a3b52] text-white px-3 py-1.5 rounded-xl font-bold text-xs inline-flex items-center gap-1 transition-colors shadow-sm"
                       >
                         ⚡ 1-Click Transfer
                       </button>
@@ -358,7 +358,7 @@ function Transfers() {
         </p>
         <button
           onClick={() => setCreating(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors shadow-sm"
+          className="bg-[#714B67] hover:bg-[#5a3b52] text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors shadow-sm"
         >
           + Request Custom Transfer
         </button>
@@ -573,7 +573,7 @@ function NewTransferModal({ onClose }) {
               type="button"
               onClick={addMed}
               disabled={!mid}
-              className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold text-xs disabled:opacity-40"
+              className="bg-[#714B67] hover:bg-[#5a3b52] text-white px-4 py-2 rounded-xl font-bold text-xs disabled:opacity-40"
             >
               + Add Line
             </button>

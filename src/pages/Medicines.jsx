@@ -308,7 +308,7 @@ export default function Medicines() {
           {/* Add Actions */}
           <button
             onClick={() => setCompanyAddOpen(true)}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5 shrink-0"
+            className="bg-[#714B67] hover:bg-[#5a3b52] text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors shadow-sm inline-flex items-center gap-1.5 shrink-0"
             title="Add medicines grouped by pharma manufacturer"
           >
             <Building2 className="w-3.5 h-3.5" /> + Add by Company
@@ -586,7 +586,7 @@ export default function Medicines() {
                           <button
                             type="button"
                             onClick={() => setEditing({ manufacturer: c.name })}
-                            className="mt-2.5 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors inline-flex items-center gap-1 shadow-sm"
+                            className="mt-2.5 bg-[#714B67] hover:bg-[#5a3b52] text-white px-3 py-1.5 rounded-sm text-xs font-bold transition-colors inline-flex items-center gap-1 shadow-sm"
                           >
                             <Plus className="w-3.5 h-3.5" /> Add First Medicine for {c.name}
                           </button>
@@ -965,7 +965,7 @@ function RegisterCompanyModal({ onSave, onClose }) {
               if (!name.trim()) return alert('Please enter a company name')
               onSave(name.trim())
             }}
-            className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-sm font-bold shadow-sm"
+            className="px-4 py-1.5 bg-[#714B67] hover:bg-[#5a3b52] text-white rounded-sm font-bold shadow-sm"
           >
             Register & Add Product
           </button>
@@ -1194,7 +1194,7 @@ function BatchForm({ medicine, onClose }) {
             addBatch({ ...f, medicineId: medicine.id })
             onClose()
           }}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm"
+          className="w-full bg-[#714B67] hover:bg-[#5a3b52] text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm"
         >
           Confirm Inward Batch Stock
         </button>
@@ -1550,7 +1550,7 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
           <button
             type="button"
             onClick={() => handleSave(true)}
-            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+            className="flex-1 bg-[#714B67] hover:bg-[#5a3b52] text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
           >
             <Plus className="w-4 h-4" /> Save & Add Next
           </button>
