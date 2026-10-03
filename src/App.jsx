@@ -260,7 +260,7 @@ function Shell({ children }) {
   // V4 Interactive Drawers & Modals
   const [alertOpen, setAlertOpen] = useState(false)
   const [shiftModalOpen, setShiftModalOpen] = useState(false)
-  const [roleMenuOpen, setRoleMenuOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [downloadMenuOpen, setDownloadMenuOpen] = useState(false)
   const [quickHubOpen, setQuickHubOpen] = useState(false)
 
@@ -378,106 +378,16 @@ function Shell({ children }) {
           })}
         </nav>
 
-        {/* Bottom Help & User Profile Card */}
-        <div className="p-3 border-t border-slate-100 space-y-2 bg-slate-50/50">
+        {/* Bottom Help & Support */}
+        <div className="p-3 border-t border-slate-100">
           <button
+            type="button"
             onClick={() => setCmdOpen(true)}
-            className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors font-medium rounded-lg hover:bg-slate-100"
+            className="w-full flex items-center gap-2 px-2.5 py-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors font-medium rounded-lg hover:bg-slate-100 cursor-pointer"
           >
             <HelpCircle className="w-4 h-4 text-slate-400" />
             <span>Help & Support</span>
           </button>
-
-          <div className="relative">
-            {roleMenuOpen && (
-              <div className="absolute bottom-full left-0 right-0 mb-2 p-2 bg-white rounded-2xl shadow-xl border border-slate-200 z-30 space-y-1 font-sans">
-                <div className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-                  Switch Active Role (Demo)
-                </div>
-                {[
-                  { key: 'ADMIN', label: '👑 Admin (Owner)' },
-                  { key: 'MANAGER', label: '👔 Manager (Ahmed)' },
-                  { key: 'PHARMACIST', label: '💊 Pharmacist (Dr. Sara)' },
-                  { key: 'CASHIER', label: '🧾 Cashier (Ali)' },
-                  { key: 'RECEPTIONIST', label: '📋 Receptionist (Fatima)' },
-                ].map((r) => (
-                  <button
-                    key={r.key}
-                    type="button"
-                    onClick={() => {
-                      switchRoleUser(r.key)
-                      setRoleMenuOpen(false)
-                    }}
-                    className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors ${
-                      me?.role === r.key
-                        ? 'bg-[#e6f7f2] text-[#00A09D]'
-                        : 'text-slate-700 hover:bg-slate-50'
-                    }`}
-                  >
-                    <span>{r.label}</span>
-                    {me?.role === r.key && <span className="text-[10px]">●</span>}
-                  </button>
-                ))}
-
-                <div className="pt-1.5 mt-1 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setRoleMenuOpen(false)
-                      navigate('/users')
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-bold text-[#714B67] hover:bg-[#f5eef4] flex items-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <UserCog className="w-3.5 h-3.5" />
-                    <span>Manage Staff & Assign Roles →</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <div className="flex items-center gap-2.5 p-2 rounded-xl bg-[#eef2f6] border border-[#e2e8f0]">
-              <div className="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden">
-                {me?.avatar ? (
-                  <img src={me.avatar} alt="avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span>{me?.name ? me.name.slice(0, 2).toUpperCase() : 'AA'}</span>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-xs font-bold text-slate-900 truncate">
-                  {me?.name || 'Akib Ahamed'}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setRoleMenuOpen(!roleMenuOpen)}
-                  className="text-[11px] font-bold hover:underline flex items-center gap-1 text-left mt-0.5"
-                  style={{ color: ROLES[me?.role]?.color || '#00A09D' }}
-                  title="Click to switch role"
-                >
-                  <span>{ROLES[me?.role]?.badge || me?.role || 'Staff'}</span>
-                  <ChevronDown className="w-2.5 h-2.5 opacity-70" />
-                </button>
-              </div>
-              <div className="flex items-center gap-0.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => navigate('/users')}
-                  title="Staff & User Roles Management"
-                  className="p-1.5 text-slate-500 hover:text-[#714B67] hover:bg-slate-200/70 rounded-lg transition-colors cursor-pointer"
-                >
-                  <UserCog className="w-4 h-4" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => logout()}
-                  title="Logout"
-                  className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </aside>
 
@@ -735,15 +645,109 @@ function Shell({ children }) {
             )}
             {installMessage && <span role="status" className="text-[11px] text-[#714b67] font-semibold">{installMessage}</span>}
 
-            {/* User Avatar Circle */}
-            <div
-              onClick={() => setCmdOpen(true)}
-              className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-sm ring-2 ring-slate-100 cursor-pointer overflow-hidden"
-            >
-              {me?.avatar ? (
-                <img src={me.avatar} alt="avatar" className="w-full h-full rounded-full object-cover" />
-              ) : (
-                <span>{me?.name ? me.name.slice(0, 2).toUpperCase() : 'AA'}</span>
+            {/* User Avatar Circle & Profile Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((open) => !open)}
+                className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-sm ring-2 ring-slate-100 cursor-pointer overflow-hidden transition-transform active:scale-95"
+                title={`${me?.name || 'User'} (${ROLES[me?.role]?.badge || me?.role || 'Staff'})`}
+              >
+                {me?.avatar ? (
+                  <img src={me.avatar} alt="avatar" className="w-full h-full rounded-full object-cover" />
+                ) : (
+                  <span>{me?.name ? me.name.slice(0, 2).toUpperCase() : 'AA'}</span>
+                )}
+              </button>
+
+              {userMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setUserMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 top-full mt-2 z-50 w-72 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl text-slate-800 font-sans ring-1 ring-black/5">
+                    {/* User Info Header */}
+                    <div className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50 border border-slate-100 mb-2">
+                      <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm shrink-0 overflow-hidden shadow-xs">
+                        {me?.avatar ? (
+                          <img src={me.avatar} alt="avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          <span>{me?.name ? me.name.slice(0, 2).toUpperCase() : 'AA'}</span>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-bold text-slate-900 truncate">
+                          {me?.name || 'Akib Ahamed'}
+                        </div>
+                        <div
+                          className="text-[11px] font-bold mt-0.5 inline-flex items-center gap-1"
+                          style={{ color: ROLES[me?.role]?.color || '#00A09D' }}
+                        >
+                          <span>{ROLES[me?.role]?.badge || me?.role || 'Staff'}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quick Switch Role List */}
+                    <div className="px-2 py-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                      Switch Role
+                    </div>
+                    <div className="space-y-0.5">
+                      {[
+                        { key: 'ADMIN', label: '👑 Admin (Owner)' },
+                        { key: 'MANAGER', label: '👔 Manager (Ahmed)' },
+                        { key: 'PHARMACIST', label: '💊 Pharmacist (Dr. Sara)' },
+                        { key: 'CASHIER', label: '🧾 Cashier (Ali)' },
+                        { key: 'RECEPTIONIST', label: '📋 Receptionist (Fatima)' },
+                      ].map((r) => (
+                        <button
+                          key={r.key}
+                          type="button"
+                          onClick={() => {
+                            switchRoleUser(r.key)
+                            setUserMenuOpen(false)
+                          }}
+                          className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
+                            me?.role === r.key
+                              ? 'bg-[#e6f7f2] text-[#00A09D] font-bold'
+                              : 'text-slate-700 hover:bg-slate-50'
+                          }`}
+                        >
+                          <span>{r.label}</span>
+                          {me?.role === r.key && <span className="text-[10px] font-bold text-[#00A09D]">● Active</span>}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Actions: Manage Staff & Logout */}
+                    <div className="pt-1.5 mt-1.5 border-t border-slate-100 space-y-0.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUserMenuOpen(false)
+                          navigate('/users')
+                        }}
+                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-[#714B67] hover:bg-[#f5eef4] flex items-center gap-2 transition-colors cursor-pointer"
+                      >
+                        <UserCog className="w-4 h-4 text-[#714B67]" />
+                        <span>Manage Staff & Assign Roles →</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setUserMenuOpen(false)
+                          logout()
+                        }}
+                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors cursor-pointer"
+                      >
+                        <LogOut className="w-4 h-4 text-rose-600" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  </div>
+                </>
               )}
             </div>
           </div>
