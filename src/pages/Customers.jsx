@@ -32,7 +32,6 @@ import {
   Crown,
   Coins,
   Shield,
-  Layers,
 } from 'lucide-react'
 
 function getInitials(name = '') {
@@ -292,136 +291,7 @@ export function Customers() {
             </div>
           </div>
 
-          {/* 2. 5 Loyalty KPI Summary Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
-            {/* Loyalty Members */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:border-slate-300 transition-colors">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-600">Active Members</span>
-                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
-                  <Award className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-black text-slate-900 mt-2">{stats.loyaltyMembersCount}</div>
-              <div className="text-[11px] font-medium text-amber-700 mt-0.5">Holding reward points</div>
-            </div>
 
-            {/* Points Pool Liability */}
-            <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-4 hover:border-purple-300 transition-colors">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-purple-700">Points Pool</span>
-                <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
-                  <Sparkles className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-black text-purple-700 mt-2">
-                ⭐ {stats.totalPoints.toLocaleString()}
-              </div>
-              <div className="text-[11px] font-medium text-purple-600 mt-0.5">
-                Liability: {fmt(stats.totalPoints)}
-              </div>
-            </div>
-
-            {/* Redemption Value */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:border-slate-300 transition-colors">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-600">Redeem Rate</span>
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                  <Coins className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-black text-slate-900 mt-2">Rs. 1 / pt</div>
-              <div className="text-[11px] font-medium text-slate-500 mt-0.5">Max 50% cart discount</div>
-            </div>
-
-            {/* VIP Tiers (Gold & Platinum) */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:border-slate-300 transition-colors">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-600">VIP Members</span>
-                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                  <Crown className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-black text-slate-900 mt-2">{stats.vipMembersCount}</div>
-              <div className="text-[11px] font-medium text-blue-600 mt-0.5">Gold & Platinum patrons</div>
-            </div>
-
-            {/* Total Credit Ceiling */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:border-slate-300 transition-colors col-span-2 md:col-span-1">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-600">Credit Ceiling</span>
-                <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-600">
-                  <CreditCard className="w-4 h-4" />
-                </div>
-              </div>
-              <div className="text-2xl font-black text-slate-900 mt-2">{fmt(stats.totalCreditLimit)}</div>
-              <div className="text-[11px] font-medium text-rose-600 mt-0.5">
-                Current Due: {fmt(stats.totalUdhar)}
-              </div>
-            </div>
-          </div>
-
-          {/* 3. Reward Tiers Breakdown Cards */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 md:p-5">
-            <div className="flex items-center justify-between mb-3.5">
-              <div>
-                <h2 className="text-sm font-black text-slate-900 tracking-tight flex items-center gap-1.5">
-                  <Layers className="w-4 h-4 text-[#714B67]" />
-                  <span>Loyalty Tier Status & Privileges</span>
-                </h2>
-                <p className="text-[11px] text-slate-500 mt-0.5">
-                  Automatic tier elevation based on lifetime accumulated points.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-              {loyaltyTiers().map((tier) => {
-                const count = customers.filter(
-                  (c) => loyaltyTier(c.points || 0).name === tier.name
-                ).length
-                const totalTierPts = customers
-                  .filter((c) => loyaltyTier(c.points || 0).name === tier.name)
-                  .reduce((acc, c) => acc + (c.points || 0), 0)
-                const badge = getTierBadge(tier.name)
-
-                return (
-                  <div
-                    key={tier.name}
-                    className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-[#714B67] transition-all"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl">{badge.icon}</span>
-                        <div>
-                          <span className="text-sm font-bold text-slate-900">{tier.name} Member</span>
-                          <div className="text-[10px] text-slate-500 font-medium">
-                            Min {tier.min} points requirement
-                          </div>
-                        </div>
-                      </div>
-                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${badge.bg}`}>
-                        {tier.name}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t border-slate-200 flex justify-between items-end">
-                      <div>
-                        <div className="text-2xl font-black text-slate-900">{count}</div>
-                        <div className="text-[11px] font-semibold text-slate-500">Enrolled Customers</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-black text-amber-600">
-                          ⭐ {totalTierPts.toLocaleString()}
-                        </div>
-                        <div className="text-[10px] text-slate-400">Total tier points</div>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
 
           {/* 4. Search & Filter Toolbar (Loyalty) */}
           <div className="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm flex flex-wrap items-center gap-2.5">
