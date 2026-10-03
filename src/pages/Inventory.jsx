@@ -1454,93 +1454,62 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
         </div>
       </div>
 
-      {/* 4 KPI Summary Cards (Kam vs Zyada) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      {/* 4 KPI Summary Cards (Clean & Simple matching Company Stock Hub) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* Card 1: Kam Medicines (Shortages) */}
-        <div className="bg-rose-50/70 border border-rose-200 rounded-2xl p-4 shadow-xs">
-          <div className="flex items-center justify-between text-rose-700 mb-1">
-            <span className="text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
-              <TrendingDown className="w-4 h-4" /> 🔻 Kam Medicines (Shortages)
-            </span>
-            <span className="text-[10px] font-bold bg-rose-200/80 px-2 py-0.5 rounded-full">
-              Deficit
-            </span>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Shortages (Kam)</span>
+            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
+              <TrendingDown className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-rose-900 tracking-tight">
-            {kamItems.length} <span className="text-sm font-semibold text-rose-700">Products</span>
-          </div>
-          <div className="flex justify-between items-center text-xs mt-2 text-rose-800 font-medium pt-2 border-t border-rose-200/60">
-            <span>Missing Units: <b>-{totalKamUnits}</b></span>
-            <span>Cost Loss: <b>Rs. {fmt(totalKamLoss)}</b></span>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-rose-700">{kamItems.length}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">-{totalKamUnits} units ({fmt(totalKamLoss)})</div>
           </div>
         </div>
 
-        {/* Card 2: Zyada Medicines (Surplus / Excess) */}
-        <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 shadow-xs">
-          <div className="flex items-center justify-between text-emerald-700 mb-1">
-            <span className="text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
-              <TrendingUp className="w-4 h-4" /> 🔺 Zyada Medicines (Surplus)
-            </span>
-            <span className="text-[10px] font-bold bg-emerald-200/80 px-2 py-0.5 rounded-full">
-              Excess
-            </span>
+        {/* Card 2: Zyada Medicines (Surplus) */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Surplus (Zyada)</span>
+            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-emerald-900 tracking-tight">
-            {zyadaItems.length} <span className="text-sm font-semibold text-emerald-700">Products</span>
-          </div>
-          <div className="flex justify-between items-center text-xs mt-2 text-emerald-800 font-medium pt-2 border-t border-emerald-200/60">
-            <span>Surplus Units: <b>+{totalZyadaUnits}</b></span>
-            <span>Excess Value: <b>Rs. {fmt(totalZyadaSurplus)}</b></span>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-[#008f8b]">{zyadaItems.length}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">+{totalZyadaUnits} units ({fmt(totalZyadaSurplus)})</div>
           </div>
         </div>
 
         {/* Card 3: Matched Stock */}
-        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-xs">
-          <div className="flex items-center justify-between text-slate-600 mb-1">
-            <span className="text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
-              <Check className="w-4 h-4 text-emerald-600" /> ✓ Matched Stock (Accurate)
-            </span>
-            <span className="text-[10px] font-bold bg-slate-200 px-2 py-0.5 rounded-full text-slate-700">
-              0 Variance
-            </span>
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Matched Stock</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <Check className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 tracking-tight">
-            {matchedItems.length} <span className="text-sm font-semibold text-slate-500">Products</span>
-          </div>
-          <div className="flex justify-between items-center text-xs mt-2 text-slate-600 font-medium pt-2 border-t border-slate-200">
-            <span>Accuracy Rate: <b>{medicines.length ? Math.round((matchedItems.length / medicines.length) * 100) : 100}%</b></span>
-            <span>Net Discrepancy: <b>Rs. {fmt(netVarianceValuation)}</b></span>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-slate-900">{matchedItems.length}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">{medicines.length ? Math.round((matchedItems.length / medicines.length) * 100) : 100}% accurate</div>
           </div>
         </div>
 
-        {/* Card 4: Purchase Order Call-to-Action */}
-        <div className="bg-indigo-50/80 border border-indigo-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between text-indigo-700 mb-1">
-              <span className="text-[11px] font-black uppercase tracking-wider flex items-center gap-1">
-                <ShoppingBag className="w-4 h-4" /> 📋 Purchase Order Ready
-              </span>
-              <span className="text-[10px] font-bold bg-indigo-200/70 px-2 py-0.5 rounded-full text-indigo-900">
-                Action
-              </span>
+        {/* Card 4: Net Valuation */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Net Valuation</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <DollarSign className="w-4 h-4" />
             </div>
-            <p className="text-xs text-indigo-900 font-bold mt-1">
-              {kamItems.length > 0 ? `${kamItems.length} medicines need restocking` : 'All inventory levels verified'}
-            </p>
           </div>
-          <button
-            type="button"
-            onClick={handleOpenPOModalForKam}
-            disabled={kamItems.length === 0}
-            className={`mt-2 w-full py-1.5 rounded-xl font-bold text-xs transition-colors flex items-center justify-center gap-1.5 ${
-              kamItems.length > 0
-                ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs cursor-pointer'
-                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-            }`}
-          >
-            <span>Draft Purchase Order</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          <div className="mt-3">
+            <div className={`text-2xl font-black ${netVarianceValuation < 0 ? 'text-rose-700' : 'text-slate-900'}`}>{fmt(netVarianceValuation)}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">{netVarianceValuation >= 0 ? 'Net surplus' : 'Net shortage loss'}</div>
+          </div>
         </div>
       </div>
 
