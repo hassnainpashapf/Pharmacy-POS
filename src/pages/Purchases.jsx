@@ -244,15 +244,6 @@ export default function Purchases({ forcedTab }) {
             <span>Print</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => navigate('/stock-audit')}
-            className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold shadow-xs inline-flex items-center gap-1.5 transition-all cursor-pointer"
-            title="Stock audit worksheet for physical counting and auto PO generation"
-          >
-            <ClipboardCheck className="w-4 h-4 text-indigo-600" />
-            <span>Stock Audit</span>
-          </button>
 
           <button
             type="button"
