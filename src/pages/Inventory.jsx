@@ -33,7 +33,6 @@ import {
   Layers,
   ArrowRight,
   Clock,
-  Sparkles,
 } from 'lucide-react'
 import MedicineGroupFilter from '../components/MedicineGroupFilter'
 import {
@@ -125,54 +124,6 @@ export default function Inventory({ forcedTab }) {
 
   return (
     <div className="space-y-4 w-full pb-8">
-      {/* Standalone Dashboards Quick Launch Bar */}
-      <div className="bg-slate-900 rounded-2xl p-3.5 sm:p-4 text-white shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 border border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#714B67]/30 border border-[#714B67]/50 flex items-center justify-center text-white shrink-0">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
-              <span>Dedicated Stock Action Dashboards</span>
-            </h2>
-            <p className="text-[11px] text-slate-300 mt-0.5">
-              Direct access to dedicated inventory action centers:
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            to="/company-stock"
-            className="px-3.5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#280c23] hover:shadow-md cursor-pointer"
-          >
-            <Building2 className="w-4 h-4" />
-            <span>Company Stock</span>
-          </Link>
-          <Link
-            to="/stock-audit"
-            className="px-3.5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#280c23] hover:shadow-md cursor-pointer"
-          >
-            <ClipboardCheck className="w-4 h-4" />
-            <span>Stock Audit</span>
-          </Link>
-          <Link
-            to="/expiry-management"
-            className="px-3.5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#280c23] hover:shadow-md cursor-pointer"
-          >
-            <Clock className="w-4 h-4" />
-            <span>Expiry Action</span>
-          </Link>
-          <Link
-            to="/purchase-returns"
-            className="px-3.5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#280c23] hover:shadow-md cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Purchase Returns</span>
-          </Link>
-        </div>
-      </div>
-
       {/* Compact row-based inventory toolbar */}
       <div className="pb-4 border-b border-slate-200 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3">
         <div>
