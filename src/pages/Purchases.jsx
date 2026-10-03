@@ -198,39 +198,70 @@ export default function Purchases({ forcedTab }) {
 
   return (
     <div className="space-y-4">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-        <div>
-          <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
-            <ShoppingBag className="w-6 h-6 text-emerald-600" />
-            {tab === 'returns'
-              ? 'Purchase Returns & Debit Notes'
-              : tab === 'orders'
-              ? 'Purchase Orders'
-              : 'Purchases & Inward Goods (GRN)'}
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            {tab === 'returns'
-              ? 'Record supplier returns for expired or damaged items and issue debit notes.'
-              : 'Create Goods Received Notes (GRN), manage GST, Advance Tax, discounts, batches, and expiry dates.'}
-          </p>
+      {/* Tab Navigation Switcher & Action Toolbar */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 pb-2 border-b border-slate-200">
+        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
+          <button
+            onClick={() => setTabAndUrl('orders')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition whitespace-nowrap ${
+              tab === 'orders'
+                ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
+            }`}
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            Purchase Orders
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full bg-blue-100 text-blue-700">
+              {allPOs.length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setTabAndUrl('invoices')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition whitespace-nowrap ${
+              tab === 'invoices'
+                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
+            }`}
+          >
+            <Receipt className="w-3.5 h-3.5" />
+            Purchase Bills, Tax & GRN
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full bg-emerald-100 text-emerald-700">
+              {(db.purchases || []).length}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setTabAndUrl('returns')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition whitespace-nowrap ${
+              tab === 'returns'
+                ? 'bg-purple-50 text-purple-700 border border-purple-200 shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
+            }`}
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            Purchase Returns
+            <span className="ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full bg-purple-100 text-purple-700">
+              {allReturns.length}
+            </span>
+          </button>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2 flex-wrap">
+        {/* Action Buttons Toolbar */}
+        <div className="flex items-center gap-1.5 flex-wrap shrink-0">
           <button
             onClick={() => navigate('/inventory?tab=audit')}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition"
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition"
             title="Stock audit worksheet for physical counting and auto PO generation"
           >
-            <ClipboardCheck className="w-4 h-4" />
+            <ClipboardCheck className="w-3.5 h-3.5" />
             Stock Audit (Variance)
           </button>
           <button
             onClick={() => setShowNewPO(true)}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg shadow-sm transition-all cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg shadow-sm transition-all cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             + New Purchase Order (PO)
           </button>
           <button
@@ -238,89 +269,19 @@ export default function Purchases({ forcedTab }) {
               setReceivingPO(null)
               setShowNewPurchase(true)
             }}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-sm transition"
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg shadow-sm transition-all cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             + New GRN / Purchase Inward
           </button>
           <button
             onClick={() => setShowNewReturn(true)}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-white bg-purple-600 hover:bg-purple-700 rounded-lg shadow-sm transition"
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition"
           >
-            <RotateCcw className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5" />
             + New Purchase Return
           </button>
         </div>
-      </div>
-
-      {/* Easy Purchase Guide Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 text-white p-3.5 rounded-xl border border-blue-900/60 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-300 flex items-center justify-center font-bold text-sm shrink-0">
-            🧾
-          </div>
-          <div className="text-xs">
-            <span className="font-bold text-blue-300">Easy Purchase Guide:</span>{' '}
-            <span className="text-slate-200">
-              Click <b>"+ New GRN / Purchase Inward"</b> to record a supplier invoice ➜ enter GST, Advance Tax (236G/H), and discount ➜ goods will automatically be added to shop inventory.
-            </span>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => { setReceivingPO(null); setShowNewPurchase(true) }}
-          className="self-start sm:self-auto px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-sm transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer active:scale-95"
-        >
-          <span>+ Record New Purchase Invoice</span>
-        </button>
-      </div>
-
-      {/* Tab Navigation Switcher */}
-      <div className="flex items-center gap-2 border-b border-slate-200 overflow-x-auto">
-        <button
-          onClick={() => setTabAndUrl('orders')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition whitespace-nowrap ${
-            tab === 'orders'
-              ? 'border-blue-600 text-blue-600 bg-blue-50/50'
-              : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-          }`}
-        >
-          <ShoppingBag className="w-4 h-4" />
-          Purchase Orders
-          <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-blue-100 text-blue-700">
-            {allPOs.length}
-          </span>
-        </button>
-
-        <button
-          onClick={() => setTabAndUrl('invoices')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition whitespace-nowrap ${
-            tab === 'invoices'
-              ? 'border-emerald-600 text-emerald-600 bg-emerald-50/50'
-              : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-          }`}
-        >
-          <Receipt className="w-4 h-4" />
-          Purchase Bills, Tax & GRN
-          <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-emerald-100 text-emerald-700">
-            {(db.purchases || []).length}
-          </span>
-        </button>
-
-        <button
-          onClick={() => setTabAndUrl('returns')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold border-b-2 transition whitespace-nowrap ${
-            tab === 'returns'
-              ? 'border-purple-600 text-purple-600 bg-purple-50/50'
-              : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-          }`}
-        >
-          <RotateCcw className="w-4 h-4" />
-          Purchase Returns
-          <span className="ml-1 px-2 py-0.5 text-xs font-extrabold rounded-full bg-purple-100 text-purple-700">
-            {allReturns.length}
-          </span>
-        </button>
       </div>
 
       {/* ======================================================== */}
