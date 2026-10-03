@@ -1218,6 +1218,24 @@ export function adjustBatch(id, newQty) {
   b.qty = Number(newQty); save()
 }
 export function addSupplier(s) { const x = { id: uid(), balance: 0, ...s }; db.suppliers.push(x); save(); return x }
+export function updateSupplier(id, patch) {
+  const s = db.suppliers.find((x) => x.id === id)
+  if (!s) return null
+  Object.assign(s, patch)
+  log('SUPPLIER_UPDATE', `Updated supplier ${s.name}`)
+  save()
+  notifyListeners()
+  return s
+}
+export function deleteSupplier(id) {
+  const idx = db.suppliers.findIndex((x) => x.id === id)
+  if (idx === -1) return false
+  const [removed] = db.suppliers.splice(idx, 1)
+  log('SUPPLIER_DELETE', `Deleted supplier ${removed?.name || id}`)
+  save()
+  notifyListeners()
+  return true
+}
 export function addCustomer(c) { const x = { id: uid(), balance: 0, points: 0, ...c }; db.customers.push(x); save(); return x }
 
 export function updateSettings(patch) {

@@ -1,40 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
-import { useDB, addSupplier, addCustomer, paySupplier, payCustomer, fmt, loyaltyTier, loyaltyTiers, topCustomers } from '../lib/db'
+import { useDB, addCustomer, payCustomer, fmt, loyaltyTier, loyaltyTiers, topCustomers } from '../lib/db'
 import { Modal, Input } from './Medicines'
 import { addCustomerPoints } from '../lib/db'
 import CustomerProfile from './CustomerProfile'
-
-export function Suppliers() {
-  const db = useDB()
-  const [adding, setAdding] = useState(false)
-  const [payFor, setPayFor] = useState(null)
-  return (
-    <div className="space-y-4">
-      <div className="flex justify-between">
-        <h2 className="text-xl font-bold">Suppliers</h2>
-        <button onClick={() => setAdding(true)} className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-semibold">+ New Supplier</button>
-      </div>
-      <div className="bg-white rounded-xl shadow">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-600"><tr><th className="p-2 text-left">Name</th><th>Company</th><th>Phone</th><th>Balance (Payable)</th><th>Actions</th></tr></thead>
-          <tbody>
-            {db.suppliers.map((s) => (
-              <tr key={s.id} className="border-t text-center">
-                <td className="p-2 text-left"><b>{s.name}</b></td>
-                <td>{s.company}</td><td>{s.phone}</td>
-                <td className={s.balance > 0 ? 'text-red-600 font-semibold' : ''}>{fmt(s.balance)}</td>
-                <td><button onClick={() => setPayFor(s)} className="bg-green-100 text-green-700 px-2 py-1 rounded text-xs">Pay</button></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {adding && <PersonForm title="New Supplier" fields={{ company: '', phone: '' }} onSave={(d) => addSupplier(d)} onClose={() => setAdding(false)} />}
-      {payFor && <PayModal title={`Payment — ${payFor.name}`} max={payFor.balance} onPay={(a) => paySupplier(payFor.id, a)} onClose={() => setPayFor(null)} />}
-    </div>
-  )
-}
+export { default as Suppliers } from './Suppliers'
 
 export function Customers() {
   const db = useDB()
