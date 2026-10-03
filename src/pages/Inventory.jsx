@@ -254,26 +254,27 @@ export default function Inventory({ forcedTab }) {
           onClick={() => setCompanyFilter('all')}
           className={`px-2.5 py-1 rounded-sm text-[11px] font-bold transition-colors shrink-0 ${
             companyFilter === 'all'
-              ? 'bg-indigo-600 text-white shadow-xs'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              ? 'bg-[#e9f5f2] text-[#006d69] border border-[#a2ded5] shadow-xs'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-transparent'
           }`}
         >
           All Companies
         </button>
         {distinctCompanies.slice(0, 10).map((comp) => {
           const units = companyStockCounts[comp] || 0
+          const isSelected = companyFilter === comp
           return (
             <button
               key={comp}
               type="button"
-              onClick={() => setCompanyFilter(companyFilter === comp ? 'all' : comp)}
+              onClick={() => setCompanyFilter(isSelected ? 'all' : comp)}
               className={`px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors shrink-0 ${
-                companyFilter === comp
-                  ? 'bg-indigo-600 text-white font-bold shadow-xs'
+                isSelected
+                  ? 'bg-[#e9f5f2] text-[#006d69] border border-[#a2ded5] font-bold shadow-xs'
                   : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
               }`}
             >
-              {comp} {units > 0 && <span className="text-[10px] opacity-75 font-mono ml-0.5">({units}u)</span>}
+              {comp} {units > 0 && <span className={`text-[10px] font-mono ml-0.5 ${isSelected ? 'text-[#006d69]/80 font-bold' : 'opacity-75'}`}>({units}u)</span>}
             </button>
           )
         })}
@@ -297,7 +298,7 @@ export default function Inventory({ forcedTab }) {
             onClick={() => setTab(k)}
             aria-pressed={tab === k}
             className={`px-3 py-1 rounded-sm text-xs font-bold transition-all ${
-              tab === k ? 'bg-white text-slate-900 shadow-sm border border-slate-200' : 'text-slate-600 hover:text-slate-900'
+              tab === k ? 'bg-[#e9f5f2] text-[#006d69] shadow-xs border border-[#a2ded5]' : 'text-slate-600 hover:text-slate-900 border border-transparent'
             }`}
           >
             {label}
