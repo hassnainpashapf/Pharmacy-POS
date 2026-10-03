@@ -573,50 +573,83 @@ export function Customers() {
             </div>
           </div>
 
-          {/* 2. KPI Summary Cards (simple) */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#f5eef4] flex items-center justify-center text-[#714B67]">
-                <Users className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-slate-500">Total Customers</div>
-                <div className="text-xl font-black text-slate-900">{stats.totalAccounts}</div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-rose-50 flex items-center justify-center text-rose-600">
-                <DollarSign className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-slate-500">
-                  Udhar Due · {stats.udharAccountsCount} account{stats.udharAccountsCount === 1 ? '' : 's'}
+          {/* 2. 5 KPI Summary Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
+            {/* Total Customers */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:border-slate-300 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-600">Total Accounts</span>
+                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] flex items-center justify-center text-[#714B67]">
+                  <Users className="w-4 h-4" />
                 </div>
-                <div className="text-xl font-black text-rose-600">{fmt(stats.totalUdhar)}</div>
+              </div>
+              <div className="text-2xl font-black text-slate-900 mt-2">{stats.totalAccounts}</div>
+              <div className="text-[11px] font-medium text-slate-500 mt-0.5">Registered accounts</div>
+            </div>
+
+            {/* Receivables Due (Udhar) */}
+            <div className="bg-white rounded-2xl border border-rose-100 shadow-sm p-4 hover:border-rose-300 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-rose-700">Receivable (Udhar)</span>
+                <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center text-rose-600">
+                  <DollarSign className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-2xl font-black text-rose-600 mt-2">{fmt(stats.totalUdhar)}</div>
+              <div className="text-[11px] font-medium text-rose-600 mt-0.5">
+                {stats.udharAccountsCount} account{stats.udharAccountsCount === 1 ? '' : 's'} with dues
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
-                <Star className="w-5 h-5" />
+            {/* Total Credit Limit */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:border-slate-300 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-600">Total Credit Limit</span>
+                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                  <CreditCard className="w-4 h-4" />
+                </div>
               </div>
-              <div>
-                <div className="text-xs font-semibold text-slate-500">Loyalty Points</div>
-                <div className="text-xl font-black text-slate-900">⭐ {stats.totalPoints.toLocaleString()}</div>
+              <div className="text-2xl font-black text-slate-900 mt-2">{fmt(stats.totalCreditLimit)}</div>
+              <div className="text-[11px] font-medium text-slate-500 mt-0.5">Approved credit ceiling</div>
+            </div>
+
+            {/* Loyalty Members */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:border-slate-300 transition-colors">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-600">Loyalty Members</span>
+                <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
+                  <Award className="w-4 h-4" />
+                </div>
               </div>
+              <div className="text-2xl font-black text-slate-900 mt-2">{stats.loyaltyMembersCount}</div>
+              <div className="text-[11px] font-medium text-amber-700 mt-0.5">Active reward points</div>
+            </div>
+
+            {/* Total Points Balance */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:border-slate-300 transition-colors col-span-2 md:col-span-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-600">Points Pool</span>
+                <div className="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+                  <Sparkles className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="text-2xl font-black text-purple-700 mt-2">
+                ⭐ {stats.totalPoints.toLocaleString()}
+              </div>
+              <div className="text-[11px] font-medium text-slate-500 mt-0.5">Redeemable customer points</div>
             </div>
           </div>
 
-          {/* 3. Search + Table */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            {/* Toolbar */}
-            <div className="p-3.5 border-b border-slate-100 flex flex-wrap items-center gap-2.5">
-              <div className="relative flex-1 min-w-[220px]">
+          {/* 3. Search & Filter Toolbar and Directory */}
+          <div className="space-y-3.5">
+            {/* Search & Filter Toolbar */}
+            <div className="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm flex flex-wrap items-center gap-2.5">
+              {/* Search Input */}
+              <div className="relative flex-1 min-w-[240px]">
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
-                  placeholder="Search by name or phone..."
+                  placeholder="Search customers by name, phone number, or ID..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#714B67] transition-all"
@@ -624,171 +657,293 @@ export function Customers() {
                 {search && (
                   <button
                     onClick={() => setSearch('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
 
-              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
-                {[
-                  { id: 'ALL', label: 'All' },
-                  { id: 'DUE', label: 'Udhar Due' },
-                  { id: 'CLEARED', label: 'Cleared' },
-                ].map((f) => (
-                  <button
-                    key={f.id}
-                    onClick={() => setBalanceFilter(f.id)}
-                    className={`px-3 py-1.5 text-xs font-bold rounded-lg transition cursor-pointer ${
-                      balanceFilter === f.id ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    {f.label}
-                  </button>
-                ))}
-              </div>
+              {/* Balance Filter */}
+              <select
+                value={balanceFilter}
+                onChange={(e) => setBalanceFilter(e.target.value)}
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              >
+                <option value="ALL">💰 All Balances</option>
+                <option value="DUE">🔴 Udhar Due Only</option>
+                <option value="CLEARED">🟢 Cleared Accounts</option>
+              </select>
+
+              {/* Tier Filter */}
+              <select
+                value={tierFilter}
+                onChange={(e) => setTierFilter(e.target.value)}
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              >
+                <option value="ALL">⭐ All Reward Tiers</option>
+                <option value="SILVER">🛡️ Silver Tier</option>
+                <option value="GOLD">⭐ Gold Tier</option>
+                <option value="PLATINUM">👑 Platinum Tier</option>
+              </select>
+
+              {/* Sort Order */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              >
+                <option value="DUE_DESC">Sort: Highest Udhar First</option>
+                <option value="POINTS_DESC">Sort: Most Points ⭐</option>
+                <option value="SPEND_DESC">Sort: Highest Lifetime Spend</option>
+                <option value="NAME_ASC">Sort: Customer Name (A-Z)</option>
+              </select>
+
+              {/* Reset Filters */}
+              {isFiltered && (
+                <button
+                  onClick={resetFilters}
+                  className="px-3 py-2 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition cursor-pointer"
+                >
+                  Reset
+                </button>
+              )}
             </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-slate-50/80 border-b border-slate-100 text-slate-500 font-bold uppercase tracking-wider text-[11px]">
-                  <tr>
-                    <th className="py-3 px-4">Customer</th>
-                    <th className="py-3 px-4 text-center">Points</th>
-                    <th className="py-3 px-4 text-right">Udhar</th>
-                    <th className="py-3 px-4 text-right">Purchases</th>
-                    <th className="py-3 px-4 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredCustomers.map((c) => {
-                    const bal = c.balance || 0
-                    const hasDue = bal > 0
-                    const cs = customerStatsMap.get(c.id) || { spend: 0, count: 0 }
-                    const cleanPhone = (c.phone || '').replace(/[^0-9]/g, '')
-                    const waLink = cleanPhone
-                      ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-                          `Assalam-o-Alaikum ${c.name},\nYour pending balance at our pharmacy is ${fmt(bal)}.\nPlease clear your dues at your convenience.\nThank you!`
-                        )}`
-                      : null
+            {/* Main Customers Table */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead className="bg-slate-50/80 border-b border-slate-100 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
+                    <tr>
+                      <th className="py-3 px-4">Customer Details</th>
+                      <th className="py-3 px-4">Phone / Contact</th>
+                      <th className="py-3 px-4 text-center">Reward Tier</th>
+                      <th className="py-3 px-4 text-center">Points ⭐</th>
+                      <th className="py-3 px-4 text-right">Credit Limit</th>
+                      <th className="py-3 px-4 text-right">Balance (Udhar)</th>
+                      <th className="py-3 px-4 text-right">Total Purchases</th>
+                      <th className="py-3 px-4 text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {filteredCustomers.map((c) => {
+                      const bal = c.balance || 0
+                      const hasDue = bal > 0
+                      const badge = getTierBadge(loyaltyTier(c.points || 0).name)
+                      const stats = customerStatsMap.get(c.id) || { spend: 0, count: 0 }
 
-                    return (
-                      <tr key={c.id} className="hover:bg-slate-50/70 transition-colors">
-                        {/* Customer */}
-                        <td className="py-3 px-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-[#f5eef4] text-[#714B67] font-black text-xs flex items-center justify-center shrink-0">
-                              {getInitials(c.name)}
+                      const waMsg = encodeURIComponent(
+                        `Assalam-o-Alaikum ${c.name},\nThis is a polite reminder that your pending balance at our pharmacy is ${fmt(
+                          bal
+                        )}.\nPlease clear your dues at your convenience.\nThank you!`
+                      )
+                      const cleanPhone = (c.phone || '').replace(/[^0-9]/g, '')
+                      const waLink = cleanPhone ? `https://wa.me/${cleanPhone}?text=${waMsg}` : null
+
+                      return (
+                        <tr
+                          key={c.id}
+                          className={`hover:bg-slate-50/70 transition-colors ${
+                            hasDue ? 'bg-rose-50/15' : ''
+                          }`}
+                        >
+                          {/* Customer Details */}
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-xl bg-[#f5eef4] text-[#714B67] border border-[#decddd] font-black text-xs flex items-center justify-center shrink-0">
+                                {getInitials(c.name)}
+                              </div>
+                              <div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="font-bold text-slate-900 text-sm">{c.name}</span>
+                                  {c.id === 'walkin' && (
+                                    <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-600">
+                                      Walk-in
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                                  ID: {c.id}
+                                </div>
+                              </div>
                             </div>
-                            <div>
-                              <div className="font-bold text-slate-900 text-sm">{c.name}</div>
-                              <div className="text-[11px] text-slate-500 font-mono">{c.phone || '—'}</div>
-                            </div>
-                          </div>
-                        </td>
+                          </td>
 
-                        {/* Points */}
-                        <td className="py-3 px-4 text-center">
-                          <button
-                            onClick={() => setPointsCustomer(c)}
-                            className="font-bold text-amber-600 font-mono hover:underline cursor-pointer"
-                            title="Adjust points"
-                          >
-                            ⭐ {c.points || 0}
-                          </button>
-                        </td>
-
-                        {/* Udhar */}
-                        <td className="py-3 px-4 text-right">
-                          {hasDue ? (
-                            <span className="font-mono font-black text-rose-600">{fmt(bal)}</span>
-                          ) : (
-                            <span className="text-emerald-600 font-bold text-[11px]">✓ Cleared</span>
-                          )}
-                        </td>
-
-                        {/* Purchases */}
-                        <td className="py-3 px-4 text-right">
-                          <div className="font-mono font-bold text-slate-800">{fmt(cs.spend)}</div>
-                          <div className="text-[10px] text-slate-400">
-                            {cs.count} bill{cs.count === 1 ? '' : 's'}
-                          </div>
-                        </td>
-
-                        {/* Actions */}
-                        <td className="py-3 px-4">
-                          <div className="flex items-center justify-end gap-1">
-                            {c.id !== 'walkin' && hasDue && (
-                              <button
-                                onClick={() => setPayFor(c)}
-                                className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] transition cursor-pointer"
-                              >
-                                Receive
-                              </button>
+                          {/* Phone / Contact */}
+                          <td className="py-3.5 px-4">
+                            {c.phone ? (
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-slate-700 font-medium">{c.phone}</span>
+                                {hasDue && waLink && (
+                                  <a
+                                    href={waLink}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    title="Send WhatsApp Payment Reminder"
+                                    className="p-1 rounded-md bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition cursor-pointer"
+                                  >
+                                    <MessageCircle className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="text-slate-400 italic">No phone</span>
                             )}
-                            {hasDue && waLink && (
-                              <a
-                                href={waLink}
-                                target="_blank"
-                                rel="noreferrer"
-                                title="WhatsApp reminder"
-                                className="p-1.5 rounded-lg text-emerald-600 hover:bg-emerald-50 transition"
-                              >
-                                <MessageCircle className="w-3.5 h-3.5" />
-                              </a>
-                            )}
-                            <button
-                              onClick={() => setProfileFor(c.id)}
-                              className="px-2.5 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-[11px] transition cursor-pointer"
+                          </td>
+
+                          {/* Reward Tier */}
+                          <td className="py-3.5 px-4 text-center">
+                            <span
+                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${badge.bg}`}
                             >
-                              Ledger
-                            </button>
-                            {c.id !== 'walkin' && (
-                              <>
+                              <span>{badge.icon}</span>
+                              <span>{loyaltyTier(c.points || 0).name}</span>
+                            </span>
+                          </td>
+
+                          {/* Points ⭐ */}
+                          <td className="py-3.5 px-4 text-center">
+                            <div className="flex items-center justify-center gap-1.5">
+                              <span className="font-bold text-amber-600 font-mono">
+                                ⭐ {c.points || 0}
+                              </span>
+                              <button
+                                onClick={() => setPointsCustomer(c)}
+                                className="w-5 h-5 rounded flex items-center justify-center bg-amber-50 hover:bg-amber-100 text-amber-800 text-[10px] font-bold transition cursor-pointer"
+                                title="Adjust Points (+ / -)"
+                              >
+                                ±
+                              </button>
+                            </div>
+                          </td>
+
+                          {/* Credit Limit */}
+                          <td className="py-3.5 px-4 text-right font-mono text-slate-600">
+                            {c.creditLimit ? fmt(c.creditLimit) : '—'}
+                          </td>
+
+                          {/* Balance (Udhar) */}
+                          <td className="py-3.5 px-4 text-right">
+                            {hasDue ? (
+                              <div className="inline-flex flex-col items-end">
+                                <span className="px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-black font-mono text-xs">
+                                  Due: {fmt(bal)}
+                                </span>
+                                {c.creditLimit && bal > c.creditLimit && (
+                                  <span className="text-[9px] text-rose-500 font-bold mt-0.5">
+                                    ⚠️ Over Limit
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[10px]">
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                <span>Cleared</span>
+                              </span>
+                            )}
+                          </td>
+
+                          {/* Total Purchases */}
+                          <td className="py-3.5 px-4 text-right">
+                            <div className="font-mono font-bold text-slate-800">{fmt(stats.spend)}</div>
+                            <div className="text-[10px] text-slate-400">
+                              {stats.count} bill{stats.count === 1 ? '' : 's'}
+                            </div>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-3.5 px-4 text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              {c.id !== 'walkin' && hasDue && (
+                                <button
+                                  onClick={() => setPayFor(c)}
+                                  className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-[11px] shadow-2xs transition cursor-pointer"
+                                  title="Receive Outstanding Balance"
+                                >
+                                  Receive
+                                </button>
+                              )}
+
+                              <button
+                                onClick={() => setProfileFor(c.id)}
+                                className="px-2 py-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 font-bold text-[11px] transition cursor-pointer"
+                                title="View Customer Profile & Ledger"
+                              >
+                                Ledger
+                              </button>
+
+                              {c.id !== 'walkin' && (
                                 <button
                                   onClick={() => setModalCustomer(c)}
-                                  className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition cursor-pointer"
-                                  title="Edit"
+                                  className="p-1 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition cursor-pointer"
+                                  title="Edit Customer Details"
                                 >
                                   <Edit3 className="w-3.5 h-3.5" />
                                 </button>
+                              )}
+
+                              {c.id !== 'walkin' && (
                                 <button
                                   onClick={() => {
-                                    if (window.confirm(`Delete customer "${c.name}"?`)) deleteCustomer(c.id)
+                                    if (
+                                      window.confirm(
+                                        `Are you sure you want to delete customer "${c.name}"?`
+                                      )
+                                    ) {
+                                      deleteCustomer(c.id)
+                                    }
                                   }}
-                                  className="p-1.5 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition cursor-pointer"
-                                  title="Delete"
+                                  className="p-1 rounded-lg hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition cursor-pointer"
+                                  title="Delete Customer"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
-                              </>
-                            )}
-                          </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+
+                    {!filteredCustomers.length && (
+                      <tr>
+                        <td colSpan={8} className="py-12 text-center text-slate-400">
+                          <Users className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+                          <div className="text-sm font-bold text-slate-600">No Customers Found</div>
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            Try searching with a different term or clear your active filters.
+                          </p>
+                          {isFiltered && (
+                            <button
+                              onClick={resetFilters}
+                              className="mt-3 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition cursor-pointer"
+                            >
+                              Clear Filters
+                            </button>
+                          )}
                         </td>
                       </tr>
-                    )
-                  })}
+                    )}
+                  </tbody>
+                </table>
+              </div>
 
-                  {!filteredCustomers.length && (
-                    <tr>
-                      <td colSpan={5} className="py-12 text-center text-slate-400">
-                        <Users className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-                        <div className="text-sm font-bold text-slate-600">No Customers Found</div>
-                        {isFiltered && (
-                          <button
-                            onClick={resetFilters}
-                            className="mt-3 px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition cursor-pointer"
-                          >
-                            Clear Filters
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+              {/* Table Footer */}
+              <div className="p-3.5 border-t border-slate-100 bg-slate-50/50 flex flex-wrap items-center justify-between text-xs text-slate-500">
+                <div>
+                  Showing <span className="font-bold text-slate-700">{filteredCustomers.length}</span> of{' '}
+                  <span className="font-bold text-slate-700">{customers.length}</span> total accounts
+                </div>
+                <div className="flex items-center gap-4">
+                  <span>
+                    Total Udhar in view:{' '}
+                    <strong className="text-rose-600 font-mono">
+                      {fmt(filteredCustomers.reduce((acc, c) => acc + (c.balance || 0), 0))}
+                    </strong>
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </>
