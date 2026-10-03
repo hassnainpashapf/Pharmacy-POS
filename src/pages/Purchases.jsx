@@ -102,6 +102,17 @@ export default function Purchases({ forcedTab }) {
     return supReport.reduce((a, s) => a + s.outstanding, 0)
   }, [supReport])
 
+  // Invoices & Purchases aggregate KPIs
+  const invoiceStats = useMemo(() => {
+    const list = db.purchases || []
+    const totalInvoices = list.length
+    const totalPurchases = list.reduce((a, p) => a + (p.total || 0), 0)
+    const totalPaid = list.reduce((a, p) => a + (p.paid || 0), 0)
+    const totalDue = totalOutstanding
+    const totalSuppliers = (db.suppliers || []).length
+    return { totalInvoices, totalPurchases, totalPaid, totalDue, totalSuppliers }
+  }, [db.purchases, db.suppliers, totalOutstanding])
+
   // Purchase Orders Data & Filters
   const [poSearch, setPoSearch] = useState('')
   const [poStatusFilter, setPoStatusFilter] = useState('ALL') // ALL | DRAFT | SENT | RECEIVED | CANCELLED
@@ -203,91 +214,127 @@ export default function Purchases({ forcedTab }) {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Tab Navigation Switcher & Action Toolbar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 pb-2 border-b border-slate-200">
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-          <button
-            onClick={() => setTabAndUrl('orders')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition whitespace-nowrap ${
-              tab === 'orders'
-                ? 'bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
-            }`}
-          >
-            <ShoppingBag className="w-3.5 h-3.5" />
-            Purchase Orders
-            <span className="ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full bg-blue-100 text-blue-700">
-              {allPOs.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setTabAndUrl('invoices')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition whitespace-nowrap ${
-              tab === 'invoices'
-                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
-            }`}
-          >
-            <Receipt className="w-3.5 h-3.5" />
-            Purchase Bills, Tax & GRN
-            <span className="ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full bg-emerald-100 text-emerald-700">
-              {(db.purchases || []).length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setTabAndUrl('returns')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition whitespace-nowrap ${
-              tab === 'returns'
-                ? 'bg-purple-50 text-purple-700 border border-purple-200 shadow-2xs'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
-            }`}
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            Purchase Returns
-            <span className="ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full bg-purple-100 text-purple-700">
-              {allReturns.length}
-            </span>
-          </button>
+    <div className="space-y-6 w-full pb-16 font-sans text-slate-800">
+      {/* 1. Header Banner (Merged into page layout matching Company Stock Hub) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
+              <ShoppingBag className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                Purchases & Invoices
+              </h1>
+              <p className="text-xs text-slate-400 font-medium">
+                Purchase orders, inward stock bills (GRN), and supplier returns
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Action Buttons Toolbar */}
-        <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+        {/* Global Action Buttons */}
+        <div className="flex items-center gap-2 flex-wrap shrink-0">
           <button
+            type="button"
+            onClick={() => window.print()}
+            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+          >
+            <Printer className="w-4 h-4 text-slate-500" />
+            <span>Print</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => navigate('/stock-audit')}
-            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition"
+            className="px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold shadow-xs inline-flex items-center gap-1.5 transition-all cursor-pointer"
             title="Stock audit worksheet for physical counting and auto PO generation"
           >
-            <ClipboardCheck className="w-3.5 h-3.5" />
-            Stock Audit (Variance)
+            <ClipboardCheck className="w-4 h-4 text-indigo-600" />
+            <span>Stock Audit</span>
           </button>
+
           <button
+            type="button"
             onClick={() => setShowNewPO(true)}
-            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg shadow-sm transition-all cursor-pointer"
+            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-all"
           >
-            <Plus className="w-3.5 h-3.5" />
-            + New Purchase Order (PO)
+            <Plus className="w-4 h-4" />
+            <span>+ New PO</span>
           </button>
+
           <button
+            type="button"
             onClick={() => {
               setReceivingPO(null)
               setShowNewPurchase(true)
             }}
-            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg shadow-sm transition-all cursor-pointer"
+            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-all"
           >
-            <Plus className="w-3.5 h-3.5" />
-            + New GRN / Purchase Inward
+            <Plus className="w-4 h-4" />
+            <span>+ New GRN</span>
           </button>
+
           <button
+            type="button"
             onClick={() => setShowNewReturn(true)}
-            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition"
+            className="px-3.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold shadow-xs inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-all"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
-            + New Purchase Return
+            <RotateCcw className="w-4 h-4" />
+            <span>+ New Return</span>
           </button>
         </div>
+      </div>
+
+      {/* Sub-tab Navigation Switcher */}
+      <div className="flex items-center gap-2 p-1 bg-slate-100/80 rounded-xl w-fit border border-slate-200/60">
+        <button
+          type="button"
+          onClick={() => setTabAndUrl('orders')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            tab === 'orders'
+              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+          }`}
+        >
+          <ShoppingBag className="w-3.5 h-3.5 text-[#714B67]" />
+          <span>Purchase Orders</span>
+          <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-[#f5eef4] text-[#714B67]">
+            {allPOs.length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTabAndUrl('invoices')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            tab === 'invoices'
+              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+          }`}
+        >
+          <Receipt className="w-3.5 h-3.5 text-emerald-600" />
+          <span>Bills & GRN</span>
+          <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-emerald-100 text-emerald-700">
+            {(db.purchases || []).length}
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setTabAndUrl('returns')}
+          className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+            tab === 'returns'
+              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+          }`}
+        >
+          <RotateCcw className="w-3.5 h-3.5 text-purple-600" />
+          <span>Purchase Returns</span>
+          <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-purple-100 text-purple-700">
+            {allReturns.length}
+          </span>
+        </button>
       </div>
 
       {/* ======================================================== */}
@@ -295,70 +342,110 @@ export default function Purchases({ forcedTab }) {
       {/* ======================================================== */}
       {tab === 'orders' && (
         <div className="space-y-4">
-          {/* KPI Summary Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Total Orders</div>
-              <div className="text-2xl font-black text-slate-800 mt-1">{poStats.total}</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">All created POs</div>
+          {/* Top KPIs Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {/* Total Orders */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Total POs</span>
+                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                  <ShoppingBag className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{poStats.total}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">All created POs</div>
+              </div>
             </div>
 
-            <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 shadow-sm">
-              <div className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Draft / Unsent</div>
-              <div className="text-2xl font-black text-amber-900 mt-1">{poStats.draft}</div>
-              <div className="text-[11px] text-amber-600 mt-0.5">Pending delivery/dispatch</div>
+            {/* Draft */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Draft / Pending</span>
+                <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
+                  <Clock className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{poStats.draft}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Pending dispatch</div>
+              </div>
             </div>
 
-            <div className="bg-blue-50 p-3 rounded-xl border border-blue-200 shadow-sm">
-              <div className="text-[11px] font-bold text-blue-700 uppercase tracking-wide">Sent to Supplier</div>
-              <div className="text-2xl font-black text-blue-900 mt-1">{poStats.sent}</div>
-              <div className="text-[11px] text-blue-600 mt-0.5">Awaiting distributor stock</div>
+            {/* Sent to Supplier */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Sent to Vendor</span>
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
+                  <Send className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{poStats.sent}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Awaiting distributor</div>
+              </div>
             </div>
 
-            <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 shadow-sm">
-              <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide">Received & Stocked</div>
-              <div className="text-2xl font-black text-emerald-900 mt-1">{poStats.received}</div>
-              <div className="text-[11px] text-emerald-600 mt-0.5">Batches added to inventory</div>
+            {/* Received & Stocked */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Received & Stocked</span>
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-emerald-700">{poStats.received}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Batches in inventory</div>
+              </div>
             </div>
 
-            <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-200 shadow-sm col-span-2 sm:col-span-1">
-              <div className="text-[11px] font-bold text-indigo-700 uppercase tracking-wide">Estimated Value</div>
-              <div className="text-xl font-black text-indigo-900 mt-1">{fmt(poStats.totalValue)}</div>
-              <div className="text-[11px] text-indigo-600 mt-0.5">Total demand cost</div>
+            {/* Estimated Value */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Demand Value</span>
+                <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+                  <DollarSign className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-[#008f8b]">{fmt(poStats.totalValue)}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Total demand cost</div>
+              </div>
             </div>
           </div>
 
           {/* Search & Filter Toolbar */}
-          <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-            <DateFilterBar filterState={poDateFilter} onChange={setPoDateFilter} />
-
+          <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+              <div className="relative flex-1 min-w-[240px]">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search PO #, supplier name, company, or medicine..."
                   value={poSearch}
                   onChange={(e) => setPoSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
                 />
               </div>
 
-              {/* Status Filter Pills */}
-              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
-                {['ALL', 'DRAFT', 'SENT', 'RECEIVED'].map((st) => (
-                  <button
-                    key={st}
-                    onClick={() => setPoStatusFilter(st)}
-                    className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
-                      poStatusFilter === st
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    {st === 'ALL' ? 'All POs' : st}
-                  </button>
-                ))}
+              {/* Date Filter Dropdown */}
+              <DateFilterBar filterState={poDateFilter} onChange={setPoDateFilter} asDropdown />
+
+              {/* Status Filter Dropdown */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+                <Filter className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <select
+                  value={poStatusFilter}
+                  onChange={(e) => setPoStatusFilter(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer"
+                  aria-label="Filter Purchase Orders by status"
+                >
+                  <option value="ALL">All POs ({allPOs.length})</option>
+                  <option value="DRAFT">Draft ({poStats.draft})</option>
+                  <option value="SENT">Sent ({poStats.sent})</option>
+                  <option value="RECEIVED">Received ({poStats.received})</option>
+                </select>
               </div>
             </div>
           </div>
@@ -539,6 +626,79 @@ export default function Purchases({ forcedTab }) {
       {/* ======================================================== */}
       {tab === 'invoices' && (
         <div className="space-y-4">
+          {/* Top KPIs Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {/* Suppliers */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Suppliers</span>
+                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                  <Phone className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{invoiceStats.totalSuppliers}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Registered vendors</div>
+              </div>
+            </div>
+
+            {/* Total Invoices */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Inward Invoices</span>
+                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                  <Receipt className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{invoiceStats.totalInvoices}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">GRN stock entries</div>
+              </div>
+            </div>
+
+            {/* Total Purchases */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Total Purchases</span>
+                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                  <ShoppingBag className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{fmt(invoiceStats.totalPurchases)}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Cumulative inward cost</div>
+              </div>
+            </div>
+
+            {/* Total Paid */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Paid to Vendors</span>
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-emerald-700">{fmt(invoiceStats.totalPaid)}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Cleared payments</div>
+              </div>
+            </div>
+
+            {/* Outstanding Due */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Balance Due</span>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${invoiceStats.totalDue > 0 ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                  <AlertCircle className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className={`text-2xl font-black ${invoiceStats.totalDue > 0 ? 'text-rose-600' : 'text-slate-900'}`}>{fmt(invoiceStats.totalDue)}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Payable to suppliers</div>
+              </div>
+            </div>
+          </div>
+
           {/* Supplier-wise Outstanding Balance Report */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
@@ -591,40 +751,35 @@ export default function Purchases({ forcedTab }) {
           </div>
 
           {/* Search & Filter Toolbar */}
-          <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-            <DateFilterBar filterState={grnDateFilter} onChange={setGrnDateFilter} />
-
+          <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+              <div className="relative flex-1 min-w-[240px]">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search GRN #, invoice #, supplier, or medicine..."
                   value={grnSearch}
                   onChange={(e) => setGrnSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
                 />
               </div>
 
-              {/* Status Filter Pills */}
-              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0">
-                {[
-                  { id: 'ALL', label: 'All Bills' },
-                  { id: 'PAID', label: 'Paid' },
-                  { id: 'DUE', label: 'Balance Due' },
-                ].map((st) => (
-                  <button
-                    key={st.id}
-                    onClick={() => setGrnStatusFilter(st.id)}
-                    className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
-                      grnStatusFilter === st.id
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    {st.label}
-                  </button>
-                ))}
+              {/* Date Filter Dropdown */}
+              <DateFilterBar filterState={grnDateFilter} onChange={setGrnDateFilter} asDropdown />
+
+              {/* Status Filter Dropdown */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+                <Filter className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <select
+                  value={grnStatusFilter}
+                  onChange={(e) => setGrnStatusFilter(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer"
+                  aria-label="Filter Invoices by payment status"
+                >
+                  <option value="ALL">All Bills ({(db.purchases || []).length})</option>
+                  <option value="PAID">Paid Only</option>
+                  <option value="DUE">Balance Due Only</option>
+                </select>
               </div>
             </div>
           </div>
@@ -721,77 +876,112 @@ export default function Purchases({ forcedTab }) {
       {/* ======================================================== */}
       {tab === 'returns' && (
         <div className="space-y-4">
-          {/* KPI Summary Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Total Return Vouchers</div>
-              <div className="text-2xl font-black text-purple-700 mt-1">{returnStats.total}</div>
-              <div className="text-[11px] text-slate-400 mt-0.5">Dispatched to suppliers</div>
+          {/* Top KPIs Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {/* Total Vouchers */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Return Vouchers</span>
+                <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-700 flex items-center justify-center">
+                  <RotateCcw className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{returnStats.total}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Dispatched to suppliers</div>
+              </div>
             </div>
 
-            <div className="bg-rose-50 p-3 rounded-xl border border-rose-200 shadow-sm">
-              <div className="text-[11px] font-bold text-rose-700 uppercase tracking-wide">Returned Units</div>
-              <div className="text-2xl font-black text-rose-900 mt-1">{returnStats.totalUnits}</div>
-              <div className="text-[11px] text-rose-600 mt-0.5">Total packs/tablets deducted</div>
+            {/* Returned Units */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Returned Units</span>
+                <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center">
+                  <Package className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{returnStats.totalUnits}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Total units deducted</div>
+              </div>
             </div>
 
-            <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 shadow-sm">
-              <div className="text-[11px] font-bold text-emerald-700 uppercase tracking-wide">Total Claimed Value</div>
-              <div className="text-xl font-black text-emerald-900 mt-1">{fmt(returnStats.totalValue)}</div>
-              <div className="text-[11px] text-emerald-600 mt-0.5">Financial recovery from vendors</div>
+            {/* Claimed Value */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Claimed Value</span>
+                <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+                  <DollarSign className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-[#008f8b]">{fmt(returnStats.totalValue)}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Financial recovery</div>
+              </div>
             </div>
 
-            <div className="bg-blue-50 p-3 rounded-xl border border-blue-200 shadow-sm">
-              <div className="text-[11px] font-bold text-blue-700 uppercase tracking-wide">Debit Notes</div>
-              <div className="text-2xl font-black text-blue-900 mt-1">{returnStats.creditNotes}</div>
-              <div className="text-[11px] text-blue-600 mt-0.5">Supplier balance adjusted</div>
+            {/* Debit Notes */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Debit Notes</span>
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center">
+                  <FileText className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{returnStats.creditNotes}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Balance adjusted</div>
+              </div>
             </div>
 
-            <div className="bg-amber-50 p-3 rounded-xl border border-amber-200 shadow-sm col-span-2 sm:col-span-1">
-              <div className="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Cash Refunds</div>
-              <div className="text-2xl font-black text-amber-900 mt-1">{returnStats.cashRefunds}</div>
-              <div className="text-[11px] text-amber-600 mt-0.5">Instant cash received</div>
+            {/* Cash Refunds */}
+            <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
+              <div className="flex items-center justify-between text-slate-500">
+                <span className="text-xs font-semibold text-slate-600">Cash Refunds</span>
+                <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center">
+                  <Receipt className="w-4 h-4" />
+                </div>
+              </div>
+              <div className="mt-3">
+                <div className="text-2xl font-black text-slate-900">{returnStats.cashRefunds}</div>
+                <div className="text-[11px] text-slate-400 mt-0.5">Instant refunds</div>
+              </div>
             </div>
           </div>
 
           {/* Search & Reason Filter Toolbar */}
-          <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-            <DateFilterBar filterState={returnDateFilter} onChange={setReturnDateFilter} />
-
+          <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+              <div className="relative flex-1 min-w-[240px]">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Search PR #, supplier, company, medicine, or batch..."
                   value={returnSearch}
                   onChange={(e) => setReturnSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
                 />
               </div>
 
-              {/* Reason Filter Pills */}
-              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg flex-wrap">
-                {[
-                  { id: 'ALL', label: 'All Reasons' },
-                  { id: 'EXPIRED', label: '⏰ Expired' },
-                  { id: 'NEAR_EXPIRY', label: '⌛ Near Expiry' },
-                  { id: 'DAMAGED', label: '💥 Damaged' },
-                  { id: 'WRONG_ITEM', label: '❌ Wrong Item' },
-                  { id: 'OVER_STOCKED', label: '📦 Excess' },
-                ].map((rf) => (
-                  <button
-                    key={rf.id}
-                    onClick={() => setReturnReasonFilter(rf.id)}
-                    className={`px-2.5 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
-                      returnReasonFilter === rf.id
-                        ? 'bg-white text-slate-900 shadow-sm'
-                        : 'text-slate-500 hover:text-slate-800'
-                    }`}
-                  >
-                    {rf.label}
-                  </button>
-                ))}
+              {/* Date Filter Dropdown */}
+              <DateFilterBar filterState={returnDateFilter} onChange={setReturnDateFilter} asDropdown />
+
+              {/* Reason Filter Dropdown */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+                <Filter className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                <select
+                  value={returnReasonFilter}
+                  onChange={(e) => setReturnReasonFilter(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer"
+                  aria-label="Filter Returns by reason"
+                >
+                  <option value="ALL">All Reasons ({allReturns.length})</option>
+                  <option value="EXPIRED">⏰ Expired</option>
+                  <option value="NEAR_EXPIRY">⌛ Near Expiry</option>
+                  <option value="DAMAGED">💥 Damaged</option>
+                  <option value="WRONG_ITEM">❌ Wrong Item</option>
+                  <option value="OVER_STOCKED">📦 Excess</option>
+                </select>
               </div>
             </div>
           </div>
