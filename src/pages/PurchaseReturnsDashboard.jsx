@@ -196,11 +196,11 @@ export default function PurchaseReturnsDashboard() {
             <RotateCcw className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900">
-              Purchase Returns & Debit Notes Dashboard
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              Purchase Returns & Debit Notes
             </h1>
-            <p className="text-xs text-slate-500 font-medium">
-              Purchase Returns to Pharma Suppliers & Debit Note Ledger
+            <p className="text-xs text-slate-400 font-medium">
+              Supplier Returns & Debit Vouchers
             </p>
           </div>
         </div>
@@ -209,10 +209,10 @@ export default function PurchaseReturnsDashboard() {
           <button
             type="button"
             onClick={() => window.print()}
-            className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
+            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
           >
             <Printer className="w-4 h-4 text-slate-500" />
-            <span>Print Ledger</span>
+            <span>Print</span>
           </button>
 
           <button
@@ -222,24 +222,24 @@ export default function PurchaseReturnsDashboard() {
               setReturnItems([])
               setShowNewModal(true)
             }}
-            className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 flex items-center gap-1.5 transition-all active:scale-95"
+            className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 flex items-center gap-1.5 transition-all active:scale-95"
           >
             <Plus className="w-4 h-4" />
-            <span>+ New Purchase Return</span>
+            <span>+ New Return</span>
           </button>
         </div>
       </div>
 
       {/* Success Notification */}
       {successMsg && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-emerald-800 text-xs font-bold animate-in fade-in">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2.5 text-emerald-800 text-xs font-bold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {/* 2. Top Summary KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {/* Total Returns Recorded */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
@@ -249,36 +249,36 @@ export default function PurchaseReturnsDashboard() {
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-slate-900">{stats.totalReturns} vouchers</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">{stats.totalUnits} units returned</div>
+            <div className="text-2xl font-black text-slate-900">{stats.totalReturns}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">{stats.totalUnits} units</div>
           </div>
         </div>
 
         {/* Total Debit Note Value */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Total Debit Claim</span>
+            <span className="text-xs font-bold">Debit Claims</span>
             <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
               💰
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-rose-600">{fmt(stats.totalAmount)}</div>
-            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Receivable / deduction claim from suppliers</div>
+            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Total claims</div>
           </div>
         </div>
 
         {/* Credit Note Balance */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Credit Note Deductions</span>
+            <span className="text-xs font-bold">Credit Notes</span>
             <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-indigo-700">{fmt(stats.creditNotes)}</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Deducted from supplier payables</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Payable deduction</div>
           </div>
         </div>
 
@@ -292,7 +292,7 @@ export default function PurchaseReturnsDashboard() {
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-teal-700">{fmt(stats.cashRefunds)}</div>
-            <div className="text-[11px] text-teal-600 font-medium mt-0.5">Instant cash returned</div>
+            <div className="text-[11px] text-teal-600 font-medium mt-0.5">Direct cash</div>
           </div>
         </div>
       </div>
@@ -300,10 +300,9 @@ export default function PurchaseReturnsDashboard() {
       {/* 3. Returns List Table */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {/* Table Toolbar */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="p-3 sm:p-4 border-b border-slate-100 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-slate-900">Recorded Debit Notes & Purchase Returns</h2>
-            <p className="text-xs text-slate-500">Comprehensive history of all returned batches and suppliers</p>
+            <h2 className="text-sm font-bold text-slate-900">Debit Notes & Returns</h2>
           </div>
 
           <div className="relative w-full sm:w-72">
@@ -312,7 +311,7 @@ export default function PurchaseReturnsDashboard() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search return number or supplier..."
+              placeholder="Search return or supplier..."
               className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
             />
           </div>
@@ -323,11 +322,11 @@ export default function PurchaseReturnsDashboard() {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold">
-                <th className="py-3 px-4">Debit Note #</th>
-                <th className="py-3 px-3">Date</th>
-                <th className="py-3 px-3">Supplier / Distributor</th>
-                <th className="py-3 px-3">Returned Items</th>
-                <th className="py-3 px-3 text-right">Refund Amount (PKR)</th>
+                <th className="py-2.5 px-4">Debit Note</th>
+                <th className="py-2.5 px-3">Date</th>
+                <th className="py-2.5 px-3">Supplier</th>
+                <th className="py-2.5 px-3">Items</th>
+                <th className="py-2.5 px-3 text-right">Amount (PKR)</th>
                 <th className="py-3 px-3 text-center">Settlement Method</th>
                 <th className="py-3 px-4 text-center">Actions</th>
               </tr>

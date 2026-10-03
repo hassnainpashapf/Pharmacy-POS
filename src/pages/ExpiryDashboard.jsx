@@ -248,11 +248,11 @@ export default function ExpiryDashboard() {
             <Clock className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900">
-              Batch Expiry & FEFO Action Center
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              Batch & Expiry Action
             </h1>
-            <p className="text-xs text-slate-500 font-medium">
-              FEFO Batch & Expiry Action Center (Returns, Clearance & Write-offs)
+            <p className="text-xs text-slate-400 font-medium">
+              FEFO Inventory & Returns
             </p>
           </div>
         </div>
@@ -261,33 +261,33 @@ export default function ExpiryDashboard() {
           <button
             type="button"
             onClick={() => window.print()}
-            className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
+            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
           >
             <Printer className="w-4 h-4 text-slate-500" />
-            <span>Print Sheet</span>
+            <span>Print</span>
           </button>
 
           <button
             type="button"
             onClick={() => navigate('/purchase-returns')}
-            className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 flex items-center gap-1.5 transition-all"
           >
             <RotateCcw className="w-4 h-4" />
-            <span>Purchase Returns Hub</span>
+            <span>Returns Hub</span>
           </button>
         </div>
       </div>
 
       {/* Success Notification */}
       {actionSuccess && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-emerald-800 text-xs font-bold animate-in fade-in">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2.5 text-emerald-800 text-xs font-bold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{actionSuccess}</span>
         </div>
       )}
 
       {/* 2. Top Summary KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {/* Expired Batches (Red) */}
         <div
           onClick={() => setFilterTab('EXPIRED')}
@@ -298,7 +298,7 @@ export default function ExpiryDashboard() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">Expired Batches</span>
+            <span className="text-xs font-bold">Expired</span>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
               filterTab === 'EXPIRED' ? 'bg-white/20 text-white' : 'bg-rose-50 text-rose-600'
             }`}>
@@ -307,10 +307,10 @@ export default function ExpiryDashboard() {
           </div>
           <div className="mt-3">
             <div className={`text-2xl font-black ${filterTab === 'EXPIRED' ? 'text-white' : 'text-rose-600'}`}>
-              {stats.expiredBatches} batches
+              {stats.expiredBatches}
             </div>
             <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'EXPIRED' ? 'text-rose-100' : 'text-slate-400'}`}>
-              Cost loss: {fmt(stats.expiredCost)}
+              Loss: {fmt(stats.expiredCost)}
             </div>
           </div>
         </div>
@@ -325,7 +325,7 @@ export default function ExpiryDashboard() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">Critical Action (0–30 Days)</span>
+            <span className="text-xs font-bold">Critical (0–30d)</span>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
               filterTab === 'CRITICAL' ? 'bg-white/20 text-white' : 'bg-orange-50 text-orange-600'
             }`}>
@@ -334,7 +334,7 @@ export default function ExpiryDashboard() {
           </div>
           <div className="mt-3">
             <div className={`text-2xl font-black ${filterTab === 'CRITICAL' ? 'text-white' : 'text-orange-600'}`}>
-              {stats.criticalBatches} batches
+              {stats.criticalBatches}
             </div>
             <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'CRITICAL' ? 'text-orange-100' : 'text-slate-400'}`}>
               Value: {fmt(stats.criticalCost)}
@@ -352,7 +352,7 @@ export default function ExpiryDashboard() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">Near Expiry (31–90 Days)</span>
+            <span className="text-xs font-bold">Near (31–90d)</span>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
               filterTab === 'NEAR' ? 'bg-white/20 text-white' : 'bg-amber-50 text-amber-600'
             }`}>
@@ -361,7 +361,7 @@ export default function ExpiryDashboard() {
           </div>
           <div className="mt-3">
             <div className={`text-2xl font-black ${filterTab === 'NEAR' ? 'text-white' : 'text-amber-700'}`}>
-              {stats.nearBatches} batches
+              {stats.nearBatches}
             </div>
             <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'NEAR' ? 'text-amber-100' : 'text-slate-400'}`}>
               Value: {fmt(stats.nearCost)}
@@ -379,7 +379,7 @@ export default function ExpiryDashboard() {
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">Safe Stock (&gt;90 Days)</span>
+            <span className="text-xs font-bold">Safe (&gt;90d)</span>
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
               filterTab === 'SAFE' ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-600'
             }`}>
@@ -388,7 +388,7 @@ export default function ExpiryDashboard() {
           </div>
           <div className="mt-3">
             <div className={`text-2xl font-black ${filterTab === 'SAFE' ? 'text-white' : 'text-emerald-700'}`}>
-              {stats.safeBatches} batches
+              {stats.safeBatches}
             </div>
             <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'SAFE' ? 'text-emerald-100' : 'text-slate-400'}`}>
               Value: {fmt(stats.safeCost)}
@@ -399,7 +399,7 @@ export default function ExpiryDashboard() {
         {/* Total Financial Risk */}
         <div className="bg-gradient-to-br from-slate-900 to-slate-800 text-white border border-slate-700 rounded-2xl p-4 shadow-sm flex flex-col justify-between col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-slate-300">
-            <span className="text-xs font-bold">Total Expiry Risk</span>
+            <span className="text-xs font-bold">Total Risk</span>
             <div className="w-8 h-8 rounded-lg bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold">
               💰
             </div>
@@ -409,7 +409,7 @@ export default function ExpiryDashboard() {
               {fmt(stats.totalRiskCost)}
             </div>
             <div className="text-[10px] text-slate-300 mt-0.5">
-              Expired + 30 Days Risk
+              Expired + Critical
             </div>
           </div>
         </div>
@@ -418,15 +418,15 @@ export default function ExpiryDashboard() {
       {/* 3. Filters & Batch Table */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {/* Toolbar */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/70 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+        <div className="p-3 sm:p-4 border-b border-slate-100 bg-slate-50/70 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           {/* Status Tabs */}
           <div className="flex flex-wrap items-center gap-1.5 bg-slate-200/60 p-1 rounded-xl">
             {[
               ['CRITICAL', `0–30 Days (${stats.criticalBatches})`],
               ['EXPIRED', `Expired (${stats.expiredBatches})`],
               ['NEAR', `31–90 Days (${stats.nearBatches})`],
-              ['SAFE', `Safe Stock (${stats.safeBatches})`],
-              ['ALL', `All Batches (${analyzedBatches.filter(b => b.qty > 0).length})`],
+              ['SAFE', `Safe (${stats.safeBatches})`],
+              ['ALL', `All (${analyzedBatches.filter(b => b.qty > 0).length})`],
             ].map(([tabKey, tabLabel]) => (
               <button
                 key={tabKey}
@@ -466,7 +466,7 @@ export default function ExpiryDashboard() {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search medicine or batch number..."
+                placeholder="Search medicine or batch..."
                 className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
               />
             </div>
@@ -478,14 +478,14 @@ export default function ExpiryDashboard() {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold">
-                <th className="py-3 px-4">Medicine & Company</th>
-                <th className="py-3 px-3">Batch No</th>
-                <th className="py-3 px-3">Expiry Date</th>
-                <th className="py-3 px-3 text-center">Remaining Days</th>
-                <th className="py-3 px-3 text-right">Stock (Units)</th>
-                <th className="py-3 px-3 text-right">Cost Price</th>
-                <th className="py-3 px-3 text-right">Total Value (PKR)</th>
-                <th className="py-3 px-4 text-center">Action</th>
+                <th className="py-2.5 px-4">Medicine</th>
+                <th className="py-2.5 px-3">Batch</th>
+                <th className="py-2.5 px-3">Expiry</th>
+                <th className="py-2.5 px-3 text-center">Days Left</th>
+                <th className="py-2.5 px-3 text-right">Stock</th>
+                <th className="py-2.5 px-3 text-right">Cost</th>
+                <th className="py-2.5 px-3 text-right">Value (PKR)</th>
+                <th className="py-2.5 px-4 text-center">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

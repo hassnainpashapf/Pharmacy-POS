@@ -196,11 +196,11 @@ export default function StockAuditDashboard() {
             <ClipboardCheck className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900">
-              Stock Audit & Discrepancy Dashboard
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
+              Stock Audit Dashboard
             </h1>
-            <p className="text-xs text-slate-500 font-medium">
-              Physical Stock Count vs Computer Stock Reconciliation (Shortage / Excess)
+            <p className="text-xs text-slate-400 font-medium">
+              Physical Stock Count & Reconciliation
             </p>
           </div>
         </div>
@@ -209,44 +209,44 @@ export default function StockAuditDashboard() {
           <button
             type="button"
             onClick={() => window.print()}
-            className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
+            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
           >
             <Printer className="w-4 h-4 text-slate-500" />
-            <span>Print Audit Sheet</span>
+            <span>Print</span>
           </button>
 
           <button
             type="button"
             onClick={handleReconcileAndSave}
-            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all active:scale-95"
+            className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all active:scale-95"
           >
             <CheckCircle2 className="w-4 h-4" />
-            <span>Reconcile System Stock</span>
+            <span>Reconcile Stock</span>
           </button>
         </div>
       </div>
 
       {/* Success Banner */}
       {successMsg && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-3 text-emerald-800 text-xs font-bold animate-in fade-in">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center gap-2.5 text-emerald-800 text-xs font-bold animate-in fade-in">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {/* 2. Top Summary KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {/* Total Items Under Audit */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Items Under Audit</span>
+            <span className="text-xs font-bold">Items Audited</span>
             <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
               <ClipboardCheck className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-slate-900">{summary.total}</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Medicines in physical count</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">In worksheet</div>
           </div>
         </div>
 
@@ -260,42 +260,42 @@ export default function StockAuditDashboard() {
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-emerald-700">{summary.matched}</div>
-            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Physical matches computer</div>
+            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Zero variance</div>
           </div>
         </div>
 
-        {/* Shortage (Kam Stock) */}
+        {/* Shortage */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Stock Shortage</span>
+            <span className="text-xs font-bold">Shortage</span>
             <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
               <TrendingDown className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-rose-600">{summary.kamItems} items</div>
-            <div className="text-[11px] text-rose-600 font-semibold mt-0.5">-{summary.kamUnits} units shortage</div>
+            <div className="text-[11px] text-rose-600 font-semibold mt-0.5">-{summary.kamUnits} units</div>
           </div>
         </div>
 
-        {/* Surplus (Zyada Stock) */}
+        {/* Surplus */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Stock Excess</span>
+            <span className="text-xs font-bold">Excess</span>
             <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-blue-700">{summary.zyadaItems} items</div>
-            <div className="text-[11px] text-blue-600 font-semibold mt-0.5">+{summary.zyadaUnits} units surplus</div>
+            <div className="text-[11px] text-blue-600 font-semibold mt-0.5">+{summary.zyadaUnits} units</div>
           </div>
         </div>
 
         {/* Financial Variance Impact */}
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Net Financial Variance</span>
+            <span className="text-xs font-bold">Net Variance</span>
             <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
               💰
             </div>
@@ -305,7 +305,7 @@ export default function StockAuditDashboard() {
               {summary.netVarianceCost < 0 ? `- ${fmt(Math.abs(summary.netVarianceCost))}` : `+ ${fmt(summary.netVarianceCost)}`}
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">
-              {summary.netVarianceCost < 0 ? 'Shortage / Loss' : 'Surplus / Gain'}
+              {summary.netVarianceCost < 0 ? 'Deficit impact' : 'Surplus impact'}
             </div>
           </div>
         </div>
@@ -314,11 +314,11 @@ export default function StockAuditDashboard() {
       {/* 3. Live Counting & Audit Sheet */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {/* Auditor & Search Toolbar */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 bg-slate-50/60 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="p-3 sm:p-4 border-b border-slate-100 bg-slate-50/60 flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4 text-slate-400" />
-              <label className="text-xs font-bold text-slate-700">Auditor Name:</label>
+              <label className="text-xs font-bold text-slate-700">Auditor:</label>
               <input
                 type="text"
                 value={auditorName}
@@ -335,7 +335,7 @@ export default function StockAuditDashboard() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search medicine to add to audit worksheet..."
+              placeholder="Search medicine to add..."
               className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
             />
 
@@ -441,7 +441,7 @@ export default function StockAuditDashboard() {
                             : 'bg-emerald-100 text-emerald-800'
                         }`}
                       >
-                        {isMatch ? '✓ 0 (Matched)' : (item.variance > 0 ? `+${item.variance} (Excess)` : `${item.variance} (Shortage)`)}
+                        {isMatch ? '✓ 0' : (item.variance > 0 ? `+${item.variance}` : `${item.variance}`)}
                       </span>
                     </td>
 
@@ -459,13 +459,13 @@ export default function StockAuditDashboard() {
                         onChange={(e) => updateReason(item.medicineId, e.target.value)}
                         className="px-2 py-1 border border-slate-300 rounded-lg text-xs font-medium bg-white text-slate-700"
                       >
-                        <option value="Matched">Matched (No Discrepancy)</option>
-                        <option value="Damage / Broken">Damage / Broken</option>
+                        <option value="Matched">Matched</option>
+                        <option value="Damage / Broken">Damaged</option>
                         <option value="Theft / Missing">Missing / Theft</option>
-                        <option value="Expired Disposed">Expired / Disposed</option>
-                        <option value="Supplier Less Delivered">Supplier Short Delivery (Invoice Issue)</option>
-                        <option value="Counting Error">Previous Count Error</option>
-                        <option value="Excess / Found">Found in Store (Excess)</option>
+                        <option value="Expired Disposed">Expired</option>
+                        <option value="Supplier Less Delivered">Short Delivery</option>
+                        <option value="Counting Error">Count Error</option>
+                        <option value="Excess / Found">Excess Found</option>
                       </select>
                     </td>
 

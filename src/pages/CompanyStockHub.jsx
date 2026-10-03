@@ -247,11 +247,11 @@ export default function CompanyStockHub() {
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-2xl font-black tracking-tight text-slate-900">
-                Pharmaceutical Company Stock Hub
+              <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                Company Stock Hub
               </h1>
-              <p className="text-xs text-slate-500 font-medium">
-                Company-Wise Stock & Valuation Management
+              <p className="text-xs text-slate-400 font-medium">
+                Stock & Valuation by Manufacturer
               </p>
             </div>
           </div>
@@ -261,10 +261,10 @@ export default function CompanyStockHub() {
           <button
             type="button"
             onClick={printCompanyReport}
-            className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
+            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all"
           >
             <Printer className="w-4 h-4 text-slate-500" />
-            <span>Print Report</span>
+            <span>Print</span>
           </button>
 
           <button
@@ -273,7 +273,7 @@ export default function CompanyStockHub() {
               setMedCompany(selectedCompany !== 'ALL' ? selectedCompany : 'GSK Pakistan')
               setShowAddMedModal(true)
             }}
-            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>+ Add Medicine</span>
@@ -282,67 +282,67 @@ export default function CompanyStockHub() {
       </div>
 
       {/* 2. Top KPIs Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {/* Total Companies */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Total Companies</span>
+            <span className="text-xs font-bold">Manufacturers</span>
             <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-slate-900">{overall.totalCompanies}</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Registered Manufacturers</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Active brands</div>
           </div>
         </div>
 
         {/* Total Stock Units */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Total Stock Units</span>
+            <span className="text-xs font-bold">Stock Units</span>
             <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
               <Package className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-slate-900">{overall.totalUnits.toLocaleString('en-PK')}</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">{overall.totalMedicines} distinct items</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">{overall.totalMedicines} SKUs</div>
           </div>
         </div>
 
         {/* Total Cost Value */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Cost Valuation</span>
+            <span className="text-xs font-bold">Cost Value</span>
             <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-emerald-700">{fmt(overall.totalCost)}</div>
-            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Total inventory purchase value</div>
+            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Purchase Total</div>
           </div>
         </div>
 
         {/* Potential Retail Value & Margin */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Retail Valuation</span>
+            <span className="text-xs font-bold">Retail Value</span>
             <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-teal-700">{fmt(overall.totalSale)}</div>
-            <div className="text-[11px] text-teal-600 font-medium mt-0.5">Expected margin: {overall.marginPct}%</div>
+            <div className="text-[11px] text-teal-600 font-medium mt-0.5">Margin: {overall.marginPct}%</div>
           </div>
         </div>
 
         {/* Top Company */}
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Top Manufacturer</span>
+            <span className="text-xs font-bold">Top Brand</span>
             <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
@@ -351,7 +351,7 @@ export default function CompanyStockHub() {
             <div className="text-lg font-black text-slate-900 truncate" title={overall.topCompany}>
               {overall.topCompany}
             </div>
-            <div className="text-[11px] text-amber-700 font-semibold mt-0.5">{fmt(overall.topCompanyCost)} stock</div>
+            <div className="text-[11px] text-amber-700 font-semibold mt-0.5">{fmt(overall.topCompanyCost)}</div>
           </div>
         </div>
       </div>
@@ -361,12 +361,11 @@ export default function CompanyStockHub() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <h2 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-              <span>Pharmaceutical Companies</span>
+              <span>Manufacturers</span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono font-bold">
                 {companyStats.length}
               </span>
             </h2>
-            <span className="text-xs text-slate-400">· Click any company to filter inventory details</span>
           </div>
 
           <div className="relative w-full sm:w-72">
@@ -375,7 +374,7 @@ export default function CompanyStockHub() {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search company or medicine name..."
+              placeholder="Search company or medicine..."
               className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 shadow-xs"
             />
           </div>
@@ -451,20 +450,12 @@ export default function CompanyStockHub() {
       {/* 4. Active Company Detail View & Medicines Table */}
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
         {/* Detail View Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
-                {selectedCompany === 'ALL' ? 'Complete Inventory' : 'Selected Company'}
-              </span>
-              <span className="text-xs text-slate-300">•</span>
-              <h2 className="text-lg font-bold text-slate-900">
-                {selectedCompany === 'ALL' ? 'All Pharmaceutical Products' : selectedCompany}
-              </h2>
-            </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              {displayedMedicines.length} items listed
-            </p>
+        <div className="p-3 sm:p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-bold text-slate-900">
+              {selectedCompany === 'ALL' ? 'All Products' : selectedCompany}
+            </h2>
+            <span className="text-xs text-slate-400">({displayedMedicines.length} items)</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -472,9 +463,9 @@ export default function CompanyStockHub() {
               <button
                 type="button"
                 onClick={() => setSelectedCompany('ALL')}
-                className="text-xs font-bold text-slate-500 hover:text-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-800 px-2.5 py-1 rounded-lg border border-indigo-200 bg-indigo-50/50 transition-colors"
               >
-                ← View All Companies
+                ← View All
               </button>
             )}
           </div>
@@ -485,14 +476,14 @@ export default function CompanyStockHub() {
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold">
-                <th className="py-3 px-4">Medicine & Generic</th>
-                <th className="py-3 px-3">Company</th>
-                <th className="py-3 px-3">Dosage & Pack</th>
-                <th className="py-3 px-3 text-right">Cost Price</th>
-                <th className="py-3 px-3 text-right">Retail Price</th>
-                <th className="py-3 px-3 text-right">Stock (Units)</th>
-                <th className="py-3 px-3 text-right">Total Value (PKR)</th>
-                <th className="py-3 px-4 text-center">Batch & Expiry Status</th>
+                <th className="py-2.5 px-4">Medicine</th>
+                <th className="py-2.5 px-3">Company</th>
+                <th className="py-2.5 px-3">Dosage / Pack</th>
+                <th className="py-2.5 px-3 text-right">Cost</th>
+                <th className="py-2.5 px-3 text-right">Retail</th>
+                <th className="py-2.5 px-3 text-right">Stock</th>
+                <th className="py-2.5 px-3 text-right">Total (PKR)</th>
+                <th className="py-2.5 px-4 text-center">Batch / Expiry</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
