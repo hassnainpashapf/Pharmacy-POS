@@ -307,7 +307,7 @@ export default function CompanyStockHub() {
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-slate-900">{overall.totalUnits.toLocaleString('en-PK')}</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">{overall.totalMedicines} SKUs</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">{overall.totalMedicines} items</div>
           </div>
         </div>
 
@@ -417,22 +417,17 @@ export default function CompanyStockHub() {
                 }`}
               >
                 <div>
-                  <div className="flex items-center justify-between gap-1">
-                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                      isSelected ? 'bg-[#00A09D]/15 text-[#006d69]' : 'bg-slate-100 text-slate-600'
-                    }`}>
-                      {c.medicines.length} SKUs
-                    </span>
-                    {c.nearExpiryCount > 0 && (
+                  {c.nearExpiryCount > 0 && (
+                    <div className="flex justify-end mb-1">
                       <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 ${
                         isSelected ? 'bg-amber-400 text-slate-900' : 'bg-amber-100 text-amber-800'
                       }`}>
                         <Clock className="w-2.5 h-2.5" />
                         {c.nearExpiryCount}
                       </span>
-                    )}
-                  </div>
-                  <div className="text-sm font-black mt-1.5 truncate" title={c.name}>
+                    </div>
+                  )}
+                  <div className="text-sm font-black truncate" title={c.name}>
                     {c.name}
                   </div>
                 </div>

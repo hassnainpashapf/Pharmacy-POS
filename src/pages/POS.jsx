@@ -583,7 +583,7 @@ export default function POS() {
               <div className="flex items-center justify-between text-[11px] text-slate-300 font-semibold uppercase tracking-wider">
                 <span>Net Payable Amount</span>
                 <span className="text-[10px] font-mono text-emerald-400 font-bold">
-                  {cart.length} SKUs
+                  {cart.length} Items
                 </span>
               </div>
               <div className="mt-1 flex items-baseline justify-between">

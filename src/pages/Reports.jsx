@@ -547,7 +547,7 @@ function ReportSection({ section }) {
         return {
           columns: [
             'Pharma Company',
-            'Products (SKUs)',
+            'Products',
             'Batches',
             'In-Stock Units',
             'Cost Valuation',
