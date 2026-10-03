@@ -311,71 +311,75 @@ export default function Medicines() {
 
       {/* MASTER FLAT MEDICINE CATALOGUE */}
       <div className="space-y-3">
-        {/* Search Bar & Action Controls */}
-        <div className="bg-white p-2.5 border border-slate-200 rounded-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5">
-          <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
-            {/* Direct Search Bar */}
-            <div className="relative flex-1 min-w-[240px]">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                aria-label="Search medicines"
-                placeholder="Search medicine name, generic chemical, brand or barcode..."
-                className="w-full bg-slate-50 border border-slate-300 rounded-sm pl-9 pr-8 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500"
-              />
-              {q && (
-                <button
-                  type="button"
-                  onClick={() => setQ('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+        {/* Unified Search, Company & Dosage Form Filter Card */}
+        <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-3">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
+              {/* Direct Search Bar */}
+              <div className="relative flex-1 min-w-[240px]">
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  aria-label="Search medicines"
+                  placeholder="Search medicine name, generic chemical, brand or barcode..."
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                />
+                {q && (
+                  <button
+                    type="button"
+                    onClick={() => setQ('')}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Company Filter Dropdown */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+                <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                <select
+                  value={companyFilter}
+                  onChange={(e) => setCompanyFilter(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
+                  aria-label="Filter medicines by pharmaceutical company"
                 >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
+                  <option value="all">🏢 All Companies ({distinctCompanies.length})</option>
+                  {distinctCompanies.map((c) => (
+                    <option key={c} value={c}>
+                      {c} {activeCompanyCount[c] ? `(${activeCompanyCount[c]})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            {/* Company Filter Dropdown */}
-            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-sm px-2.5 py-1.5 shrink-0">
-              <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-              <select
-                value={companyFilter}
-                onChange={(e) => setCompanyFilter(e.target.value)}
-                className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
-                aria-label="Filter medicines by pharmaceutical company"
+            <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto flex-wrap">
+              <button
+                type="button"
+                onClick={() => setCompanyAddOpen(true)}
+                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                title="Add medicines grouped by pharma manufacturer"
               >
-                <option value="all">🏢 All Companies ({distinctCompanies.length})</option>
-                {distinctCompanies.map((c) => (
-                  <option key={c} value={c}>
-                    {c} {activeCompanyCount[c] ? `(${activeCompanyCount[c]})` : ''}
-                  </option>
-                ))}
-              </select>
+                <Building2 className="w-3.5 h-3.5" /> + Add by Company
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditing({})}
+                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                title="Quickly add a single medicine product"
+              >
+                <Plus className="w-3.5 h-3.5" /> + Quick Add Product
+              </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto flex-wrap">
-            <button
-              type="button"
-              onClick={() => setCompanyAddOpen(true)}
-              className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
-              title="Add medicines grouped by pharma manufacturer"
-            >
-              <Building2 className="w-3.5 h-3.5" /> + Add by Company
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditing({})}
-              className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
-              title="Quickly add a single medicine product"
-            >
-              <Plus className="w-3.5 h-3.5" /> + Quick Add Product
-            </button>
+          {/* Dosage Form Filters */}
+          <div className="pt-2 border-t border-slate-100">
+            <MedicineGroupFilter value={group} onChange={setGroup} counts={counts} noBorder />
           </div>
         </div>
-
-
-          <MedicineGroupFilter value={group} onChange={setGroup} counts={counts} />
 
           {/* Flat Master Table */}
           <section aria-label="Medicine catalogue" className="space-y-3">
