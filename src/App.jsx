@@ -342,7 +342,7 @@ function Shell({ children }) {
             if (!accessibleItems.length) return null
             return (
               <div key={group.title} className="space-y-0.5">
-                <div className="nav-section-label px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <div className="nav-section-label px-2.5 py-1 text-[11px] font-black text-slate-900 uppercase tracking-wider select-none">
                   {group.title}
                 </div>
                 {accessibleItems.map((n) => {
