@@ -368,6 +368,9 @@ export default function PurchaseReturnsDashboard() {
             </select>
           </div>
 
+          {/* Date Filter Dropdown */}
+          <DateFilterBar filterState={dateFilter} onChange={setDateFilter} asDropdown />
+
           {/* Settlement Method Pills */}
           <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0 overflow-x-auto">
             {[
@@ -389,11 +392,6 @@ export default function PurchaseReturnsDashboard() {
               </button>
             ))}
           </div>
-        </div>
-
-        {/* Date Filter Pills */}
-        <div className="pt-2 border-t border-slate-100">
-          <DateFilterBar filterState={dateFilter} onChange={setDateFilter} noBorder />
         </div>
       </div>
 

@@ -116,6 +116,7 @@ export default function DateFilterBar({
   showAll = true,
   compact = false,
   noBorder = false,
+  asDropdown = false,
   className = '',
 }) {
   const today = getTodayStr()
@@ -172,6 +173,83 @@ export default function DateFilterBar({
       return singleDate
     }
   }, [singleDate])
+
+  if (asDropdown) {
+    return (
+      <div className={`flex flex-wrap items-center gap-1.5 ${className}`}>
+        {/* Dropdown Menu */}
+        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+          <Calendar className="w-3.5 h-3.5 text-[#714B67] shrink-0" />
+          <select
+            value={type}
+            onChange={(e) => handleTypeChange(e.target.value)}
+            className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[145px] truncate"
+            aria-label="Filter by date range"
+          >
+            {showAll && <option value="all">📅 All Dates</option>}
+            <option value="today">Today</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="week">7 Days</option>
+            <option value="month">30 Days</option>
+            <option value="single">Single Day...</option>
+            <option value="range">Date Range...</option>
+          </select>
+        </div>
+
+        {/* Sub-bar: Single Day Picker inline */}
+        {type === 'single' && (
+          <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg px-1.5 py-1 shadow-2xs text-xs">
+            <button
+              type="button"
+              onClick={() => stepSingleDate(-1)}
+              title="Previous Day"
+              className="p-0.5 hover:bg-slate-100 rounded text-slate-600 cursor-pointer"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+            </button>
+            <input
+              type="date"
+              value={singleDate || today}
+              onChange={(e) => handleSingleDateChange(e.target.value)}
+              className="px-1 text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer"
+            />
+            <button
+              type="button"
+              onClick={() => stepSingleDate(1)}
+              title="Next Day"
+              className="p-0.5 hover:bg-slate-100 rounded text-slate-600 cursor-pointer"
+            >
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+            {formattedSingleDate && (
+              <span className="text-[11px] font-semibold text-[#714B67] pl-1 border-l border-slate-200 hidden md:inline">
+                {formattedSingleDate}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Sub-bar: Date Range Picker inline */}
+        {type === 'range' && (
+          <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-lg px-2 py-1 shadow-2xs text-xs">
+            <input
+              type="date"
+              value={fromDate || shiftDateStr(today, -7)}
+              onChange={(e) => handleRangeFromChange(e.target.value)}
+              className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer"
+            />
+            <span className="text-slate-400 font-bold text-[11px]">to</span>
+            <input
+              type="date"
+              value={toDate || today}
+              onChange={(e) => handleRangeToChange(e.target.value)}
+              className="text-xs font-bold text-slate-800 bg-transparent focus:outline-none cursor-pointer"
+            />
+          </div>
+        )}
+      </div>
+    )
+  }
 
   const pills = [
     ...(showAll ? [{ id: 'all', label: 'All' }] : []),
