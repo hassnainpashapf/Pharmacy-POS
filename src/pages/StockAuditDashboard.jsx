@@ -27,6 +27,7 @@ import {
   Sparkles,
   Check,
   FileSpreadsheet,
+  DollarSign,
 } from 'lucide-react'
 
 export default function StockAuditDashboard() {

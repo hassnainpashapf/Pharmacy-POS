@@ -26,6 +26,7 @@ import {
   Filter,
   DollarSign,
   TrendingDown,
+  ShieldCheck,
 } from 'lucide-react'
 
 export default function ExpiryDashboard() {
