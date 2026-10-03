@@ -267,10 +267,47 @@ export default function StockAuditDashboard() {
               <ClipboardCheck className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-slate-900">
-                Physical Stock Audit
-              </h1>
-              <p className="text-xs text-slate-400 font-medium">
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                  Physical Stock Audit
+                </h1>
+                {/* Mode Switcher Segmented Pills */}
+                <div className="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setSubTab('worksheet')}
+                    className={`px-2.5 py-0.5 rounded-md font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                      subTab === 'worksheet'
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    <span>Worksheet</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      subTab === 'worksheet' ? 'bg-[#3b1734] text-white' : 'bg-slate-200 text-slate-600'
+                    }`}>
+                      {auditData.length}
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSubTab('history')}
+                    className={`px-2.5 py-0.5 rounded-md font-bold transition cursor-pointer flex items-center gap-1.5 ${
+                      subTab === 'history'
+                        ? 'bg-white text-slate-900 shadow-xs'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    <span>History</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      subTab === 'history' ? 'bg-[#3b1734] text-white' : 'bg-slate-200 text-slate-600'
+                    }`}>
+                      {pastAudits.length}
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400 font-medium mt-0.5">
                 Physical stock verification, count reconciliation & variance ledger
               </p>
             </div>
@@ -327,45 +364,6 @@ export default function StockAuditDashboard() {
             <span>Print</span>
           </button>
         </div>
-      </div>
-
-      {/* 2. SubTab Navigation Switcher */}
-      <div className="flex items-center gap-2 overflow-x-auto">
-        <button
-          type="button"
-          onClick={() => setSubTab('worksheet')}
-          className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-xl transition whitespace-nowrap cursor-pointer ${
-            subTab === 'worksheet'
-              ? 'bg-[#3b1734] text-white shadow-sm'
-              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-          }`}
-        >
-          <ClipboardCheck className="w-3.5 h-3.5" />
-          <span>Live Audit Worksheet</span>
-          <span className={`ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full ${
-            subTab === 'worksheet' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'
-          }`}>
-            {auditData.length}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setSubTab('history')}
-          className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-xl transition whitespace-nowrap cursor-pointer ${
-            subTab === 'history'
-              ? 'bg-[#3b1734] text-white shadow-sm'
-              : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-          }`}
-        >
-          <Calendar className="w-3.5 h-3.5" />
-          <span>Past Audit History</span>
-          <span className={`ml-1 px-1.5 py-0.2 text-[10px] font-extrabold rounded-full ${
-            subTab === 'history' ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-700'
-          }`}>
-            {pastAudits.length}
-          </span>
-        </button>
       </div>
 
       {/* 4 Clean Uniform KPI Summary Cards */}
@@ -461,14 +459,14 @@ export default function StockAuditDashboard() {
           <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
               {/* Direct Search Bar */}
-              <div className="relative flex-1 min-w-[220px]">
+              <div className="relative flex-1 min-w-[200px]">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Search medicine, generic, barcode, company..."
-                  className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
                 />
                 {q && (
                   <button
@@ -479,6 +477,20 @@ export default function StockAuditDashboard() {
                     <X className="w-3.5 h-3.5" />
                   </button>
                 )}
+              </div>
+
+              {/* View Mode Dropdown */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+                <ClipboardCheck className="w-3.5 h-3.5 text-[#3b1734] shrink-0" />
+                <select
+                  value={subTab}
+                  onChange={(e) => setSubTab(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[185px] truncate"
+                  aria-label="Switch audit view mode"
+                >
+                  <option value="worksheet">📋 Live Worksheet ({auditData.length})</option>
+                  <option value="history">📅 Audit History ({pastAudits.length})</option>
+                </select>
               </div>
 
               {/* Company Filter Dropdown */}
@@ -708,6 +720,21 @@ export default function StockAuditDashboard() {
                   </button>
                 )}
               </div>
+
+              {/* View Mode Dropdown */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+                <ClipboardCheck className="w-3.5 h-3.5 text-[#3b1734] shrink-0" />
+                <select
+                  value={subTab}
+                  onChange={(e) => setSubTab(e.target.value)}
+                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[185px] truncate"
+                  aria-label="Switch audit view mode"
+                >
+                  <option value="worksheet">📋 Live Worksheet ({auditData.length})</option>
+                  <option value="history">📅 Audit History ({pastAudits.length})</option>
+                </select>
+              </div>
+
               <DateFilterBar filterState={auditDateFilter} onChange={setAuditDateFilter} asDropdown />
             </div>
           </div>
