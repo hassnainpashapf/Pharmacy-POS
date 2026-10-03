@@ -309,454 +309,70 @@ export default function Medicines() {
         </div>
       </div>
 
-      {/* VIEW 1: COMPANY-WISE MANAGEMENT DIRECTORY */}
-      {viewMode === 'companies' && (
-        <div className="bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
-          {/* Controls Bar */}
-          <div className="p-2.5 bg-slate-50/70 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-            <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
-              {/* View Mode Switcher */}
-              <div className="flex items-center gap-1 bg-white p-0.5 rounded-sm border border-slate-300 shrink-0">
+      {/* MASTER FLAT MEDICINE CATALOGUE */}
+      <div className="space-y-3">
+        {/* Search Bar & Action Controls */}
+        <div className="bg-white p-2.5 border border-slate-200 rounded-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
+            {/* Direct Search Bar */}
+            <div className="relative flex-1 min-w-[240px]">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                aria-label="Search medicines"
+                placeholder="Search medicine name, generic chemical, brand or barcode..."
+                className="w-full bg-slate-50 border border-slate-300 rounded-sm pl-9 pr-8 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500"
+              />
+              {q && (
                 <button
                   type="button"
-                  onClick={() => setViewMode('companies')}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold transition-all ${
-                    viewMode === 'companies'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900 border border-transparent'
-                  }`}
+                  onClick={() => setQ('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
-                  <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Companies Directory</span>
+                  <X className="w-3.5 h-3.5" />
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('table')}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold transition-all ${
-                    viewMode === 'table'
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900 border border-transparent'
-                  }`}
-                >
-                  <Layers className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>All Medicines List</span>
-                </button>
-              </div>
-
-              {/* Search company or inner medicine */}
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  value={compSearch}
-                  onChange={(e) => setCompSearch(e.target.value)}
-                  placeholder="Search company, brand or medicine name (e.g. GSK, Abbott, Panadol)..."
-                  className="w-full bg-white border border-slate-300 rounded-sm pl-9 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-indigo-500"
-                />
-                {compSearch && (
-                  <button
-                    onClick={() => setCompSearch('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-
-              {compSearch && (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-sm text-xs font-bold shrink-0">
-                  <span>Filter: {compSearch}</span>
-                  <button
-                    onClick={() => setCompSearch('')}
-                    className="p-0.5 hover:bg-indigo-100 rounded text-indigo-600 cursor-pointer"
-                    title="Clear filter"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
               )}
-
-              {/* Status Filter */}
-              <select
-                value={compFilterStatus}
-                onChange={(e) => setCompFilterStatus(e.target.value)}
-                className="bg-white border border-slate-300 rounded-sm px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none cursor-pointer"
-              >
-                <option value="ALL">🏢 All Companies ({companyData.length})</option>
-                <option value="WITH_STOCK">📦 With In-Stock Units</option>
-                <option value="LOW_STOCK">⚠️ Low Stock Alerts</option>
-                <option value="ZERO_STOCK">⭕ Zero Stock Items</option>
-              </select>
-
-              {/* Sort By */}
-              <select
-                value={compSort}
-                onChange={(e) => setCompSort(e.target.value)}
-                className="bg-white border border-slate-300 rounded-sm px-2.5 py-1.5 text-xs font-bold text-slate-700 outline-none cursor-pointer"
-              >
-                <option value="NAME">Sort: Company Name (A-Z)</option>
-                <option value="PRODUCTS">Sort: Most Products</option>
-                <option value="STOCK">Sort: Highest Stock Units</option>
-                <option value="VALUE">Sort: Highest Stock Value (Rs.)</option>
-              </select>
             </div>
 
-            <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto flex-wrap">
-              <button
-                type="button"
-                onClick={expandAll}
-                className="text-[11px] font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1 rounded-sm transition-colors"
+            {/* Company Filter Dropdown */}
+            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-sm px-2.5 py-1.5 shrink-0">
+              <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <select
+                value={companyFilter}
+                onChange={(e) => setCompanyFilter(e.target.value)}
+                className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
+                aria-label="Filter medicines by pharmaceutical company"
               >
-                Expand All
-              </button>
-              <button
-                type="button"
-                onClick={collapseAll}
-                className="text-[11px] font-bold text-slate-600 bg-white hover:bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-sm transition-colors"
-              >
-                Collapse All
-              </button>
-              <button
-                type="button"
-                onClick={() => setNewCompanyModalOpen(true)}
-                className="text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-sm transition-colors flex items-center gap-1"
-              >
-                <Plus className="w-3 h-3" /> New Company
-              </button>
-              <button
-                type="button"
-                onClick={() => setCompanyAddOpen(true)}
-                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
-                title="Add medicines grouped by pharma manufacturer"
-              >
-                <Building2 className="w-3.5 h-3.5" /> + Add by Company
-              </button>
-              <button
-                type="button"
-                onClick={() => setEditing({})}
-                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
-                title="Quickly add a single medicine product"
-              >
-                <Plus className="w-3.5 h-3.5" /> + Quick Add Product
-              </button>
+                <option value="all">🏢 All Companies ({distinctCompanies.length})</option>
+                {distinctCompanies.map((c) => (
+                  <option key={c} value={c}>
+                    {c} {activeCompanyCount[c] ? `(${activeCompanyCount[c]})` : ''}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
-          {/* Company Cards List */}
-          <div className="divide-y divide-slate-200">
-            {filteredCompanyData.map((c) => {
-              const isExpanded = Boolean(expandedCompanies[c.name] || compSearch.trim())
-              const badgeColor = getCompanyBadgeColor(c.name)
-              const initials = getCompanyInitials(c.name)
-
-              return (
-                <div
-                  key={c.name}
-                  className="transition-all"
-                >
-                  {/* Company Card Header */}
-                  <div
-                    className={`px-3 py-2 flex flex-wrap items-center justify-between gap-2.5 cursor-pointer transition-colors ${
-                      isExpanded ? 'bg-slate-50/90 border-b border-slate-200' : 'bg-white hover:bg-slate-50/60'
-                    }`}
-                    onClick={() => toggleCompany(c.name)}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      {/* Initials Avatar */}
-                      <span
-                        className={`w-8 h-8 rounded-sm border font-extrabold text-[11px] flex items-center justify-center shrink-0 tracking-wider shadow-2xs ${badgeColor}`}
-                      >
-                        {initials}
-                      </span>
-
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-bold text-slate-900 tracking-tight">
-                            {c.name}
-                          </h3>
-                          {c.lowStockCount > 0 && (
-                            <span className="text-[10px] font-bold bg-rose-100 text-rose-700 px-1.5 py-0.2 rounded border border-rose-200 flex items-center gap-0.5">
-                              <AlertTriangle className="w-2.5 h-2.5" /> {c.lowStockCount} Low Stock
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Badges / Metrics */}
-                        <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-slate-500">
-                          <span className="font-semibold text-slate-700">
-                            <b>{c.productCount}</b> Products
-                          </span>
-                          <span>·</span>
-                          <span className="font-semibold text-slate-700">
-                            <b>{c.stockUnits}</b> Units on hand
-                          </span>
-                          <span>·</span>
-                          <span className="font-mono text-slate-700">
-                            Retail: <b>Rs. {Math.round(c.retailVal).toLocaleString()}</b>
-                          </span>
-                          <span>·</span>
-                          <span className="text-emerald-700 font-semibold font-mono">
-                            Cost: Rs. {Math.round(c.costVal).toLocaleString()} ({c.profitMargin}% margin)
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Action buttons inside header */}
-                    <div
-                      className="flex items-center gap-1.5"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => setEditing({ manufacturer: c.name })}
-                        className="bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 px-2.5 py-1 rounded-sm text-xs font-bold transition-colors inline-flex items-center gap-1"
-                        title={`Add a new medicine for ${c.name}`}
-                      >
-                        <Plus className="w-3.5 h-3.5" /> Add Medicine
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setCompanyAddOpen(c.name)}
-                        className="bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 px-2.5 py-1 rounded-sm text-xs font-bold transition-colors inline-flex items-center gap-1"
-                        title={`Bulk add multiple products for ${c.name}`}
-                      >
-                        <Building2 className="w-3.5 h-3.5 text-indigo-600" /> Multi-Add
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => toggleCompany(c.name)}
-                        className="p-1 rounded-sm text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
-                        title={isExpanded ? 'Collapse' : 'Expand'}
-                      >
-                        {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Company Expanded Products Table */}
-                  {isExpanded && (
-                    <div>
-                      {c.medicines.length === 0 ? (
-                        <div className="p-8 text-center bg-slate-50/50">
-                          <p className="text-xs text-slate-500 font-medium">
-                            No medicines registered yet under <b>{c.name}</b>.
-                          </p>
-                          <button
-                            type="button"
-                            onClick={() => setEditing({ manufacturer: c.name })}
-                            className="mt-2.5 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all inline-flex items-center gap-1 shadow-sm cursor-pointer"
-                          >
-                            <Plus className="w-3.5 h-3.5" /> Add First Medicine for {c.name}
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="overflow-x-auto">
-                          <table className="w-full min-w-[1100px] text-xs text-left">
-                            <thead className="bg-slate-100/75 border-b border-slate-200 text-slate-600 font-semibold">
-                              <tr>
-                                <th className="p-2.5 pl-3">Medicine & Strength</th>
-                                <th className="p-2.5">Generic Chemical / Brand</th>
-                                <th className="p-2.5">Form</th>
-                                <th className="p-2.5">Pack Size</th>
-                                <th className="p-2.5">Barcode</th>
-                                <th className="p-2.5 text-right">In Stock</th>
-                                <th className="p-2.5 text-right">Batches</th>
-                                <th className="p-2.5 text-right">Purchase Price</th>
-                                <th className="p-2.5 text-right">Retail Price</th>
-                                <th className="p-2.5 text-right">Wholesale</th>
-                                <th className="p-2.5 text-right">Margin</th>
-                                <th className="p-2.5 pr-3 text-center">Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-slate-100">
-                              {c.medicines.map((m) => {
-                                const st = stockOf(m.id)
-                                const isLow = st <= (m.minStock || 10)
-                                const batchesCount = (db.batches || []).filter((b) => b.medicineId === m.id).length
-                                const marginPct = m.salePrice > 0 ? Math.round(((m.salePrice - (m.purchasePrice || 0)) / m.salePrice) * 100) : 0
-
-                                return (
-                                  <tr key={m.id} className="hover:bg-indigo-50/30 transition-colors">
-                                    <td className="p-2.5 pl-3 font-bold text-slate-900">
-                                      {m.name}{' '}
-                                      <span className="font-normal text-slate-500">{m.strength}</span>
-                                    </td>
-                                    <td className="p-2.5">
-                                      <span className="text-slate-700">{m.generic || '—'}</span>
-                                      <p className="text-[10px] text-slate-400">Brand: {m.brand || m.name}</p>
-                                    </td>
-                                    <td className="p-2.5">
-                                      <span className="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded text-[11px] font-semibold border border-slate-200">
-                                        {dosageFormValue(m) || 'Tablet'}
-                                      </span>
-                                    </td>
-                                    <td className="p-2.5 text-slate-600">{m.packSize || '—'}</td>
-                                    <td className="p-2.5 font-mono text-[11px] text-slate-600">{m.barcode || '—'}</td>
-                                    <td className={`p-2.5 text-right font-bold tabular-nums ${isLow ? 'text-rose-600' : 'text-slate-900'}`}>
-                                      {st}
-                                      {isLow && <span className="block text-[9px] text-rose-500 font-bold whitespace-nowrap">LOW STOCK</span>}
-                                    </td>
-                                    <td className="p-2.5 text-right tabular-nums text-slate-600">{batchesCount}</td>
-                                    <td className="p-2.5 text-right font-mono text-slate-600 tabular-nums">
-                                      {m.purchasePrice == null ? '—' : fmt(m.purchasePrice)}
-                                    </td>
-                                    <td className="p-2.5 text-right font-mono font-bold text-slate-900 tabular-nums">
-                                      {fmt(m.salePrice)}
-                                    </td>
-                                    <td className="p-2.5 text-right font-mono text-emerald-700 tabular-nums">
-                                      {m.wholesalePrice == null ? '—' : fmt(m.wholesalePrice)}
-                                    </td>
-                                    <td className="p-2.5 text-right font-mono font-bold text-slate-600 tabular-nums">
-                                      {marginPct}%
-                                    </td>
-                                    <td className="p-2.5 pr-3 text-center">
-                                      <div className="flex items-center justify-center gap-1 whitespace-nowrap">
-                                        <button
-                                          type="button"
-                                          onClick={() => setBatchFor(m)}
-                                          className="inline-flex items-center gap-1 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 px-2 py-1 rounded text-[11px] font-bold transition-colors"
-                                          title={`Stock in batch for ${m.name}`}
-                                        >
-                                          <Plus className="w-3 h-3" /> Batch
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => setEditing(m)}
-                                          className="inline-flex items-center gap-1 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 px-2 py-1 rounded text-[11px] font-semibold transition-colors"
-                                          title={`Edit ${m.name}`}
-                                        >
-                                          <Edit3 className="w-3 h-3" /> Edit
-                                        </button>
-                                        <button
-                                          type="button"
-                                          onClick={() => confirm(`Permanently delete ${m.name}?`) && deleteMedicine(m.id)}
-                                          className="inline-flex items-center gap-1 text-rose-600 hover:bg-rose-50 border border-rose-100 px-2 py-1 rounded text-[11px] font-semibold transition-colors"
-                                          title={`Delete ${m.name}`}
-                                        >
-                                          <Trash2 className="w-3 h-3" />
-                                        </button>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )
-                              })}
-                            </tbody>
-                          </table>
-
-                          {/* Company Footer Summary Bar */}
-                          <div className="p-2.5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between text-[11px] text-slate-600 px-3">
-                            <span>
-                              <b>{c.name}</b>: {c.medicines.length} products listed
-                            </span>
-                            <div className="flex items-center gap-3 font-mono font-semibold">
-                              <span>Total Stock: <b>{c.stockUnits} units</b></span>
-                              <span>Total Cost: <b>Rs. {Math.round(c.costVal).toLocaleString()}</b></span>
-                              <span>Total Retail: <b>Rs. {Math.round(c.retailVal).toLocaleString()}</b></span>
-                              <span className="text-emerald-700">Gross Margin: <b>Rs. {Math.round(c.profitVal).toLocaleString()} ({c.profitMargin}%)</b></span>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-
-            {!filteredCompanyData.length && (
-              <div className="p-8 text-center text-slate-500 bg-white">
-                No pharmaceutical companies match your search and filter criteria.
-              </div>
-            )}
+          <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto flex-wrap">
+            <button
+              type="button"
+              onClick={() => setCompanyAddOpen(true)}
+              className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
+              title="Add medicines grouped by pharma manufacturer"
+            >
+              <Building2 className="w-3.5 h-3.5" /> + Add by Company
+            </button>
+            <button
+              type="button"
+              onClick={() => setEditing({})}
+              className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
+              title="Quickly add a single medicine product"
+            >
+              <Plus className="w-3.5 h-3.5" /> + Quick Add Product
+            </button>
           </div>
         </div>
-      )}
-
-      {/* VIEW 2: FLAT MASTER CATALOGUE TABLE VIEW */}
-      {viewMode === 'table' && (
-        <div className="space-y-3">
-          {/* Flat Catalogue Filters */}
-          <div className="bg-white p-2.5 border border-slate-200 rounded-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5">
-            <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
-              {/* View Mode Switcher */}
-              <div className="flex items-center gap-1 bg-white p-0.5 rounded-sm border border-slate-300 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setViewMode('companies')}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold transition-all ${
-                    viewMode === 'companies'
-                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900 border border-transparent'
-                  }`}
-                >
-                  <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-                  <span>Companies Directory</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('table')}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold transition-all ${
-                    viewMode === 'table'
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs'
-                      : 'text-slate-600 hover:text-slate-900 border border-transparent'
-                  }`}
-                >
-                  <Layers className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>All Medicines List</span>
-                </button>
-              </div>
-
-              {/* Company Filter Dropdown */}
-              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-sm px-2.5 py-1.5 shrink-0">
-                <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                <select
-                  value={companyFilter}
-                  onChange={(e) => setCompanyFilter(e.target.value)}
-                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
-                  aria-label="Filter medicines by pharmaceutical company"
-                >
-                  <option value="all">🏢 All Companies ({distinctCompanies.length})</option>
-                  {distinctCompanies.map((c) => (
-                    <option key={c} value={c}>
-                      {c} {activeCompanyCount[c] ? `(${activeCompanyCount[c]})` : ''}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="relative flex-1 min-w-[200px]">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  aria-label="Search medicines"
-                  placeholder="Name, generic, barcode, form..."
-                  className="w-full bg-slate-50 border border-slate-300 rounded-sm pl-9 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto flex-wrap">
-              <button
-                type="button"
-                onClick={() => setCompanyAddOpen(true)}
-                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
-                title="Add medicines grouped by pharma manufacturer"
-              >
-                <Building2 className="w-3.5 h-3.5" /> + Add by Company
-              </button>
-              <button
-                type="button"
-                onClick={() => setEditing({})}
-                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
-                title="Quickly add a single medicine product"
-              >
-                <Plus className="w-3.5 h-3.5" /> + Quick Add Product
-              </button>
-            </div>
-          </div>
 
           {/* Quick Company Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs custom-scroll">
@@ -912,7 +528,6 @@ export default function Medicines() {
             </section>
           </section>
         </div>
-      )}
 
       {/* Modals */}
       {editing && (
