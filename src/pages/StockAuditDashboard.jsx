@@ -237,9 +237,9 @@ export default function StockAuditDashboard() {
       {/* 2. Top Summary KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
         {/* Total Items Under Audit */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Items Audited</span>
+            <span className="text-xs font-semibold text-slate-600">Items Audited</span>
             <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
               <ClipboardCheck className="w-4 h-4" />
             </div>
@@ -251,57 +251,57 @@ export default function StockAuditDashboard() {
         </div>
 
         {/* Matched Count */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Matched Stock</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <span className="text-xs font-semibold text-slate-600">Matched Stock</span>
+            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center font-bold">
               <Check className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-emerald-700">{summary.matched}</div>
-            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Zero variance</div>
+            <div className="text-2xl font-black text-[#008f8b]">{summary.matched}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Zero variance</div>
           </div>
         </div>
 
         {/* Shortage */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Shortage</span>
+            <span className="text-xs font-semibold text-slate-600">Shortage</span>
             <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
               <TrendingDown className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-rose-600">{summary.kamItems} items</div>
-            <div className="text-[11px] text-rose-600 font-semibold mt-0.5">-{summary.kamUnits} units</div>
+            <div className="text-[11px] text-rose-500 font-medium mt-0.5">-{summary.kamUnits} units</div>
           </div>
         </div>
 
         {/* Surplus */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Excess</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+            <span className="text-xs font-semibold text-slate-600">Excess</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-blue-700">{summary.zyadaItems} items</div>
-            <div className="text-[11px] text-blue-600 font-semibold mt-0.5">+{summary.zyadaUnits} units</div>
+            <div className="text-2xl font-black text-[#714B67]">{summary.zyadaItems} items</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">+{summary.zyadaUnits} units</div>
           </div>
         </div>
 
         {/* Financial Variance Impact */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between col-span-2 sm:col-span-1">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Net Variance</span>
-            <div className="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
-              💰
+            <span className="text-xs font-semibold text-slate-600">Net Variance</span>
+            <div className="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+              <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className={`text-xl font-black ${summary.netVarianceCost < 0 ? 'text-rose-600' : 'text-emerald-700'}`}>
+            <div className={`text-xl font-black ${summary.netVarianceCost < 0 ? 'text-rose-600' : 'text-slate-900'}`}>
               {summary.netVarianceCost < 0 ? `- ${fmt(Math.abs(summary.netVarianceCost))}` : `+ ${fmt(summary.netVarianceCost)}`}
             </div>
             <div className="text-[11px] text-slate-400 mt-0.5">
@@ -423,8 +423,8 @@ export default function StockAuditDashboard() {
                             isShortage
                               ? 'border-rose-400 bg-rose-50/60 text-rose-700 focus:ring-rose-500/20'
                               : isSurplus
-                              ? 'border-blue-400 bg-blue-50/60 text-blue-700 focus:ring-blue-500/20'
-                              : 'border-slate-300 bg-white text-slate-900 focus:ring-amber-500/20'
+                              ? 'border-[#b7e5dc] bg-[#e6f7f2] text-[#008f8b] focus:ring-[#008f8b]/20'
+                              : 'border-slate-300 bg-white text-slate-900 focus:ring-[#714B67]/20 focus:border-[#714B67]'
                           }`}
                         />
                       </div>
@@ -437,8 +437,8 @@ export default function StockAuditDashboard() {
                           isShortage
                             ? 'bg-rose-100 text-rose-800'
                             : isSurplus
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-emerald-100 text-emerald-800'
+                            ? 'bg-[#e6f7f2] text-[#008f8b] border border-[#b7e5dc]'
+                            : 'bg-slate-100 text-slate-700'
                         }`}
                       >
                         {isMatch ? '✓ 0' : (item.variance > 0 ? `+${item.variance}` : `${item.variance}`)}
@@ -447,7 +447,7 @@ export default function StockAuditDashboard() {
 
                     {/* Cost Impact */}
                     <td className="py-3 px-3 text-right font-mono font-bold">
-                      <span className={isShortage ? 'text-rose-600' : isSurplus ? 'text-blue-600' : 'text-slate-400'}>
+                      <span className={isShortage ? 'text-rose-600' : isSurplus ? 'text-[#008f8b]' : 'text-slate-400'}>
                         {isMatch ? '—' : fmt(varianceValue)}
                       </span>
                     </td>

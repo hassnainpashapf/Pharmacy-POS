@@ -284,9 +284,9 @@ export default function CompanyStockHub() {
       {/* 2. Top KPIs Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
         {/* Total Companies */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Manufacturers</span>
+            <span className="text-xs font-semibold text-slate-600">Manufacturers</span>
             <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
@@ -298,10 +298,10 @@ export default function CompanyStockHub() {
         </div>
 
         {/* Total Stock Units */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Stock Units</span>
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+            <span className="text-xs font-semibold text-slate-600">Stock Units</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
               <Package className="w-4 h-4" />
             </div>
           </div>
@@ -312,38 +312,38 @@ export default function CompanyStockHub() {
         </div>
 
         {/* Total Cost Value */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Cost Value</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <span className="text-xs font-semibold text-slate-600">Purchase Value</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-emerald-700">{fmt(overall.totalCost)}</div>
-            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Purchase Total</div>
+            <div className="text-2xl font-black text-slate-900">{fmt(overall.totalCost)}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Total cost</div>
           </div>
         </div>
 
-        {/* Potential Retail Value & Margin */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        {/* Retail Value & Margin */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Retail Value</span>
-            <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center">
+            <span className="text-xs font-semibold text-slate-600">Retail Value</span>
+            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-teal-700">{fmt(overall.totalSale)}</div>
-            <div className="text-[11px] text-teal-600 font-medium mt-0.5">Margin: {overall.marginPct}%</div>
+            <div className="text-2xl font-black text-[#008f8b]">{fmt(overall.totalSale)}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Margin: {overall.marginPct}%</div>
           </div>
         </div>
 
         {/* Top Company */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between col-span-2 sm:col-span-1">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Top Brand</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+            <span className="text-xs font-semibold text-slate-600">Top Brand</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
@@ -351,7 +351,7 @@ export default function CompanyStockHub() {
             <div className="text-lg font-black text-slate-900 truncate" title={overall.topCompany}>
               {overall.topCompany}
             </div>
-            <div className="text-[11px] text-amber-700 font-semibold mt-0.5">{fmt(overall.topCompanyCost)}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">{fmt(overall.topCompanyCost)}</div>
           </div>
         </div>
       </div>

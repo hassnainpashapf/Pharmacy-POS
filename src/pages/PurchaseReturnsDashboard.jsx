@@ -241,9 +241,9 @@ export default function PurchaseReturnsDashboard() {
       {/* 2. Top Summary KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {/* Total Returns Recorded */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Total Returns</span>
+            <span className="text-xs font-semibold text-slate-600">Total Returns</span>
             <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
               <RotateCcw className="w-4 h-4" />
             </div>
@@ -255,44 +255,44 @@ export default function PurchaseReturnsDashboard() {
         </div>
 
         {/* Total Debit Note Value */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Debit Claims</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-[#008f8b] flex items-center justify-center font-bold">
-              💰
+            <span className="text-xs font-semibold text-slate-600">Debit Claims</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+              <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-[#714B67]">{fmt(stats.totalAmount)}</div>
-            <div className="text-[11px] text-[#008f8b] font-medium mt-0.5">Total claims</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Total claims</div>
           </div>
         </div>
 
         {/* Credit Note Balance */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Credit Notes</span>
+            <span className="text-xs font-semibold text-slate-600">Credit Notes</span>
             <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-[#714B67]">{fmt(stats.creditNotes)}</div>
+            <div className="text-2xl font-black text-slate-900">{fmt(stats.creditNotes)}</div>
             <div className="text-[11px] text-slate-400 mt-0.5">Payable deduction</div>
           </div>
         </div>
 
         {/* Cash Refund */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-bold">Cash Refunds</span>
-            <div className="w-8 h-8 rounded-lg bg-teal-50 text-[#008f8b] flex items-center justify-center font-bold">
-              💵
+            <span className="text-xs font-semibold text-slate-600">Cash Refunds</span>
+            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center font-bold">
+              <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-[#008f8b]">{fmt(stats.cashRefunds)}</div>
-            <div className="text-[11px] text-[#008f8b] font-medium mt-0.5">Direct cash</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Direct cash</div>
           </div>
         </div>
       </div>
