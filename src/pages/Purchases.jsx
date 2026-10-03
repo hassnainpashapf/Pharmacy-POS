@@ -265,15 +265,6 @@ export default function Purchases({ forcedTab }) {
             <Plus className="w-4 h-4" />
             <span>+ New GRN</span>
           </button>
-
-          <button
-            type="button"
-            onClick={() => setShowNewReturn(true)}
-            className="px-3.5 py-1.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold shadow-xs inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-all"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>+ New Return</span>
-          </button>
         </div>
       </div>
 
@@ -308,22 +299,6 @@ export default function Purchases({ forcedTab }) {
           <span>Bills & GRN</span>
           <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-emerald-100 text-emerald-700">
             {(db.purchases || []).length}
-          </span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setTabAndUrl('returns')}
-          className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-            tab === 'returns'
-              ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
-          }`}
-        >
-          <RotateCcw className="w-3.5 h-3.5 text-purple-600" />
-          <span>Purchase Returns</span>
-          <span className="px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-purple-100 text-purple-700">
-            {allReturns.length}
           </span>
         </button>
       </div>
