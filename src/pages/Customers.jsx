@@ -9,31 +9,22 @@ import {
   addCustomerPoints,
   fmt,
   loyaltyTier,
-  loyaltyTiers,
-  topCustomers,
 } from '../lib/db'
 import CustomerProfile from './CustomerProfile'
 import {
   Users,
-  UserCheck,
   CreditCard,
   Award,
   Sparkles,
   Search,
   Printer,
   Plus,
-  Phone,
   DollarSign,
-  AlertCircle,
   CheckCircle2,
   Edit3,
   Trash2,
-  History,
   X,
-  Trophy,
-  Filter,
   MessageCircle,
-  ArrowUpDown,
   Star,
   Receipt,
   User,
@@ -75,10 +66,6 @@ export function Customers() {
   const customers = db.customers || []
   const sales = db.sales || []
 
-  // View mode: 'list' | 'top' | 'loyalty'
-  const [view, setView] = useState('list')
-  const [period, setPeriod] = useState(null) // null = all time, 30, 90
-
   // Filter & Search states
   const [search, setSearch] = useState('')
   const [balanceFilter, setBalanceFilter] = useState('ALL') // 'ALL' | 'DUE' | 'CLEARED'
@@ -94,8 +81,9 @@ export function Customers() {
   // Sync tab with query params (?tab=loyalty)
   useEffect(() => {
     const tab = new URLSearchParams(location.search).get('tab')
-    if (tab === 'loyalty') setView('loyalty')
-    else if (tab === 'top') setView('top')
+    if (tab === 'loyalty') {
+      setSortBy('POINTS_DESC')
+    }
   }, [location.search])
 
   // Customer sales aggregation
@@ -113,11 +101,6 @@ export function Customers() {
     }
     return map
   }, [sales])
-
-  // Top Customers leaderboard calculation
-  const topList = useMemo(() => {
-    return topCustomers(15, period)
-  }, [period, sales, customers])
 
   // KPI Calculations
   const stats = useMemo(() => {
@@ -314,313 +297,10 @@ export function Customers() {
         </div>
       </div>
 
-      {/* 3. Navigation View Pills */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => setView('list')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-              view === 'list'
-                ? 'bg-[#3b1734] text-white shadow-xs'
-                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-            }`}
-          >
-            <Users className="w-3.5 h-3.5" />
-            <span>Accounts Directory</span>
-            <span
-              className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
-                view === 'list' ? 'bg-white/20 text-white' : 'bg-white text-slate-700'
-              }`}
-            >
-              {customers.length}
-            </span>
-          </button>
-
-          <button
-            onClick={() => setView('top')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-              view === 'top'
-                ? 'bg-amber-600 text-white shadow-xs'
-                : 'bg-amber-50 hover:bg-amber-100 text-amber-800'
-            }`}
-          >
-            <Trophy className="w-3.5 h-3.5" />
-            <span>🏆 Top Spenders Leaderboard</span>
-          </button>
-
-          <button
-            onClick={() => setView('loyalty')}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-              view === 'loyalty'
-                ? 'bg-purple-600 text-white shadow-xs'
-                : 'bg-purple-50 hover:bg-purple-100 text-purple-800'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>⭐ Loyalty Tiers & Credits</span>
-          </button>
-        </div>
-
-        {/* Contextual control based on view */}
-        {view === 'top' && (
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-500">Period:</span>
-            <select
-              value={period || ''}
-              onChange={(e) => setPeriod(Number(e.target.value) || null)}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-[#714B67] focus:outline-none"
-            >
-              <option value="">All Time</option>
-              <option value="30">Last 30 Days</option>
-              <option value="90">Last 90 Days</option>
-            </select>
-          </div>
-        )}
-      </div>
-
-      {/* 4. VIEW: Top Spenders Leaderboard */}
-      {view === 'top' && (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-amber-50/50 to-orange-50/30">
-            <div>
-              <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
-                <span>🏆 Top Customer Rankings</span>
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-                  {period ? `Last ${period} Days` : 'All Time'}
-                </span>
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Recognize your highest-value patrons by lifetime spend, order volume, and reward points.
-              </p>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-50/75 border-b border-slate-100 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
-                <tr>
-                  <th className="py-3 px-4 w-14 text-center">Rank</th>
-                  <th className="py-3 px-4">Customer</th>
-                  <th className="py-3 px-4">Phone</th>
-                  <th className="py-3 px-4 text-center">Invoices</th>
-                  <th className="py-3 px-4 text-center">Units Bought</th>
-                  <th className="py-3 px-4 text-right">Lifetime Spend</th>
-                  <th className="py-3 px-4 text-center">Points ⭐</th>
-                  <th className="py-3 px-4 text-center">Tier</th>
-                  <th className="py-3 px-4 text-center">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {topList.map((c, i) => {
-                  const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`
-                  const badge = getTierBadge(c.tier?.name)
-                  return (
-                    <tr
-                      key={c.customerId}
-                      className={`hover:bg-slate-50/60 transition-colors ${
-                        i === 0 ? 'bg-amber-50/40' : i === 1 ? 'bg-slate-50/30' : ''
-                      }`}
-                    >
-                      <td className="py-3.5 px-4 text-center font-black text-base">{medal}</td>
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 font-black text-xs flex items-center justify-center shrink-0">
-                            {getInitials(c.name)}
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-900">{c.name}</div>
-                            <div className="text-[10px] text-slate-400">ID: {c.customerId}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-3.5 px-4 font-mono text-slate-600">{c.phone || '—'}</td>
-                      <td className="py-3.5 px-4 text-center font-bold text-slate-800">
-                        {c.invoices}
-                      </td>
-                      <td className="py-3.5 px-4 text-center text-slate-600">{c.items}</td>
-                      <td className="py-3.5 px-4 text-right font-black text-emerald-700 text-sm">
-                        {fmt(c.spend)}
-                      </td>
-                      <td className="py-3.5 px-4 text-center font-bold text-amber-600">
-                        ⭐ {c.points || 0}
-                      </td>
-                      <td className="py-3.5 px-4 text-center">
-                        <span
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${badge.bg}`}
-                        >
-                          <span>{badge.icon}</span>
-                          <span>{c.tier?.name || 'Silver'}</span>
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-center">
-                        <button
-                          onClick={() => setProfileFor(c.customerId)}
-                          className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-[#3b1734] hover:text-white text-slate-700 text-[11px] font-bold transition cursor-pointer"
-                        >
-                          View Ledger
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                })}
-                {!topList.length && (
-                  <tr>
-                    <td colSpan={9} className="py-8 text-center text-slate-400">
-                      No customer transactions found for this period.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* 5. VIEW: Loyalty Tiers & Credits */}
-      {view === 'loyalty' && (
-        <div className="space-y-5">
-          {/* Loyalty overview cards */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <h2 className="text-base font-black text-slate-900 flex items-center gap-2">
-                  <span>⭐ Loyalty Program & Reward Tiers</span>
-                </h2>
-                <p className="text-xs text-slate-600 mt-0.5">
-                  Customers earn 1 point per Rs. 100 spent. Points can be redeemed at checkout for discounts.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-xs font-bold text-purple-700 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Current Redeem Rate: Rs. 1 per point</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 mt-4">
-              {loyaltyTiers().map((tier) => {
-                const count = customers.filter(
-                  (c) => loyaltyTier(c.points || 0).name === tier.name
-                ).length
-                const totalTierPts = customers
-                  .filter((c) => loyaltyTier(c.points || 0).name === tier.name)
-                  .reduce((acc, c) => acc + (c.points || 0), 0)
-                const badge = getTierBadge(tier.name)
-
-                return (
-                  <div
-                    key={tier.name}
-                    className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:border-[#714B67] transition-all"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{badge.icon}</span>
-                        <div>
-                          <span className="text-sm font-bold text-slate-900">{tier.name} Tier</span>
-                          <div className="text-[10px] text-slate-500">Min {tier.min} points</div>
-                        </div>
-                      </div>
-                      <span className={`text-[10px] font-black px-2 py-0.5 rounded-full border ${badge.bg}`}>
-                        {tier.name}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 pt-3 border-t border-slate-200 flex justify-between items-end">
-                      <div>
-                        <div className="text-2xl font-black text-slate-900">{count}</div>
-                        <div className="text-[11px] font-semibold text-slate-500">Customers</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-black text-amber-600">
-                          ⭐ {totalTierPts.toLocaleString()}
-                        </div>
-                        <div className="text-[10px] text-slate-400">Total tier points</div>
-                      </div>
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Loyalty Customers Table */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900">Member Points Ledger</h3>
-              <span className="text-xs text-slate-500 font-medium">{customers.length} total members</span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead className="bg-slate-50 border-b border-slate-100 text-slate-600 font-bold uppercase tracking-wider text-[11px]">
-                  <tr>
-                    <th className="py-3 px-4">Customer</th>
-                    <th className="py-3 px-4">Phone</th>
-                    <th className="py-3 px-4 text-center">Reward Tier</th>
-                    <th className="py-3 px-4 text-center">Available Points</th>
-                    <th className="py-3 px-4 text-right">Credit Balance</th>
-                    <th className="py-3 px-4 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {customers.map((c) => {
-                    const badge = getTierBadge(loyaltyTier(c.points || 0).name)
-                    return (
-                      <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="py-3 px-4 font-bold text-slate-900">
-                          {c.name}
-                          {c.id === 'walkin' && (
-                            <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
-                              System Default
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 font-mono text-slate-600">{c.phone || '—'}</td>
-                        <td className="py-3 px-4 text-center">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${badge.bg}`}
-                          >
-                            <span>{badge.icon}</span>
-                            <span>{loyaltyTier(c.points || 0).name}</span>
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-center font-black text-amber-600">
-                          ⭐ {c.points || 0}
-                        </td>
-                        <td className="py-3 px-4 text-right font-mono font-bold text-slate-700">
-                          {fmt(c.balance || 0)}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <div className="flex items-center justify-center gap-1.5">
-                            <button
-                              onClick={() => setPointsCustomer(c)}
-                              className="px-2 py-1 rounded bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition cursor-pointer"
-                              title="Award or Deduct Points"
-                            >
-                              ⭐ ± Points
-                            </button>
-                            <button
-                              onClick={() => setProfileFor(c.id)}
-                              className="px-2.5 py-1 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold transition cursor-pointer"
-                            >
-                              Profile
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 6. VIEW: Main Accounts Directory (list) */}
-      {view === 'list' && (
-        <div className="space-y-3.5">
-          {/* Search & Filter Toolbar */}
-          <div className="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm flex flex-wrap items-center gap-2.5">
+      {/* 3. Search & Filter Toolbar and Directory */}
+      <div className="space-y-3.5">
+        {/* Search & Filter Toolbar */}
+        <div className="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm flex flex-wrap items-center gap-2.5">
             {/* Search Input */}
             <div className="relative flex-1 min-w-[240px]">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -926,11 +606,10 @@ export function Customers() {
                 </span>
               </div>
             </div>
-          </div>
         </div>
-      )}
+      </div>
 
-      {/* 7. MODAL: Add / Edit Customer */}
+      {/* 4. MODAL: Add / Edit Customer */}
       {modalCustomer && (
         <CustomerFormModal
           initialData={modalCustomer}
