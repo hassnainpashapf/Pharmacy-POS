@@ -374,41 +374,6 @@ export default function Medicines() {
           </div>
         </div>
 
-          {/* Quick Company Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs custom-scroll">
-            <span className="text-[11px] font-bold text-slate-500 shrink-0 flex items-center gap-1">
-              <Building2 className="w-3 h-3 text-slate-400" /> Top Companies:
-            </span>
-            <button
-              type="button"
-              onClick={() => setCompanyFilter('all')}
-              className={`px-2.5 py-1 rounded-sm text-[11px] font-bold transition-colors shrink-0 ${
-                companyFilter === 'all'
-                  ? 'bg-[#e9f5f2] text-[#006d69] border border-[#a2ded5] shadow-xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-transparent'
-              }`}
-            >
-              All ({source.length})
-            </button>
-            {distinctCompanies.slice(0, 10).map((comp) => {
-              const count = activeCompanyCount[comp] || 0
-              const isSelected = companyFilter === comp
-              return (
-                <button
-                  key={comp}
-                  type="button"
-                  onClick={() => setCompanyFilter(isSelected ? 'all' : comp)}
-                  className={`px-2.5 py-1 rounded-sm text-[11px] font-semibold transition-colors shrink-0 ${
-                    isSelected
-                      ? 'bg-[#e9f5f2] text-[#006d69] border border-[#a2ded5] font-bold shadow-xs'
-                      : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-                  }`}
-                >
-                  {comp} {count > 0 && <span className={`text-[10px] font-mono ml-0.5 ${isSelected ? 'text-[#006d69]/80 font-bold' : 'opacity-75'}`}>({count})</span>}
-                </button>
-              )
-            })}
-          </div>
 
           <MedicineGroupFilter value={group} onChange={setGroup} counts={counts} />
 
