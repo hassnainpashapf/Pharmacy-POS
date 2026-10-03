@@ -185,41 +185,64 @@ export default function Inventory({ forcedTab }) {
   }, [allBatches, medicines, distinctCompanies])
 
   return (
-    <div className="space-y-4 w-full pb-8">
-      {/* Top Header Card */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+    <div className="space-y-6 w-full pb-16 font-sans text-slate-800">
+      {/* 1. Header Banner (Merged into page layout like Company Stock Hub) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h2 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-            <span>
-              {tab === 'COMPANIES'
-                ? '🏢 Company Stock Hub & Breakdown'
-                : tab === 'audit'
-                ? '⚖️ Physical Stock Audit (Count & Variance)'
-                : tab === 'NEAR_EXPIRY'
-                ? '⏳ Batch & Expiry Management'
-                : '📦 Stock Master Management'}
-            </span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">
-            {tab === 'COMPANIES'
-              ? 'Total stock and valuation breakdown categorized by pharmaceutical company'
-              : tab === 'audit'
-              ? 'Physical stock verification and discrepancy reconciliation'
-              : tab === 'NEAR_EXPIRY'
-              ? 'Near-expiry batches (<90 days) and expired item action log'
-              : 'Live real-time inventory and batch tracking'}
-          </p>
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
+              {tab === 'COMPANIES' ? (
+                <Building2 className="w-5 h-5" />
+              ) : tab === 'audit' ? (
+                <ClipboardCheck className="w-5 h-5" />
+              ) : tab === 'NEAR_EXPIRY' ? (
+                <Clock className="w-5 h-5" />
+              ) : (
+                <Package className="w-5 h-5" />
+              )}
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                {tab === 'COMPANIES'
+                  ? 'Company Stock Hub & Breakdown'
+                  : tab === 'audit'
+                  ? 'Physical Stock Audit (Count & Variance)'
+                  : tab === 'NEAR_EXPIRY'
+                  ? 'Batch & Expiry Management'
+                  : 'Stock Master Management'}
+              </h1>
+              <p className="text-xs text-slate-400 font-medium">
+                {tab === 'COMPANIES'
+                  ? 'Total stock and valuation breakdown categorized by pharmaceutical company'
+                  : tab === 'audit'
+                  ? 'Physical stock verification and discrepancy reconciliation'
+                  : tab === 'NEAR_EXPIRY'
+                  ? 'Near-expiry batches (<90 days) and expired item action log'
+                  : 'Live real-time inventory and batch tracking'}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+          >
+            <Printer className="w-4 h-4 text-slate-500" />
+            <span>Print</span>
+          </button>
+
           {/* Stock In by Company Button */}
           <button
             type="button"
             onClick={() => setCompanyStockInOpen(true)}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
             title="Stock in batches grouped by pharma manufacturer delivery invoice"
           >
-            <Building2 className="w-4 h-4" /> Stock In by Company
+            <Building2 className="w-4 h-4" />
+            <span>Stock In by Company</span>
           </button>
         </div>
       </div>
