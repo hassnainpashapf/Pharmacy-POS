@@ -28,6 +28,9 @@ import {
   FileSpreadsheet,
   Check,
   X,
+  Pill,
+  Printer,
+  DollarSign,
 } from 'lucide-react'
 import MedicineGroupFilter from '../components/MedicineGroupFilter'
 import {
@@ -258,124 +261,177 @@ export default function Medicines() {
   const { matches: list, counts } = filterMedicineRecords(source, { query: q, group, company: companyFilter })
 
   return (
-    <div className="space-y-3 w-full pb-8">
-      {/* KPI Stats Overview Banner */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
-        <div className="bg-white p-2.5 rounded-sm border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[11px] font-bold">Pharma Companies</span>
-            <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+    <div className="space-y-6 w-full pb-16 font-sans text-slate-800">
+      {/* 1. Header Banner (Merged into page layout like Company Stock Hub) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
+              <Pill className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                Medicines Catalogue
+              </h1>
+              <p className="text-xs text-slate-400 font-medium">
+                Master pharmaceutical database, pricing, and product directory
+              </p>
+            </div>
           </div>
-          <div className="text-base font-extrabold text-slate-900">{overallStats.totalCompanies}</div>
-          <p className="text-[10px] text-slate-400 mt-0.5">Active manufacturers</p>
         </div>
 
-        <div className="bg-white p-2.5 rounded-sm border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[11px] font-bold">Total Products</span>
-            <Package className="w-3.5 h-3.5 text-emerald-600" />
+        {/* Global Action Buttons */}
+        <div className="flex items-center gap-2 flex-wrap shrink-0">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold shadow-xs flex items-center gap-1.5 transition-all cursor-pointer"
+          >
+            <Printer className="w-4 h-4 text-slate-500" />
+            <span>Print</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setCompanyAddOpen(true)}
+            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            title="Add medicines grouped by pharma manufacturer"
+          >
+            <Building2 className="w-4 h-4" />
+            <span>+ Add by Company</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setEditing({})}
+            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            title="Quickly add a single medicine product"
+          >
+            <Plus className="w-4 h-4" />
+            <span>+ Quick Add Product</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Top KPIs Cards (Clean & Simple matching Company Stock Hub) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        {/* Total Companies */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Manufacturers</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <Building2 className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-base font-extrabold text-slate-900">{overallStats.totalMedicines}</div>
-          <p className="text-[10px] text-slate-400 mt-0.5">Master items registered</p>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-slate-900">{overallStats.totalCompanies}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Active brands</div>
+          </div>
         </div>
 
-        <div className="bg-white p-2.5 rounded-sm border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[11px] font-bold">Inventory Stock</span>
-            <Layers className="w-3.5 h-3.5 text-blue-600" />
+        {/* Total Products */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Total Products</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <Package className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-base font-extrabold text-slate-900">{overallStats.totalStockUnits.toLocaleString()} <span className="text-[11px] font-normal text-slate-500">units</span></div>
-          <p className="text-[10px] text-slate-400 mt-0.5">On-hand across all batches</p>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-slate-900">{overallStats.totalMedicines}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Catalog medicines</div>
+          </div>
         </div>
 
-        <div className="bg-white p-2.5 rounded-sm border border-slate-200 shadow-xs">
-          <div className="flex items-center justify-between text-slate-500 mb-1">
-            <span className="text-[11px] font-bold">Stock Worth (Retail)</span>
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+        {/* Total Stock Units */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Stock Units</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <Layers className="w-4 h-4" />
+            </div>
           </div>
-          <div className="text-base font-extrabold text-slate-900 font-mono">Rs. {Math.round(overallStats.totalRetailVal).toLocaleString()}</div>
-          <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">Margin: Rs. {Math.round(overallStats.estimatedProfit).toLocaleString()}</p>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-slate-900">{overallStats.totalStockUnits.toLocaleString()}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">On-hand across batches</div>
+          </div>
         </div>
 
-        <div className={`p-2.5 rounded-sm border shadow-xs ${overallStats.lowStockCount > 0 ? 'bg-rose-50/60 border-rose-200 text-rose-900' : 'bg-white border-slate-200'}`}>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[11px] font-bold">Low Stock Alert</span>
-            <AlertTriangle className={`w-3.5 h-3.5 ${overallStats.lowStockCount > 0 ? 'text-rose-600' : 'text-slate-400'}`} />
+        {/* Retail Worth */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Retail Worth</span>
+            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+              <Sparkles className="w-4 h-4" />
+            </div>
           </div>
-          <div className={`text-base font-extrabold ${overallStats.lowStockCount > 0 ? 'text-rose-700' : 'text-slate-900'}`}>
-            {overallStats.lowStockCount} <span className="text-[11px] font-normal text-slate-500">items</span>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-[#008f8b]">{fmt(overallStats.totalRetailVal)}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Profit: {fmt(overallStats.estimatedProfit)}</div>
           </div>
-          <p className="text-[10px] mt-0.5 opacity-80">Reorder threshold reached</p>
+        </div>
+
+        {/* Low Stock Alert */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Low Stock</span>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${overallStats.lowStockCount > 0 ? 'bg-rose-50 text-rose-600' : 'bg-[#f5eef4] text-[#714B67]'}`}>
+              <AlertTriangle className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className={`text-2xl font-black ${overallStats.lowStockCount > 0 ? 'text-rose-700' : 'text-slate-900'}`}>{overallStats.lowStockCount}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Reorder needed</div>
+          </div>
         </div>
       </div>
 
       {/* MASTER FLAT MEDICINE CATALOGUE */}
       <div className="space-y-3">
         {/* Unified Search, Company & Dosage Form Filter Card */}
-        <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-3">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5">
-            <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
-              {/* Direct Search Bar */}
-              <div className="relative flex-1 min-w-[240px]">
-                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  aria-label="Search medicines"
-                  placeholder="Search medicine name, generic chemical, brand or barcode..."
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500 focus:outline-none"
-                />
-                {q && (
-                  <button
-                    type="button"
-                    onClick={() => setQ('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-
-              {/* Company Filter Dropdown */}
-              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
-                <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                <select
-                  value={companyFilter}
-                  onChange={(e) => setCompanyFilter(e.target.value)}
-                  className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
-                  aria-label="Filter medicines by pharmaceutical company"
+        <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+            {/* Direct Search Bar */}
+            <div className="relative flex-1 min-w-[240px]">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                aria-label="Search medicines"
+                placeholder="Search medicine name, generic chemical, brand or barcode..."
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              />
+              {q && (
+                <button
+                  type="button"
+                  onClick={() => setQ('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                 >
-                  <option value="all">🏢 All Companies ({distinctCompanies.length})</option>
-                  {distinctCompanies.map((c) => (
-                    <option key={c} value={c}>
-                      {c} {activeCompanyCount[c] ? `(${activeCompanyCount[c]})` : ''}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Dosage Form Filter Dropdown */}
-              <MedicineGroupFilter value={group} onChange={setGroup} counts={counts} asDropdown />
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
-            <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto flex-wrap">
-              <button
-                type="button"
-                onClick={() => setCompanyAddOpen(true)}
-                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
-                title="Add medicines grouped by pharma manufacturer"
+            {/* Company Filter Dropdown */}
+            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+              <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <select
+                value={companyFilter}
+                onChange={(e) => setCompanyFilter(e.target.value)}
+                className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
+                aria-label="Filter medicines by pharmaceutical company"
               >
-                <Building2 className="w-3.5 h-3.5" /> + Add by Company
-              </button>
-              <button
-                type="button"
-                onClick={() => setEditing({})}
-                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
-                title="Quickly add a single medicine product"
-              >
-                <Plus className="w-3.5 h-3.5" /> + Quick Add Product
-              </button>
+                <option value="all">🏢 All Companies ({distinctCompanies.length})</option>
+                {distinctCompanies.map((c) => (
+                  <option key={c} value={c}>
+                    {c} {activeCompanyCount[c] ? `(${activeCompanyCount[c]})` : ''}
+                  </option>
+                ))}
+              </select>
             </div>
+
+            {/* Dosage Form Filter Dropdown */}
+            <MedicineGroupFilter value={group} onChange={setGroup} counts={counts} asDropdown />
           </div>
         </div>
 
