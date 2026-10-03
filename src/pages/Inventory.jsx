@@ -126,9 +126,9 @@ export default function Inventory({ forcedTab }) {
   return (
     <div className="space-y-4 w-full pb-8">
       {/* Standalone Dashboards Quick Launch Bar */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-3.5 sm:p-4 text-white shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 border border-slate-700">
+      <div className="bg-slate-900 rounded-2xl p-3.5 sm:p-4 text-white shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 border border-slate-800">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#714B67]/30 border border-[#714B67]/50 flex items-center justify-center text-white shrink-0">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
@@ -142,38 +142,34 @@ export default function Inventory({ forcedTab }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <a
-            href="/company-stock"
-            className="px-3 py-1.5 rounded-xl bg-[#714B67] hover:bg-[#5a3b52] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+          <Link
+            to="/company-stock"
+            className="px-3.5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5a3b52] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#8a5d7e]/40 hover:shadow-md cursor-pointer"
           >
-            <Building2 className="w-3.5 h-3.5" />
+            <Building2 className="w-4 h-4" />
             <span>Company Stock</span>
-            <span className="text-[10px] opacity-80 font-normal">Hub</span>
-          </a>
-          <a
-            href="/stock-audit"
-            className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+          </Link>
+          <Link
+            to="/stock-audit"
+            className="px-3.5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5a3b52] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#8a5d7e]/40 hover:shadow-md cursor-pointer"
           >
-            <ClipboardCheck className="w-3.5 h-3.5" />
+            <ClipboardCheck className="w-4 h-4" />
             <span>Stock Audit</span>
-            <span className="text-[10px] opacity-80 font-normal">Audit</span>
-          </a>
-          <a
-            href="/expiry-management"
-            className="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+          </Link>
+          <Link
+            to="/expiry-management"
+            className="px-3.5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5a3b52] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#8a5d7e]/40 hover:shadow-md cursor-pointer"
           >
-            <Clock className="w-3.5 h-3.5" />
+            <Clock className="w-4 h-4" />
             <span>Expiry Action</span>
-            <span className="text-[10px] opacity-80 font-normal">FEFO</span>
-          </a>
-          <a
-            href="/purchase-returns"
-            className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+          </Link>
+          <Link
+            to="/purchase-returns"
+            className="px-3.5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5a3b52] active:scale-95 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition-all border border-[#8a5d7e]/40 hover:shadow-md cursor-pointer"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-4 h-4" />
             <span>Purchase Returns</span>
-            <span className="text-[10px] opacity-80 font-normal">Debit</span>
-          </a>
+          </Link>
         </div>
       </div>
 
