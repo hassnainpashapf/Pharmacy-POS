@@ -258,72 +258,7 @@ export default function Medicines() {
   const { matches: list, counts } = filterMedicineRecords(source, { query: q, group, company: companyFilter })
 
   return (
-    <div className="space-y-4 w-full pb-8">
-      {/* Top Bar with View Mode Switcher and Actions */}
-      <div className="pb-3 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-indigo-600" />
-              <span>{controlledMode ? 'Controlled Substances' : 'Company-Wise Medicine Management'}</span>
-            </h2>
-            <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-sm border border-indigo-200">
-              {distinctCompanies.length} Companies · {db.medicines.length} Products
-            </span>
-          </div>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Organize, filter, add, and monitor medicines by pharmaceutical manufacturer
-          </p>
-        </div>
-
-        {/* View Mode Switcher */}
-        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-          <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-sm border border-slate-300">
-            <button
-              type="button"
-              onClick={() => setViewMode('companies')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-bold transition-all ${
-                viewMode === 'companies'
-                  ? 'bg-white text-indigo-700 shadow-sm border border-slate-200'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Building2 className="w-3.5 h-3.5 text-indigo-600" />
-              <span>🏢 Companies Directory</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-sm text-xs font-bold transition-all ${
-                viewMode === 'table'
-                  ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Layers className="w-3.5 h-3.5 text-emerald-600" />
-              <span>📋 All Medicines List</span>
-            </button>
-          </div>
-
-          {/* Add Actions */}
-          <button
-            onClick={() => setCompanyAddOpen(true)}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
-            title="Add medicines grouped by pharma manufacturer"
-          >
-            <Building2 className="w-3.5 h-3.5" /> + Add by Company
-          </button>
-
-          <button
-            onClick={() => setEditing({})}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
-            title="Quickly add a single medicine product"
-          >
-            <Plus className="w-3.5 h-3.5" /> + Quick Add Product
-          </button>
-        </div>
-      </div>
-
+    <div className="space-y-3 w-full pb-8">
       {/* KPI Stats Overview Banner */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
         <div className="bg-white p-2.5 rounded-sm border border-slate-200 shadow-xs">
@@ -380,6 +315,34 @@ export default function Medicines() {
           {/* Controls Bar */}
           <div className="p-2.5 bg-slate-50/70 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
             <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
+              {/* View Mode Switcher */}
+              <div className="flex items-center gap-1 bg-white p-0.5 rounded-sm border border-slate-300 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('companies')}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold transition-all ${
+                    viewMode === 'companies'
+                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 border border-transparent'
+                  }`}
+                >
+                  <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Companies Directory</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('table')}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold transition-all ${
+                    viewMode === 'table'
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 border border-transparent'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>All Medicines List</span>
+                </button>
+              </div>
+
               {/* Search company or inner medicine */}
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -437,7 +400,7 @@ export default function Medicines() {
               </select>
             </div>
 
-            <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto">
+            <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto flex-wrap">
               <button
                 type="button"
                 onClick={expandAll}
@@ -458,6 +421,22 @@ export default function Medicines() {
                 className="text-[11px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-sm transition-colors flex items-center gap-1"
               >
                 <Plus className="w-3 h-3" /> New Company
+              </button>
+              <button
+                type="button"
+                onClick={() => setCompanyAddOpen(true)}
+                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                title="Add medicines grouped by pharma manufacturer"
+              >
+                <Building2 className="w-3.5 h-3.5" /> + Add by Company
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditing({})}
+                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                title="Quickly add a single medicine product"
+              >
+                <Plus className="w-3.5 h-3.5" /> + Quick Add Product
               </button>
             </div>
           </div>
@@ -701,6 +680,34 @@ export default function Medicines() {
           {/* Flat Catalogue Filters */}
           <div className="bg-white p-2.5 border border-slate-200 rounded-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5">
             <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
+              {/* View Mode Switcher */}
+              <div className="flex items-center gap-1 bg-white p-0.5 rounded-sm border border-slate-300 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('companies')}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold transition-all ${
+                    viewMode === 'companies'
+                      ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 border border-transparent'
+                  }`}
+                >
+                  <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Companies Directory</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('table')}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-sm text-xs font-bold transition-all ${
+                    viewMode === 'table'
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs'
+                      : 'text-slate-600 hover:text-slate-900 border border-transparent'
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>All Medicines List</span>
+                </button>
+              </div>
+
               {/* Company Filter Dropdown */}
               <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-sm px-2.5 py-1.5 shrink-0">
                 <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
@@ -729,6 +736,25 @@ export default function Medicines() {
                   className="w-full bg-slate-50 border border-slate-300 rounded-sm pl-9 pr-3 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
+            </div>
+
+            <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto flex-wrap">
+              <button
+                type="button"
+                onClick={() => setCompanyAddOpen(true)}
+                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                title="Add medicines grouped by pharma manufacturer"
+              >
+                <Building2 className="w-3.5 h-3.5" /> + Add by Company
+              </button>
+              <button
+                type="button"
+                onClick={() => setEditing({})}
+                className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                title="Quickly add a single medicine product"
+              >
+                <Plus className="w-3.5 h-3.5" /> + Quick Add Product
+              </button>
             </div>
           </div>
 
