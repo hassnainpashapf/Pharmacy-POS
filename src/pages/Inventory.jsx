@@ -34,6 +34,8 @@ import {
   ArrowRight,
   Clock,
   X,
+  DollarSign,
+  Sparkles,
 } from 'lucide-react'
 import MedicineGroupFilter from '../components/MedicineGroupFilter'
 import {
@@ -129,6 +131,50 @@ export default function Inventory({ forcedTab }) {
   })
   const clearFilters = () => { setSearch(''); setGroup('all'); setCompanyFilter('all') }
 
+  const medicines = db.medicines || []
+
+  // Overall stock inventory KPIs (same as Company Stock Hub)
+  const overall = useMemo(() => {
+    let totalUnits = 0
+    let totalCost = 0
+    let totalSale = 0
+    const companyCostMap = {}
+
+    for (const b of allBatches) {
+      const qty = Number(b.qty) || 0
+      if (qty <= 0) continue
+      const m = medicineById(b.medicineId)
+      const cost = Number(b.purchasePrice) || Number(m?.purchasePrice) || 0
+      const sale = Number(b.salePrice) || Number(m?.salePrice) || 0
+      totalUnits += qty
+      totalCost += qty * cost
+      totalSale += qty * sale
+
+      const comp = (m?.manufacturer || m?.company || 'Unassigned').trim()
+      companyCostMap[comp] = (companyCostMap[comp] || 0) + (qty * cost)
+    }
+
+    let topCompany = 'N/A'
+    let topCompanyCost = 0
+    for (const [comp, cost] of Object.entries(companyCostMap)) {
+      if (cost > topCompanyCost) {
+        topCompany = comp
+        topCompanyCost = cost
+      }
+    }
+
+    return {
+      totalCompanies: distinctCompanies.length,
+      totalMedicines: medicines.length,
+      totalUnits,
+      totalCost,
+      totalSale,
+      marginPct: totalCost > 0 ? (((totalSale - totalCost) / totalSale) * 100).toFixed(1) : '0.0',
+      topCompany,
+      topCompanyCost,
+    }
+  }, [allBatches, medicines, distinctCompanies])
+
   return (
     <div className="space-y-4 w-full pb-8">
       {/* Top Header Card */}
@@ -166,6 +212,81 @@ export default function Inventory({ forcedTab }) {
           >
             <Building2 className="w-4 h-4" /> Stock In by Company
           </button>
+        </div>
+      </div>
+
+      {/* 2. Top KPIs Cards (Same as Company Stock Hub) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+        {/* Total Companies */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Manufacturers</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <Building2 className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-slate-900">{overall.totalCompanies}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Active brands</div>
+          </div>
+        </div>
+
+        {/* Total Stock Units */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Stock Units</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <Package className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-slate-900">{overall.totalUnits.toLocaleString('en-PK')}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">{overall.totalMedicines} items</div>
+          </div>
+        </div>
+
+        {/* Total Cost Value */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Purchase Value</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <DollarSign className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-slate-900">{fmt(overall.totalCost)}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Total cost</div>
+          </div>
+        </div>
+
+        {/* Retail Value & Margin */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Retail Value</span>
+            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl font-black text-[#008f8b]">{fmt(overall.totalSale)}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">Margin: {overall.marginPct}%</div>
+          </div>
+        </div>
+
+        {/* Top Company */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs font-semibold text-slate-600">Top Brand</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <Sparkles className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-lg font-black text-slate-900 truncate" title={overall.topCompany}>
+              {overall.topCompany}
+            </div>
+            <div className="text-[11px] text-slate-400 mt-0.5">{fmt(overall.topCompanyCost)}</div>
+          </div>
         </div>
       </div>
 
