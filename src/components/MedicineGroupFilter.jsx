@@ -1,6 +1,39 @@
+import { Layers } from 'lucide-react'
 import { MEDICINE_GROUPS } from '../lib/medicineGroups'
 
-export default function MedicineGroupFilter({ value, onChange, counts, unit = 'products', context = 'current search', noBorder = false }) {
+export default function MedicineGroupFilter({
+  value,
+  onChange,
+  counts = {},
+  unit = 'products',
+  context = 'current search',
+  noBorder = false,
+  asDropdown = false,
+  className = '',
+}) {
+  if (asDropdown) {
+    return (
+      <div className={`flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0 ${className}`}>
+        <Layers className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
+          aria-label="Filter by dosage form"
+        >
+          {MEDICINE_GROUPS.map(({ id, label }) => {
+            const count = counts[id] ?? 0
+            return (
+              <option key={id} value={id}>
+                {id === 'all' ? `💊 All Forms (${count})` : `${label} (${count})`}
+              </option>
+            )
+          })}
+        </select>
+      </div>
+    )
+  }
+
   return (
     <section className={noBorder ? '' : 'border-b border-slate-200 pb-3'} aria-label="Dosage form filters">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">

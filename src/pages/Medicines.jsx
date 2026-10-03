@@ -353,6 +353,9 @@ export default function Medicines() {
                   ))}
                 </select>
               </div>
+
+              {/* Dosage Form Filter Dropdown */}
+              <MedicineGroupFilter value={group} onChange={setGroup} counts={counts} asDropdown />
             </div>
 
             <div className="flex items-center gap-1.5 shrink-0 self-end md:self-auto flex-wrap">
@@ -373,11 +376,6 @@ export default function Medicines() {
                 <Plus className="w-3.5 h-3.5" /> + Quick Add Product
               </button>
             </div>
-          </div>
-
-          {/* Dosage Form Filters */}
-          <div className="pt-2 border-t border-slate-100">
-            <MedicineGroupFilter value={group} onChange={setGroup} counts={counts} noBorder />
           </div>
         </div>
 

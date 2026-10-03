@@ -332,6 +332,18 @@ export default function Inventory({ forcedTab }) {
             </select>
           </div>
 
+          {/* Dosage Form Filter Dropdown */}
+          {tab !== 'audit' && tab !== 'COMPANIES' && (
+            <MedicineGroupFilter
+              value={group}
+              onChange={setGroup}
+              counts={tab === 'adjustments' ? adjustmentCounts : batchCounts}
+              unit={tab === 'adjustments' ? 'adjustments' : 'batches'}
+              context={tab === 'adjustments' ? 'current search' : 'current search and stock status'}
+              asDropdown
+            />
+          )}
+
           {/* Status Filter Pills */}
           <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0 overflow-x-auto">
             {[
@@ -356,19 +368,6 @@ export default function Inventory({ forcedTab }) {
             ))}
           </div>
         </div>
-
-        {tab !== 'audit' && tab !== 'COMPANIES' && (
-          <div className="pt-2 border-t border-slate-100">
-            <MedicineGroupFilter
-              value={group}
-              onChange={setGroup}
-              counts={tab === 'adjustments' ? adjustmentCounts : batchCounts}
-              unit={tab === 'adjustments' ? 'adjustments' : 'batches'}
-              context={tab === 'adjustments' ? 'current search' : 'current search and stock status'}
-              noBorder
-            />
-          </div>
-        )}
       </div>
       {tab !== 'audit' && tab !== 'COMPANIES' && (
         <div className="flex items-center justify-between gap-3 px-1">
