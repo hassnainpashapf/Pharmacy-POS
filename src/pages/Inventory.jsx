@@ -1374,16 +1374,6 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
 
         {/* Global Action Buttons */}
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-          {/* ⚡ Generate Purchase Order Button */}
-          <button
-            type="button"
-            onClick={handleOpenPOModalForKam}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
-            title="Automatically create a Purchase Order for all deficit medicines"
-          >
-            <ShoppingBag className="w-4 h-4" />
-            <span>⚡ Generate PO ({kamItems.length} Kam)</span>
-          </button>
 
           {/* Save Audit Button */}
           <button
