@@ -453,7 +453,7 @@ function ReportSection({ section }) {
               'Medicine Name',
               'System Recorded Stock',
               'Physical Count',
-              'Audit Variance (Kam/Zyada)',
+              'Audit Variance (Shortage / Surplus)',
               'Unit Cost Price',
               'Discrepancy Valuation',
               'Remarks / Notes',
@@ -462,8 +462,8 @@ function ReportSection({ section }) {
             summary: {
               'Audit Report': `${latestAudit.auditNo} — ${latestAudit.title || 'Physical Stock Audit'}`,
               'Auditor Name': latestAudit.auditor || 'Pharmacist',
-              'Kam Medicines (Deficit)': `${latestAudit.kamCount || 0} items (-${latestAudit.totalKamUnits || 0} units)`,
-              'Zyada Medicines (Surplus)': `${latestAudit.zyadaCount || 0} items (+${latestAudit.totalZyadaUnits || 0} units)`,
+              'Shortage Medicines (Deficit)': `${latestAudit.kamCount || 0} items (-${latestAudit.totalKamUnits || 0} units)`,
+              'Surplus Medicines (Excess)': `${latestAudit.zyadaCount || 0} items (+${latestAudit.totalZyadaUnits || 0} units)`,
               'Total Financial Shortage': fmt(latestAudit.totalKamCost || 0),
               'Stock Reconciled': latestAudit.reconciled ? 'YES (Adjusted in System)' : 'NO (Audit Log Only)',
               'Purchase Order': latestAudit.poNo ? `Auto-Generated (${latestAudit.poNo})` : 'None Generated',
@@ -480,7 +480,7 @@ function ReportSection({ section }) {
               `${m.name} ${m.strength || ''}`,
               currentStock,
               minStock,
-              diff < 0 ? `🔻 ${Math.abs(diff)} Below Target (Kam)` : `🔺 +${diff} Above Target (Zyada)`,
+              diff < 0 ? `🔻 ${Math.abs(diff)} Below Target` : `🔺 +${diff} Above Target`,
               fmt(m.purchasePrice || Math.round(m.salePrice * 0.75)),
               diff < 0 ? `-${fmt(Math.abs(diff) * (m.purchasePrice || Math.round(m.salePrice * 0.75)))}` : `+${fmt(diff * (m.purchasePrice || Math.round(m.salePrice * 0.75)))}`,
               'Physical Audit Pending (Target Safety Comparison Shown)',
@@ -491,7 +491,7 @@ function ReportSection({ section }) {
               'Medicine Name',
               'Current System Stock',
               'Safety Target Stock',
-              'Target Variance (Kam/Zyada)',
+              'Target Variance (Shortage / Surplus)',
               'Unit Cost Price',
               'Target Valuation Difference',
               'Audit Status',
@@ -499,7 +499,7 @@ function ReportSection({ section }) {
             rows,
             summary: {
               'Audit Status': 'No physical stock audit recorded yet',
-              'Action Needed': 'Perform a physical stock count in Inventory -> Stock Audit (Kam/Zyada)',
+              'Action Needed': 'Perform a physical stock count in Stock Audit & Count dashboard',
             },
           }
         }

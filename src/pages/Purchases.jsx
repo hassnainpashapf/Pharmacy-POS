@@ -513,7 +513,7 @@ export default function Purchases({ forcedTab }) {
                         <ShoppingBag className="w-10 h-10 mx-auto text-slate-300 mb-2" />
                         <div className="font-bold text-slate-600">No Purchase Orders Found</div>
                         <div className="text-xs text-slate-400 mt-1">
-                          Naya purchase order banayein ya Stock Audit (Kam/Zyada) se shortage medicines ka auto-order create karein.
+                          Create a new purchase order or auto-generate one for shortages from the Stock Audit worksheet.
                         </div>
                         <div className="mt-4 flex items-center justify-center gap-2">
                           <button
@@ -523,10 +523,10 @@ export default function Purchases({ forcedTab }) {
                             + Create Manual PO
                           </button>
                           <button
-                            onClick={() => navigate('/inventory?tab=audit')}
+                            onClick={() => navigate('/stock-audit')}
                             className="px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 rounded-lg"
                           >
-                            📋 Run Stock Audit (Kam/Zyada)
+                            📋 Run Stock Audit & Count
                           </button>
                         </div>
                       </td>

@@ -293,7 +293,7 @@ export default function Inventory({ forcedTab }) {
           ['DAMAGED', `Damaged (${summary.damaged} units)`],
           ['RETURNED', `Returned (${summary.returned} units)`],
           ['adjustments', `Adjustment History (${adjustments.length})`],
-          ['audit', `📋 Stock Audit (Kam / Zyada)`],
+          ['audit', `📋 Stock Audit (Physical Count)`],
         ].map(([k, label]) => (
           <button
             key={k}

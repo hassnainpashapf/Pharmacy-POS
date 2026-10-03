@@ -125,121 +125,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 4 Dedicated Independent Stock & Inventory Dashboards (Urdu + English) */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-5 bg-indigo-600 rounded-full"></div>
-            <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <span>Inventory & Stock Dedicated Dashboards</span>
-              <span className="text-xs font-normal text-slate-500 hidden sm:inline">| Dedicated Stock Modules</span>
-            </h2>
-          </div>
-          <span className="text-xs font-medium text-slate-500">1-Click Direct Pages</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          {/* 1. Company Stock Hub */}
-          <div
-            onClick={() => nav('/company-stock')}
-            className="group bg-white hover:bg-indigo-50/50 border border-slate-300 hover:border-indigo-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
-                  <Building2 className="w-5 h-5" />
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  Company Hub
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-900">Company Stock Hub</h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                Company-wise stock breakdown, valuation, and catalogue management.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600 group-hover:text-indigo-700">
-              <span>Open Company Hub</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </div>
-          </div>
-
-          {/* 2. Stock Audit */}
-          <div
-            onClick={() => nav('/stock-audit')}
-            className="group bg-white hover:bg-amber-50/50 border border-slate-300 hover:border-amber-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
-                  <ClipboardCheck className="w-5 h-5" />
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                  Count & Variance
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-amber-900">Stock Audit & Count</h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                Count physical items, record discrepancies, and reconcile in 1 click.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600 group-hover:text-amber-700">
-              <span>Open Audit Worksheet</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </div>
-          </div>
-
-          {/* 3. Expiry Management */}
-          <div
-            onClick={() => nav('/expiry-management')}
-            className="group bg-white hover:bg-orange-50/50 border border-slate-300 hover:border-orange-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
-                  Expiry & FEFO
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-orange-900">Batch & Expiry Action</h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                Identify near-expiry batches, apply discounts, or return to suppliers.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-orange-600 group-hover:text-orange-700">
-              <span>Open Expiry Center</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </div>
-          </div>
-
-          {/* 4. Purchase Returns */}
-          <div
-            onClick={() => nav('/purchase-returns')}
-            className="group bg-white hover:bg-rose-50/50 border border-slate-300 hover:border-rose-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
-                  <RotateCcw className="w-5 h-5" />
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                  Debit Notes
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-rose-900">Purchase Returns (Debit Note)</h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                Send returns to suppliers, issue debit notes, and adjust accounts.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-rose-600 group-hover:text-rose-700">
-              <span>Open Returns Hub</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </div>
-          </div>
-        </div>
-      </div>
       <div className="quick-actions grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
         {/* New Sale */}
         <button type="button"
@@ -496,6 +381,122 @@ export default function Dashboard() {
             <div>
               <div className="text-xs font-bold text-[#831843]">{data.attention.pendingPayments === null ? 'Unavailable' : `${data.attention.pendingPayments} suppliers`}</div>
               <div className="text-[11px] text-[#9d174d] font-medium">With unpaid balances</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Dedicated Stock & Inventory Operations Hubs */}
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-4 bg-indigo-600 rounded-full"></div>
+            <h2 className="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
+              <span>Stock & Operations Hubs</span>
+              <span className="text-xs font-normal text-slate-400 hidden sm:inline">| Specialized Inventory Dashboards</span>
+            </h2>
+          </div>
+          <span className="text-[11px] font-medium text-slate-500">Quick Access</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {/* 1. Company Stock Hub */}
+          <div
+            onClick={() => nav('/company-stock')}
+            className="group bg-white hover:bg-indigo-50/50 border border-slate-300 hover:border-indigo-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                  <Building2 className="w-4 h-4" />
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  Company Hub
+                </span>
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-indigo-900">Company Stock Hub</h3>
+              <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                Company-wise stock breakdown, valuation, and catalogue management.
+              </p>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600 group-hover:text-indigo-700">
+              <span>Open Hub</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </div>
+          </div>
+
+          {/* 2. Stock Audit */}
+          <div
+            onClick={() => nav('/stock-audit')}
+            className="group bg-white hover:bg-amber-50/50 border border-slate-300 hover:border-amber-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                  <ClipboardCheck className="w-4 h-4" />
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                  Physical Count
+                </span>
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-amber-900">Stock Audit & Count</h3>
+              <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                Count physical items, record discrepancies, and reconcile in 1 click.
+              </p>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600 group-hover:text-amber-700">
+              <span>Open Audit</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </div>
+          </div>
+
+          {/* 3. Expiry Management */}
+          <div
+            onClick={() => nav('/expiry-management')}
+            className="group bg-white hover:bg-orange-50/50 border border-slate-300 hover:border-orange-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="w-9 h-9 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                  <Clock className="w-4 h-4" />
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
+                  FEFO Action
+                </span>
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-orange-900">Batch & Expiry Action</h3>
+              <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                Identify near-expiry batches, apply discounts, or return to suppliers.
+              </p>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-orange-600 group-hover:text-orange-700">
+              <span>Open Expiry Center</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </div>
+          </div>
+
+          {/* 4. Purchase Returns */}
+          <div
+            onClick={() => nav('/purchase-returns')}
+            className="group bg-white hover:bg-rose-50/50 border border-slate-300 hover:border-rose-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                  <RotateCcw className="w-4 h-4" />
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                  Debit Notes
+                </span>
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-rose-900">Purchase Returns</h3>
+              <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                Send returns to suppliers, issue debit notes, and adjust accounts.
+              </p>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-rose-600 group-hover:text-rose-700">
+              <span>Open Returns Hub</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
         </div>
@@ -830,122 +831,6 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
         </div>
       </div>
 
-      {/* 4 Dedicated Independent Stock & Inventory Dashboards (Urdu + English) */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-5 bg-indigo-600 rounded-full"></div>
-            <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2">
-              <span>Inventory & Stock Dedicated Dashboards</span>
-              <span className="text-xs font-normal text-slate-500 hidden sm:inline">| Dedicated Stock Modules</span>
-            </h2>
-          </div>
-          <span className="text-xs font-medium text-slate-500">1-Click Direct Pages</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-          {/* 1. Company Stock Hub */}
-          <div
-            onClick={() => nav('/company-stock')}
-            className="group bg-white hover:bg-indigo-50/50 border border-slate-300 hover:border-indigo-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
-                  <Building2 className="w-5 h-5" />
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                  Company Hub
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-indigo-900">Company Stock Hub</h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                Company-wise stock breakdown, valuation, and catalogue management.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600 group-hover:text-indigo-700">
-              <span>Open Company Hub</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </div>
-          </div>
-
-          {/* 2. Stock Audit */}
-          <div
-            onClick={() => nav('/stock-audit')}
-            className="group bg-white hover:bg-amber-50/50 border border-slate-300 hover:border-amber-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
-                  <ClipboardCheck className="w-5 h-5" />
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                  Count & Variance
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-amber-900">Stock Audit & Count</h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                Count physical items, record discrepancies, and reconcile in 1 click.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600 group-hover:text-amber-700">
-              <span>Open Audit Worksheet</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </div>
-          </div>
-
-          {/* 3. Expiry Management */}
-          <div
-            onClick={() => nav('/expiry-management')}
-            className="group bg-white hover:bg-orange-50/50 border border-slate-300 hover:border-orange-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
-                  Expiry & FEFO
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-orange-900">Batch & Expiry Action</h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                Identify near-expiry batches, apply discounts, or return to suppliers.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-orange-600 group-hover:text-orange-700">
-              <span>Open Expiry Center</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </div>
-          </div>
-
-          {/* 4. Purchase Returns */}
-          <div
-            onClick={() => nav('/purchase-returns')}
-            className="group bg-white hover:bg-rose-50/50 border border-slate-300 hover:border-rose-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center group-hover:scale-110 transition-transform shadow-xs">
-                  <RotateCcw className="w-5 h-5" />
-                </div>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                  Debit Notes
-                </span>
-              </div>
-              <h3 className="text-sm font-bold text-slate-900 group-hover:text-rose-900">Purchase Returns (Debit Note)</h3>
-              <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                Send returns to suppliers, issue debit notes, and adjust accounts.
-              </p>
-            </div>
-            <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-rose-600 group-hover:text-rose-700">
-              <span>Open Returns Hub</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="kpi-grid grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         {cards.map(([label, value, hint], index) => {
           const Icon = [DollarSign, ReceiptIcon, Package, Truck, AlertTriangle, Clock, CreditCard, TrendingUp][index]
@@ -964,6 +849,122 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
             </section>
           )
         })}
+      </div>
+
+      {/* Dedicated Stock & Inventory Operations Hubs */}
+      <div className="space-y-2.5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-4 bg-indigo-600 rounded-full"></div>
+            <h2 className="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
+              <span>Stock & Operations Hubs</span>
+              <span className="text-xs font-normal text-slate-400 hidden sm:inline">| Specialized Inventory Dashboards</span>
+            </h2>
+          </div>
+          <span className="text-[11px] font-medium text-slate-500">Quick Access</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {/* 1. Company Stock Hub */}
+          <div
+            onClick={() => nav('/company-stock')}
+            className="group bg-white hover:bg-indigo-50/50 border border-slate-300 hover:border-indigo-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="w-9 h-9 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                  <Building2 className="w-4 h-4" />
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  Company Hub
+                </span>
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-indigo-900">Company Stock Hub</h3>
+              <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                Company-wise stock breakdown, valuation, and catalogue management.
+              </p>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600 group-hover:text-indigo-700">
+              <span>Open Hub</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </div>
+          </div>
+
+          {/* 2. Stock Audit */}
+          <div
+            onClick={() => nav('/stock-audit')}
+            className="group bg-white hover:bg-amber-50/50 border border-slate-300 hover:border-amber-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                  <ClipboardCheck className="w-4 h-4" />
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                  Physical Count
+                </span>
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-amber-900">Stock Audit & Count</h3>
+              <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                Count physical items, record discrepancies, and reconcile in 1 click.
+              </p>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-600 group-hover:text-amber-700">
+              <span>Open Audit</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </div>
+          </div>
+
+          {/* 3. Expiry Management */}
+          <div
+            onClick={() => nav('/expiry-management')}
+            className="group bg-white hover:bg-orange-50/50 border border-slate-300 hover:border-orange-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="w-9 h-9 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                  <Clock className="w-4 h-4" />
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-50 text-orange-700 border border-orange-200">
+                  FEFO Action
+                </span>
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-orange-900">Batch & Expiry Action</h3>
+              <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                Identify near-expiry batches, apply discounts, or return to suppliers.
+              </p>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-orange-600 group-hover:text-orange-700">
+              <span>Open Expiry Center</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </div>
+          </div>
+
+          {/* 4. Purchase Returns */}
+          <div
+            onClick={() => nav('/purchase-returns')}
+            className="group bg-white hover:bg-rose-50/50 border border-slate-300 hover:border-rose-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center group-hover:scale-105 transition-transform shadow-xs">
+                  <RotateCcw className="w-4 h-4" />
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                  Debit Notes
+                </span>
+              </div>
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-rose-900">Purchase Returns</h3>
+              <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                Send returns to suppliers, issue debit notes, and adjust accounts.
+              </p>
+            </div>
+            <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-rose-600 group-hover:text-rose-700">
+              <span>Open Returns Hub</span>
+              <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </div>
+          </div>
+        </div>
       </div>
 
       {isManager && <ManagerOperations data={data} nav={nav} />}

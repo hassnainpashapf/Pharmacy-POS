@@ -113,56 +113,43 @@ const navGroups = [
     ],
   },
   {
-    title: 'OPERATIONS',
+    title: 'SALES & POS',
     items: [
-      { to: '/pos', label: 'Sales & POS', icon: ShoppingCart },
-      { to: '/sales-history', label: 'Sales History & Invoices', icon: ReceiptIcon },
-      { to: '/returns', label: 'Returns & Refunds', icon: RotateCcw },
-      { to: '/pos?tab=rx', label: 'Prescriptions', icon: FileText },
+      { to: '/pos', label: 'Sales & POS Terminal', icon: ShoppingCart },
+      { to: '/sales-history', label: 'Sales Invoices & History', icon: ReceiptIcon },
+      { to: '/returns', label: 'Customer Returns & Refunds', icon: RotateCcw },
+      { to: '/pos?tab=rx', label: 'Prescriptions (Rx)', icon: FileText },
     ],
   },
   {
-    title: 'STOCKS & DISCREPANCIES',
-    items: [
-      { to: '/company-stock', label: 'Company Stock Hub', icon: Building2, badge: 'By Company', badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-      { to: '/stock-audit', label: 'Stock Audit (Physical Count)', icon: ClipboardCheck, badge: 'Audit', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200' },
-      { to: '/expiry-management', label: 'Batch & Expiry Action', icon: Clock, badge: 'Expiry', badgeColor: 'bg-orange-50 text-orange-700 border-orange-200' },
-      { to: '/purchase-returns', label: 'Purchase Returns (Debit Note)', icon: RotateCcw, badge: 'Returns', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
-    ],
-  },
-  {
-    title: 'INVENTORY & PROCUREMENT',
+    title: 'INVENTORY & STOCKS',
     items: [
       { to: '/inventory', label: 'Stock Master Inventory', icon: Package },
+      { to: '/company-stock', label: 'Company Stock Hub', icon: Building2 },
+      { to: '/stock-audit', label: 'Stock Audit & Physical Count', icon: ClipboardCheck },
+      { to: '/expiry-management', label: 'Batch & Expiry Action', icon: Clock },
       { to: '/medicines', label: 'Medicines Catalogue', icon: Pill },
-      { to: '/purchases', label: 'Purchases & Invoices', icon: ShoppingBag, badge: 'GRN + Tax', badgeColor: 'bg-blue-50 text-blue-700 border-blue-200' },
-      { to: '/suppliers', label: 'Suppliers', icon: Truck },
     ],
   },
   {
-    title: 'CUSTOMERS',
+    title: 'PURCHASES & SUPPLIERS',
     items: [
-      { to: '/customers', label: 'Customers', icon: UsersIcon },
+      { to: '/purchases', label: 'Purchases & Inward GRN', icon: ShoppingBag },
+      { to: '/purchase-returns', label: 'Purchase Returns (Debit Notes)', icon: RotateCcw },
+      { to: '/suppliers', label: 'Suppliers & Distributors', icon: Truck },
+    ],
+  },
+  {
+    title: 'CUSTOMERS & ACCOUNTS',
+    items: [
+      { to: '/customers', label: 'Customers & Patients', icon: UsersIcon },
       { to: '/customers?tab=loyalty', label: 'Loyalty & Credits', icon: Award },
-    ],
-  },
-  {
-    title: 'FINANCE',
-    items: [
-      { to: '/accounting', label: 'Accounting', icon: CircleDollarSign },
-      { to: '/accounting?tab=expenses', label: 'Expenses', icon: Wallet },
+      { to: '/accounting', label: 'Accounting & Expenses', icon: CircleDollarSign },
       { to: '/suppliers?tab=payables', label: 'Receivables & Payables', icon: ArrowLeftRight },
     ],
   },
   {
-    title: 'MANAGEMENT',
-    items: [
-      { to: '/branches', label: 'Branches', icon: Building2 },
-      { to: '/users', label: 'User Roles & Staff', icon: UserCog },
-    ],
-  },
-  {
-    title: 'REPORTS',
+    title: 'REPORTS & ANALYTICS',
     items: [
       { to: '/reports?tab=analytics', label: 'Business Analytics', icon: BarChart3 },
       { to: '/reports?tab=sales', label: 'Sales Reports', icon: TrendingUp },
@@ -171,17 +158,13 @@ const navGroups = [
     ],
   },
   {
-    title: 'COMPLIANCE',
+    title: 'MANAGEMENT & SETTINGS',
     items: [
-      { to: '/hardware', label: 'Regulatory', icon: ShieldCheck },
-      { to: '/medicines?filter=controlled', label: 'Controlled Substances', icon: AlertOctagon },
-    ],
-  },
-  {
-    title: 'SYSTEM',
-    items: [
-      { to: '/settings', label: 'Settings', icon: SettingsIcon },
-      { to: '/settings?tab=audit', label: 'Audit Logs', icon: ClipboardList },
+      { to: '/branches', label: 'Branches & Transfers', icon: Building2 },
+      { to: '/users', label: 'Staff Roles & Permissions', icon: UserCog },
+      { to: '/hardware', label: 'Hardware & Printers', icon: Printer },
+      { to: '/settings', label: 'System Settings', icon: SettingsIcon },
+      { to: '/settings?tab=audit', label: 'Audit Trail Logs', icon: ClipboardList },
     ],
   },
 ]
@@ -505,65 +488,6 @@ function Shell({ children }) {
                 className="w-48 xl:w-64 pl-9 pr-4 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none cursor-pointer transition-colors"
               />
             </div>
-
-            {/* Quick Access to Dedicated Independent Dashboards */}
-            <nav className="flex items-center gap-1 sm:gap-1.5" aria-label="Quick Dashboards">
-              <Link
-                to="/company-stock"
-                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-all border shrink-0 ${
-                  loc.pathname === '/company-stock'
-                    ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
-                    : 'bg-indigo-50/80 hover:bg-indigo-100 text-indigo-800 border-indigo-200/90'
-                }`}
-                title="Company Stock Hub"
-              >
-                <Building2 className="w-3.5 h-3.5 text-indigo-600 group-hover:text-indigo-800" />
-                <span className="hidden sm:inline">Company Stock</span>
-                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-indigo-900 sm:ml-0.5">Hub</span>
-              </Link>
-
-              <Link
-                to="/stock-audit"
-                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-all border shrink-0 ${
-                  loc.pathname === '/stock-audit'
-                    ? 'bg-amber-600 text-white border-amber-700 shadow-xs'
-                    : 'bg-amber-50/80 hover:bg-amber-100 text-amber-800 border-amber-200/90'
-                }`}
-                title="Stock Audit & Physical Count"
-              >
-                <ClipboardCheck className="w-3.5 h-3.5 text-amber-600" />
-                <span className="hidden sm:inline">Stock Audit</span>
-                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-amber-900 sm:ml-0.5">Audit</span>
-              </Link>
-
-              <Link
-                to="/expiry-management"
-                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-all border shrink-0 ${
-                  loc.pathname === '/expiry-management'
-                    ? 'bg-orange-600 text-white border-orange-700 shadow-xs'
-                    : 'bg-orange-50/80 hover:bg-orange-100 text-orange-800 border-orange-200/90'
-                }`}
-                title="Batch Expiry Action Center (FEFO)"
-              >
-                <Clock className="w-3.5 h-3.5 text-orange-600" />
-                <span className="hidden sm:inline">Expiry Hub</span>
-                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-orange-900 sm:ml-0.5">FEFO</span>
-              </Link>
-
-              <Link
-                to="/purchase-returns"
-                className={`px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-bold flex items-center gap-1 transition-all border shrink-0 ${
-                  loc.pathname === '/purchase-returns'
-                    ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
-                    : 'bg-rose-50/80 hover:bg-rose-100 text-rose-800 border-rose-200/90'
-                }`}
-                title="Purchase Returns & Debit Notes"
-              >
-                <RotateCcw className="w-3.5 h-3.5 text-rose-600" />
-                <span className="hidden sm:inline">Returns</span>
-                <span className="text-[10px] font-semibold bg-white/60 px-1 py-0.2 rounded text-rose-900 sm:ml-0.5">Debit</span>
-              </Link>
-            </nav>
           </div>
 
           {/* Right Controls */}
