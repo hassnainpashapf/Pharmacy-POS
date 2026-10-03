@@ -26,6 +26,7 @@ import {
   Sparkles,
   ChevronRight,
   ShieldCheck,
+  X,
 } from 'lucide-react'
 
 export default function CompanyStockHub() {
@@ -146,17 +147,6 @@ export default function CompanyStockHub() {
       topCompanyCost: companyStats[0]?.totalCost || 0,
     }
   }, [companyStats, medicines])
-
-  // Filtered companies based on search
-  const filteredCompanies = useMemo(() => {
-    if (!search.trim()) return companyStats
-    const q = search.toLowerCase()
-    return companyStats.filter(
-      (c) =>
-        c.name.toLowerCase().includes(q) ||
-        c.medicines.some((m) => m.name.toLowerCase().includes(q) || m.generic?.toLowerCase().includes(q))
-    )
-  }, [companyStats, search])
 
   // Active company data
   const activeCompanyData = useMemo(() => {
@@ -356,92 +346,49 @@ export default function CompanyStockHub() {
         </div>
       </div>
 
-      {/* 3. Company Selector Tabs / Carousel Cards */}
-      <div className="space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-              <span>Manufacturers</span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-mono font-bold">
-                {companyStats.length}
-              </span>
-            </h2>
-          </div>
-
-          <div className="relative w-full sm:w-72">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search company or medicine..."
-              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67] shadow-xs"
-            />
-          </div>
-        </div>
-
-        {/* Company Quick Badges Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5">
-          {/* ALL Companies Card */}
-          <button
-            type="button"
-            onClick={() => setSelectedCompany('ALL')}
-            className={`relative h-[115px] p-3 rounded-2xl border transition-all flex flex-col justify-between cursor-pointer text-center ${
-              selectedCompany === 'ALL'
-                ? 'bg-[#e9f5f2] border-[#00A09D] text-[#006d69] shadow-xs'
-                : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 hover:shadow-xs'
-            }`}
-          >
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-1 my-auto">
-              <div className="text-sm font-black text-center leading-snug">
-                All Medicines
-              </div>
+      {/* 3. Search & Manufacturer Filter Toolbar */}
+      <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2 flex-1">
+            {/* Direct Search Bar */}
+            <div className="relative flex-1 min-w-[240px]">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search company or medicine name, generic chemical..."
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs focus:ring-1 focus:ring-[#714B67] focus:outline-none"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
-            <div className="mt-auto pt-2 border-t border-current/10 flex items-center justify-between text-[11px] w-full shrink-0">
-              <span>{overall.totalMedicines} items</span>
-              <span className="font-bold">{fmt(overall.totalCost)}</span>
-            </div>
-          </button>
 
-          {/* Each Company Card */}
-          {filteredCompanies.map((c) => {
-            const isSelected = selectedCompany === c.name
-            return (
-              <button
-                key={c.name}
-                type="button"
-                onClick={() => setSelectedCompany(c.name)}
-                className={`relative h-[115px] p-3 rounded-2xl border transition-all flex flex-col justify-between cursor-pointer text-center ${
-                  isSelected
-                    ? 'bg-[#e9f5f2] border-[#00A09D] text-[#006d69] shadow-xs'
-                    : 'bg-white border-slate-200 hover:border-slate-300 text-slate-800 hover:shadow-xs'
-                }`}
+            {/* Manufacturer Dropdown Menu */}
+            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+              <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+              <select
+                value={selectedCompany}
+                onChange={(e) => setSelectedCompany(e.target.value)}
+                className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[240px] truncate"
+                aria-label="Filter by manufacturer"
               >
-                {c.nearExpiryCount > 0 && (
-                  <span
-                    title={`${c.nearExpiryCount} near expiry batches`}
-                    className={`absolute top-2 right-2 text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 z-10 ${
-                      isSelected ? 'bg-amber-400 text-slate-900 font-extrabold' : 'bg-amber-100 text-amber-800 border border-amber-200/80'
-                    }`}
-                  >
-                    <Clock className="w-2.5 h-2.5" />
-                    {c.nearExpiryCount}
-                  </span>
-                )}
-
-                <div className="flex-1 flex flex-col items-center justify-center text-center px-1 my-auto">
-                  <div className="text-sm font-black text-center leading-snug break-words line-clamp-2" title={c.name}>
-                    {c.name}
-                  </div>
-                </div>
-
-                <div className="mt-auto pt-2 border-t border-current/10 flex items-center justify-between text-[11px] w-full shrink-0">
-                  <span>{c.totalUnits} Units</span>
-                  <span className="font-bold">{fmt(c.totalCost)}</span>
-                </div>
-              </button>
-            )
-          })}
+                <option value="ALL">🏢 All Manufacturers ({companyStats.length})</option>
+                {companyStats.map((c) => (
+                  <option key={c.name} value={c.name}>
+                    {c.name} ({c.totalUnits} Units · {fmt(c.totalCost)})
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
       </div>
 
