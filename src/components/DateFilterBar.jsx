@@ -115,6 +115,7 @@ export default function DateFilterBar({
   onChange,
   showAll = true,
   compact = false,
+  noBorder = false,
   className = '',
 }) {
   const today = getTodayStr()
@@ -185,7 +186,7 @@ export default function DateFilterBar({
   return (
     <div className={`space-y-2 ${className}`}>
       {/* ── Preset & Mode Selector Bar ── */}
-      <div className="flex flex-wrap items-center gap-1.5 bg-white p-1 rounded-xl border border-slate-200 shadow-xs">
+      <div className={`flex flex-wrap items-center gap-1.5 ${noBorder ? 'p-0.5' : 'bg-white p-1 rounded-xl border border-slate-200 shadow-xs'}`}>
         {pills.map(({ id, label, icon: Icon }) => {
           const active = type === id
           return (

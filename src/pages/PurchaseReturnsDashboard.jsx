@@ -26,6 +26,7 @@ import {
   ArrowRight,
   ShieldCheck,
   Package,
+  X,
 } from 'lucide-react'
 
 export default function PurchaseReturnsDashboard() {
@@ -73,12 +74,34 @@ export default function PurchaseReturnsDashboard() {
   }, [allReturns])
 
   const [settlementFilter, setSettlementFilter] = useState('ALL')
+  const [supplierFilter, setSupplierFilter] = useState('ALL')
+
+  // Distinct suppliers in returns / database
+  const distinctSuppliers = useMemo(() => {
+    const set = new Set()
+    for (const r of allReturns) {
+      if (r.supplierName) set.add(r.supplierName.trim())
+    }
+    for (const s of suppliers) {
+      if (s.name) set.add(s.name.trim())
+      if (s.company) set.add(s.company.trim())
+    }
+    return Array.from(set).filter(Boolean).sort()
+  }, [allReturns, suppliers])
 
   // Filtered returns list
   const filteredReturns = useMemo(() => {
     let list = allReturns.filter((r) => matchesDateFilter(r.date || r.createdAt, dateFilter))
     if (settlementFilter !== 'ALL') {
       list = list.filter((r) => r.settlementType === settlementFilter)
+    }
+    if (supplierFilter !== 'ALL') {
+      const sf = supplierFilter.toLowerCase()
+      list = list.filter(
+        (r) =>
+          (r.supplierName && r.supplierName.toLowerCase().includes(sf)) ||
+          r.supplierId === supplierFilter
+      )
     }
     if (!searchQuery.trim()) return list
     const q = searchQuery.toLowerCase()
@@ -88,7 +111,7 @@ export default function PurchaseReturnsDashboard() {
         r.supplierName.toLowerCase().includes(q) ||
         (r.items || []).some((it) => it.medicineName.toLowerCase().includes(q))
     )
-  }, [allReturns, dateFilter, settlementFilter, searchQuery])
+  }, [allReturns, dateFilter, settlementFilter, supplierFilter, searchQuery])
 
   // Available batches for selected supplier or general
   const eligibleBatches = useMemo(() => {
@@ -307,32 +330,56 @@ export default function PurchaseReturnsDashboard() {
 
       {/* ── Search & Filter Toolbar ── */}
       <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-        <DateFilterBar filterState={dateFilter} onChange={setDateFilter} />
-
         <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+          {/* Direct Search Bar */}
           <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400 pointer-events-none" />
             <input
               type="text"
               placeholder="Search return note #, supplier, or medicine..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
             />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Supplier Filter Dropdown */}
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+            <Building2 className="w-3.5 h-3.5 text-[#714B67]" />
+            <select
+              value={supplierFilter}
+              onChange={(e) => setSupplierFilter(e.target.value)}
+              className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
+              aria-label="Filter returns by supplier"
+            >
+              <option value="ALL">🏢 All Suppliers ({distinctSuppliers.length})</option>
+              {distinctSuppliers.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
           </div>
 
           {/* Settlement Method Pills */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0">
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0 overflow-x-auto">
             {[
-              { id: 'ALL', label: 'All Returns' },
-              { id: 'CREDIT_NOTE', label: 'Credit Note' },
-              { id: 'CASH_REFUND', label: 'Cash Refund' },
+              { id: 'ALL', label: `All Returns (${allReturns.length})` },
+              { id: 'CREDIT_NOTE', label: `Credit Note (${allReturns.filter(r => r.settlementType === 'CREDIT_NOTE').length})` },
+              { id: 'CASH_REFUND', label: `Cash Refund (${allReturns.filter(r => r.settlementType === 'CASH_REFUND').length})` },
             ].map((st) => (
               <button
                 key={st.id}
                 type="button"
                 onClick={() => setSettlementFilter(st.id)}
-                className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
+                className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer whitespace-nowrap ${
                   settlementFilter === st.id
                     ? 'bg-white text-slate-900 shadow-sm'
                     : 'text-slate-500 hover:text-slate-800'
@@ -342,6 +389,11 @@ export default function PurchaseReturnsDashboard() {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Date Filter Pills */}
+        <div className="pt-2 border-t border-slate-100">
+          <DateFilterBar filterState={dateFilter} onChange={setDateFilter} noBorder />
         </div>
       </div>
 
