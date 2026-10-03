@@ -113,43 +113,56 @@ const navGroups = [
     ],
   },
   {
-    title: 'SALES & POS',
+    title: 'OPERATIONS',
     items: [
-      { to: '/pos', label: 'Sales & POS Terminal', icon: ShoppingCart },
-      { to: '/sales-history', label: 'Sales Invoices & History', icon: ReceiptIcon },
-      { to: '/returns', label: 'Customer Returns & Refunds', icon: RotateCcw },
-      { to: '/pos?tab=rx', label: 'Prescriptions (Rx)', icon: FileText },
+      { to: '/pos', label: 'Sales & POS', icon: ShoppingCart },
+      { to: '/sales-history', label: 'Sales History & Invoices', icon: ReceiptIcon },
+      { to: '/returns', label: 'Returns & Refunds', icon: RotateCcw },
+      { to: '/pos?tab=rx', label: 'Prescriptions', icon: FileText },
     ],
   },
   {
-    title: 'INVENTORY & STOCKS',
+    title: 'STOCKS & DISCREPANCIES',
+    items: [
+      { to: '/company-stock', label: 'Company Stock Hub', icon: Building2, badge: 'By Company', badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+      { to: '/stock-audit', label: 'Stock Audit (Physical Count)', icon: ClipboardCheck, badge: 'Audit', badgeColor: 'bg-amber-50 text-amber-700 border-amber-200' },
+      { to: '/expiry-management', label: 'Batch & Expiry Action', icon: Clock, badge: 'Expiry', badgeColor: 'bg-orange-50 text-orange-700 border-orange-200' },
+      { to: '/purchase-returns', label: 'Purchase Returns (Debit Note)', icon: RotateCcw, badge: 'Returns', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200' },
+    ],
+  },
+  {
+    title: 'INVENTORY & PROCUREMENT',
     items: [
       { to: '/inventory', label: 'Stock Master Inventory', icon: Package },
-      { to: '/company-stock', label: 'Company Stock Hub', icon: Building2 },
-      { to: '/stock-audit', label: 'Stock Audit & Physical Count', icon: ClipboardCheck },
-      { to: '/expiry-management', label: 'Batch & Expiry Action', icon: Clock },
       { to: '/medicines', label: 'Medicines Catalogue', icon: Pill },
+      { to: '/purchases', label: 'Purchases & Invoices', icon: ShoppingBag, badge: 'GRN + Tax', badgeColor: 'bg-blue-50 text-blue-700 border-blue-200' },
+      { to: '/suppliers', label: 'Suppliers', icon: Truck },
     ],
   },
   {
-    title: 'PURCHASES & SUPPLIERS',
+    title: 'CUSTOMERS',
     items: [
-      { to: '/purchases', label: 'Purchases & Inward GRN', icon: ShoppingBag },
-      { to: '/purchase-returns', label: 'Purchase Returns (Debit Notes)', icon: RotateCcw },
-      { to: '/suppliers', label: 'Suppliers & Distributors', icon: Truck },
-    ],
-  },
-  {
-    title: 'CUSTOMERS & ACCOUNTS',
-    items: [
-      { to: '/customers', label: 'Customers & Patients', icon: UsersIcon },
+      { to: '/customers', label: 'Customers', icon: UsersIcon },
       { to: '/customers?tab=loyalty', label: 'Loyalty & Credits', icon: Award },
-      { to: '/accounting', label: 'Accounting & Expenses', icon: CircleDollarSign },
+    ],
+  },
+  {
+    title: 'FINANCE',
+    items: [
+      { to: '/accounting', label: 'Accounting', icon: CircleDollarSign },
+      { to: '/accounting?tab=expenses', label: 'Expenses', icon: Wallet },
       { to: '/suppliers?tab=payables', label: 'Receivables & Payables', icon: ArrowLeftRight },
     ],
   },
   {
-    title: 'REPORTS & ANALYTICS',
+    title: 'MANAGEMENT',
+    items: [
+      { to: '/branches', label: 'Branches', icon: Building2 },
+      { to: '/users', label: 'User Roles & Staff', icon: UserCog },
+    ],
+  },
+  {
+    title: 'REPORTS',
     items: [
       { to: '/reports?tab=analytics', label: 'Business Analytics', icon: BarChart3 },
       { to: '/reports?tab=sales', label: 'Sales Reports', icon: TrendingUp },
@@ -158,13 +171,17 @@ const navGroups = [
     ],
   },
   {
-    title: 'MANAGEMENT & SETTINGS',
+    title: 'COMPLIANCE',
     items: [
-      { to: '/branches', label: 'Branches & Transfers', icon: Building2 },
-      { to: '/users', label: 'Staff Roles & Permissions', icon: UserCog },
-      { to: '/hardware', label: 'Hardware & Printers', icon: Printer },
-      { to: '/settings', label: 'System Settings', icon: SettingsIcon },
-      { to: '/settings?tab=audit', label: 'Audit Trail Logs', icon: ClipboardList },
+      { to: '/hardware', label: 'Regulatory', icon: ShieldCheck },
+      { to: '/medicines?filter=controlled', label: 'Controlled Substances', icon: AlertOctagon },
+    ],
+  },
+  {
+    title: 'SYSTEM',
+    items: [
+      { to: '/settings', label: 'Settings', icon: SettingsIcon },
+      { to: '/settings?tab=audit', label: 'Audit Logs', icon: ClipboardList },
     ],
   },
 ]
