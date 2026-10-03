@@ -5,7 +5,6 @@ import {
   fmt,
   medicineById,
   adjustStockStatus,
-  getStockStatusSummary,
   getStockAdjustments,
   addBatch,
   addMedicine,
@@ -107,11 +106,21 @@ export default function Inventory({ forcedTab }) {
     setTab(computeTab())
   }, [location.search, location.pathname, forcedTab, navigate])
 
-  const summary = getStockStatusSummary()
-
   const now = new Date()
-
   const allBatches = db.batches || []
+
+  // Accurate batch counts for Stock Status dropdown
+  const statusCounts = useMemo(() => {
+    const counts = { ALL: allBatches.length, AVAILABLE: 0, NEAR_EXPIRY: 0, EXPIRED: 0, DAMAGED: 0 }
+    const currentDate = new Date()
+    for (const b of allBatches) {
+      if (batchMatchesStockTab(b, 'AVAILABLE', currentDate)) counts.AVAILABLE++
+      if (batchMatchesStockTab(b, 'NEAR_EXPIRY', currentDate)) counts.NEAR_EXPIRY++
+      if (batchMatchesStockTab(b, 'EXPIRED', currentDate)) counts.EXPIRED++
+      if (batchMatchesStockTab(b, 'DAMAGED', currentDate)) counts.DAMAGED++
+    }
+    return counts
+  }, [allBatches])
   const { matches: batches, counts: batchCounts } = filterMedicineRecords(
     allBatches.filter((batch) => batchMatchesStockTab(batch, tab, now)),
     {
@@ -344,29 +353,24 @@ export default function Inventory({ forcedTab }) {
             />
           )}
 
-          {/* Status Filter Pills */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0 overflow-x-auto">
-            {[
-              { id: 'ALL', label: `All (${allBatches.length})` },
-              { id: 'AVAILABLE', label: `Available (${summary.availableBatches})` },
-              { id: 'NEAR_EXPIRY', label: `Near Expiry (${summary.nearExpiryBatches})` },
-              { id: 'EXPIRED', label: `Expired (${summary.expiredBatches})` },
-              { id: 'DAMAGED', label: `Damaged (${summary.damagedBatches})` },
-            ].map((st) => (
-              <button
-                key={st.id}
-                type="button"
-                onClick={() => setTab(st.id)}
-                className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer whitespace-nowrap ${
-                  tab === st.id
-                    ? 'bg-white text-slate-900 shadow-sm'
-                    : 'text-slate-500 hover:text-slate-800'
-                }`}
+          {/* Stock Status Dropdown Menu */}
+          {tab !== 'audit' && tab !== 'COMPANIES' && (
+            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <select
+                value={['ALL', 'AVAILABLE', 'NEAR_EXPIRY', 'EXPIRED', 'DAMAGED'].includes(tab) ? tab : 'ALL'}
+                onChange={(e) => setTab(e.target.value)}
+                className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[175px] truncate"
+                aria-label="Filter inventory by stock status"
               >
-                {st.label}
-              </button>
-            ))}
-          </div>
+                <option value="ALL">📦 All Stock ({statusCounts.ALL})</option>
+                <option value="AVAILABLE">✓ Available ({statusCounts.AVAILABLE})</option>
+                <option value="NEAR_EXPIRY">⏳ Near Expiry ({statusCounts.NEAR_EXPIRY})</option>
+                <option value="EXPIRED">⚠️ Expired ({statusCounts.EXPIRED})</option>
+                <option value="DAMAGED">🔻 Damaged ({statusCounts.DAMAGED})</option>
+              </select>
+            </div>
+          )}
         </div>
       </div>
       {tab !== 'audit' && tab !== 'COMPANIES' && (
@@ -375,7 +379,18 @@ export default function Inventory({ forcedTab }) {
             Showing <b className="text-slate-800">{tab === 'adjustments' ? filteredAdjustments.length : batches.length}</b> {tab === 'adjustments' ? 'adjustments' : 'batches'}
             {tab !== 'adjustments' && <> · {batches.reduce((total, batch) => total + (Number(batch.qty) || 0), 0)} stock units</>}
           </p>
-          {(search || group !== 'all') && <button type="button" onClick={clearFilters} className="text-xs font-semibold text-emerald-700 hover:text-emerald-900">Clear form & search</button>}
+          {(search || group !== 'all' || companyFilter !== 'all' || (tab !== 'ALL' && tab !== 'adjustments')) && (
+            <button
+              type="button"
+              onClick={() => {
+                clearFilters()
+                setTab('ALL')
+              }}
+              className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 cursor-pointer"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       )}
 
