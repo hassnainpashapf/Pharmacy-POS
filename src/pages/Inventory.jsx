@@ -190,9 +190,6 @@ export default function Inventory({ forcedTab }) {
                 ? '⏳ Batch & Expiry Management'
                 : '📦 Stock Master Management'}
             </span>
-            <span className="text-[10px] font-bold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-sm border border-indigo-200">
-              {tab === 'audit' ? 'Physical Count' : tab === 'COMPANIES' ? 'Company Grouped' : 'FEFO Managed'}
-            </span>
           </h2>
           <p className="text-xs text-slate-500 mt-1">
             {tab === 'COMPANIES'
