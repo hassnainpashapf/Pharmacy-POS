@@ -227,31 +227,6 @@ export default function Inventory({ forcedTab }) {
         })}
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-1 bg-slate-100 p-0.5 rounded-sm border border-slate-300 w-fit">
-        {[
-          ['ALL', `All Batches (${allBatches.length})`],
-          ['COMPANIES', `🏢 By Company (${distinctCompanies.length})`],
-          ['AVAILABLE', `Available (${summary.available} units)`],
-          ['NEAR_EXPIRY', `Near Expiry (FEFO) (${allBatches.filter((b) => batchMatchesStockTab(b, 'NEAR_EXPIRY', now) && b.qty > 0).reduce((a, b) => a + b.qty, 0)} units)`],
-          ['EXPIRED', `Expired (${summary.expired} units)`],
-          ['DAMAGED', `Damaged (${summary.damaged} units)`],
-          ['RETURNED', `Returned (${summary.returned} units)`],
-          ['adjustments', `Adjustment History (${adjustments.length})`],
-          ['audit', `📋 Stock Audit (Physical Count)`],
-        ].map(([k, label]) => (
-          <button
-            key={k}
-            onClick={() => setTab(k)}
-            aria-pressed={tab === k}
-            className={`px-3 py-1 rounded-sm text-xs font-bold transition-all ${
-              tab === k ? 'bg-[#e9f5f2] text-[#006d69] shadow-xs border border-[#a2ded5]' : 'text-slate-600 hover:text-slate-900 border border-transparent'
-            }`}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
 
       {tab !== 'audit' && tab !== 'COMPANIES' && (
         <MedicineGroupFilter
