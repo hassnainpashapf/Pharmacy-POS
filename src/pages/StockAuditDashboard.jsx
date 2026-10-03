@@ -230,11 +230,21 @@ export default function StockAuditDashboard() {
     document.body.removeChild(link)
   }
 
-  // Past audits date filtering
+  // Past audits date filtering & search
   const [auditDateFilter, setAuditDateFilter] = useDateFilterState('all')
+  const [auditSearch, setAuditSearch] = useState('')
   const filteredAudits = useMemo(() => {
-    return pastAudits.filter((a) => matchesDateFilter(a.date, auditDateFilter))
-  }, [pastAudits, auditDateFilter])
+    let list = pastAudits.filter((a) => matchesDateFilter(a.date, auditDateFilter))
+    if (auditSearch.trim()) {
+      const term = auditSearch.toLowerCase()
+      list = list.filter((a) =>
+        (a.auditNo && a.auditNo.toLowerCase().includes(term)) ||
+        (a.title && a.title.toLowerCase().includes(term)) ||
+        (a.auditor && a.auditor.toLowerCase().includes(term))
+      )
+    }
+    return list
+  }, [pastAudits, auditDateFilter, auditSearch])
 
   return (
     <div className="space-y-4 w-full pb-16 font-sans text-slate-800">
@@ -421,9 +431,9 @@ export default function StockAuditDashboard() {
       {/* SUB-TAB 1: LIVE AUDIT WORKSHEET */}
       {subTab === 'worksheet' && (
         <div className="space-y-3">
-          {/* Controls Bar: Search, Filters, Variance Pills */}
-          <div className="bg-white p-2.5 border border-slate-200 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-2 shadow-2xs">
-            <div className="flex flex-wrap items-center gap-2 flex-1 w-full">
+          {/* Search & Filter Toolbar */}
+          <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
               {/* Direct Search Bar */}
               <div className="relative flex-1 min-w-[220px]">
                 <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -432,13 +442,13 @@ export default function StockAuditDashboard() {
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Search medicine, generic, barcode, company..."
-                  className="w-full bg-slate-50 border border-slate-300 rounded-sm pl-9 pr-8 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500"
+                  className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
                 {q && (
                   <button
                     type="button"
                     onClick={() => setQ('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
@@ -446,7 +456,7 @@ export default function StockAuditDashboard() {
               </div>
 
               {/* Company Filter Dropdown */}
-              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-300 rounded-sm px-2.5 py-1.5 shrink-0">
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
                 <Building2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                 <select
                   value={companyFilter}
@@ -462,37 +472,37 @@ export default function StockAuditDashboard() {
               </div>
 
               {/* Status Filter Buttons */}
-              <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200 shrink-0">
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0">
                 {[
                   { id: 'ALL', label: `All (${auditData.length})` },
-                  { id: 'KAM', label: `🔻 Shortages (${kamItems.length})`, color: 'text-rose-700 bg-rose-50 border-rose-200' },
-                  { id: 'ZYADA', label: `🔺 Excess (${zyadaItems.length})`, color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
-                  { id: 'MATCHED', label: `✓ Matched (${matchedItems.length})`, color: 'text-slate-700 bg-slate-50 border-slate-200' },
+                  { id: 'KAM', label: `🔻 Shortages (${kamItems.length})` },
+                  { id: 'ZYADA', label: `🔺 Excess (${zyadaItems.length})` },
+                  { id: 'MATCHED', label: `✓ Matched (${matchedItems.length})` },
                 ].map((f) => (
                   <button
                     key={f.id}
                     type="button"
                     onClick={() => setVarianceFilter(f.id)}
-                    className={`px-2.5 py-1 rounded text-xs font-bold transition-all cursor-pointer ${
+                    className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
                       varianceFilter === f.id
-                        ? f.color || 'bg-white text-slate-900 shadow-2xs border border-slate-200'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-800'
                     }`}
                   >
                     {f.label}
                   </button>
                 ))}
               </div>
-            </div>
 
-            <button
-              type="button"
-              onClick={handleResetAll}
-              className="text-xs font-bold text-slate-500 hover:text-rose-600 px-2.5 py-1 rounded-lg border border-slate-200 hover:border-rose-200 bg-white hover:bg-rose-50 transition shrink-0 self-end md:self-auto cursor-pointer"
-              title="Reset all entered counts back to current system stock"
-            >
-              Reset Counts
-            </button>
+              <button
+                type="button"
+                onClick={handleResetAll}
+                className="text-xs font-bold text-slate-500 hover:text-rose-600 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-rose-200 bg-white hover:bg-rose-50 transition shrink-0 cursor-pointer"
+                title="Reset all entered counts back to current system stock"
+              >
+                Reset Counts
+              </button>
+            </div>
           </div>
 
           {/* Worksheet Table */}
@@ -656,18 +666,32 @@ export default function StockAuditDashboard() {
 
       {/* SUB-TAB 2: PAST AUDIT HISTORY */}
       {subTab === 'history' && (
-        <div className="bg-white border border-slate-200 rounded-xl shadow-xs p-4 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
-            <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-[#3b1734]" />
-              <span>Past Audit History Sessions</span>
-            </h2>
-            <span className="text-xs text-slate-400">{filteredAudits.length} recorded sessions</span>
+        <div className="space-y-3">
+          {/* Search & Date Filter Card */}
+          <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <DateFilterBar filterState={auditDateFilter} onChange={setAuditDateFilter} />
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search audit #, title, or auditor name..."
+                value={auditSearch}
+                onChange={(e) => setAuditSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+              />
+            </div>
           </div>
 
-          <DateFilterBar filterState={auditDateFilter} onChange={setAuditDateFilter} />
+          <div className="bg-white border border-slate-200 rounded-xl shadow-xs p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
+              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-[#3b1734]" />
+                <span>Past Audit History Sessions</span>
+              </h2>
+              <span className="text-xs text-slate-400">{filteredAudits.length} recorded sessions</span>
+            </div>
 
-          {!filteredAudits.length && (
+            {!filteredAudits.length && (
             <p className="text-xs text-slate-400 py-8 text-center">
               No past stock audit sessions found. Perform and save an audit from the Live Worksheet tab!
             </p>
@@ -711,6 +735,7 @@ export default function StockAuditDashboard() {
               </div>
             ))}
           </div>
+        </div>
         </div>
       )}
 

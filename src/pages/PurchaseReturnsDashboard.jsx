@@ -72,9 +72,14 @@ export default function PurchaseReturnsDashboard() {
     }
   }, [allReturns])
 
+  const [settlementFilter, setSettlementFilter] = useState('ALL')
+
   // Filtered returns list
   const filteredReturns = useMemo(() => {
     let list = allReturns.filter((r) => matchesDateFilter(r.date || r.createdAt, dateFilter))
+    if (settlementFilter !== 'ALL') {
+      list = list.filter((r) => r.settlementType === settlementFilter)
+    }
     if (!searchQuery.trim()) return list
     const q = searchQuery.toLowerCase()
     return list.filter(
@@ -83,7 +88,7 @@ export default function PurchaseReturnsDashboard() {
         r.supplierName.toLowerCase().includes(q) ||
         (r.items || []).some((it) => it.medicineName.toLowerCase().includes(q))
     )
-  }, [allReturns, dateFilter, searchQuery])
+  }, [allReturns, dateFilter, settlementFilter, searchQuery])
 
   // Available batches for selected supplier or general
   const eligibleBatches = useMemo(() => {
@@ -300,28 +305,50 @@ export default function PurchaseReturnsDashboard() {
         </div>
       </div>
 
-      {/* 3. Returns List Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        {/* Table Toolbar */}
-        <div className="p-3 sm:p-4 border-b border-slate-100 bg-slate-50/70 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div>
-              <h2 className="text-sm font-bold text-slate-900">Debit Notes & Returns ({filteredReturns.length})</h2>
-            </div>
+      {/* ── Search & Filter Toolbar ── */}
+      <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+        <DateFilterBar filterState={dateFilter} onChange={setDateFilter} />
 
-            <div className="relative w-full sm:w-72">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search return or supplier..."
-                className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
-              />
-            </div>
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search return note #, supplier, or medicine..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+            />
           </div>
 
-          <DateFilterBar filterState={dateFilter} onChange={setDateFilter} />
+          {/* Settlement Method Pills */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0">
+            {[
+              { id: 'ALL', label: 'All Returns' },
+              { id: 'CREDIT_NOTE', label: 'Credit Note' },
+              { id: 'CASH_REFUND', label: 'Cash Refund' },
+            ].map((st) => (
+              <button
+                key={st.id}
+                type="button"
+                onClick={() => setSettlementFilter(st.id)}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
+                  settlementFilter === st.id
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                {st.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Returns List Table */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div className="p-3 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center">
+          <h2 className="text-xs font-bold text-slate-900">Debit Notes & Returns ({filteredReturns.length})</h2>
         </div>
 
         {/* Table */}

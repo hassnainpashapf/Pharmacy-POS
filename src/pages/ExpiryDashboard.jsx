@@ -409,11 +409,38 @@ export default function ExpiryDashboard() {
       </div>
 
       {/* 3. Filters & Batch Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-        {/* Toolbar */}
-        <div className="p-3 sm:p-4 border-b border-slate-100 bg-slate-50/70 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-          {/* Status Tabs */}
-          <div className="flex flex-wrap items-center gap-1.5 bg-slate-200/60 p-1 rounded-xl">
+      {/* ── Search & Filter Toolbar ── */}
+      <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search medicine name or batch number..."
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+            />
+          </div>
+
+          {/* Company Filter Dropdown */}
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+            <Building2 className="w-3.5 h-3.5 text-[#714B67]" />
+            <select
+              value={companyFilter}
+              onChange={(e) => setCompanyFilter(e.target.value)}
+              className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
+            >
+              <option value="ALL">🏢 All Companies ({distinctCompanies.length})</option>
+              {distinctCompanies.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Status Tabs / Filter Pills */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0 overflow-x-auto">
             {[
               ['CRITICAL', `0–30 Days (${stats.criticalBatches})`],
               ['EXPIRED', `Expired (${stats.expiredBatches})`],
@@ -425,45 +452,23 @@ export default function ExpiryDashboard() {
                 key={tabKey}
                 type="button"
                 onClick={() => setFilterTab(tabKey)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer whitespace-nowrap ${
                   filterTab === tabKey
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 {tabLabel}
               </button>
             ))}
           </div>
+        </div>
+      </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Company Dropdown */}
-            <div className="flex items-center gap-1.5 bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs">
-              <Building2 className="w-3.5 h-3.5 text-slate-400" />
-              <select
-                value={companyFilter}
-                onChange={(e) => setCompanyFilter(e.target.value)}
-                className="bg-transparent font-bold text-slate-700 outline-none cursor-pointer max-w-[150px] truncate"
-              >
-                <option value="ALL">🏢 All Companies ({distinctCompanies.length})</option>
-                {distinctCompanies.map((c) => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Search */}
-            <div className="relative flex-1 sm:w-60">
-              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search medicine or batch..."
-                className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
-              />
-            </div>
-          </div>
+      {/* 3. Batches Table */}
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div className="p-3 border-b border-slate-100 bg-slate-50/70 flex justify-between items-center">
+          <h2 className="text-xs font-bold text-slate-900">Batches & Expiry Ledger ({filteredBatches.length})</h2>
         </div>
 
         {/* Batches Table */}

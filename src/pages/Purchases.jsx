@@ -137,11 +137,17 @@ export default function Purchases({ forcedTab }) {
 
   // Inward Purchases & GRN Filters
   const [grnSearch, setGrnSearch] = useState('')
+  const [grnStatusFilter, setGrnStatusFilter] = useState('ALL') // 'ALL' | 'PAID' | 'DUE'
   const [grnDateFilter, setGrnDateFilter] = useDateFilterState('all')
 
   const filteredPurchases = useMemo(() => {
     return (db.purchases || []).filter((p) => {
       const matchDate = matchesDateFilter(p.date, grnDateFilter)
+      const due = p.due !== undefined ? p.due : (p.total - (p.paid || 0))
+      const matchStatus =
+        grnStatusFilter === 'ALL' ||
+        (grnStatusFilter === 'PAID' && due <= 0) ||
+        (grnStatusFilter === 'DUE' && due > 0)
       const sup = supplierById(p.supplierId)
       const q = grnSearch.toLowerCase().trim()
       const matchSearch =
@@ -150,9 +156,9 @@ export default function Purchases({ forcedTab }) {
         p.invoiceNo?.toLowerCase().includes(q) ||
         sup?.name?.toLowerCase().includes(q) ||
         (p.items || []).some((it) => it.name?.toLowerCase().includes(q) || it.batchNo?.toLowerCase().includes(q))
-      return matchDate && matchSearch
+      return matchDate && matchStatus && matchSearch
     })
-  }, [db.purchases, grnDateFilter, grnSearch])
+  }, [db.purchases, grnDateFilter, grnStatusFilter, grnSearch])
 
   // Purchase Returns Data & Filters
   const [returnSearch, setReturnSearch] = useState('')
@@ -584,6 +590,45 @@ export default function Purchases({ forcedTab }) {
             </div>
           </div>
 
+          {/* Search & Filter Toolbar */}
+          <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <DateFilterBar filterState={grnDateFilter} onChange={setGrnDateFilter} />
+
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search GRN #, invoice #, supplier, or medicine..."
+                  value={grnSearch}
+                  onChange={(e) => setGrnSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              {/* Status Filter Pills */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0">
+                {[
+                  { id: 'ALL', label: 'All Bills' },
+                  { id: 'PAID', label: 'Paid' },
+                  { id: 'DUE', label: 'Balance Due' },
+                ].map((st) => (
+                  <button
+                    key={st.id}
+                    onClick={() => setGrnStatusFilter(st.id)}
+                    className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
+                      grnStatusFilter === st.id
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {st.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* Inward Purchases & GRN Invoices Ledger */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
@@ -601,21 +646,6 @@ export default function Purchases({ forcedTab }) {
                 <Plus className="w-3.5 h-3.5" />
                 + Add GRN / Inward Stock
               </button>
-            </div>
-
-            {/* GRN Date Filter & Search */}
-            <div className="p-3 border-b border-slate-200 bg-white space-y-2.5">
-              <DateFilterBar filterState={grnDateFilter} onChange={setGrnDateFilter} />
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search GRN #, invoice #, supplier, or medicine..."
-                  value={grnSearch}
-                  onChange={(e) => setGrnSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                />
-              </div>
             </div>
 
             <div className="overflow-x-auto">
@@ -755,7 +785,7 @@ export default function Purchases({ forcedTab }) {
                     onClick={() => setReturnReasonFilter(rf.id)}
                     className={`px-2.5 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
                       returnReasonFilter === rf.id
-                        ? 'bg-white text-purple-900 shadow-sm'
+                        ? 'bg-white text-slate-900 shadow-sm'
                         : 'text-slate-500 hover:text-slate-800'
                     }`}
                   >

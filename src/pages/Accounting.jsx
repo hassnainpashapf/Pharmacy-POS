@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useLocation } from 'react-router'
 import { useDB, profitAndLoss, fmt, addExpense } from '../lib/db'
+import { Search } from 'lucide-react'
 import DateFilterBar, { matchesDateFilter, useDateFilterState } from '../components/DateFilterBar'
 
 export default function Accounting() {
@@ -91,10 +92,23 @@ function ExpensesPanel({ db }) {
   const [amount, setAmount] = useState('')
   const [message, setMessage] = useState('')
   const [expenseDateFilter, setExpenseDateFilter] = useDateFilterState('all')
+  const [expenseSearch, setExpenseSearch] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('ALL')
 
   const filteredExpenses = useMemo(() => {
-    return (db.expenses || []).filter((e) => matchesDateFilter(e.date, expenseDateFilter))
-  }, [db.expenses, expenseDateFilter])
+    let list = (db.expenses || []).filter((e) => matchesDateFilter(e.date, expenseDateFilter))
+    if (categoryFilter !== 'ALL') {
+      list = list.filter((e) => e.category === categoryFilter)
+    }
+    if (expenseSearch.trim()) {
+      const q = expenseSearch.toLowerCase()
+      list = list.filter((e) =>
+        (e.note && e.note.toLowerCase().includes(q)) ||
+        (e.category && e.category.toLowerCase().includes(q))
+      )
+    }
+    return list
+  }, [db.expenses, expenseDateFilter, categoryFilter, expenseSearch])
 
   function saveExpense(e) {
     e.preventDefault()
@@ -119,15 +133,57 @@ function ExpensesPanel({ db }) {
           <button className="w-full bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl py-2 font-bold cursor-pointer transition-all">Save Expense</button>
           {message && <p className="text-xs font-semibold text-[#008f8b]">{message}</p>}
         </form>
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-5 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-slate-900">Recent Expenses ({filteredExpenses.length})</h3>
-            <span className="text-xs text-slate-500 font-semibold">
-              Total: {fmt(filteredExpenses.reduce((s, e) => s + Number(e.amount || 0), 0))}
-            </span>
+        <div className="lg:col-span-2 space-y-3">
+          {/* ── Search & Filter Toolbar ── */}
+          <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <DateFilterBar filterState={expenseDateFilter} onChange={setExpenseDateFilter} />
+
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search expense description or category..."
+                  value={expenseSearch}
+                  onChange={(e) => setExpenseSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                />
+              </div>
+
+              {/* Category Filter Pills */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0 overflow-x-auto">
+                {[
+                  { id: 'ALL', label: 'All' },
+                  { id: 'Operations', label: 'Operations' },
+                  { id: 'Utilities', label: 'Utilities' },
+                  { id: 'Rent', label: 'Rent' },
+                  { id: 'Transport', label: 'Transport' },
+                  { id: 'Payroll', label: 'Payroll' },
+                ].map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setCategoryFilter(c.id)}
+                    className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer whitespace-nowrap ${
+                      categoryFilter === c.id
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <DateFilterBar filterState={expenseDateFilter} onChange={setExpenseDateFilter} />
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden p-5 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <h3 className="font-bold text-slate-900">Recent Expenses ({filteredExpenses.length})</h3>
+              <span className="text-xs text-slate-500 font-semibold">
+                Total: {fmt(filteredExpenses.reduce((s, e) => s + Number(e.amount || 0), 0))}
+              </span>
+            </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -158,6 +214,7 @@ function ExpensesPanel({ db }) {
               </tbody>
             </table>
           </div>
+        </div>
         </div>
       </div>
     </div>

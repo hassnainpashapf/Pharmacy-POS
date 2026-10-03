@@ -252,6 +252,7 @@ export default function SalesHistory() {
   const canDel = can('deleteSales')
 
   const [search, setSearch] = useState('')
+  const [payMethodFilter, setPayMethodFilter] = useState('ALL')
   const [dateFilter, setDateFilter] = useDateFilterState('all')
   const [viewSale, setViewSale] = useState(null)
   const [editSale, setEditSale] = useState(null)
@@ -271,6 +272,13 @@ export default function SalesHistory() {
   // Filtered list
   const filtered = useMemo(() => {
     let list = all.filter(s => matchesDateFilter(s.date, dateFilter))
+    if (payMethodFilter !== 'ALL') {
+      list = list.filter(s => {
+        const pm = (s.paymentMethod || s.paymentType || 'CASH').toUpperCase()
+        if (payMethodFilter === 'SPLIT') return Boolean(s.splitPayment)
+        return pm === payMethodFilter
+      })
+    }
     if (search.trim()) {
       const q = search.toLowerCase()
       list = list.filter(s =>
@@ -280,7 +288,7 @@ export default function SalesHistory() {
       )
     }
     return list
-  }, [all, dateFilter, search, refresh])
+  }, [all, dateFilter, payMethodFilter, search, refresh])
 
   const bump = () => setRefresh(r => r + 1)
 
@@ -333,17 +341,44 @@ export default function SalesHistory() {
         })}
       </div>
 
-      {/* ── Filters & Search ── */}
-      <div className="space-y-3">
+      {/* ── Search & Filter Toolbar ── */}
+      <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
         <DateFilterBar filterState={dateFilter} onChange={setDateFilter} />
 
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text" placeholder="Search invoice, customer, medicine…"
-            value={search} onChange={e => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#714B67]/30 focus:border-[#714B67]"
-          />
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search invoice #, customer name, or medicine..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+            />
+          </div>
+
+          {/* Payment Method Filter Pills */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0">
+            {[
+              { id: 'ALL', label: 'All Sales' },
+              { id: 'CASH', label: 'Cash' },
+              { id: 'CARD', label: 'Card' },
+              { id: 'SPLIT', label: 'Split' },
+            ].map((pm) => (
+              <button
+                key={pm.id}
+                type="button"
+                onClick={() => setPayMethodFilter(pm.id)}
+                className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
+                  payMethodFilter === pm.id
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                {pm.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

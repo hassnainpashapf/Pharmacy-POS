@@ -10,11 +10,23 @@ export default function Returns() {
   const [err, setErr] = useState('')
   const [done, setDone] = useState('')
   const [historyDateFilter, setHistoryDateFilter] = useDateFilterState('all')
+  const [historySearch, setHistorySearch] = useState('')
   const history = returnsHistory()
 
   const filteredHistory = useMemo(() => {
-    return history.filter((r) => matchesDateFilter(r.date, historyDateFilter))
-  }, [history, historyDateFilter])
+    let list = history.filter((r) => matchesDateFilter(r.date, historyDateFilter))
+    if (historySearch.trim()) {
+      const term = historySearch.toLowerCase()
+      list = list.filter((r) =>
+        (r.invoiceNo && r.invoiceNo.toLowerCase().includes(term)) ||
+        (r.items || []).some((x) => {
+          const m = medicineById(x.medicineId)
+          return m && m.name && m.name.toLowerCase().includes(term)
+        })
+      )
+    }
+    return list
+  }, [history, historyDateFilter, historySearch])
 
   function search() {
     setErr('')
@@ -163,13 +175,26 @@ export default function Returns() {
         </div>
       )}
 
+      {/* ── Search & Filter Toolbar ── */}
+      <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+        <DateFilterBar filterState={historyDateFilter} onChange={setHistoryDateFilter} />
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Search return history by invoice # or medicine name..."
+            value={historySearch}
+            onChange={(e) => setHistorySearch(e.target.value)}
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          />
+        </div>
+      </div>
+
       {/* Return Logs History */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-3 p-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
           <h3 className="font-bold text-slate-900 text-sm">Return & Refund History ({filteredHistory.length})</h3>
         </div>
-
-        <DateFilterBar filterState={historyDateFilter} onChange={setHistoryDateFilter} />
 
         <div className="overflow-x-auto">
           <table className="w-full text-xs">

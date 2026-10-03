@@ -14,10 +14,25 @@ export default function Wholesale() {
   const medicines = db.medicines || []
   const wholesaleOrders = db.wholesaleOrders || []
   const [orderDateFilter, setOrderDateFilter] = useDateFilterState('all')
+  const [orderSearch, setOrderSearch] = useState('')
+  const [orderStatusFilter, setOrderStatusFilter] = useState('ALL')
 
   const filteredOrders = useMemo(() => {
-    return wholesaleOrders.filter((o) => matchesDateFilter(o.createdAt || o.date, orderDateFilter))
-  }, [wholesaleOrders, orderDateFilter])
+    let list = wholesaleOrders.filter((o) => matchesDateFilter(o.createdAt || o.date, orderDateFilter))
+    if (orderStatusFilter !== 'ALL') {
+      list = list.filter((o) => (o.status || 'PENDING') === orderStatusFilter)
+    }
+    if (orderSearch.trim()) {
+      const q = orderSearch.toLowerCase()
+      list = list.filter((o) =>
+        (o.orderNo && o.orderNo.toLowerCase().includes(q)) ||
+        (o.customerName && o.customerName.toLowerCase().includes(q)) ||
+        (o.company && o.company.toLowerCase().includes(q)) ||
+        (o.phone && o.phone.toLowerCase().includes(q))
+      )
+    }
+    return list
+  }, [wholesaleOrders, orderDateFilter, orderStatusFilter, orderSearch])
 
   // Add carton to B2B cart
   const addBulk = (med, cartonQty = 1) => {
@@ -92,13 +107,53 @@ export default function Wholesale() {
 
       {/* Orders Tab */}
       {tab === 'orders' && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-3 p-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-slate-900 text-sm">Commercial Wholesale Invoices ({filteredOrders.length})</h3>
-            <span className="text-xs text-slate-500">Authorized B2B dispatches</span>
+        <div className="space-y-3">
+          {/* ── Search & Filter Toolbar ── */}
+          <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <DateFilterBar filterState={orderDateFilter} onChange={setOrderDateFilter} />
+
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
+              <div className="relative flex-1">
+                <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Search wholesale order #, customer, company, or phone..."
+                  value={orderSearch}
+                  onChange={(e) => setOrderSearch(e.target.value)}
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                />
+              </div>
+
+              {/* Status Filter Pills */}
+              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0">
+                {[
+                  { id: 'ALL', label: 'All Orders' },
+                  { id: 'PENDING', label: 'Pending' },
+                  { id: 'DISPATCHED', label: 'Dispatched' },
+                  { id: 'CANCELLED', label: 'Cancelled' },
+                ].map((st) => (
+                  <button
+                    key={st.id}
+                    type="button"
+                    onClick={() => setOrderStatusFilter(st.id)}
+                    className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
+                      orderStatusFilter === st.id
+                        ? 'bg-white text-slate-900 shadow-sm'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {st.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
-          <DateFilterBar filterState={orderDateFilter} onChange={setOrderDateFilter} />
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden space-y-3 p-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <h3 className="font-bold text-slate-900 text-sm">Commercial Wholesale Invoices ({filteredOrders.length})</h3>
+              <span className="text-xs text-slate-500">Authorized B2B dispatches</span>
+            </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -157,6 +212,8 @@ export default function Wholesale() {
               ))}
             </tbody>
           </table>
+        </div>
+        </div>
         </div>
       )}
 

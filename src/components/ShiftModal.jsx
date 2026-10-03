@@ -25,6 +25,7 @@ import {
   PlusCircle,
   Building,
   DollarSign,
+  Search,
 } from 'lucide-react'
 
 export default function ShiftModal({ isOpen, onClose }) {
@@ -34,9 +35,19 @@ export default function ShiftModal({ isOpen, onClose }) {
   const counters = getCounters()
   const history = getShiftHistory()
   const [shiftDateFilter, setShiftDateFilter] = useDateFilterState('all')
+  const [shiftSearch, setShiftSearch] = useState('')
   const filteredHistory = useMemo(() => {
-    return history.filter((s) => matchesDateFilter(s.openedAt || s.date, shiftDateFilter))
-  }, [history, shiftDateFilter])
+    let list = history.filter((s) => matchesDateFilter(s.openedAt || s.date, shiftDateFilter))
+    if (shiftSearch.trim()) {
+      const q = shiftSearch.toLowerCase()
+      list = list.filter((s) =>
+        (s.shiftNo && s.shiftNo.toLowerCase().includes(q)) ||
+        (s.counterName && s.counterName.toLowerCase().includes(q)) ||
+        (s.cashierName && s.cashierName.toLowerCase().includes(q))
+      )
+    }
+    return list
+  }, [history, shiftDateFilter, shiftSearch])
 
   const [activeTab, setActiveTab] = useState(currentShift ? 'active' : 'start')
   const [selectedCounter, setSelectedCounter] = useState(activeCounter())
@@ -577,7 +588,20 @@ export default function ShiftModal({ isOpen, onClose }) {
           {/* TAB: SHIFT HISTORY */}
           {activeTab === 'history' && (
             <div className="space-y-3">
-              <DateFilterBar filterState={shiftDateFilter} onChange={setShiftDateFilter} />
+              {/* ── Search & Filter Toolbar ── */}
+              <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                <DateFilterBar filterState={shiftDateFilter} onChange={setShiftDateFilter} />
+                <div className="relative">
+                  <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search shift #, counter, or cashier name..."
+                    value={shiftSearch}
+                    onChange={(e) => setShiftSearch(e.target.value)}
+                    className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                  />
+                </div>
+              </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">

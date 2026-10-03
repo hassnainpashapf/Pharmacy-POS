@@ -179,33 +179,34 @@ export default function SalesHistory({ onReprint }) {
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="bg-white p-2.5 rounded-xl border border-slate-300 shadow-2xs mb-2.5 space-y-2.5 shrink-0">
+      {/* ── Search & Filter Toolbar ── */}
+      <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm shrink-0 mb-3">
         <DateFilterBar filterState={dateFilter} onChange={setDateFilter} />
 
-        <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3">
           {/* Search Input */}
-          <div className="relative flex-1 min-w-[240px]">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by Invoice # (INV-00001), Medicine, Batch, Customer, or Cashier..."
-              className="w-full bg-slate-50 border border-slate-300 rounded-lg pl-9 pr-8 py-2 text-xs font-medium focus:bg-white focus:outline-none focus:ring-1 focus:ring-emerald-600 focus:border-emerald-600"
+              placeholder="Search by invoice #, medicine, batch, customer, or cashier..."
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
             />
             {search && (
               <button
+                type="button"
                 onClick={() => setSearch('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
-          {/* Payment Filter */}
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
+          {/* Payment Filter Pills */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0">
             {[
               { id: 'ALL', label: 'All Methods' },
               { id: 'CASH', label: 'Cash' },
@@ -214,11 +215,12 @@ export default function SalesHistory({ onReprint }) {
             ].map((tab) => (
               <button
                 key={tab.id}
+                type="button"
                 onClick={() => setPayFilter(tab.id)}
-                className={`px-2.5 py-1 rounded-md font-bold text-xs transition-colors cursor-pointer ${
+                className={`px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer ${
                   payFilter === tab.id
-                    ? 'bg-white text-slate-900 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 {tab.label}
