@@ -192,7 +192,7 @@ export default function StockAuditDashboard() {
       {/* 1. Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black shadow-md shadow-amber-500/20">
+          <div className="w-10 h-10 rounded-xl bg-[#714B67] text-white flex items-center justify-center font-black shadow-md shadow-[#714B67]/20">
             <ClipboardCheck className="w-5 h-5" />
           </div>
           <div>
@@ -218,7 +218,7 @@ export default function StockAuditDashboard() {
           <button
             type="button"
             onClick={handleReconcileAndSave}
-            className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-1.5 transition-all active:scale-95"
+            className="px-3.5 py-1.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white text-xs font-bold shadow-md shadow-[#714B67]/20 flex items-center gap-1.5 transition-all active:scale-95"
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>Reconcile Stock</span>
@@ -240,7 +240,7 @@ export default function StockAuditDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-bold">Items Audited</span>
-            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
               <ClipboardCheck className="w-4 h-4" />
             </div>
           </div>
@@ -336,7 +336,7 @@ export default function StockAuditDashboard() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search medicine to add..."
-              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
             />
 
             {/* Dropdown with search matches */}
@@ -350,13 +350,13 @@ export default function StockAuditDashboard() {
                     key={m.id}
                     type="button"
                     onClick={() => addMedicineToWorksheet(m)}
-                    className="w-full p-2.5 text-left hover:bg-amber-50 flex items-center justify-between text-xs transition-colors"
+                    className="w-full p-2.5 text-left hover:bg-[#f5eef4]/50 flex items-center justify-between text-xs transition-colors"
                   >
                     <div>
                       <div className="font-bold text-slate-900">{m.name}</div>
                       <div className="text-[10px] text-slate-400">{m.manufacturer || 'General'}</div>
                     </div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#f5eef4] text-[#714B67] border border-[#decddd]">
                       + Add to Sheet
                     </span>
                   </button>
@@ -496,7 +496,7 @@ export default function StockAuditDashboard() {
           <button
             type="button"
             onClick={handleReconcileAndSave}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 active:scale-95 transition-all"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white font-bold text-xs shadow-md shadow-[#714B67]/20 flex items-center justify-center gap-2 active:scale-95 transition-all"
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>Save Audit & Reconcile Stock</span>
@@ -508,7 +508,7 @@ export default function StockAuditDashboard() {
       <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5 space-y-3">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-amber-500" />
+            <Calendar className="w-4 h-4 text-[#714B67]" />
             <span>Past Audit History</span>
           </h2>
           <span className="text-xs text-slate-400">{pastAudits.length} audit sessions recorded</span>

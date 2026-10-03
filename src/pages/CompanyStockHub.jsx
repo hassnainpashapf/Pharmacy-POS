@@ -243,7 +243,7 @@ export default function CompanyStockHub() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black shadow-md shadow-indigo-600/20">
+            <div className="w-10 h-10 rounded-xl bg-[#714B67] text-white flex items-center justify-center font-black shadow-md shadow-[#714B67]/20">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
@@ -273,7 +273,7 @@ export default function CompanyStockHub() {
               setMedCompany(selectedCompany !== 'ALL' ? selectedCompany : 'GSK Pakistan')
               setShowAddMedModal(true)
             }}
-            className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-1.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white text-xs font-bold shadow-md shadow-[#714B67]/20 flex items-center gap-1.5 transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>+ Add Medicine</span>
@@ -287,7 +287,7 @@ export default function CompanyStockHub() {
         <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-bold">Manufacturers</span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
@@ -375,7 +375,7 @@ export default function CompanyStockHub() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search company or medicine..."
-              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 shadow-xs"
+              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67] shadow-xs"
             />
           </div>
         </div>
@@ -388,8 +388,8 @@ export default function CompanyStockHub() {
             onClick={() => setSelectedCompany('ALL')}
             className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
               selectedCompany === 'ALL'
-                ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                : 'bg-white border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/30 text-slate-800'
+                ? 'bg-[#714B67] border-[#714B67] text-white shadow-md shadow-[#714B67]/20'
+                : 'bg-white border-slate-200 hover:border-[#714B67]/40 hover:bg-[#f5eef4]/30 text-slate-800'
             }`}
           >
             <div>
@@ -412,8 +412,8 @@ export default function CompanyStockHub() {
                 onClick={() => setSelectedCompany(c.name)}
                 className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between cursor-pointer ${
                   isSelected
-                    ? 'bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                    : 'bg-white border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/30 text-slate-800'
+                    ? 'bg-[#714B67] border-[#714B67] text-white shadow-md shadow-[#714B67]/20'
+                    : 'bg-white border-slate-200 hover:border-[#714B67]/40 hover:bg-[#f5eef4]/30 text-slate-800'
                 }`}
               >
                 <div>
@@ -463,7 +463,7 @@ export default function CompanyStockHub() {
               <button
                 type="button"
                 onClick={() => setSelectedCompany('ALL')}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-800 px-2.5 py-1 rounded-lg border border-indigo-200 bg-indigo-50/50 transition-colors"
+                className="text-xs font-bold text-[#714B67] hover:text-[#5c3c54] px-2.5 py-1 rounded-lg border border-[#decddd] bg-[#f5eef4]/50 transition-colors"
               >
                 ← View All
               </button>
@@ -526,8 +526,8 @@ export default function CompanyStockHub() {
                       <div className="text-[11px] text-slate-400 mt-0.5">{m.generic || 'Generic N/A'}</div>
                     </td>
 
-                    <td className="py-3 px-3 font-semibold text-indigo-700">
-                      <span className="px-2 py-0.5 rounded bg-indigo-50 border border-indigo-100">
+                    <td className="py-3 px-3 font-semibold text-[#714B67]">
+                      <span className="px-2 py-0.5 rounded bg-[#f5eef4] border border-[#decddd]">
                         {m.manufacturer || 'Unassigned'}
                       </span>
                     </td>
@@ -591,7 +591,7 @@ export default function CompanyStockHub() {
           <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
                   <Plus className="w-4 h-4" />
                 </div>
                 <div>
@@ -617,7 +617,7 @@ export default function CompanyStockHub() {
                   value={medCompany}
                   onChange={(e) => setMedCompany(e.target.value)}
                   placeholder="e.g. GSK Pakistan, Abbott, Getz Pharma..."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold text-indigo-700 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold text-[#714B67] bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
                 />
               </div>
 
@@ -630,7 +630,7 @@ export default function CompanyStockHub() {
                     value={medName}
                     onChange={(e) => setMedName(e.target.value)}
                     placeholder="e.g. Panadol Extra"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
                   />
                 </div>
                 <div>
@@ -640,7 +640,7 @@ export default function CompanyStockHub() {
                     value={medGeneric}
                     onChange={(e) => setMedGeneric(e.target.value)}
                     placeholder="e.g. Paracetamol + Caffeine"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
                   />
                 </div>
               </div>
@@ -706,14 +706,14 @@ export default function CompanyStockHub() {
                     value={medSalePrice}
                     onChange={(e) => setMedSalePrice(e.target.value)}
                     placeholder="e.g. 195"
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold text-emerald-700"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold text-[#008f8b]"
                   />
                 </div>
               </div>
 
               <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 space-y-2.5">
                 <div className="text-[11px] font-bold text-slate-700 flex items-center gap-1">
-                  <Package className="w-3.5 h-3.5 text-indigo-600" />
+                  <Package className="w-3.5 h-3.5 text-[#714B67]" />
                   <span>Initial Batch & Stock (Optional)</span>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
@@ -759,7 +759,7 @@ export default function CompanyStockHub() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-md shadow-indigo-600/20"
+                  className="px-5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white font-bold shadow-md shadow-[#714B67]/20"
                 >
                   Save Medicine
                 </button>

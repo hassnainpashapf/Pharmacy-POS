@@ -687,27 +687,27 @@ export function CompanyStockGraph({ db, nav }) {
     }
   }, [db?.medicines, db?.batches])
 
-  const colors = ['bg-indigo-600', 'bg-blue-500', 'bg-sky-500', 'bg-slate-400']
+  const colors = ['bg-[#714B67]', 'bg-[#008f8b]', 'bg-[#8c6783]', 'bg-slate-400']
 
   return (
     <div
       onClick={() => nav('/company-stock')}
-      className="group bg-white hover:bg-indigo-50/30 border border-slate-300 hover:border-indigo-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform">
               <Building2 className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs font-bold text-slate-900 group-hover:text-indigo-900 leading-none">
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#714B67] leading-none">
                 Company Stock
               </h3>
               <p className="text-[10px] text-slate-400 mt-0.5">{stats.totalCompanies} manufacturers</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-indigo-600 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#714B67] bg-[#f5eef4] border border-[#714B67]/20 px-2 py-0.5 rounded-full group-hover:bg-[#714B67] group-hover:text-white transition-colors">
             Open <ArrowUpRight className="w-3 h-3" />
           </span>
         </div>
@@ -752,8 +752,8 @@ export function CompanyStockGraph({ db, nav }) {
       </div>
 
       <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
-        <span>Company-wise inventory breakdown</span>
-        <span className="text-indigo-600 font-bold group-hover:underline">View Hub</span>
+        <span>Company-wise inventory</span>
+        <span className="text-[#714B67] font-bold group-hover:underline">View Hub</span>
       </div>
     </div>
   )
@@ -812,22 +812,22 @@ export function StockAuditGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/stock-audit')}
-      className="group bg-white hover:bg-emerald-50/30 border border-slate-300 hover:border-emerald-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-xl bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center group-hover:scale-105 transition-transform">
               <ClipboardCheck className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs font-bold text-slate-900 group-hover:text-emerald-900 leading-none">
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#008f8b] leading-none">
                 Stock Audit & Count
               </h3>
               <p className="text-[10px] text-slate-400 mt-0.5">{stats.lastAuditDate}</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#008f8b] bg-[#e6f7f2] border border-[#b7e5dc] px-2 py-0.5 rounded-full group-hover:bg-[#008f8b] group-hover:text-white transition-colors">
             Open <ArrowUpRight className="w-3 h-3" />
           </span>
         </div>
@@ -836,7 +836,7 @@ export function StockAuditGraph({ db, nav }) {
         <div className="mt-2.5 pb-2.5 border-b border-slate-100">
           <div className="text-[11px] font-medium text-slate-500">Count Accuracy Rate</div>
           <div className="text-lg font-black text-slate-900 tracking-tight flex items-baseline gap-1.5">
-            <span className={stats.accuracy >= 90 ? 'text-emerald-700' : 'text-amber-700'}>{stats.accuracy}%</span>
+            <span className="text-[#008f8b]">{stats.accuracy}%</span>
             <span className="text-[11px] font-normal text-slate-400">({stats.totalItems} audited items)</span>
           </div>
         </div>
@@ -846,7 +846,7 @@ export function StockAuditGraph({ db, nav }) {
           <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
             {stats.matchedPct > 0 && (
               <div
-                className="bg-emerald-500 h-full transition-all duration-500"
+                className="bg-[#008f8b] h-full transition-all duration-500"
                 style={{ width: `${stats.matchedPct}%` }}
                 title={`Matched: ${stats.matched} items (${stats.matchedPct}%)`}
               />
@@ -860,7 +860,7 @@ export function StockAuditGraph({ db, nav }) {
             )}
             {stats.surplusPct > 0 && (
               <div
-                className="bg-amber-400 h-full transition-all duration-500"
+                className="bg-[#714B67] h-full transition-all duration-500"
                 style={{ width: `${stats.surplusPct}%` }}
                 title={`Surplus: ${stats.surplus} items (${stats.surplusPct}%)`}
               />
@@ -869,9 +869,9 @@ export function StockAuditGraph({ db, nav }) {
 
           {/* Breakdown Stats */}
           <div className="grid grid-cols-3 gap-1 pt-1">
-            <div className="bg-emerald-50/70 border border-emerald-100 rounded-lg p-1.5 text-center">
-              <div className="text-[10px] font-bold text-emerald-800">{stats.matched}</div>
-              <div className="text-[9px] text-emerald-600 font-medium">Matched</div>
+            <div className="bg-[#e6f7f2]/80 border border-[#b7e5dc] rounded-lg p-1.5 text-center">
+              <div className="text-[10px] font-bold text-[#008f8b]">{stats.matched}</div>
+              <div className="text-[9px] text-[#008f8b] font-medium">Matched</div>
             </div>
             <div className="bg-rose-50/70 border border-rose-100 rounded-lg p-1.5 text-center">
               <div className="text-[10px] font-bold text-rose-800">
@@ -879,11 +879,11 @@ export function StockAuditGraph({ db, nav }) {
               </div>
               <div className="text-[9px] text-rose-600 font-medium">Shortage</div>
             </div>
-            <div className="bg-amber-50/70 border border-amber-100 rounded-lg p-1.5 text-center">
-              <div className="text-[10px] font-bold text-amber-800">
+            <div className="bg-[#f5eef4]/80 border border-[#decddd] rounded-lg p-1.5 text-center">
+              <div className="text-[10px] font-bold text-[#714B67]">
                 {stats.surplusUnits > 0 ? `+${stats.surplusUnits}` : stats.surplus}
               </div>
-              <div className="text-[9px] text-amber-600 font-medium">Surplus</div>
+              <div className="text-[9px] text-[#714B67] font-medium">Excess</div>
             </div>
           </div>
         </div>
@@ -891,9 +891,9 @@ export function StockAuditGraph({ db, nav }) {
 
       <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
         <span>
-          {stats.shortageCost > 0 ? `Shortage: -PKR ${fmt(stats.shortageCost)}` : '1-click balance reconciliation'}
+          {stats.shortageCost > 0 ? `Shortage: -PKR ${fmt(stats.shortageCost)}` : '1-click reconciliation'}
         </span>
-        <span className="text-emerald-700 font-bold group-hover:underline">Start Audit</span>
+        <span className="text-[#008f8b] font-bold group-hover:underline">Start Audit</span>
       </div>
     </div>
   )
@@ -966,22 +966,22 @@ export function ExpiryActionGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/expiry-management')}
-      className="group bg-white hover:bg-orange-50/30 border border-slate-300 hover:border-orange-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-orange-100 text-orange-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform">
               <Clock className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs font-bold text-slate-900 group-hover:text-orange-900 leading-none">
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#714B67] leading-none">
                 Batch & Expiry Action
               </h3>
               <p className="text-[10px] text-slate-400 mt-0.5">FEFO Aging Radar</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-700 bg-orange-50 border border-orange-200 px-2 py-0.5 rounded-full group-hover:bg-orange-600 group-hover:text-white transition-colors">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#714B67] bg-[#f5eef4] border border-[#714B67]/20 px-2 py-0.5 rounded-full group-hover:bg-[#714B67] group-hover:text-white transition-colors">
             Open <ArrowUpRight className="w-3 h-3" />
           </span>
         </div>
@@ -990,7 +990,7 @@ export function ExpiryActionGraph({ db, nav }) {
         <div className="mt-2.5 pb-2.5 border-b border-slate-100">
           <div className="text-[11px] font-medium text-slate-500">Capital at Expiry Risk</div>
           <div className="text-lg font-black text-slate-900 tracking-tight flex items-baseline gap-1.5">
-            <span className={stats.capitalAtRisk > 0 ? 'text-rose-700' : 'text-emerald-700'}>
+            <span className={stats.capitalAtRisk > 0 ? 'text-rose-700' : 'text-[#008f8b]'}>
               PKR {fmt(stats.capitalAtRisk)}
             </span>
             <span className="text-[11px] font-normal text-slate-400">
@@ -1004,7 +1004,7 @@ export function ExpiryActionGraph({ db, nav }) {
           <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
             {stats.expiredPct > 0 && (
               <div
-                className="bg-rose-600 h-full transition-all duration-500"
+                className="bg-rose-500 h-full transition-all duration-500"
                 style={{ width: `${stats.expiredPct}%` }}
                 title={`Expired: ${stats.expiredUnits} units (${stats.expiredPct}%)`}
               />
@@ -1025,7 +1025,7 @@ export function ExpiryActionGraph({ db, nav }) {
             )}
             {stats.safePct > 0 && (
               <div
-                className="bg-emerald-500 h-full transition-all duration-500"
+                className="bg-[#008f8b] h-full transition-all duration-500"
                 style={{ width: `${stats.safePct}%` }}
                 title={`Safe (>90d): ${stats.safeUnits} units (${stats.safePct}%)`}
               />
@@ -1036,7 +1036,7 @@ export function ExpiryActionGraph({ db, nav }) {
           <div className="space-y-1 pt-1">
             <div className="flex items-center justify-between text-[10px]">
               <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-rose-600 inline-block" />
+                <span className="w-2 h-2 rounded-full bg-rose-500 inline-block" />
                 <span>Expired (&lt; 0d)</span>
               </span>
               <span className="font-bold text-rose-700 tabular-nums">
@@ -1054,18 +1054,18 @@ export function ExpiryActionGraph({ db, nav }) {
             </div>
             <div className="flex items-center justify-between text-[10px]">
               <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                <span className="w-2 h-2 rounded-full bg-[#008f8b] inline-block" />
                 <span>Safe Stock (&gt;90d)</span>
               </span>
-              <span className="font-bold text-emerald-700 tabular-nums">{fmt(stats.safeUnits)} units</span>
+              <span className="font-bold text-[#008f8b] tabular-nums">{fmt(stats.safeUnits)} units</span>
             </div>
           </div>
         </div>
       </div>
 
       <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
-        <span>FEFO Discount & Return Actions</span>
-        <span className="text-orange-700 font-bold group-hover:underline">Manage Batches</span>
+        <span>FEFO Actions &amp; Clearance</span>
+        <span className="text-[#714B67] font-bold group-hover:underline">Manage Batches</span>
       </div>
     </div>
   )
@@ -1110,22 +1110,22 @@ export function PurchaseReturnsGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/purchase-returns')}
-      className="group bg-white hover:bg-rose-50/30 border border-slate-300 hover:border-rose-400 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-sm hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform">
               <RotateCcw className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-xs font-bold text-slate-900 group-hover:text-rose-900 leading-none">
+              <h3 className="text-xs font-bold text-slate-900 group-hover:text-[#714B67] leading-none">
                 Purchase Returns
               </h3>
               <p className="text-[10px] text-slate-400 mt-0.5">{stats.totalReturns} debit vouchers</p>
             </div>
           </div>
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full group-hover:bg-rose-600 group-hover:text-white transition-colors">
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#714B67] bg-[#f5eef4] border border-[#714B67]/20 px-2 py-0.5 rounded-full group-hover:bg-[#714B67] group-hover:text-white transition-colors">
             Open <ArrowUpRight className="w-3 h-3" />
           </span>
         </div>
@@ -1134,8 +1134,8 @@ export function PurchaseReturnsGraph({ db, nav }) {
         <div className="mt-2.5 pb-2.5 border-b border-slate-100">
           <div className="text-[11px] font-medium text-slate-500">Recovered Claims (Debit Notes)</div>
           <div className="text-lg font-black text-slate-900 tracking-tight flex items-baseline gap-1.5">
-            <span className="text-rose-700">PKR {fmt(stats.totalClaims)}</span>
-            <span className="text-[11px] font-normal text-slate-400">({stats.totalUnits} returned units)</span>
+            <span className="text-[#714B67]">PKR {fmt(stats.totalClaims)}</span>
+            <span className="text-[11px] font-normal text-slate-400">({stats.totalUnits} units)</span>
           </div>
         </div>
 
@@ -1143,12 +1143,12 @@ export function PurchaseReturnsGraph({ db, nav }) {
         <div className="mt-3 space-y-2">
           <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden flex">
             <div
-              className="bg-indigo-600 h-full transition-all duration-500"
+              className="bg-[#714B67] h-full transition-all duration-500"
               style={{ width: `${stats.totalClaims > 0 ? stats.creditPct : 80}%` }}
               title={`Credit Notes: PKR ${fmt(stats.creditNotes)} (${stats.creditPct}%)`}
             />
             <div
-              className="bg-emerald-500 h-full transition-all duration-500"
+              className="bg-[#008f8b] h-full transition-all duration-500"
               style={{ width: `${stats.totalClaims > 0 ? stats.cashPct : 20}%` }}
               title={`Cash Refunds: PKR ${fmt(stats.cashRefunds)} (${stats.cashPct}%)`}
             />
@@ -1158,19 +1158,19 @@ export function PurchaseReturnsGraph({ db, nav }) {
           <div className="space-y-1 pt-1">
             <div className="flex items-center justify-between text-[10px]">
               <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-indigo-600 inline-block" />
+                <span className="w-2 h-2 rounded-full bg-[#714B67] inline-block" />
                 <span>Credit Notes</span>
               </span>
-              <span className="font-bold text-indigo-700 tabular-nums">
+              <span className="font-bold text-[#714B67] tabular-nums">
                 PKR {fmt(stats.creditNotes)} <span className="font-normal text-slate-400">({stats.creditPct}%)</span>
               </span>
             </div>
             <div className="flex items-center justify-between text-[10px]">
               <span className="flex items-center gap-1.5 text-slate-600">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                <span className="w-2 h-2 rounded-full bg-[#008f8b] inline-block" />
                 <span>Cash Refunds</span>
               </span>
-              <span className="font-bold text-emerald-700 tabular-nums">
+              <span className="font-bold text-[#008f8b] tabular-nums">
                 PKR {fmt(stats.cashRefunds)} <span className="font-normal text-slate-400">({stats.cashPct}%)</span>
               </span>
             </div>
@@ -1184,7 +1184,7 @@ export function PurchaseReturnsGraph({ db, nav }) {
 
       <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-500 font-medium">
         <span>Supplier Account Ledgers</span>
-        <span className="text-rose-700 font-bold group-hover:underline">Return Items</span>
+        <span className="text-[#714B67] font-bold group-hover:underline">Return Items</span>
       </div>
     </div>
   )
@@ -1195,7 +1195,7 @@ export function StockOperationsGraphs({ db, nav }) {
     <div className="space-y-2.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-4 bg-indigo-600 rounded-full" />
+          <div className="w-2 h-4 bg-[#714B67] rounded-full" />
           <h2 className="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2">
             <span>Stock & Operations Analytics</span>
             <span className="text-xs font-normal text-slate-400 hidden sm:inline">

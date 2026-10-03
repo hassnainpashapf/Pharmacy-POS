@@ -244,7 +244,7 @@ export default function ExpiryDashboard() {
       {/* 1. Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-orange-600 text-white flex items-center justify-center font-black shadow-md shadow-orange-600/20">
+          <div className="w-10 h-10 rounded-xl bg-[#714B67] text-white flex items-center justify-center font-black shadow-md shadow-[#714B67]/20">
             <Clock className="w-5 h-5" />
           </div>
           <div>
@@ -270,7 +270,7 @@ export default function ExpiryDashboard() {
           <button
             type="button"
             onClick={() => navigate('/purchase-returns')}
-            className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 flex items-center gap-1.5 transition-all"
+            className="px-3.5 py-1.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white text-xs font-bold shadow-md shadow-[#714B67]/20 flex items-center gap-1.5 transition-all"
           >
             <RotateCcw className="w-4 h-4" />
             <span>Returns Hub</span>
@@ -288,28 +288,26 @@ export default function ExpiryDashboard() {
 
       {/* 2. Top Summary KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
-        {/* Expired Batches (Red) */}
+        {/* Expired Batches */}
         <div
           onClick={() => setFilterTab('EXPIRED')}
           className={`border rounded-2xl p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all ${
             filterTab === 'EXPIRED'
-              ? 'bg-rose-600 text-white border-rose-600 ring-2 ring-rose-300'
-              : 'bg-white border-slate-200 hover:border-rose-300'
+              ? 'bg-[#f5eef4]/60 border-[#714B67] ring-2 ring-[#714B67]/20'
+              : 'bg-white border-slate-200 hover:border-[#714B67]/40'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">Expired</span>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
-              filterTab === 'EXPIRED' ? 'bg-white/20 text-white' : 'bg-rose-50 text-rose-600'
-            }`}>
+            <span className="text-xs font-bold text-slate-700">Expired</span>
+            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
               ⚠️
             </div>
           </div>
           <div className="mt-3">
-            <div className={`text-2xl font-black ${filterTab === 'EXPIRED' ? 'text-white' : 'text-rose-600'}`}>
+            <div className="text-2xl font-black text-rose-600">
               {stats.expiredBatches}
             </div>
-            <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'EXPIRED' ? 'text-rose-100' : 'text-slate-400'}`}>
+            <div className="text-[11px] mt-0.5 font-medium text-slate-400">
               Loss: {fmt(stats.expiredCost)}
             </div>
           </div>
@@ -320,23 +318,21 @@ export default function ExpiryDashboard() {
           onClick={() => setFilterTab('CRITICAL')}
           className={`border rounded-2xl p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all ${
             filterTab === 'CRITICAL'
-              ? 'bg-orange-600 text-white border-orange-600 ring-2 ring-orange-300'
-              : 'bg-white border-slate-200 hover:border-orange-300'
+              ? 'bg-[#f5eef4]/60 border-[#714B67] ring-2 ring-[#714B67]/20'
+              : 'bg-white border-slate-200 hover:border-[#714B67]/40'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">Critical (0–30d)</span>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
-              filterTab === 'CRITICAL' ? 'bg-white/20 text-white' : 'bg-orange-50 text-orange-600'
-            }`}>
+            <span className="text-xs font-bold text-slate-700">Critical (0–30d)</span>
+            <div className="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center font-bold">
               ⏳
             </div>
           </div>
           <div className="mt-3">
-            <div className={`text-2xl font-black ${filterTab === 'CRITICAL' ? 'text-white' : 'text-orange-600'}`}>
+            <div className="text-2xl font-black text-orange-600">
               {stats.criticalBatches}
             </div>
-            <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'CRITICAL' ? 'text-orange-100' : 'text-slate-400'}`}>
+            <div className="text-[11px] mt-0.5 font-medium text-slate-400">
               Value: {fmt(stats.criticalCost)}
             </div>
           </div>
@@ -347,23 +343,21 @@ export default function ExpiryDashboard() {
           onClick={() => setFilterTab('NEAR')}
           className={`border rounded-2xl p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all ${
             filterTab === 'NEAR'
-              ? 'bg-amber-500 text-white border-amber-500 ring-2 ring-amber-300'
-              : 'bg-white border-slate-200 hover:border-amber-300'
+              ? 'bg-[#f5eef4]/60 border-[#714B67] ring-2 ring-[#714B67]/20'
+              : 'bg-white border-slate-200 hover:border-[#714B67]/40'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">Near (31–90d)</span>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
-              filterTab === 'NEAR' ? 'bg-white/20 text-white' : 'bg-amber-50 text-amber-600'
-            }`}>
+            <span className="text-xs font-bold text-slate-700">Near (31–90d)</span>
+            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
               <Clock className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className={`text-2xl font-black ${filterTab === 'NEAR' ? 'text-white' : 'text-amber-700'}`}>
+            <div className="text-2xl font-black text-amber-700">
               {stats.nearBatches}
             </div>
-            <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'NEAR' ? 'text-amber-100' : 'text-slate-400'}`}>
+            <div className="text-[11px] mt-0.5 font-medium text-slate-400">
               Value: {fmt(stats.nearCost)}
             </div>
           </div>
@@ -374,23 +368,21 @@ export default function ExpiryDashboard() {
           onClick={() => setFilterTab('SAFE')}
           className={`border rounded-2xl p-4 shadow-sm flex flex-col justify-between cursor-pointer transition-all ${
             filterTab === 'SAFE'
-              ? 'bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-300'
-              : 'bg-white border-slate-200 hover:border-emerald-300'
+              ? 'bg-[#f5eef4]/60 border-[#714B67] ring-2 ring-[#714B67]/20'
+              : 'bg-white border-slate-200 hover:border-[#714B67]/40'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold">Safe (&gt;90d)</span>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
-              filterTab === 'SAFE' ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-600'
-            }`}>
+            <span className="text-xs font-bold text-slate-700">Safe (&gt;90d)</span>
+            <div className="w-8 h-8 rounded-lg bg-teal-50 text-[#008f8b] flex items-center justify-center font-bold">
               ✓
             </div>
           </div>
           <div className="mt-3">
-            <div className={`text-2xl font-black ${filterTab === 'SAFE' ? 'text-white' : 'text-emerald-700'}`}>
+            <div className="text-2xl font-black text-[#008f8b]">
               {stats.safeBatches}
             </div>
-            <div className={`text-[11px] mt-0.5 font-medium ${filterTab === 'SAFE' ? 'text-emerald-100' : 'text-slate-400'}`}>
+            <div className="text-[11px] mt-0.5 font-medium text-slate-400">
               Value: {fmt(stats.safeCost)}
             </div>
           </div>
@@ -467,7 +459,7 @@ export default function ExpiryDashboard() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search medicine or batch..."
-                className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
+                className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
               />
             </div>
           </div>
@@ -500,7 +492,7 @@ export default function ExpiryDashboard() {
                 <tr key={b.id} className="hover:bg-slate-50/70 transition-colors">
                   <td className="py-3 px-4">
                     <div className="font-bold text-slate-900 text-sm leading-tight">{b.medicineName}</div>
-                    <div className="text-[11px] text-indigo-700 font-semibold mt-0.5">{b.company}</div>
+                    <div className="text-[11px] text-[#714B67] font-semibold mt-0.5">{b.company}</div>
                   </td>
 
                   <td className="py-3 px-3 font-mono font-bold text-slate-700">
@@ -581,9 +573,9 @@ export default function ExpiryDashboard() {
       {returnModalBatch && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-5 border-b border-slate-100 bg-rose-50/50 flex items-center justify-between">
+            <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
                   <RotateCcw className="w-4 h-4" />
                 </div>
                 <div>
@@ -616,7 +608,7 @@ export default function ExpiryDashboard() {
                 <select
                   value={returnSupplierId}
                   onChange={(e) => setReturnSupplierId(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white font-bold text-slate-800"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
                 >
                   {suppliers.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -636,12 +628,12 @@ export default function ExpiryDashboard() {
                     required
                     value={returnQty}
                     onChange={(e) => setReturnQty(Math.min(returnModalBatch.qty, parseInt(e.target.value, 10) || 1))}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold text-rose-700 text-sm"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl font-bold text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
                   />
                 </div>
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Total Refund Value (Debit Note)</label>
-                  <div className="px-3 py-2 border border-slate-200 bg-slate-50 rounded-xl font-mono font-black text-rose-700 text-sm">
+                  <div className="px-3 py-2 border border-slate-200 bg-slate-50 rounded-xl font-mono font-black text-[#714B67] text-sm">
                     {fmt(returnQty * returnModalBatch.cost)}
                   </div>
                 </div>
@@ -654,7 +646,7 @@ export default function ExpiryDashboard() {
                   value={returnNote}
                   onChange={(e) => setReturnNote(e.target.value)}
                   placeholder="Near expiry / Expired return claim..."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
                 />
               </div>
 
@@ -668,7 +660,7 @@ export default function ExpiryDashboard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-md shadow-rose-600/20"
+                  className="px-5 py-2 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white font-bold shadow-md shadow-[#714B67]/20 transition-all"
                 >
                   Generate Debit Note
                 </button>

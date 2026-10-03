@@ -192,7 +192,7 @@ export default function PurchaseReturnsDashboard() {
       {/* 1. Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-rose-600 text-white flex items-center justify-center font-black shadow-md shadow-rose-600/20">
+          <div className="w-10 h-10 rounded-xl bg-[#714B67] text-white flex items-center justify-center font-black shadow-md shadow-[#714B67]/20">
             <RotateCcw className="w-5 h-5" />
           </div>
           <div>
@@ -222,7 +222,7 @@ export default function PurchaseReturnsDashboard() {
               setReturnItems([])
               setShowNewModal(true)
             }}
-            className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold shadow-md shadow-rose-600/20 flex items-center gap-1.5 transition-all active:scale-95"
+            className="px-3.5 py-1.5 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] text-white text-xs font-bold shadow-md shadow-[#714B67]/20 flex items-center gap-1.5 transition-all active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>+ New Return</span>
@@ -244,7 +244,7 @@ export default function PurchaseReturnsDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-bold">Total Returns</span>
-            <div className="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
               <RotateCcw className="w-4 h-4" />
             </div>
           </div>
@@ -258,13 +258,13 @@ export default function PurchaseReturnsDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-bold">Debit Claims</span>
-            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-[#008f8b] flex items-center justify-center font-bold">
               💰
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-rose-600">{fmt(stats.totalAmount)}</div>
-            <div className="text-[11px] text-emerald-600 font-medium mt-0.5">Total claims</div>
+            <div className="text-2xl font-black text-[#714B67]">{fmt(stats.totalAmount)}</div>
+            <div className="text-[11px] text-[#008f8b] font-medium mt-0.5">Total claims</div>
           </div>
         </div>
 
@@ -272,12 +272,12 @@ export default function PurchaseReturnsDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-bold">Credit Notes</span>
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-indigo-700">{fmt(stats.creditNotes)}</div>
+            <div className="text-2xl font-black text-[#714B67]">{fmt(stats.creditNotes)}</div>
             <div className="text-[11px] text-slate-400 mt-0.5">Payable deduction</div>
           </div>
         </div>
@@ -286,13 +286,13 @@ export default function PurchaseReturnsDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-bold">Cash Refunds</span>
-            <div className="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-teal-50 text-[#008f8b] flex items-center justify-center font-bold">
               💵
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-teal-700">{fmt(stats.cashRefunds)}</div>
-            <div className="text-[11px] text-teal-600 font-medium mt-0.5">Direct cash</div>
+            <div className="text-2xl font-black text-[#008f8b]">{fmt(stats.cashRefunds)}</div>
+            <div className="text-[11px] text-[#008f8b] font-medium mt-0.5">Direct cash</div>
           </div>
         </div>
       </div>
@@ -312,7 +312,7 @@ export default function PurchaseReturnsDashboard() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search return or supplier..."
-              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500"
+              className="w-full pl-9 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
             />
           </div>
         </div>
@@ -342,7 +342,7 @@ export default function PurchaseReturnsDashboard() {
               {filteredReturns.map((r) => (
                 <tr key={r.id} className="hover:bg-slate-50/70 transition-colors">
                   <td className="py-3 px-4">
-                    <span className="font-mono font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                    <span className="font-mono font-bold text-[#714B67] bg-[#f5eef4] px-2 py-0.5 rounded border border-[#decddd]">
                       {r.returnNo}
                     </span>
                   </td>
@@ -369,7 +369,7 @@ export default function PurchaseReturnsDashboard() {
                     </div>
                   </td>
 
-                  <td className="py-3 px-3 text-right font-mono font-black text-rose-700 text-sm">
+                  <td className="py-3 px-3 text-right font-mono font-black text-slate-900 text-sm">
                     {fmt(r.totalAmount)}
                   </td>
 
@@ -377,8 +377,8 @@ export default function PurchaseReturnsDashboard() {
                     <span
                       className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                         r.settlementType === 'CREDIT_NOTE'
-                          ? 'bg-indigo-50 text-indigo-700 border border-indigo-200'
-                          : 'bg-teal-50 text-teal-700 border border-teal-200'
+                          ? 'bg-[#f5eef4] text-[#714B67] border border-[#decddd]'
+                          : 'bg-teal-50 text-[#008f8b] border border-[#b7e5dc]'
                       }`}
                     >
                       {r.settlementType === 'CREDIT_NOTE' ? 'Credit Note' : 'Cash Refund'}
@@ -419,9 +419,9 @@ export default function PurchaseReturnsDashboard() {
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
             {/* Header */}
-            <div className="p-5 border-b border-slate-100 bg-rose-50/50 flex items-center justify-between shrink-0">
+            <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
                   <RotateCcw className="w-4 h-4" />
                 </div>
                 <div>
@@ -451,7 +451,7 @@ export default function PurchaseReturnsDashboard() {
                       setSelectedSupplierId(e.target.value)
                       setReturnItems([])
                     }}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-rose-500/20"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
                   >
                     <option value="">-- Select Supplier --</option>
                     {suppliers.map((s) => (
@@ -481,7 +481,7 @@ export default function PurchaseReturnsDashboard() {
                 <div className="space-y-2 border border-slate-200 rounded-2xl p-3 bg-slate-50/60">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-slate-800 text-[11px] flex items-center gap-1.5">
-                      <Package className="w-3.5 h-3.5 text-rose-600" />
+                      <Package className="w-3.5 h-3.5 text-[#714B67]" />
                       <span>Select available batches from this supplier:</span>
                     </span>
                     <span className="text-[10px] text-slate-400">Click to add to return list</span>
@@ -513,7 +513,7 @@ export default function PurchaseReturnsDashboard() {
                             className={`px-3 py-1 rounded-lg font-bold text-[11px] transition-all ${
                               isAdded
                                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                                : 'bg-[#f5eef4] text-[#714B67] hover:bg-[#f5eef4]/80 border border-[#decddd]'
                             }`}
                           >
                             {isAdded ? '✓ Added' : '+ Add to Return'}
@@ -555,7 +555,7 @@ export default function PurchaseReturnsDashboard() {
                             max={it.maxQty}
                             value={it.qty}
                             onChange={(e) => updateItemQty(it.batchId, e.target.value)}
-                            className="w-16 px-2 py-1 border border-slate-300 rounded-lg text-center font-bold text-rose-700"
+                            className="w-16 px-2 py-1 border border-slate-300 rounded-lg text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
                           />
                         </div>
 
@@ -572,7 +572,7 @@ export default function PurchaseReturnsDashboard() {
                         </select>
 
                         {/* Total Cost */}
-                        <div className="font-mono font-bold text-rose-700 text-right w-20">
+                        <div className="font-mono font-bold text-[#714B67] text-right w-20">
                           {fmt(it.total)}
                         </div>
 
@@ -592,12 +592,12 @@ export default function PurchaseReturnsDashboard() {
 
               {/* Total Calculation Banner */}
               {returnItems.length > 0 && (
-                <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-between">
+                <div className="p-4 bg-[#f5eef4]/60 border border-[#decddd] rounded-2xl flex items-center justify-between">
                   <div>
-                    <div className="text-[11px] text-rose-700 font-bold uppercase tracking-wider">Total Debit Note Amount</div>
+                    <div className="text-[11px] text-[#714B67] font-bold uppercase tracking-wider">Total Debit Note Amount</div>
                     <div className="text-xs text-slate-500">{returnItems.length} batches selected for return</div>
                   </div>
-                  <div className="text-2xl font-black text-rose-700 font-mono">
+                  <div className="text-2xl font-black text-[#714B67] font-mono">
                     {fmt(currentTotal)}
                   </div>
                 </div>
@@ -611,7 +611,7 @@ export default function PurchaseReturnsDashboard() {
                   value={returnNote}
                   onChange={(e) => setReturnNote(e.target.value)}
                   placeholder="Reference invoice number, reason, etc..."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
                 />
               </div>
 
@@ -627,7 +627,7 @@ export default function PurchaseReturnsDashboard() {
                 <button
                   type="submit"
                   disabled={!returnItems.length}
-                  className="px-6 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white font-bold shadow-md shadow-rose-600/20 active:scale-95 transition-all"
+                  className="px-6 py-2 rounded-xl bg-[#714B67] hover:bg-[#5c3c54] disabled:opacity-50 text-white font-bold shadow-md shadow-[#714B67]/20 active:scale-95 transition-all"
                 >
                   Generate Debit Note
                 </button>
@@ -657,7 +657,7 @@ export default function PurchaseReturnsDashboard() {
               <div className="text-center pb-3 border-b border-slate-200">
                 <h2 className="text-lg font-black text-slate-900">{db.settings.pharmacyName || 'Pharmacy POS'}</h2>
                 <p className="text-[11px] text-slate-500">{db.settings.address || 'Medical Store'}</p>
-                <div className="inline-block mt-2 px-3 py-1 rounded-full bg-rose-100 text-rose-800 font-black text-xs uppercase tracking-wider">
+                <div className="inline-block mt-2 px-3 py-1 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd] font-black text-xs uppercase tracking-wider">
                   PURCHASE RETURN DEBIT NOTE
                 </div>
               </div>
@@ -665,7 +665,7 @@ export default function PurchaseReturnsDashboard() {
               <div className="grid grid-cols-2 gap-2 text-[11px] border-b border-slate-100 pb-3">
                 <div>
                   <span className="text-slate-400">Voucher No:</span>{' '}
-                  <strong className="font-mono text-rose-700">{viewingVoucher.returnNo}</strong>
+                  <strong className="font-mono text-[#714B67]">{viewingVoucher.returnNo}</strong>
                 </div>
                 <div className="text-right">
                   <span className="text-slate-400">Date:</span>{' '}
@@ -696,7 +696,7 @@ export default function PurchaseReturnsDashboard() {
 
               <div className="flex justify-between items-center text-sm font-black pt-1">
                 <span>Total Refund Amount:</span>
-                <span className="text-rose-700 font-mono">{fmt(viewingVoucher.totalAmount)}</span>
+                <span className="text-[#714B67] font-mono">{fmt(viewingVoucher.totalAmount)}</span>
               </div>
 
               <div className="pt-6 border-t border-slate-200 flex justify-between text-[10px] text-slate-400">
