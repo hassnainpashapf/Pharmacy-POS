@@ -508,7 +508,7 @@ function Shell({ children }) {
 
                       {/* Windows App (Installer) - Rich Blue Card */}
                       <a
-                        href="/downloads/Pharmacy-POS-Station-Setup.exe"
+                        href="https://github.com/hassnainpashapf/Pharmacy-POS/releases/download/v1.0.0/Pharmacy-POS-Station-Setup.exe"
                         download="Pharmacy-POS-Station-Setup.exe"
                         onClick={() => setDownloadMenuOpen(false)}
                         className="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-blue-200/90 bg-blue-50/80 hover:bg-blue-100/90 transition-all group shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
