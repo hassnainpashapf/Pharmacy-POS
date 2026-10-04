@@ -39,7 +39,7 @@ function pct(part, whole) {
 
 /* ---------- Shared UI pieces ---------- */
 
-function PageHeader({ icon: Icon, title, badge, subtitle, children }) {
+function PageHeader({ icon: Icon, title, subtitle, children }) {
   return (
     <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
       <div className="flex items-center gap-3">
@@ -47,14 +47,7 @@ function PageHeader({ icon: Icon, title, badge, subtitle, children }) {
           <Icon className="w-6 h-6 text-white" />
         </div>
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-black text-slate-900 tracking-tight">{title}</h1>
-            {badge && (
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd]">
-                {badge}
-              </span>
-            )}
-          </div>
+          <h1 className="text-xl font-black text-slate-900 tracking-tight">{title}</h1>
           <p className="text-xs text-slate-600 font-medium mt-0.5">{subtitle}</p>
         </div>
       </div>
@@ -131,7 +124,6 @@ function FinancialStatements() {
       <PageHeader
         icon={CircleDollarSign}
         title="Financial Accounts & P&L"
-        badge={periodLabel}
         subtitle="Income statement, gross & net margins, receivables, payables and inventory valuation."
       >
         <select
@@ -309,7 +301,6 @@ function ExpensesPanel({ db }) {
       <PageHeader
         icon={Wallet}
         title="Expense Management"
-        badge={`${stats.count} entries`}
         subtitle="Record and track store operating expenses — rent, utilities, payroll, transport and more."
       >
         <button
