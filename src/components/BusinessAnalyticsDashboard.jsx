@@ -583,36 +583,6 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
         </div>
       </div>
 
-      {/* ── Executive AI Highlights Strip ── */}
-      <div className="bg-gradient-to-r from-slate-900 via-[#3b1734] to-slate-900 text-white rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-            <Sparkles className="w-4 h-4 text-amber-300" />
-          </div>
-          <div>
-            <div className="font-bold flex items-center gap-2">
-              <span>Executive Business Insights</span>
-              <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                Operating Target: Optimal
-              </span>
-            </div>
-            <p className="text-[11px] text-white/80 mt-0.5">
-              Net margin is holding at <strong className="text-white">{kpis.marginPct}%</strong> •{' '}
-              {peakHour && peakHour.revenue > 0
-                ? `Peak traffic occurs around ${peakHour.label} (${fmt(peakHour.revenue)}) • `
-                : ''}
-              Digital transactions account for <strong className="text-white">{kpis.digitalRatio}%</strong> of total counter volume.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="text-right">
-            <span className="text-[10px] uppercase font-bold text-white/60 block">Refund Ratio</span>
-            <strong className="text-emerald-300 text-xs font-mono">{kpis.refundRatio}% (Healthy)</strong>
-          </div>
-        </div>
-      </div>
-
       {/* ── 8 Rich Executive KPI Metric Cards ── */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3.5">
         <MetricCard
