@@ -28,8 +28,10 @@ import {
   Receipt,
   FileSpreadsheet,
   Building2,
+  Activity,
 } from 'lucide-react'
 import { getDistinctCompanies } from '../lib/medicineGroups'
+import BusinessAnalyticsDashboard from '../components/BusinessAnalyticsDashboard'
 
 // All 35 Pharmacy-Specific Reports Grouped into 4 Core Categories
 const REPORT_CATEGORIES = [
@@ -101,9 +103,25 @@ export default function Reports() {
   const { search } = useLocation()
   const requested = new URLSearchParams(search).get('tab')
   const section = ['analytics', 'sales', 'inventory', 'financial'].includes(requested) ? requested : 'sales'
+  const [analyticsView, setAnalyticsView] = useState('gui') // 'gui' | 'tabular'
+
+  if (section === 'analytics' && analyticsView === 'gui') {
+    return (
+      <BusinessAnalyticsDashboard
+        onSwitchToTabular={() => setAnalyticsView('tabular')}
+      />
+    )
+  }
+
   // Remount on category changes so a previous report/search cannot leak into
   // the next sidebar destination, including browser Back/Forward navigation.
-  return <ReportSection key={section} section={section} />
+  return (
+    <ReportSection
+      key={section}
+      section={section}
+      onSwitchToGui={section === 'analytics' ? () => setAnalyticsView('gui') : undefined}
+    />
+  )
 }
 
 const REPORT_SECTIONS = {
@@ -133,7 +151,7 @@ const REPORT_SECTIONS = {
   },
 }
 
-function ReportSection({ section }) {
+function ReportSection({ section, onSwitchToGui }) {
   const db = useDB()
   const config = REPORT_SECTIONS[section]
   const [selectedReportId, setSelectedReportId] = useState(config.categories[0].reports[0].id)
@@ -1078,6 +1096,26 @@ function ReportSection({ section }) {
 
         {/* Controls: Date, Company, Export, Print */}
         <div className="flex flex-wrap items-center gap-2">
+          {onSwitchToGui && (
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold mr-1">
+              <button
+                type="button"
+                onClick={onSwitchToGui}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer"
+              >
+                <Activity className="w-3.5 h-3.5 text-[#714B67]" />
+                <span>Graphical Dashboard</span>
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-xs cursor-default"
+              >
+                <FileSpreadsheet className="w-3.5 h-3.5 text-slate-500" />
+                <span>Tabular Reports (8)</span>
+              </button>
+            </div>
+          )}
+
           {/* Date Filter Dropdown */}
           <DateFilterBar filterState={reportDateFilter} onChange={setReportDateFilter} asDropdown dropdownClassName="rounded-xl py-2 px-3" />
 
