@@ -52,6 +52,7 @@ export default function Dashboard() {
   const data = enterpriseDashboardData()
 
   const [activeRoleView, setActiveRoleView] = useState('OWNER')
+  const [chartRange, setChartRange] = useState('7D')
   const [showAddCustomer, setShowAddCustomer] = useState(false)
   const [newCustName, setNewCustName] = useState('')
   const [newCustPhone, setNewCustPhone] = useState('')
@@ -62,15 +63,17 @@ export default function Dashboard() {
 
   const curBranch = data.scopeLabel
 
-  // Rich 7-day revenue & order flow trend for Today's Performance chart
+  // Dynamic revenue & order flow trend (7-day vs intraday hourly periods)
   const todayChartData = useMemo(() => {
-    const daily = data?.operations?.salesTrendDaily || []
-    if (daily.length > 0) {
-      return daily.slice(-7).map((d) => ({
-        time: d.label,
-        revenue: d.total || 0,
-        orders: d.count || 0,
-      }))
+    if (chartRange === '7D') {
+      const daily = data?.operations?.salesTrendDaily || []
+      if (daily.length > 0) {
+        return daily.slice(-7).map((d) => ({
+          time: d.label,
+          revenue: d.total || 0,
+          orders: d.count || 0,
+        }))
+      }
     }
 
     const intervals = [
@@ -107,7 +110,7 @@ export default function Dashboard() {
     })
 
     return intervals
-  }, [db?.sales, data?.operations?.salesTrendDaily])
+  }, [db?.sales, data?.operations?.salesTrendDaily, chartRange])
 
   const handleAddCustomerSubmit = (e) => {
     e.preventDefault()
@@ -182,8 +185,11 @@ export default function Dashboard() {
         {/* New Sale */}
         <button type="button"
           onClick={() => nav('/pos')}
-          className="bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
+          className="relative bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
         >
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-slate-400 group-hover:text-[#714B67] bg-slate-50 group-hover:bg-[#f5eef4] px-1.5 py-0.5 rounded border border-slate-200/60 transition-colors">
+            F1
+          </span>
           <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform">
             <ShoppingCart className="w-5 h-5" />
           </div>
@@ -196,8 +202,11 @@ export default function Dashboard() {
         {/* Add Customer */}
         <button type="button"
           onClick={() => setShowAddCustomer(true)}
-          className="bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
+          className="relative bg-white border border-slate-200 hover:border-[#ea580c]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
         >
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-slate-400 group-hover:text-[#ea580c] bg-slate-50 group-hover:bg-[#ffedd5] px-1.5 py-0.5 rounded border border-slate-200/60 transition-colors">
+            +C
+          </span>
           <div className="w-10 h-10 rounded-xl bg-[#ffedd5] text-[#ea580c] flex items-center justify-center group-hover:scale-105 transition-transform">
             <UserPlus className="w-5 h-5" />
           </div>
@@ -210,8 +219,11 @@ export default function Dashboard() {
         {/* Add Medicine */}
         <button type="button"
           onClick={() => nav('/medicines')}
-          className="bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
+          className="relative bg-white border border-slate-200 hover:border-[#008f8b]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
         >
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-slate-400 group-hover:text-[#008f8b] bg-slate-50 group-hover:bg-[#e6f7f2] px-1.5 py-0.5 rounded border border-slate-200/60 transition-colors">
+            +M
+          </span>
           <div className="w-10 h-10 rounded-xl bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center group-hover:scale-105 transition-transform">
             <PlusCircle className="w-5 h-5" />
           </div>
@@ -224,8 +236,11 @@ export default function Dashboard() {
         {/* Dispensing POS */}
         <button type="button"
           onClick={() => nav('/pos')}
-          className="bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
+          className="relative bg-white border border-slate-200 hover:border-[#ca8a04]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
         >
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-slate-400 group-hover:text-[#ca8a04] bg-slate-50 group-hover:bg-[#fef9c3] px-1.5 py-0.5 rounded border border-slate-200/60 transition-colors">
+            Rx
+          </span>
           <div className="w-10 h-10 rounded-xl bg-[#fef9c3] text-[#ca8a04] flex items-center justify-center group-hover:scale-105 transition-transform">
             <FileText className="w-5 h-5" />
           </div>
@@ -238,8 +253,11 @@ export default function Dashboard() {
         {/* New Purchase */}
         <button type="button"
           onClick={() => nav('/purchases')}
-          className="bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
+          className="relative bg-white border border-slate-200 hover:border-[#0284c7]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
         >
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-slate-400 group-hover:text-[#0284c7] bg-slate-50 group-hover:bg-[#e0f2fe] px-1.5 py-0.5 rounded border border-slate-200/60 transition-colors">
+            +P
+          </span>
           <div className="w-10 h-10 rounded-xl bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center group-hover:scale-105 transition-transform">
             <Truck className="w-5 h-5" />
           </div>
@@ -261,77 +279,122 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-slate-200 hover:border-amber-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center gap-3 text-left group"
+            className="bg-white border border-slate-200 hover:border-amber-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-              <AlertTriangle className="w-5 h-5" />
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-slate-800 group-hover:text-amber-700 truncate">{data.attention.lowStock} Items</div>
+                <div className="text-[10px] text-slate-400 truncate">Low Stock</div>
+              </div>
             </div>
-            <div>
-              <div className="text-xs font-bold text-slate-800 group-hover:text-amber-700">{data.attention.lowStock} Items</div>
-              <div className="text-[10px] text-slate-400">Low Stock</div>
-            </div>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
+              data.attention.lowStock > 0
+                ? 'text-amber-700 bg-amber-50 border-amber-200/80'
+                : 'text-emerald-700 bg-emerald-50 border-emerald-200/80'
+            }`}>
+              {data.attention.lowStock > 0 ? 'Review' : 'Clear'}
+            </span>
           </button>
 
           {/* Out of Stock */}
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-slate-200 hover:border-rose-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center gap-3 text-left group"
+            className="bg-white border border-slate-200 hover:border-rose-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-              <AlertCircle className="w-5 h-5" />
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-slate-800 group-hover:text-rose-700 truncate">{data.attention.outOfStock} Items</div>
+                <div className="text-[10px] text-slate-400 truncate">Out of Stock</div>
+              </div>
             </div>
-            <div>
-              <div className="text-xs font-bold text-slate-800 group-hover:text-rose-700">{data.attention.outOfStock} Items</div>
-              <div className="text-[10px] text-slate-400">Out of Stock</div>
-            </div>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
+              data.attention.outOfStock > 0
+                ? 'text-rose-700 bg-rose-50 border-rose-200/80'
+                : 'text-emerald-700 bg-emerald-50 border-emerald-200/80'
+            }`}>
+              {data.attention.outOfStock > 0 ? 'Urgent' : 'Clear'}
+            </span>
           </button>
 
           {/* Near Expiry */}
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-slate-200 hover:border-amber-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center gap-3 text-left group"
+            className="bg-white border border-slate-200 hover:border-amber-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-              <Calendar className="w-5 h-5" />
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                <Calendar className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-slate-800 group-hover:text-amber-700 truncate">{data.attention.nearExpiry} Batches</div>
+                <div className="text-[10px] text-slate-400 truncate">Near Expiry (30d)</div>
+              </div>
             </div>
-            <div>
-              <div className="text-xs font-bold text-slate-800 group-hover:text-amber-700">{data.attention.nearExpiry} Batches</div>
-              <div className="text-[10px] text-slate-400">Near Expiry (0–30d)</div>
-            </div>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
+              data.attention.nearExpiry > 0
+                ? 'text-amber-700 bg-amber-50 border-amber-200/80'
+                : 'text-emerald-700 bg-emerald-50 border-emerald-200/80'
+            }`}>
+              {data.attention.nearExpiry > 0 ? 'Track' : 'Clear'}
+            </span>
           </button>
 
           {/* Have Expired */}
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-slate-200 hover:border-rose-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center gap-3 text-left group"
+            className="bg-white border border-slate-200 hover:border-rose-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-              <Clock className="w-5 h-5" />
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-slate-800 group-hover:text-rose-700 truncate">{data.attention.expired} Batches</div>
+                <div className="text-[10px] text-slate-400 truncate">Expired</div>
+              </div>
             </div>
-            <div>
-              <div className="text-xs font-bold text-slate-800 group-hover:text-rose-700">{data.attention.expired} Batches</div>
-              <div className="text-[10px] text-slate-400">Have expired</div>
-            </div>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
+              data.attention.expired > 0
+                ? 'text-rose-700 bg-rose-50 border-rose-200/80'
+                : 'text-emerald-700 bg-emerald-50 border-emerald-200/80'
+            }`}>
+              {data.attention.expired > 0 ? 'Action' : 'Clear'}
+            </span>
           </button>
 
           {/* Pending Payments */}
           <button
             type="button"
             onClick={() => nav('/suppliers')}
-            className="bg-white border border-slate-200 hover:border-[#714B67]/60 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center gap-3 text-left group"
+            className="bg-white border border-slate-200 hover:border-[#714B67]/60 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
-              <CreditCard className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-slate-800 group-hover:text-[#714B67]">
-                {data.attention.pendingPayments === null ? '0' : `${data.attention.pendingPayments} Vendors`}
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+                <CreditCard className="w-5 h-5" />
               </div>
-              <div className="text-[10px] text-slate-400">Unpaid Balances</div>
+              <div className="min-w-0">
+                <div className="text-xs font-bold text-slate-800 group-hover:text-[#714B67] truncate">
+                  {data.attention.pendingPayments === null ? '0' : `${data.attention.pendingPayments} Vendors`}
+                </div>
+                <div className="text-[10px] text-slate-400 truncate">Unpaid Balances</div>
+              </div>
             </div>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
+              (data.attention.pendingPayments || 0) > 0
+                ? 'text-[#714B67] bg-[#f5eef4] border-[#714B67]/30'
+                : 'text-emerald-700 bg-emerald-50 border-emerald-200/80'
+            }`}>
+              {(data.attention.pendingPayments || 0) > 0 ? 'Due' : 'Settled'}
+            </span>
           </button>
         </div>
       </div>
@@ -339,9 +402,29 @@ export default function Dashboard() {
       {/* 3. Today's Overview (Rich, Simple Performance Graph & Clean Metrics) */}
       <div className="space-y-4 py-2 border-y border-slate-200/80">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <div className="w-2.5 h-5 bg-[#3b1734] rounded-full" />
             <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Today's Performance</h2>
+            <div className="inline-flex items-center p-0.5 rounded-lg bg-slate-100 border border-slate-200/80 text-[11px] font-bold ml-2">
+              <button
+                type="button"
+                onClick={() => setChartRange('7D')}
+                className={`px-2.5 py-0.5 rounded-md transition-all ${
+                  chartRange === '7D' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                7-Day Trend
+              </button>
+              <button
+                type="button"
+                onClick={() => setChartRange('HOURLY')}
+                className={`px-2.5 py-0.5 rounded-md transition-all ${
+                  chartRange === 'HOURLY' ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                Intraday Flow
+              </button>
+            </div>
           </div>
           <div className="flex items-center gap-4 text-xs font-semibold">
             <span className="flex items-center gap-1.5 text-slate-600">
@@ -391,82 +474,101 @@ export default function Dashboard() {
             </ResponsiveContainer>
           </div>
 
-          {/* Unified Metrics Flow (5 of 12 cols, merged without separate cards) */}
-          <div className="lg:col-span-5 grid grid-cols-2 gap-4 lg:pl-6 lg:border-l border-slate-100">
-            <div className="p-2">
-              <div className="text-xs text-slate-500 font-semibold flex items-center justify-between">
+          {/* Unified Metrics Flow (5 of 12 cols, rich cards matching overall theme) */}
+          <div className="lg:col-span-5 grid grid-cols-2 gap-3 lg:pl-6 lg:border-l border-slate-100">
+            {/* 1. Revenue Today */}
+            <div className="p-3 rounded-xl border border-slate-200/70 bg-white hover:border-[#008f8b]/40 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-slate-500 font-semibold flex items-center justify-between">
                 <span>Revenue Today</span>
-                <DollarSign className="w-3.5 h-3.5 text-[#008f8b]" />
+                <div className="w-6 h-6 rounded-md bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+                  <DollarSign className="w-3.5 h-3.5" />
+                </div>
               </div>
-              <div className="text-2xl font-black text-slate-900 tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-slate-900 tracking-tight font-mono mt-1">
                 {data.kpis.sales}
               </div>
-              <div className="text-[11px] font-semibold text-emerald-700 mt-0.5">
-                {data.kpis.salesChange}
+              <div className="text-[10px] font-semibold text-emerald-700 mt-1 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" />
+                <span>{data.kpis.salesChange}</span>
               </div>
             </div>
 
-            <div className="p-2">
-              <div className="text-xs text-slate-500 font-semibold flex items-center justify-between">
+            {/* 2. Orders */}
+            <div className="p-3 rounded-xl border border-slate-200/70 bg-white hover:border-[#714B67]/40 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-slate-500 font-semibold flex items-center justify-between">
                 <span>Orders / Invoices</span>
-                <CreditCard className="w-3.5 h-3.5 text-[#714B67]" />
+                <div className="w-6 h-6 rounded-md bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                  <CreditCard className="w-3.5 h-3.5" />
+                </div>
               </div>
-              <div className="text-2xl font-black text-slate-900 tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-slate-900 tracking-tight font-mono mt-1">
                 {data.kpis.orders}
               </div>
-              <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
+              <div className="text-[10px] font-semibold text-slate-500 mt-1">
                 {data.kpis.ordersChange}
               </div>
             </div>
 
-            <div className="p-2">
-              <div className="text-xs text-slate-500 font-semibold flex items-center justify-between">
+            {/* 3. Gross Profit */}
+            <div className="p-3 rounded-xl border border-slate-200/70 bg-white hover:border-amber-300 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-slate-500 font-semibold flex items-center justify-between">
                 <span>Gross Profit</span>
-                <TrendingUp className="w-3.5 h-3.5 text-[#ea580c]" />
+                <div className="w-6 h-6 rounded-md bg-amber-50 text-[#ea580c] flex items-center justify-center">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                </div>
               </div>
-              <div className="text-2xl font-black text-slate-900 tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-slate-900 tracking-tight font-mono mt-1">
                 {data.kpis.profit}
               </div>
-              <div className="text-[11px] font-medium text-slate-400 mt-0.5">
+              <div className="text-[10px] font-medium text-slate-400 mt-1">
                 {data.kpis.profitChange}
               </div>
             </div>
 
-            <div className="p-2">
-              <div className="text-xs text-slate-500 font-semibold flex items-center justify-between">
+            {/* 4. Gross Margin */}
+            <div className="p-3 rounded-xl border border-slate-200/70 bg-white hover:border-purple-300 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-slate-500 font-semibold flex items-center justify-between">
                 <span>Gross Margin</span>
-                <ReceiptIcon className="w-3.5 h-3.5 text-purple-600" />
+                <div className="w-6 h-6 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center">
+                  <ReceiptIcon className="w-3.5 h-3.5" />
+                </div>
               </div>
-              <div className="text-2xl font-black text-slate-900 tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-slate-900 tracking-tight font-mono mt-1">
                 {data.kpis.grossMargin}
               </div>
-              <div className="text-[11px] font-medium text-slate-400 mt-0.5">
+              <div className="text-[10px] font-medium text-slate-400 mt-1">
                 {data.kpis.marginChange}
               </div>
             </div>
 
-            <div className="p-2">
-              <div className="text-xs text-slate-500 font-semibold flex items-center justify-between">
+            {/* 5. Customers Served */}
+            <div className="p-3 rounded-xl border border-slate-200/70 bg-white hover:border-slate-300 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-slate-500 font-semibold flex items-center justify-between">
                 <span>Customers Served</span>
-                <Users className="w-3.5 h-3.5 text-slate-600" />
+                <div className="w-6 h-6 rounded-md bg-slate-100 text-slate-700 flex items-center justify-center">
+                  <Users className="w-3.5 h-3.5" />
+                </div>
               </div>
-              <div className="text-2xl font-black text-slate-900 tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-slate-900 tracking-tight font-mono mt-1">
                 {data.kpis.customers}
               </div>
-              <div className="text-[11px] font-medium text-slate-400 mt-0.5">
+              <div className="text-[10px] font-medium text-slate-400 mt-1">
                 {data.kpis.customersChange}
               </div>
             </div>
 
-            <div className="p-2">
-              <div className="text-xs text-[#e11d48] font-semibold flex items-center justify-between">
+            {/* 6. Supplier Payables */}
+            <div className="p-3 rounded-xl border border-rose-200/70 bg-white hover:border-rose-400 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-[#e11d48] font-semibold flex items-center justify-between">
                 <span>Supplier Payables</span>
-                <CreditCard className="w-3.5 h-3.5 text-[#e11d48]" />
+                <div className="w-6 h-6 rounded-md bg-rose-50 text-[#e11d48] flex items-center justify-center">
+                  <CreditCard className="w-3.5 h-3.5" />
+                </div>
               </div>
-              <div className="text-2xl font-black text-[#e11d48] tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-[#e11d48] tracking-tight font-mono mt-1">
                 {data.kpis.payables}
               </div>
-              <div className="text-[11px] font-semibold text-[#e11d48] mt-0.5">
+              <div className="text-[10px] font-semibold text-[#e11d48] mt-1">
                 {data.kpis.payablesHint}
               </div>
             </div>
