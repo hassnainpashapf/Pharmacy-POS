@@ -506,6 +506,28 @@ function Shell({ children }) {
                         <span className="text-[9px] font-bold text-slate-400">Offline-First</span>
                       </div>
 
+                      {/* Windows App (Portable - Zero Install) - Rich Emerald/Teal Card */}
+                      <a
+                        href="https://github.com/hassnainpashapf/Pharmacy-POS/releases/download/v1.0.0/Pharmacy-POS-Station-Portable.exe"
+                        download="Pharmacy-POS-Station-Portable.exe"
+                        onClick={() => setDownloadMenuOpen(false)}
+                        className="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100/90 transition-all group shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div className="w-8 h-8 rounded-lg bg-[#008f8b] text-white flex items-center justify-center shrink-0 shadow-sm font-black text-xs">
+                            <Zap className="w-4 h-4 text-white" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="font-bold text-emerald-950 group-hover:text-emerald-900 truncate text-xs flex items-center gap-1.5">
+                              <span>Windows Portable App</span>
+                              <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-200/80 text-emerald-800">Direct Run</span>
+                            </div>
+                            <div className="text-[11px] text-emerald-700 font-medium truncate">No install/uninstall needed • Run instantly</div>
+                          </div>
+                        </div>
+                        <Download className="w-4 h-4 text-emerald-700 group-hover:text-emerald-950 transition-colors shrink-0" />
+                      </a>
+
                       {/* Windows App (Installer) - Rich Blue Card */}
                       <a
                         href="https://github.com/hassnainpashapf/Pharmacy-POS/releases/download/v1.0.0/Pharmacy-POS-Station-Setup.exe"
@@ -520,8 +542,8 @@ function Shell({ children }) {
                             </svg>
                           </div>
                           <div className="min-w-0">
-                            <div className="font-bold text-blue-950 group-hover:text-blue-900 truncate text-xs">Windows App (Installer)</div>
-                            <div className="text-[11px] text-blue-700/90 font-medium truncate">Full offline setup for PC (111 MB)</div>
+                            <div className="font-bold text-blue-950 group-hover:text-blue-900 truncate text-xs">Windows Setup (Installer)</div>
+                            <div className="text-[11px] text-blue-700/90 font-medium truncate">Standard PC installation wizard (111 MB)</div>
                           </div>
                         </div>
                         <Download className="w-4 h-4 text-blue-600 group-hover:text-blue-950 transition-colors shrink-0" />
