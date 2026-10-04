@@ -1076,8 +1076,11 @@ function ReportSection({ section }) {
           </h2>
         </div>
 
-        {/* Controls: Company, Export, Print */}
+        {/* Controls: Date, Company, Export, Print */}
         <div className="flex flex-wrap items-center gap-2">
+          {/* Date Filter Dropdown */}
+          <DateFilterBar filterState={reportDateFilter} onChange={setReportDateFilter} asDropdown dropdownClassName="rounded-xl py-2 px-3" />
+
           {/* Company Filter Selector */}
           <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
             <Building2 className="w-3.5 h-3.5 text-[#714B67] flex-shrink-0" />
@@ -1107,11 +1110,6 @@ function ReportSection({ section }) {
             <Printer className="w-3.5 h-3.5" /> Print
           </button>
         </div>
-      </div>
-
-      {/* Global Date Filter Card */}
-      <div className="space-y-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-        <DateFilterBar filterState={reportDateFilter} onChange={setReportDateFilter} />
       </div>
 
       {/* Main Grid: Left Catalog Sidebar & Right Report Display */}
