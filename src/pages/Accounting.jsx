@@ -302,7 +302,7 @@ function ExpensesPanel({ db }) {
   }, [allExpenses])
 
   const viewTotal = filteredExpenses.reduce((s, e) => s + Number(e.amount || 0), 0)
-  const isFiltered = expenseSearch || categoryFilter !== 'ALL'
+  const isFiltered = expenseSearch || categoryFilter !== 'ALL' || expenseDateFilter.type !== 'all'
 
   return (
     <div className="space-y-5 pb-12">
@@ -340,7 +340,7 @@ function ExpensesPanel({ db }) {
       </div>
 
       {/* Toolbar */}
-      <div className="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+      <div className="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm">
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="relative flex-1 min-w-[240px]">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -360,6 +360,7 @@ function ExpensesPanel({ db }) {
               </button>
             )}
           </div>
+          <DateFilterBar filterState={expenseDateFilter} onChange={setExpenseDateFilter} asDropdown dropdownClassName="rounded-xl py-2 px-3" />
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
@@ -372,14 +373,13 @@ function ExpensesPanel({ db }) {
           </select>
           {isFiltered && (
             <button
-              onClick={() => { setExpenseSearch(''); setCategoryFilter('ALL') }}
+              onClick={() => { setExpenseSearch(''); setCategoryFilter('ALL'); setExpenseDateFilter({ type: 'all' }) }}
               className="px-3 py-2 rounded-xl text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 transition cursor-pointer"
             >
               Reset
             </button>
           )}
         </div>
-        <DateFilterBar filterState={expenseDateFilter} onChange={setExpenseDateFilter} />
       </div>
 
       {/* Table */}

@@ -118,6 +118,7 @@ export default function DateFilterBar({
   noBorder = false,
   asDropdown = false,
   className = '',
+  dropdownClassName = '',
 }) {
   const today = getTodayStr()
   const { type, singleDate, fromDate, toDate } = filterState
@@ -178,7 +179,7 @@ export default function DateFilterBar({
     return (
       <div className={`flex flex-wrap items-center gap-1.5 ${className}`}>
         {/* Dropdown Menu */}
-        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+        <div className={`flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0 ${dropdownClassName}`}>
           <Calendar className="w-3.5 h-3.5 text-[#714B67] shrink-0" />
           <select
             value={type}
