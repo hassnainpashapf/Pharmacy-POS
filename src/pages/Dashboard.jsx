@@ -838,15 +838,6 @@ export function CompanyStockGraph({ db, nav }) {
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
-        <div className="mb-2">
-          <div className="text-2xl font-black text-slate-900 tracking-tight font-mono">
-            {fmt(stats.totalStockValuation)}
-          </div>
-          <div className="text-xs text-slate-400 font-medium mt-0.5">
-            {stats.totalCompanies} brands
-          </div>
-        </div>
-
         {/* Donut Chart */}
         <DashboardDonutChart
           data={donutData}
@@ -943,15 +934,6 @@ export function StockAuditGraph({ db, nav }) {
             </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#008f8b] transition-colors" />
-        </div>
-
-        <div className="mb-2">
-          <div className="text-2xl font-black text-[#008f8b] tracking-tight font-mono">
-            {stats.accuracy}%
-          </div>
-          <div className="text-xs text-slate-400 font-medium mt-0.5">
-            {stats.totalItems.toLocaleString()} items
-          </div>
         </div>
 
         {/* Donut Chart */}
@@ -1090,15 +1072,6 @@ export function ExpiryActionGraph({ db, nav }) {
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
-        <div className="mb-2">
-          <div className={`text-2xl font-black tracking-tight font-mono ${stats.capitalAtRisk > 0 ? 'text-rose-600' : 'text-[#008f8b]'}`}>
-            {fmt(stats.capitalAtRisk)}
-          </div>
-          <div className="text-xs text-slate-400 font-medium mt-0.5">
-            {totalAtRisk.toLocaleString()} at risk
-          </div>
-        </div>
-
         {/* Donut Chart */}
         <DashboardDonutChart
           data={expiryDonutData}
@@ -1202,15 +1175,6 @@ export function PurchaseReturnsGraph({ db, nav }) {
             </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
-        </div>
-
-        <div className="mb-2">
-          <div className="text-2xl font-black text-slate-900 tracking-tight font-mono">
-            {fmt(stats.totalClaims)}
-          </div>
-          <div className="text-xs text-slate-400 font-medium mt-0.5">
-            {stats.totalReturns} debit notes
-          </div>
         </div>
 
         {/* Donut Chart */}
