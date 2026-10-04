@@ -29,9 +29,24 @@ import {
   FileSpreadsheet,
   Building2,
   Activity,
+  Users,
+  ChevronDown,
 } from 'lucide-react'
 import { getDistinctCompanies } from '../lib/medicineGroups'
 import BusinessAnalyticsDashboard from '../components/BusinessAnalyticsDashboard'
+
+const REPORT_ICONS = {
+  SALES_DAILY: Calendar,
+  SALES_MONTHLY: BarChart3,
+  SALES_DATE_RANGE: Receipt,
+  SALES_COMPANY: Building2,
+  SALES_CASHIER: Users,
+  SALES_MEDICINE: Package,
+  SALES_CATEGORY: Filter,
+  SALES_CUSTOMER: Users,
+  SALES_COUNTER: Receipt,
+  SALES_DAY_CLOSING: TrendingUp,
+}
 
 // All 35 Pharmacy-Specific Reports Grouped into 4 Core Categories
 const REPORT_CATEGORIES = [
@@ -1083,7 +1098,31 @@ function ReportSection({ section, onSwitchToGui }) {
 
   const summaryEntries = Object.entries(reportData.summary || {})
   const summaryIcons = [Receipt, DollarSign, TrendingUp, Package]
-  const allReports = config.categories.flatMap((category) => category.reports)
+  const allReports = useMemo(() => config.categories.flatMap((category) => category.reports), [config.categories])
+
+  const { primaryReports, secondaryReports } = useMemo(() => {
+    if (section === 'sales') {
+      const primaryOrder = [
+        'SALES_DAILY',
+        'SALES_MONTHLY',
+        'SALES_DATE_RANGE',
+        'SALES_COMPANY',
+        'SALES_CASHIER',
+        'SALES_MEDICINE',
+      ]
+      const prim = []
+      for (const id of primaryOrder) {
+        const found = allReports.find((r) => r.id === id)
+        if (found) prim.push(found)
+      }
+      const sec = allReports.filter((r) => !primaryOrder.includes(r.id))
+      return { primaryReports: prim, secondaryReports: sec }
+    }
+    return {
+      primaryReports: allReports.slice(0, 6),
+      secondaryReports: allReports.slice(6),
+    }
+  }, [allReports, section])
 
   return (
     <div className="space-y-4 w-full pb-8">
@@ -1101,7 +1140,7 @@ function ReportSection({ section, onSwitchToGui }) {
               onClick={onSwitchToGui}
               className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
             >
-              <Activity className="w-3.5 h-3.5" /> Graphs
+              <Activity className="w-3.5 h-3.5 text-[#714B67]" /> Graphs
             </button>
           )}
           <button
@@ -1137,58 +1176,93 @@ function ReportSection({ section, onSwitchToGui }) {
         </div>
       )}
 
-      {/* Toolbar Card: filters + report selector */}
-      <div className="bg-white p-3 rounded-xl border border-slate-200 space-y-3">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <DateFilterBar
-            filterState={reportDateFilter}
-            onChange={setReportDateFilter}
-            asDropdown
-            dropdownClassName="rounded-xl py-2 px-3 text-xs bg-slate-50 border border-slate-200 font-bold text-slate-700"
-          />
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-            <Building2 className="w-3.5 h-3.5 text-[#714B67] flex-shrink-0" />
-            <select
-              value={selectedCompany}
-              onChange={(e) => setSelectedCompany(e.target.value)}
-              className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[180px] truncate"
-              title="Filter by Pharma Company"
-            >
-              <option value="ALL">All Companies ({distinctCompanies.length})</option>
-              {distinctCompanies.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </div>
-          <div className="relative flex-1 min-w-[180px] sm:max-w-xs sm:ml-auto">
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search in report..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium outline-none focus:border-[#714B67]"
-            />
-          </div>
-        </div>
-
+      {/* ── Reports Navigation Menu Bar ── */}
+      <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
         <div className="flex items-center gap-1.5 overflow-x-auto custom-scroll pb-0.5">
-          {allReports.map((r) => (
-            <button
-              key={r.id}
-              onClick={() => {
-                setSelectedReportId(r.id)
-                setSearchTerm('')
-              }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition cursor-pointer ${
-                selectedReportId === r.id
-                  ? 'bg-[#3b1734] text-white'
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
-              }`}
-            >
-              {r.title}
-            </button>
-          ))}
+          {primaryReports.map((r) => {
+            const Icon = REPORT_ICONS[r.id] || FileSpreadsheet
+            const active = selectedReportId === r.id
+            return (
+              <button
+                key={r.id}
+                onClick={() => {
+                  setSelectedReportId(r.id)
+                  setSearchTerm('')
+                }}
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap shrink-0 ${
+                  active
+                    ? 'bg-[#3b1734] text-white shadow-xs'
+                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/80'
+                }`}
+              >
+                <Icon className={`w-3.5 h-3.5 ${active ? 'text-white' : 'text-[#714B67]'}`} />
+                <span>{r.title}</span>
+              </button>
+            )
+          })}
+
+          {secondaryReports.length > 0 && (
+            <div className="relative shrink-0">
+              <select
+                value={secondaryReports.some((r) => r.id === selectedReportId) ? selectedReportId : ''}
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setSelectedReportId(e.target.value)
+                    setSearchTerm('')
+                  }
+                }}
+                className={`appearance-none bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/80 rounded-xl px-3.5 py-2 pr-7 text-xs font-bold outline-none cursor-pointer ${
+                  secondaryReports.some((r) => r.id === selectedReportId)
+                    ? 'bg-[#3b1734] text-white border-[#3b1734]'
+                    : ''
+                }`}
+              >
+                <option value="" disabled className="text-slate-500 bg-white">
+                  More Reports ▾
+                </option>
+                {secondaryReports.map((r) => (
+                  <option key={r.id} value={r.id} className="text-slate-800 bg-white">
+                    {r.title}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Toolbar Card: filters & search */}
+      <div className="bg-white p-3 rounded-xl border border-slate-200 flex flex-wrap items-center gap-2.5">
+        <DateFilterBar
+          filterState={reportDateFilter}
+          onChange={setReportDateFilter}
+          asDropdown
+          dropdownClassName="rounded-xl py-2 px-3 text-xs bg-slate-50 border border-slate-200 font-bold text-slate-700"
+        />
+        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+          <Building2 className="w-3.5 h-3.5 text-[#714B67] flex-shrink-0" />
+          <select
+            value={selectedCompany}
+            onChange={(e) => setSelectedCompany(e.target.value)}
+            className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[180px] truncate"
+            title="Filter by Pharma Company"
+          >
+            <option value="ALL">All Companies ({distinctCompanies.length})</option>
+            {distinctCompanies.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+        <div className="relative flex-1 min-w-[200px] sm:max-w-xs sm:ml-auto">
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search in report table..."
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium outline-none focus:border-[#714B67]"
+          />
         </div>
       </div>
 
