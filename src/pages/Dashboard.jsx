@@ -522,11 +522,11 @@ export default function Dashboard() {
         <span className="sr-only">Owner monthly sales comparison by year</span><OwnerYearChart comparison={ownerSalesComparison(db)} />
       </div>
 
-      {/* 7. Unified Executive Hub: Branch Rankings, Capital at Risk, Recent Activity (Single Unified Card) */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
-        <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
+      {/* 7. Unified Executive Hub: Branch Rankings, Capital at Risk, Recent Activity (Merged directly into page) */}
+      <div className="py-3 border-y border-slate-200/80">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
           {/* Section 1: Branch Performance Ranking */}
-          <div className="p-5 flex flex-col justify-between">
+          <div className="pt-2 lg:pt-0 lg:pr-6 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
@@ -562,7 +562,7 @@ export default function Dashboard() {
                       return (
                         <div
                           key={r.rank}
-                          className="p-2.5 rounded-xl border border-slate-100 bg-slate-50/40 hover:bg-slate-50 transition-colors flex items-center gap-3"
+                          className="p-2.5 rounded-xl border border-slate-200/60 bg-white hover:border-slate-300 shadow-xs transition-colors flex items-center gap-3"
                         >
                           <span
                             className={`w-6 h-6 rounded-md font-black text-[10px] flex items-center justify-center shrink-0 ${
@@ -584,7 +584,7 @@ export default function Dashboard() {
                               <span className="font-bold text-slate-900 font-mono ml-2 shrink-0">{r.revenue}</span>
                             </div>
                             <div className="flex items-center justify-between gap-2 mt-1.5">
-                              <div className="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                              <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                                 <div
                                   className="h-full rounded-full transition-all duration-500"
                                   style={{
@@ -617,7 +617,7 @@ export default function Dashboard() {
           </div>
 
           {/* Section 2: Capital at Risk */}
-          <div className="p-5 flex flex-col justify-between bg-rose-50/20">
+          <div className="pt-4 lg:pt-0 lg:px-6 flex flex-col justify-between">
             <div>
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2.5">
@@ -653,7 +653,7 @@ export default function Dashboard() {
                   return (
                     <div
                       key={item.id}
-                      className="p-2.5 rounded-xl border border-rose-100/80 bg-white hover:border-rose-300 shadow-xs transition-all flex items-center justify-between gap-3 text-xs group"
+                      className="p-2.5 rounded-xl border border-rose-100/90 bg-white hover:border-rose-300 shadow-xs transition-all flex items-center justify-between gap-3 text-xs group"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="font-bold text-slate-900 truncate group-hover:text-rose-900 transition-colors">
@@ -682,7 +682,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="pt-3 mt-4 border-t border-rose-100/80 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
               <span>Inventory Expiry Ledger</span>
               <button
                 onClick={() => nav('/inventory/hub?tab=expiry')}
@@ -695,7 +695,7 @@ export default function Dashboard() {
           </div>
 
           {/* Section 3: Recent Activity */}
-          <div className="p-5 flex flex-col justify-between">
+          <div className="pt-4 lg:pt-0 lg:pl-6 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
