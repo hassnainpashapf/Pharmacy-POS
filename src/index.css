@@ -17,7 +17,8 @@ html {
   height: 100%;
   min-height: 100%;
   width: 100%;
-  background-color: #eef0f3;
+  background-color: #f8fafc;
+  overflow: hidden;
 }
 
 body, #root {
@@ -26,8 +27,9 @@ body, #root {
   width: 100%;
   margin: 0;
   padding: 0;
-  background-color: #eef0f3;
+  background-color: #f8fafc;
   color: #111827;
+  overflow: hidden;
 }
 
 /* Keep the existing layout and palette, but make readable text consistently

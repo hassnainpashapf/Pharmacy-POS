@@ -317,7 +317,7 @@ function Shell({ children }) {
   const totalAlertCount = (stats.expired || 0) + (stats.lowStock || 0)
 
   return (
-    <div className="app-shell flex h-screen w-full bg-[#f8fafc] text-slate-800 font-sans overflow-hidden">
+    <div className="app-shell fixed inset-0 flex h-full w-full bg-[#f8fafc] text-slate-800 font-sans overflow-hidden">
       <OfflineIndicator />
       <CommandPalette isOpen={cmdOpen} onClose={setCmdOpen} />
       <AlertEngine isOpen={alertOpen} onClose={() => setAlertOpen(false)} />
@@ -325,7 +325,7 @@ function Shell({ children }) {
 
       {/* Modern Light Clean White Sidebar (Odoo Style) */}
       <aside
-        className={`app-sidebar ${
+        className={`app-sidebar h-full ${
           sidebarCollapsed ? 'w-0 overflow-hidden border-0' : 'w-56 lg:w-64 border-r border-slate-200/80'
         } bg-white text-slate-700 flex flex-col shrink-0 shadow-sm transition-all duration-200 z-20`}
       >
@@ -395,7 +395,7 @@ function Shell({ children }) {
       </aside>
 
       {/* Main Container */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         {/* Top Header matching reference image */}
         <header className="app-toolbar h-14 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between gap-3 shrink-0 z-10">
           {/* Left: Sidebar Toggle + Wide Search Input */}
@@ -833,14 +833,20 @@ function MobileRoute() {
   }, [])
 
   return (
-    <Suspense fallback={<main className="min-h-screen p-6" role="status">Loading shared inventory…</main>}>
-       <MobileInventory desktop={false} />
-     </Suspense>
-   )
+    <div className="fixed inset-0 h-full w-full overflow-y-auto">
+      <Suspense fallback={<main className="min-h-screen p-6" role="status">Loading shared inventory…</main>}>
+        <MobileInventory desktop={false} />
+      </Suspense>
+    </div>
+  )
 }
 
 function AdminRoute() {
-  return <Suspense fallback={<main className="min-h-screen p-6" role="status">Loading admin app…</main>}><MobileInventory desktop /></Suspense>
+  return (
+    <div className="fixed inset-0 h-full w-full overflow-y-auto">
+      <Suspense fallback={<main className="min-h-screen p-6" role="status">Loading admin app…</main>}><MobileInventory desktop /></Suspense>
+    </div>
+  )
 }
 
 export default function App() {
@@ -856,7 +862,7 @@ export default function App() {
           {/* The shared module has its own server session and permissions. */}
           <Route path="/mobile/*" element={<MobileRoute />} />
           <Route path="/admin/*" element={<AdminRoute />} />
-          <Route path="/superadmin/*" element={<Suspense fallback={<main className="min-h-screen p-6" role="status">Loading platform console…</main>}><Superadmin /></Suspense>} />
+          <Route path="/superadmin/*" element={<div className="fixed inset-0 h-full w-full overflow-y-auto"><Suspense fallback={<main className="min-h-screen p-6" role="status">Loading platform console…</main>}><Superadmin /></Suspense></div>} />
           <Route path="*" element={<LegacyApp />} />
         </Routes>
       </ErrorBoundary>

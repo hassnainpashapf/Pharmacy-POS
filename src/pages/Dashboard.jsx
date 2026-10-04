@@ -122,7 +122,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="dashboard-view space-y-6 w-full pb-16 font-sans text-slate-800">
+    <div className="dashboard-view space-y-6 w-full pb-6 font-sans text-slate-800">
       {/* 1. Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
@@ -1580,7 +1580,7 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
   }
 
   return (
-    <div className="dashboard-view space-y-6 w-full pb-16 font-sans text-slate-800">
+    <div className="dashboard-view space-y-6 w-full pb-6 font-sans text-slate-800">
       {/* Role Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
