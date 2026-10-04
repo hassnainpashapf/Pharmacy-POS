@@ -682,8 +682,8 @@ function DashboardDonutChart({
   data = [],
   centerMain = '',
   centerSub = '',
-  size = 148,
-  strokeWidth = 12,
+  size = 176,
+  strokeWidth = 13,
 }) {
   const total = data.reduce((sum, d) => sum + (Number(d.value) || 0), 0)
   const r = 38
@@ -711,8 +711,8 @@ function DashboardDonutChart({
 
   return (
     <div className="flex justify-center my-3">
-      <div className="relative flex items-center justify-center transition-transform group-hover:scale-105 duration-200" style={{ width: size, height: size }}>
-        <svg width={size} height={size} viewBox="0 0 100 100" className="transform -rotate-90 drop-shadow-xs">
+      <div className="relative flex items-center justify-center transition-transform hover:scale-105 duration-200" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox="0 0 100 100" className="transform -rotate-90 drop-shadow-sm">
           <circle
             cx="50"
             cy="50"
@@ -754,11 +754,11 @@ function DashboardDonutChart({
           )}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none select-none px-2">
-          <span className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-none truncate max-w-[85px]">
+          <span className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-none truncate max-w-[105px]">
             {centerMain}
           </span>
           {centerSub && (
-            <span className="text-[10px] font-bold text-slate-400 mt-1 leading-none uppercase tracking-wider truncate max-w-[85px]">
+            <span className="text-[11px] font-extrabold text-slate-400 mt-1 leading-none uppercase tracking-wider truncate max-w-[105px]">
               {centerSub}
             </span>
           )}
@@ -860,8 +860,8 @@ export function CompanyStockGraph({ db, nav }) {
           data={donutData}
           centerMain={String(stats.totalCompanies)}
           centerSub="brands"
-          size={150}
-          strokeWidth={12}
+          size={176}
+          strokeWidth={13}
         />
 
         {/* Legend */}
@@ -968,8 +968,8 @@ export function StockAuditGraph({ db, nav }) {
           data={auditDonutData}
           centerMain={`${stats.accuracy}%`}
           centerSub="accuracy"
-          size={150}
-          strokeWidth={12}
+          size={176}
+          strokeWidth={13}
         />
 
         {/* Legend */}
@@ -1114,8 +1114,8 @@ export function ExpiryActionGraph({ db, nav }) {
           data={expiryDonutData}
           centerMain={totalAtRisk > 0 ? `${totalAtRisk.toLocaleString()}` : '0'}
           centerSub="at risk"
-          size={150}
-          strokeWidth={12}
+          size={176}
+          strokeWidth={13}
         />
 
         {/* Legend */}
@@ -1229,8 +1229,8 @@ export function PurchaseReturnsGraph({ db, nav }) {
           data={returnsDonutData}
           centerMain={`${stats.totalReturns}`}
           centerSub="debit notes"
-          size={150}
-          strokeWidth={12}
+          size={176}
+          strokeWidth={13}
         />
 
         {/* Legend */}
