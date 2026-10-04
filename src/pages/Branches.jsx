@@ -81,7 +81,7 @@ export default function Branches() {
   const navigate = useNavigate()
   const queryTab = new URLSearchParams(location.search).get('tab')
   const [tab, setTab] = useState(queryTab && ['overview', 'smart', 'transfers'].includes(queryTab) ? queryTab : 'overview')
-  const [viewMode, setViewMode] = useState('cards') // 'cards' | 'table'
+  const [viewMode, setViewMode] = useState('table') // 'cards' | 'table'
   const [search, setSearch] = useState('')
   const [regionFilter, setRegionFilter] = useState('ALL')
   const [editingBranch, setEditingBranch] = useState(null)
@@ -303,31 +303,6 @@ export default function Branches() {
             </button>
           ))}
         </div>
-
-        {tab === 'overview' && (
-          <div className="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl">
-            <button
-              onClick={() => setViewMode('cards')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                viewMode === 'cards' ? 'bg-white text-[#714B67] shadow-xs' : 'text-slate-600 hover:text-slate-900'
-              }`}
-              title="Cards Grid View"
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              <span>Cards</span>
-            </button>
-            <button
-              onClick={() => setViewMode('table')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-                viewMode === 'table' ? 'bg-white text-[#714B67] shadow-xs' : 'text-slate-600 hover:text-slate-900'
-              }`}
-              title="Matrix Table View"
-            >
-              <TableIcon className="w-3.5 h-3.5" />
-              <span>Table</span>
-            </button>
-          </div>
-        )}
       </div>
 
       {/* ── TAB 1: OVERVIEW MATRIX & CARDS ── */}
