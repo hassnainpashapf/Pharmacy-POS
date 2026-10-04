@@ -47,6 +47,19 @@ const REPORT_ICONS = {
   SALES_CUSTOMER: Users,
   SALES_COUNTER: Receipt,
   SALES_DAY_CLOSING: TrendingUp,
+  STOCK_COMPANY: Building2,
+  STOCK_CURRENT: Package,
+  STOCK_VALUATION: DollarSign,
+  STOCK_LOW: AlertTriangle,
+  STOCK_EXPIRED: AlertTriangle,
+  STOCK_NEAR_EXPIRY: Calendar,
+  STOCK_BATCH_MASTER: FileSpreadsheet,
+  STOCK_AUDIT_VARIANCE: FileSpreadsheet,
+  STOCK_MOVEMENT: TrendingUp,
+  STOCK_DEAD: DollarSign,
+  STOCK_FAST_MOVING: TrendingUp,
+  STOCK_SLOW_MOVING: Calendar,
+  STOCK_DAMAGED: AlertTriangle,
 }
 
 // All 35 Pharmacy-Specific Reports Grouped into 4 Core Categories
@@ -803,8 +816,17 @@ function ReportSection({ section, onSwitchToGui }) {
       }
 
       case 'STOCK_CURRENT': {
+        let totalCostVal = 0
+        let totalRetailVal = 0
+        let lowStockCount = 0
         const rows = (db.medicines || []).map((m) => {
           const qty = (db.batches || []).filter((b) => b.medicineId === m.id).reduce((a, b) => a + b.qty, 0)
+          const costVal = qty * (m.purchasePrice || Math.round(m.salePrice * 0.75))
+          const retailVal = qty * m.salePrice
+          totalCostVal += costVal
+          totalRetailVal += retailVal
+          const isLow = qty <= (m.minStock || 10)
+          if (isLow) lowStockCount += 1
           return [
             `${m.name} ${m.strength}`,
             m.generic || '—',
@@ -812,8 +834,8 @@ function ReportSection({ section, onSwitchToGui }) {
             m.manufacturer || '—',
             qty,
             fmt(m.salePrice),
-            fmt(qty * m.salePrice),
-            qty <= (m.minStock || 10) ? '⚠️ LOW STOCK' : '✓ OK',
+            fmt(retailVal),
+            isLow ? '⚠️ LOW STOCK' : '✓ OK',
           ]
         })
         return {
@@ -822,6 +844,8 @@ function ReportSection({ section, onSwitchToGui }) {
           summary: {
             'Total Medicines': (db.medicines || []).length,
             'Total Units in Stock': (db.batches || []).reduce((a, b) => a + b.qty, 0),
+            'Total Retail Valuation': fmt(totalRetailVal),
+            'Low Stock Items': `${lowStockCount} items`,
           },
         }
       }
@@ -851,31 +875,43 @@ function ReportSection({ section, onSwitchToGui }) {
             'Total Purchase Cost': fmt(totalCost),
             'Total Retail Value': fmt(totalRetail),
             'Potential Profit': fmt(totalRetail - totalCost),
+            'Overall Margin': totalRetail > 0 ? `${Math.round(((totalRetail - totalCost) / totalRetail) * 100)}%` : '0%',
           },
         }
       }
 
       case 'STOCK_LOW': {
+        let totalDeficitUnits = 0
+        let totalReorderCost = 0
         const rows = (db.medicines || [])
           .map((m) => {
             const stock = (db.batches || []).filter((b) => b.medicineId === m.id).reduce((a, b) => a + b.qty, 0)
             const min = m.minStock || 15
-            return { m, stock, min, deficit: Math.max(0, min * 2 - stock) }
+            const deficit = Math.max(0, min * 2 - stock)
+            const cost = m.purchasePrice || Math.round(m.salePrice * 0.75)
+            return { m, stock, min, deficit, cost }
           })
           .filter((x) => x.stock <= x.min)
-          .map((x) => [
-            `${x.m.name} ${x.m.strength}`,
-            x.m.dosageForm || x.m.form,
-            x.stock,
-            x.min,
-            `+${x.deficit} units`,
-            'CRITICAL REORDER',
-          ])
+          .map((x) => {
+            totalDeficitUnits += x.deficit
+            totalReorderCost += x.deficit * x.cost
+            return [
+              `${x.m.name} ${x.m.strength}`,
+              x.m.dosageForm || x.m.form,
+              x.stock,
+              x.min,
+              `+${x.deficit} units`,
+              'CRITICAL REORDER',
+            ]
+          })
         return {
           columns: ['Medicine', 'Dosage Form', 'Current Stock', 'Safety Reorder Point', 'Recommended Order', 'Urgency'],
           rows,
           summary: {
-            'Shortage Items': rows.length,
+            'Shortage Medicines': rows.length,
+            'Units Needed to Reorder': totalDeficitUnits,
+            'Est. Reorder Capital Required': fmt(totalReorderCost),
+            'Reorder Urgency': rows.length > 0 ? 'CRITICAL ACTION' : 'STABLE',
           },
         }
       }
@@ -883,6 +919,8 @@ function ReportSection({ section, onSwitchToGui }) {
       case 'STOCK_EXPIRED': {
         const now = new Date()
         const expiredBatches = (db.batches || []).filter((b) => new Date(b.expiry) < now && b.qty > 0)
+        const totalLoss = expiredBatches.reduce((a, b) => a + b.qty * b.purchasePrice, 0)
+        const totalUnits = expiredBatches.reduce((a, b) => a + b.qty, 0)
         const rows = expiredBatches.map((b) => {
           const m = medicineById(b.medicineId)
           return [
@@ -900,7 +938,9 @@ function ReportSection({ section, onSwitchToGui }) {
           rows,
           summary: {
             'Expired Batches': rows.length,
-            'Total Financial Loss': fmt(expiredBatches.reduce((a, b) => a + b.qty * b.purchasePrice, 0)),
+            'Expired Units': totalUnits,
+            'Total Financial Loss': fmt(totalLoss),
+            'Action': rows.length > 0 ? 'QUARANTINE & DISCARD' : 'CLEAN INVENTORY',
           },
         }
       }
@@ -911,6 +951,8 @@ function ReportSection({ section, onSwitchToGui }) {
         const nearBatches = (db.batches || [])
           .filter((b) => new Date(b.expiry) >= now && new Date(b.expiry) <= in90Days && b.qty > 0)
           .sort((a, b) => a.expiry.localeCompare(b.expiry))
+        const totalRiskRetail = nearBatches.reduce((a, b) => a + b.qty * b.salePrice, 0)
+        const totalUnitsAtRisk = nearBatches.reduce((a, b) => a + b.qty, 0)
         const rows = nearBatches.map((b) => {
           const m = medicineById(b.medicineId)
           const daysLeft = Math.ceil((new Date(b.expiry) - now) / 86400000)
@@ -929,7 +971,9 @@ function ReportSection({ section, onSwitchToGui }) {
           rows,
           summary: {
             'Near-Expiry Batches': rows.length,
-            'Stock at Risk': fmt(nearBatches.reduce((a, b) => a + b.qty * b.salePrice, 0)),
+            'Units at Risk': totalUnitsAtRisk,
+            'Retail Exposure at Risk': fmt(totalRiskRetail),
+            'FEFO Action Priority': nearBatches.some((b) => (new Date(b.expiry) - now) / 86400000 <= 30) ? '🔴 CRITICAL FEFO' : '🟡 MONITORING',
           },
         }
       }
@@ -1304,6 +1348,23 @@ function ReportSection({ section, onSwitchToGui }) {
       const sec = allReports.filter((r) => !primaryOrder.includes(r.id))
       return { primaryReports: prim, secondaryReports: sec }
     }
+    if (section === 'inventory') {
+      const primaryOrder = [
+        'STOCK_COMPANY',
+        'STOCK_CURRENT',
+        'STOCK_VALUATION',
+        'STOCK_LOW',
+        'STOCK_EXPIRED',
+        'STOCK_NEAR_EXPIRY',
+      ]
+      const prim = []
+      for (const id of primaryOrder) {
+        const found = allReports.find((r) => r.id === id)
+        if (found) prim.push(found)
+      }
+      const sec = allReports.filter((r) => !primaryOrder.includes(r.id))
+      return { primaryReports: prim, secondaryReports: sec }
+    }
     return {
       primaryReports: allReports.slice(0, 6),
       secondaryReports: allReports.slice(6),
@@ -1416,7 +1477,7 @@ function ReportSection({ section, onSwitchToGui }) {
               />
               <div className="absolute right-0 sm:left-0 top-full mt-1.5 w-76 sm:w-80 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-150 max-h-96 overflow-y-auto">
                 <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">
-                  Select Sales Report
+                  Select {section === 'inventory' ? 'Inventory' : section === 'financial' ? 'Financial' : 'Sales'} Report
                 </div>
                 {primaryReports.map((r) => {
                   const Icon = REPORT_ICONS[r.id] || FileSpreadsheet
@@ -1448,7 +1509,7 @@ function ReportSection({ section, onSwitchToGui }) {
                 {secondaryReports.length > 0 && (
                   <>
                     <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 mt-1 mb-1">
-                      More Sales Reports
+                      More {section === 'inventory' ? 'Inventory' : section === 'financial' ? 'Financial' : 'Sales'} Reports
                     </div>
                     {secondaryReports.map((r) => {
                       const Icon = REPORT_ICONS[r.id] || FileSpreadsheet
