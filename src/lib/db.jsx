@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react'
 
 const KEY = 'pharmacy_pos_db_v2'
 const ACTIVE_TENANT_KEY = 'pharmacy_pos_active_tenant'
+// Bump to regenerate demo (seeded) sales for analytics; real POS sales are always kept
+const SALES_SEED_VERSION = 2
 
 export function getActiveTenantKey() {
   if (typeof window === 'undefined') return KEY
@@ -311,7 +313,8 @@ function load(targetTenantId) {
         })
       }
 
-      if (!d.sales || d.sales.length < 15) {
+      const realSaleCount = (d.sales || []).filter((s) => !String(s.id || '').startsWith('sale_seed_')).length
+      if (realSaleCount < 15 && d.salesSeedVersion !== SALES_SEED_VERSION) {
         seedHistoricalSales(d)
       }
 
@@ -341,46 +344,38 @@ export function seedHistoricalSales(d) {
   ]
   const counters = ['counter-1', 'counter-1', 'counter-2', 'counter-3']
 
-  // Create 125 realistic sales across the past 30 days
-  for (let i = 0; i < 125; i++) {
-    // Distribution over 30 days
-    let daysAgo
-    if (i < 22) {
-      daysAgo = 0 // Today
-    } else if (i < 40) {
-      daysAgo = 1 // Yesterday
-    } else if (i < 80) {
-      daysAgo = (i % 6) + 2 // Past 2 to 7 days
-    } else {
-      daysAgo = (i % 22) + 8 // Past 8 to 29 days
-    }
+  // Deterministic pseudo-random generator so the demo data looks natural but stable
+  let seedState = 20261004
+  const rand = () => {
+    seedState = (seedState * 1664525 + 1013904223) % 4294967296
+    return seedState / 4294967296
+  }
+  // Relative customer traffic per hour (8 AM .. 10 PM): morning low, lunch bump, evening peak
+  const hourWeights = { 8: 2, 9: 3, 10: 4, 11: 5, 12: 6, 13: 6, 14: 5, 15: 4, 16: 5, 17: 7, 18: 9, 19: 10, 20: 9, 21: 7, 22: 4 }
+  const hourPool = []
+  Object.entries(hourWeights).forEach(([h, w]) => { for (let k = 0; k < w; k++) hourPool.push(Number(h)) })
 
-    // Operating hours 08:30 to 22:45
-    // Evening rush peak 17:00 - 21:00 (50%), Afternoon 12:00 - 16:00 (30%), Morning 08:30 - 11:00 (20%)
-    let hour
-    const cycle = i % 10
-    if (cycle < 5) {
-      hour = 17 + (i % 5) // 17, 18, 19, 20, 21
-    } else if (cycle < 8) {
-      hour = 12 + (i % 5) // 12, 13, 14, 15, 16
-    } else {
-      hour = 8 + (i % 4) // 8, 9, 10, 11
-    }
-    const minute = (i * 17) % 60
-    const second = (i * 23) % 60
+  // Create ~180 realistic sales spread across the past 30 days
+  for (let i = 0; i < 180; i++) {
+    const daysAgo = Math.floor(rand() * 30)
+    const hour = hourPool[Math.floor(rand() * hourPool.length)]
+    const minute = Math.floor(rand() * 60)
+    const second = Math.floor(rand() * 60)
 
     const saleDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
     saleDate.setHours(hour, minute, second, 0)
+    // Never create a sale in the future (e.g. later today)
+    if (saleDate.getTime() > now.getTime()) saleDate.setTime(saleDate.getTime() - 24 * 60 * 60 * 1000)
 
     // Items count (1 to 3 items per transaction)
-    const itemsCount = 1 + (i % 3)
+    const itemsCount = 1 + Math.floor(rand() * 3)
     const saleItems = []
     let subtotal = 0
     let cost = 0
 
     for (let k = 0; k < itemsCount; k++) {
-      const med = popularMeds[(i * 2 + k * 7) % popularMeds.length]
-      const qty = 1 + ((i + k) % 3)
+      const med = popularMeds[Math.floor(rand() * popularMeds.length)]
+      const qty = 1 + Math.floor(rand() * 3)
       const unitPrice = med.salePrice || 120
       const purchasePrice = med.purchasePrice || Math.round(unitPrice * 0.76)
       const itemTotal = qty * unitPrice
@@ -397,18 +392,18 @@ export function seedHistoricalSales(d) {
       })
     }
 
-    const discount = i % 5 === 0 ? Math.round(subtotal * 0.05) : 0
+    const discount = rand() < 0.2 ? Math.round(subtotal * 0.05) : 0
     const total = Math.max(0, subtotal - discount)
     const profit = Math.max(0, subtotal - cost - discount)
-    const payMethod = payMethods[i % payMethods.length]
-    const cashier = cashiers[i % cashiers.length]
-    const branchId = branches[i % branches.length]
-    const counterId = counters[i % counters.length]
+    const payMethod = payMethods[Math.floor(rand() * payMethods.length)]
+    const cashier = cashiers[Math.floor(rand() * cashiers.length)]
+    const branchId = branches[Math.floor(rand() * branches.length)]
+    const counterId = counters[Math.floor(rand() * counters.length)]
 
     sales.push({
       id: `sale_seed_${i + 1}`,
-      invoiceNo: `INV-${String(1001 + i).padStart(5, '0')}`,
-      customerId: i % 4 === 0 ? 'walkin' : (d.customers?.[0]?.id || 'walkin'),
+      invoiceNo: '',
+      customerId: rand() < 0.25 ? 'walkin' : (d.customers?.[0]?.id || 'walkin'),
       date: saleDate.toISOString(),
       items: saleItems,
       subtotal,
@@ -427,9 +422,14 @@ export function seedHistoricalSales(d) {
     })
   }
 
-  // Sort chronological
+  // Sort chronological and number invoices in date order
   sales.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-  d.sales = sales
+  sales.forEach((s, idx) => { s.invoiceNo = `INV-${String(1001 + idx).padStart(5, '0')}` })
+
+  // Keep any real sales made at the POS; only replace previous demo sales
+  const realSales = (d.sales || []).filter((s) => !String(s.id || '').startsWith('sale_seed_'))
+  d.sales = [...sales, ...realSales]
+  d.salesSeedVersion = SALES_SEED_VERSION
 }
 
 function seed(d) {

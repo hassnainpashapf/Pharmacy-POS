@@ -655,35 +655,35 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
           {/* Row 1: Dual Trajectory Area Chart (2 Cols) + Dosage Form Donut (1 Col) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Left: Revenue & Profit Curve (2 Columns) */}
-            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+            <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-4 flex flex-col justify-between">
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <Activity className="w-4 h-4 text-[#714B67]" />
-                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
-                      Revenue & Net Profit Trajectory
+                    <h3 className="font-semibold text-sm text-slate-800">
+                      Sales & Profit
                     </h3>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Timeline comparison between gross customer sales and generated net profit margin
+                    Daily sales vs profit
                   </p>
                 </div>
-                <div className="flex items-center gap-3 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl text-xs font-bold">
-                  <span className="flex items-center gap-1.5 text-slate-800">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#714B67]" />
-                    Gross Sales
+                <div className="flex items-center gap-4 text-xs font-medium text-slate-600">
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-block w-3 h-0.5 rounded" style={{ backgroundColor: '#714B67', height: 3 }} />
+                    Sales
                   </span>
-                  <span className="flex items-center gap-1.5 text-emerald-700">
-                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    Net Profit
+                  <span className="flex items-center gap-1.5">
+                    <span className="inline-block w-3 h-0.5 rounded" style={{ backgroundColor: '#10b981', height: 3 }} />
+                    Profit
                   </span>
                 </div>
               </div>
 
-              <div className="w-full pt-2" style={{ height: 280, minHeight: 280 }}>
+              <div className="w-full" style={{ height: 280 }}>
                 {trendData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={280}>
-                    <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
+                    <AreaChart data={trendData} margin={{ top: 10, right: 24, left: 4, bottom: 4 }}>
                       <defs>
                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#714B67" stopOpacity={0.3} />
@@ -701,13 +701,17 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                         fontSize={11}
                         tickLine={false}
                         axisLine={{ stroke: '#e2e8f0' }}
+                        padding={{ left: 8, right: 8 }}
+                        interval="preserveStartEnd"
+                        minTickGap={16}
                       />
                       <YAxis
                         stroke="#94a3b8"
                         fontSize={11}
                         tickLine={false}
                         axisLine={false}
-                        tickFormatter={(v) => (v >= 1000 ? `${Math.round(v / 1000)}k` : v)}
+                        width={56}
+                        tickFormatter={(v) => (v >= 1000 ? `Rs ${Math.round(v / 1000)}k` : `Rs ${v}`)}
                       />
                       <Tooltip content={<CustomAreaTooltip />} />
                       <Area
@@ -745,26 +749,23 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
             </div>
 
             {/* Right: Sales by Dosage Form Donut (1 Column) */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+            <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="flex items-center gap-2">
                     <Package className="w-4 h-4 text-[#714B67]" />
-                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
-                      Dosage Form Breakdown
+                    <h3 className="font-semibold text-sm text-slate-800">
+                      Sales by Form
                     </h3>
                   </div>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Revenue distribution across medicine formats</p>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Tablet, syrup, injection etc.</p>
                 </div>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                  Form Mix
-                </span>
               </div>
 
               <div className="h-44 w-full flex items-center justify-center relative">
                 {categoryData.length > 0 ? (
                   <>
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={176}>
                       <PieChart>
                         <Pie
                           data={categoryData}
@@ -833,28 +834,25 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
 
           {/* Row 2: Top Pharma Manufacturers (1 Col) + 24-Hour Counter Rush Velocity (1 Col) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Top Pharma Manufacturers Demand */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+            {/* Top Companies */}
+            <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <Building2 className="w-4 h-4 text-[#714B67]" />
-                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
-                      Top Pharma Manufacturers Demand
+                    <h3 className="font-semibold text-sm text-slate-800">
+                      Top Companies
                     </h3>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Ranked by gross customer prescription & OTC demand revenue
+                    By sales amount
                   </p>
                 </div>
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
-                  Top 7 Brands
-                </span>
               </div>
 
               <div className="h-60 w-full pt-1">
                 {topCompanies.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={240}>
                     <BarChart
                       data={topCompanies}
                       layout="vertical"
@@ -892,26 +890,23 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
             </div>
 
             {/* Operational Rush Hours Distribution */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+            <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-[#714B67]" />
-                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
-                      Counter Rush & Hourly Frequency
+                    <h3 className="font-semibold text-sm text-slate-800">
+                      Busy Hours
                     </h3>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Customer checkout traffic velocity across operating hours (8:00 AM to 11:00 PM)
+                    Invoices per hour
                   </p>
                 </div>
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700">
-                  Peak: 5 PM – 9 PM
-                </span>
               </div>
 
               <div className="h-60 w-full pt-1">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={hourlyRush} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                     <XAxis
@@ -951,26 +946,23 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
           {/* Row 3: Day-of-Week Velocity (1 Col) + Multi-Channel Payment Channels (1 Col) */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Day of Week Sales Performance */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+            <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-[#714B67]" />
-                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
-                      Weekly Day-of-Week Sales Performance
+                    <h3 className="font-semibold text-sm text-slate-800">
+                      Sales by Day
                     </h3>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Customer footfall and gross revenue pattern from Monday through Sunday
+                    Monday to Sunday
                   </p>
                 </div>
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
-                  Weekly Footfall
-                </span>
               </div>
 
               <div className="h-60 w-full pt-1">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={dayOfWeekData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                     <XAxis
@@ -1006,30 +998,27 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               </div>
             </div>
 
-            {/* Payment Channels & Settlement Mix */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+            {/* Payment Methods */}
+            <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-[#714B67]" />
-                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
-                      Payment Channels & Settlement Mix
+                    <h3 className="font-semibold text-sm text-slate-800">
+                      Payment Methods
                     </h3>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">
-                    Cash counter vs card terminals vs mobile digital wallets vs customer credit
+                    Cash, card, digital, udhar
                   </p>
                 </div>
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-[#714B67]">
-                  Omnichannel
-                </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4 pt-1">
                 <div className="h-44 w-full flex items-center justify-center relative">
                   {paymentData.length > 0 ? (
                     <>
-                      <ResponsiveContainer width="100%" height="100%">
+                      <ResponsiveContainer width="100%" height={176}>
                         <PieChart>
                           <Pie
                             data={paymentData}
@@ -1101,20 +1090,17 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
         <div className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Top Pharma Companies Bar Chart */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5">
+            <div className="bg-white rounded-xl border border-slate-200 p-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">
                     <Building2 className="w-4 h-4 text-[#714B67]" />
-                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                    <h3 className="font-semibold text-sm text-slate-800">
                       Top Pharma Manufacturers Market Share
                     </h3>
                   </div>
                   <p className="text-[11px] text-slate-500 mt-0.5">Ranked by gross customer demand revenue</p>
                 </div>
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                  Top 7 Brands
-                </span>
               </div>
 
               <div className="w-full pt-1" style={{ height: 280, minHeight: 280 }}>
@@ -1162,7 +1148,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-amber-500" />
                     <div>
-                      <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                      <h3 className="font-semibold text-sm text-slate-800">
                         Fastest-Moving Dispensed Medicines
                       </h3>
                       <p className="text-[11px] text-slate-400">Products with highest counter velocity</p>
@@ -1217,7 +1203,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <div className="flex items-center gap-2">
                 <Award className="w-4 h-4 text-emerald-600" />
                 <div>
-                  <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                  <h3 className="font-semibold text-sm text-slate-800">
                     Top Profit-Generating Pharmaceutical Products
                   </h3>
                   <p className="text-[11px] text-slate-400">Products producing highest net profit margins</p>
@@ -1276,11 +1262,11 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
         <div className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Payment Method Pie Chart */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+            <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <CreditCard className="w-4 h-4 text-[#714B67]" />
-                  <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                  <h3 className="font-semibold text-sm text-slate-800">
                     Multi-Channel Payment Split
                   </h3>
                 </div>
@@ -1289,7 +1275,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
 
               <div className="h-48 w-full flex items-center justify-center relative">
                 {paymentData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={192}>
                     <PieChart>
                       <Pie
                         data={paymentData}
@@ -1346,7 +1332,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                 <div>
                   <div className="flex items-center gap-2">
                     <UserCheck className="w-4 h-4 text-[#714B67]" />
-                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                    <h3 className="font-semibold text-sm text-slate-800">
                       Customer Retention & Profile Dynamics
                     </h3>
                   </div>
@@ -1423,7 +1409,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-[#714B67]" />
                 <div>
-                  <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                  <h3 className="font-semibold text-sm text-slate-800">
                     Counter Staff & Cashier Performance Velocity
                   </h3>
                   <p className="text-[11px] text-slate-400">
