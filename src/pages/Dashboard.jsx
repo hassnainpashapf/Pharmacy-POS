@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-  PieChart, Pie, Cell,
+  PieChart, Pie, Cell, AreaChart, Area,
 } from 'recharts'
 import { useNavigate } from 'react-router'
 import { ownerSalesComparison } from '../lib/ownerSalesChart'
@@ -61,8 +61,17 @@ export default function Dashboard() {
 
   const curBranch = data.scopeLabel
 
-  // Group today's sales or hourly/time periods for the unified Today's Performance chart
+  // Rich 7-day revenue & order flow trend for Today's Performance chart
   const todayChartData = useMemo(() => {
+    const daily = data?.operations?.salesTrendDaily || []
+    if (daily.length > 0) {
+      return daily.slice(-7).map((d) => ({
+        time: d.label,
+        revenue: d.total || 0,
+        orders: d.count || 0,
+      }))
+    }
+
     const intervals = [
       { time: 'Morning (8-12)', revenue: 0, orders: 0 },
       { time: 'Afternoon (12-4)', revenue: 0, orders: 0 },
@@ -97,7 +106,7 @@ export default function Dashboard() {
     })
 
     return intervals
-  }, [db?.sales])
+  }, [db?.sales, data?.operations?.salesTrendDaily])
 
   const handleAddCustomerSubmit = (e) => {
     e.preventDefault()
@@ -326,15 +335,12 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 3. Today's Overview (Single Combined Performance Graph & Metrics) */}
+      {/* 3. Today's Overview (Rich, Simple Performance Graph & Clean Metrics) */}
       <div className="space-y-4 py-2 border-y border-slate-200/80">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-5 bg-[#3b1734] rounded-full" />
-            <div>
-              <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Today's Performance</h2>
-              <p className="text-xs text-slate-400 font-medium">Real-time revenue, order flow, margin & financial overview</p>
-            </div>
+            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Today's Performance</h2>
           </div>
           <div className="flex items-center gap-4 text-xs font-semibold">
             <span className="flex items-center gap-1.5 text-slate-600">
@@ -354,14 +360,23 @@ export default function Dashboard() {
 
         {/* Combined Graph + Summary Strip */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-          {/* Main Visual Chart (7 of 12 cols) */}
-          <div className="lg:col-span-7 h-52 w-full pt-2">
+          {/* Main Visual Rich Gradient Area Chart (7 of 12 cols) */}
+          <div className="lg:col-span-7 h-56 w-full pt-2">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart
+              <AreaChart
                 data={todayChartData}
                 margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
-                barCategoryGap="25%"
               >
+                <defs>
+                  <linearGradient id="todayRevenueGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#008f8b" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#008f8b" stopOpacity={0.0} />
+                  </linearGradient>
+                  <linearGradient id="todayOrdersGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#714B67" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#714B67" stopOpacity={0.0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                 <XAxis dataKey="time" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
@@ -369,9 +384,9 @@ export default function Dashboard() {
                   formatter={(v, name) => [name === 'revenue' ? fmt(v) : v, name === 'revenue' ? 'Sales Revenue' : 'Orders']}
                   contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
                 />
-                <Bar dataKey="revenue" name="revenue" fill="#008f8b" radius={[6, 6, 0, 0]} maxBarSize={36} />
-                <Bar dataKey="orders" name="orders" fill="#714B67" radius={[6, 6, 0, 0]} maxBarSize={20} />
-              </BarChart>
+                <Area type="monotone" dataKey="revenue" name="revenue" stroke="#008f8b" strokeWidth={2.5} fillOpacity={1} fill="url(#todayRevenueGrad)" />
+                <Area type="monotone" dataKey="orders" name="orders" stroke="#714B67" strokeWidth={2} fillOpacity={1} fill="url(#todayOrdersGrad)" />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
 
