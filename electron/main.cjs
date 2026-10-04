@@ -66,7 +66,7 @@ function createWindow() {
   } else {
     // Load local bundled station immediately (lightning-fast 50ms startup, works 100% offline)
     const localIndexPath = path.join(__dirname, '../dist/index.html')
-    mainWindow.loadFile(localIndexPath).catch((err) => {
+    mainWindow.loadFile(localIndexPath, { hash: '/' }).catch((err) => {
       console.warn('Local bundle load failed, falling back to cloud station:', err)
       mainWindow.loadURL(CLOUD_STATION_URL)
     })

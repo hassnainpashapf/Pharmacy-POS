@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-router'
+import { HashRouter, Routes, Route, Link, Navigate, useLocation, useNavigate } from 'react-router'
 import React, { useState, useEffect, useLayoutEffect, lazy, Suspense, Component } from 'react'
 import {
   useDB,
@@ -878,7 +878,7 @@ export default function App() {
   }, [])
 
   return (
-    <BrowserRouter>
+    <HashRouter>
       <ErrorBoundary>
         <Routes>
           {/* The shared module has its own server session and permissions. */}
@@ -888,6 +888,6 @@ export default function App() {
           <Route path="*" element={<LegacyApp />} />
         </Routes>
       </ErrorBoundary>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
