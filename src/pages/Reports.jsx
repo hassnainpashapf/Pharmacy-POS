@@ -84,13 +84,13 @@ const REPORT_CATEGORIES = [
     id: 'stock',
     name: '📦 Stock & Expiry',
     reports: [
-      { id: 'STOCK_AUDIT_VARIANCE', title: '📋 Stock Audit Variance (Kam vs Zyada)' },
       { id: 'STOCK_COMPANY', title: '🏢 Company-Wise Stock Master' },
       { id: 'STOCK_CURRENT', title: 'Current Stock Master' },
       { id: 'STOCK_VALUATION', title: 'Stock Valuation (Cost vs Retail)' },
       { id: 'STOCK_LOW', title: 'Low Stock & Reorder Report' },
       { id: 'STOCK_EXPIRED', title: 'Expired Stock Inventory' },
       { id: 'STOCK_NEAR_EXPIRY', title: 'Near-Expiry FEFO Priority' },
+      { id: 'STOCK_AUDIT_VARIANCE', title: '📋 Stock Audit Variance (Kam vs Zyada)' },
       { id: 'STOCK_BATCH_MASTER', title: 'Comprehensive Batch Master' },
       { id: 'STOCK_MOVEMENT', title: 'Stock Movement Ledger' },
       { id: 'STOCK_DEAD', title: 'Dead Stock (Capital Trapped)' },
@@ -713,6 +713,9 @@ function ReportSection({ section, onSwitchToGui }) {
               'Physical Audit Pending (Target Safety Comparison Shown)',
             ]
           })
+          const belowTarget = rows.filter((r) => String(r[3]).includes('Below')).length
+          const aboveTarget = rows.filter((r) => String(r[3]).includes('Above')).length
+          const totalUnits = (db.batches || []).reduce((a, b) => a + b.qty, 0)
           return {
             columns: [
               'Medicine Name',
@@ -725,8 +728,10 @@ function ReportSection({ section, onSwitchToGui }) {
             ],
             rows,
             summary: {
-              'Audit Status': 'No physical stock audit recorded yet',
-              'Action Needed': 'Perform a physical stock count in Stock Audit & Count dashboard',
+              'Medicines Evaluated': rows.length,
+              'Total Units in Stock': totalUnits,
+              'Items Below Safety': `${belowTarget} items`,
+              'Items Above Safety': `${aboveTarget} items`,
             },
           }
         }
