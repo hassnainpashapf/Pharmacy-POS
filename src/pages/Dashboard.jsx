@@ -37,6 +37,7 @@ import {
   Sparkles,
   Zap,
   ArrowUpRight,
+  Trophy,
 } from 'lucide-react'
 
 export default function Dashboard() {
@@ -521,136 +522,255 @@ export default function Dashboard() {
         <span className="sr-only">Owner monthly sales comparison by year</span><OwnerYearChart comparison={ownerSalesComparison(db)} />
       </div>
 
-      {/* 7. Row 3 Analytics: Branch Performance Ranking, Capital at Risk, Recent Activity */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Branch Performance Ranking */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-sm text-slate-900">Branch Performance Ranking <span className="block text-[11px] text-slate-500 font-normal mt-1">{data.monthLabel}</span></h3>
+      {/* 7. Unified Executive Hub: Branch Rankings, Capital at Risk, Recent Activity (Single Unified Card) */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
+          {/* Section 1: Branch Performance Ranking */}
+          <div className="p-5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#008f8b]/10 text-[#008f8b] flex items-center justify-center shrink-0">
+                    <Trophy className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-slate-900 leading-tight">Branch Rankings</h3>
+                    <p className="text-[11px] text-slate-400 font-medium">{data.monthLabel}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => nav('/branches')}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#008f8b] hover:text-[#00706c] hover:underline transition-colors"
+                >
+                  <span>View All</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {!data.hasMonthlySales && (
+                <div className="py-10 text-center text-slate-400 text-xs">
+                  No sales recorded to rank branches this month.
+                </div>
+              )}
+
+              {data.hasMonthlySales && (
+                <div className="space-y-3">
+                  {(() => {
+                    const topRevenue = Math.max(1, ...(data.branchRankings || []).map((b) => b.total || 0))
+                    return data.branchRankings.map((r) => {
+                      const pct = Math.max(6, Math.min(100, Math.round(((r.total || 0) / topRevenue) * 100)))
+                      return (
+                        <div
+                          key={r.rank}
+                          className="p-2.5 rounded-xl border border-slate-100 bg-slate-50/40 hover:bg-slate-50 transition-colors flex items-center gap-3"
+                        >
+                          <span
+                            className={`w-6 h-6 rounded-md font-black text-[10px] flex items-center justify-center shrink-0 ${
+                              r.rank === 1
+                                ? 'bg-amber-500 text-white shadow-xs'
+                                : r.rank === 2
+                                ? 'bg-slate-400 text-white'
+                                : r.rank === 3
+                                ? 'bg-amber-700/80 text-white'
+                                : 'bg-slate-200 text-slate-600'
+                            }`}
+                          >
+                            {r.rank === 1 ? '1' : r.rank}
+                          </span>
+
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="font-bold text-slate-800 truncate">{r.name}</span>
+                              <span className="font-bold text-slate-900 font-mono ml-2 shrink-0">{r.revenue}</span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2 mt-1.5">
+                              <div className="w-full bg-slate-200/60 h-1.5 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full rounded-full transition-all duration-500"
+                                  style={{
+                                    width: `${pct}%`,
+                                    backgroundColor: r.color || '#008f8b',
+                                  }}
+                                />
+                              </div>
+                              <span className="text-[10px] font-semibold text-slate-400 shrink-0">{r.status}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })
+                  })()}
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Multi-branch revenue share</span>
               <button
                 onClick={() => nav('/branches')}
-                className="text-xs font-semibold text-[#008f8b] hover:underline"
+                className="font-bold text-[#008f8b] hover:text-[#00706c] inline-flex items-center gap-1 transition-colors"
               >
-                View All
+                <span>Branch Hub</span>
+                <ArrowUpRight className="w-3 h-3" />
               </button>
             </div>
-
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-[10px] text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100">
-                  <th className="pb-2 text-left font-medium">RANK</th>
-                  <th className="pb-2 text-left font-medium">BRANCH</th>
-                  <th className="pb-2 text-left font-medium">REVENUE</th>
-                  <th className="pb-2 text-right font-medium">ACTIVITY</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-medium">
-                {!data.hasMonthlySales && <tr><td colSpan={4} className="py-8 text-center text-slate-500">No sales to rank this month.</td></tr>}
-                {data.hasMonthlySales && data.branchRankings.map((r) => (
-                  <tr key={r.rank} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-2.5 text-slate-400">#{r.rank}</td>
-                    <td className="py-2.5 text-slate-800 font-bold">{r.name}</td>
-                    <td className="py-2.5 text-slate-900 font-mono">{r.revenue}</td>
-                    <td className="py-2.5 text-right">
-                      <span
-                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600"
-                      >
-                        <span>{r.status}</span>
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
-        </div>
 
-        {/* Capital at Risk ⚠ */}
-        <div className="bg-[#fff1f2] rounded-2xl p-5 border-l-[5px] border-l-[#e11d48] border-t border-r border-b border-rose-300 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="font-bold text-sm text-[#9f1239] flex items-center gap-1.5">
-                  <span>Capital at Risk</span>
-                  <span className="text-[#e11d48]">⚠</span>
-                </h3>
-                <p className="text-[11px] text-[#9f1239]/80 mt-0.5">Expired + expiring within 30 days · cost value</p>
-              </div>
-              <div className="text-right">
-                <div className="text-[10px] text-[#9f1239] font-medium">Total Value at Risk</div>
-                <div className="text-base font-extrabold text-[#e11d48] font-mono">
-                  {data.capitalAtRisk.total}
+          {/* Section 2: Capital at Risk */}
+          <div className="p-5 flex flex-col justify-between bg-rose-50/20">
+            <div>
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-600 flex items-center justify-center shrink-0">
+                    <AlertTriangle className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-slate-900 leading-tight flex items-center gap-1.5">
+                      <span>Capital at Risk</span>
+                      <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                    </h3>
+                    <p className="text-[11px] text-slate-400 font-medium">Expired & 30d near expiry</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] font-semibold text-slate-400 block uppercase tracking-wider">At Risk</span>
+                  <span className="text-sm font-black text-rose-600 font-mono tracking-tight">{data.capitalAtRisk.total}</span>
                 </div>
               </div>
-            </div>
 
-            <div className="space-y-2.5 mt-4 max-h-80 overflow-y-auto">
-              {!data.capitalAtRisk.items.length && <p className="text-xs text-slate-500 py-8 text-center">No stocked batches expired or due within 30 days.</p>}
-              {data.capitalAtRisk.items.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white p-3 rounded-xl border border-rose-300 shadow-sm flex items-center justify-between text-xs"
-                >
-                  <div>
-                    <div className="font-bold text-slate-900">{item.name}</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">{item.batch}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="font-black text-slate-900 font-mono">{item.value}</div>
-                    <div className={`text-[10px] font-medium flex items-center gap-1 justify-end mt-0.5 ${
-                      item.days < 0 ? 'text-[#e11d48]' : 'text-[#d97706]'
-                    }`}>
-                      <Clock className="w-2.5 h-2.5" />
-                      <span>{item.expiring}</span>
+              <div className="space-y-2.5 max-h-72 overflow-y-auto pr-0.5">
+                {!data.capitalAtRisk.items.length && (
+                  <div className="py-8 text-center flex flex-col items-center justify-center text-slate-400">
+                    <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1.5">
+                      <ClipboardCheck className="w-4 h-4" />
                     </div>
+                    <span className="text-xs font-semibold text-slate-700">All Batches Valid</span>
+                    <span className="text-[11px] text-slate-400">No stock expired or due within 30 days</span>
                   </div>
-                </div>
-              ))}
+                )}
+                {data.capitalAtRisk.items.map((item) => {
+                  const isExpired = item.days < 0
+                  return (
+                    <div
+                      key={item.id}
+                      className="p-2.5 rounded-xl border border-rose-100/80 bg-white hover:border-rose-300 shadow-xs transition-all flex items-center justify-between gap-3 text-xs group"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold text-slate-900 truncate group-hover:text-rose-900 transition-colors">
+                          {item.name}
+                        </div>
+                        <div className="text-[10px] text-slate-400 truncate mt-0.5">
+                          {item.batch}
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="font-bold text-slate-900 font-mono text-xs">{item.value}</div>
+                        <span
+                          className={`inline-flex items-center gap-1 text-[10px] font-semibold mt-0.5 px-1.5 py-0.5 rounded-md ${
+                            isExpired
+                              ? 'bg-rose-100 text-rose-700'
+                              : 'bg-amber-100 text-amber-800'
+                          }`}
+                        >
+                          <Clock className="w-2.5 h-2.5" />
+                          <span>{item.expiring}</span>
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Recent Activity */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-sm text-slate-900">Recent Activity</h3>
+            <div className="pt-3 mt-4 border-t border-rose-100/80 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Inventory Expiry Ledger</span>
               <button
-                onClick={() => nav('/reports')}
-                className="text-xs font-semibold text-[#008f8b] hover:underline"
+                onClick={() => nav('/inventory/hub?tab=expiry')}
+                className="font-bold text-rose-600 hover:text-rose-800 inline-flex items-center gap-1 transition-colors"
               >
-                View All
+                <span>Resolve Batches</span>
+                <ArrowUpRight className="w-3 h-3" />
               </button>
             </div>
+          </div>
 
-            <div className="space-y-3.5">
-              {!data.recentActivity.length && <p className="text-xs text-slate-500 py-8 text-center">No activity recorded in this scope.</p>}
-              {data.recentActivity.map((act) => (
-                <div key={act.id} className="flex items-start gap-3">
-                  <div
-                    className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
-                      act.type === 'sale'
-                        ? 'bg-[#e6f7f2] text-[#008f8b]'
-                        : act.type === 'purchase'
-                        ? 'bg-[#e0f2fe] text-[#0284c7]'
-                        : 'bg-[#fef3c7] text-[#d97706]'
-                    }`}
-                  >
-                    {act.type === 'sale' ? (
-                      <ReceiptIcon className="w-3.5 h-3.5" />
-                    ) : act.type === 'purchase' ? (
-                      <Truck className="w-3.5 h-3.5" />
-                    ) : (
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                    )}
+          {/* Section 3: Recent Activity */}
+          <div className="p-5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#714B67]/10 text-[#714B67] flex items-center justify-center shrink-0">
+                    <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-slate-800">{act.title}</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">{act.subtitle}</div>
+                    <h3 className="font-bold text-sm text-slate-900 leading-tight">Recent Activity</h3>
+                    <p className="text-[11px] text-slate-400 font-medium">Real-time ledger audit</p>
                   </div>
                 </div>
-              ))}
+                <button
+                  onClick={() => nav('/reports')}
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-[#008f8b] hover:text-[#00706c] hover:underline transition-colors"
+                >
+                  <span>View All</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              <div className="space-y-2.5 max-h-72 overflow-y-auto pr-0.5">
+                {!data.recentActivity.length && (
+                  <p className="text-xs text-slate-400 py-8 text-center font-medium">No activity recorded in this scope.</p>
+                )}
+                {data.recentActivity.map((act) => {
+                  const isSale = act.type === 'sale'
+                  const isPurchase = act.type === 'purchase'
+                  return (
+                    <div
+                      key={act.id}
+                      className="flex items-center justify-between gap-2.5 p-2 rounded-xl hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                            isSale
+                              ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-500/20'
+                              : isPurchase
+                              ? 'bg-sky-50 text-sky-600 ring-1 ring-sky-500/20'
+                              : 'bg-amber-50 text-amber-600 ring-1 ring-amber-500/20'
+                          }`}
+                        >
+                          {isSale ? (
+                            <ReceiptIcon className="w-3.5 h-3.5" />
+                          ) : isPurchase ? (
+                            <Truck className="w-3.5 h-3.5" />
+                          ) : (
+                            <RotateCcw className="w-3.5 h-3.5" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-xs font-bold text-slate-800 truncate">{act.title}</div>
+                          <div className="text-[10px] text-slate-400 truncate mt-0.5">{act.subtitle}</div>
+                        </div>
+                      </div>
+                      {act.amount > 0 && (
+                        <span className="font-mono text-xs font-bold text-slate-700 shrink-0">
+                          {fmt(act.amount)}
+                        </span>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <span>Complete transaction feed</span>
+              <button
+                onClick={() => nav('/sales')}
+                className="font-bold text-[#008f8b] hover:text-[#00706c] inline-flex items-center gap-1 transition-colors"
+              >
+                <span>Sales Log</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </button>
             </div>
           </div>
         </div>
