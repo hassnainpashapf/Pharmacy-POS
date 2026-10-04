@@ -208,20 +208,20 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* 2. Attention & Action Required (5 Cards matching top Quick Action styling & size) */}
+      {/* 2. Attention & Action Required (5 Cards matching top Quick Action styling & size exactly) */}
       <div className="space-y-2.5">
         <div className="flex items-center gap-2">
           <div className="w-2 h-4 bg-amber-500 rounded-full" />
           <h2 className="text-sm font-bold text-slate-800 tracking-tight">Attention & Action Required</h2>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div className="quick-actions grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {/* Low Stock */}
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-slate-200 hover:border-amber-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
+            className="bg-white border border-slate-200 hover:border-amber-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center gap-3 text-left group"
           >
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
@@ -234,9 +234,9 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-slate-200 hover:border-rose-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
+            className="bg-white border border-slate-200 hover:border-rose-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center gap-3 text-left group"
           >
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <AlertCircle className="w-5 h-5" />
             </div>
             <div>
@@ -249,9 +249,9 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-slate-200 hover:border-amber-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
+            className="bg-white border border-slate-200 hover:border-amber-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center gap-3 text-left group"
           >
-            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <Calendar className="w-5 h-5" />
             </div>
             <div>
@@ -264,9 +264,9 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-slate-200 hover:border-rose-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
+            className="bg-white border border-slate-200 hover:border-rose-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center gap-3 text-left group"
           >
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <Clock className="w-5 h-5" />
             </div>
             <div>
@@ -279,9 +279,9 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => nav('/suppliers')}
-            className="bg-white border border-slate-200 hover:border-[#714B67]/60 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
+            className="bg-white border border-slate-200 hover:border-[#714B67]/60 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center gap-3 text-left group"
           >
-            <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
