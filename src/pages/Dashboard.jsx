@@ -61,6 +61,44 @@ export default function Dashboard() {
 
   const curBranch = data.scopeLabel
 
+  // Group today's sales or hourly/time periods for the unified Today's Performance chart
+  const todayChartData = useMemo(() => {
+    const intervals = [
+      { time: 'Morning (8-12)', revenue: 0, orders: 0 },
+      { time: 'Afternoon (12-4)', revenue: 0, orders: 0 },
+      { time: 'Evening (4-8)', revenue: 0, orders: 0 },
+      { time: 'Night (8-12)', revenue: 0, orders: 0 },
+    ]
+
+    const sales = db?.sales || []
+    const now = new Date()
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+
+    sales.forEach((s) => {
+      const sDate = String(s.date || '').slice(0, 10)
+      if (sDate === todayStr) {
+        const d = new Date(s.date || s.createdAt || now)
+        const hour = d.getHours()
+        const rev = Number(s.total) || 0
+        if (hour < 12) {
+          intervals[0].revenue += rev
+          intervals[0].orders += 1
+        } else if (hour < 16) {
+          intervals[1].revenue += rev
+          intervals[1].orders += 1
+        } else if (hour < 20) {
+          intervals[2].revenue += rev
+          intervals[2].orders += 1
+        } else {
+          intervals[3].revenue += rev
+          intervals[3].orders += 1
+        }
+      }
+    })
+
+    return intervals
+  }, [db?.sales])
+
   const handleAddCustomerSubmit = (e) => {
     e.preventDefault()
     if (!newCustName.trim()) return
@@ -294,117 +332,132 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 3. Today's Overview (6 KPI Cards in a row) */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-4 bg-[#3b1734] rounded-full" />
-          <h2 className="text-sm font-bold text-slate-800 tracking-tight">Today's Overview</h2>
-        </div>
-        <div className="kpi-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {/* Sales */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
-            <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
-              <span>Sales Revenue</span>
-              <div className="w-8 h-8 rounded-xl bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
-                <DollarSign className="w-4 h-4" />
-              </div>
+      {/* 3. Today's Overview (Single Combined Performance Graph & Metrics) */}
+      <div className="space-y-4 py-2 border-y border-slate-200/80">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-2.5 h-5 bg-[#3b1734] rounded-full" />
+            <div>
+              <h2 className="text-base font-extrabold text-slate-900 tracking-tight">Today's Performance</h2>
+              <p className="text-xs text-slate-400 font-medium">Real-time revenue, order flow, margin & financial overview</p>
             </div>
-            <div className="mt-3">
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono">
+          </div>
+          <div className="flex items-center gap-4 text-xs font-semibold">
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#008f8b]" />
+              Revenue: <strong className="font-mono text-slate-900">{data.kpis.sales}</strong>
+            </span>
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#714B67]" />
+              Orders: <strong className="font-mono text-slate-900">{data.kpis.orders}</strong>
+            </span>
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ea580c]" />
+              Profit: <strong className="font-mono text-slate-900">{data.kpis.profit}</strong>
+            </span>
+          </div>
+        </div>
+
+        {/* Combined Graph + Summary Strip */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          {/* Main Visual Chart (7 of 12 cols) */}
+          <div className="lg:col-span-7 h-52 w-full pt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={todayChartData}
+                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                barCategoryGap="25%"
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <XAxis dataKey="time" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                <YAxis tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  formatter={(v, name) => [name === 'revenue' ? fmt(v) : v, name === 'revenue' ? 'Sales Revenue' : 'Orders']}
+                  contentStyle={{ borderRadius: 12, border: '1px solid #e2e8f0', fontSize: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}
+                />
+                <Bar dataKey="revenue" name="revenue" fill="#008f8b" radius={[6, 6, 0, 0]} maxBarSize={36} />
+                <Bar dataKey="orders" name="orders" fill="#714B67" radius={[6, 6, 0, 0]} maxBarSize={20} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Unified Metrics Flow (5 of 12 cols, merged without separate cards) */}
+          <div className="lg:col-span-5 grid grid-cols-2 gap-4 lg:pl-6 lg:border-l border-slate-100">
+            <div className="p-2">
+              <div className="text-xs text-slate-500 font-semibold flex items-center justify-between">
+                <span>Revenue Today</span>
+                <DollarSign className="w-3.5 h-3.5 text-[#008f8b]" />
+              </div>
+              <div className="text-2xl font-black text-slate-900 tracking-tight font-mono mt-1">
                 {data.kpis.sales}
               </div>
-              <div className="text-[11px] font-semibold text-emerald-700 mt-1 flex items-center gap-1">
-                <span>{data.kpis.salesChange}</span>
+              <div className="text-[11px] font-semibold text-emerald-700 mt-0.5">
+                {data.kpis.salesChange}
               </div>
             </div>
-          </div>
 
-          {/* Orders */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
-            <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
-              <span>Orders / Invoices</span>
-              <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
-                <CreditCard className="w-4 h-4" />
+            <div className="p-2">
+              <div className="text-xs text-slate-500 font-semibold flex items-center justify-between">
+                <span>Orders / Invoices</span>
+                <CreditCard className="w-3.5 h-3.5 text-[#714B67]" />
               </div>
-            </div>
-            <div className="mt-3">
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono">
+              <div className="text-2xl font-black text-slate-900 tracking-tight font-mono mt-1">
                 {data.kpis.orders}
               </div>
-              <div className="text-[11px] font-semibold text-slate-500 mt-1 flex items-center gap-1">
-                <span>{data.kpis.ordersChange}</span>
+              <div className="text-[11px] font-semibold text-slate-500 mt-0.5">
+                {data.kpis.ordersChange}
               </div>
             </div>
-          </div>
 
-          {/* Profit */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
-            <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
-              <span>Gross Profit</span>
-              <div className="w-8 h-8 rounded-xl bg-[#ffedd5] text-[#ea580c] flex items-center justify-center">
-                <TrendingUp className="w-4 h-4" />
+            <div className="p-2">
+              <div className="text-xs text-slate-500 font-semibold flex items-center justify-between">
+                <span>Gross Profit</span>
+                <TrendingUp className="w-3.5 h-3.5 text-[#ea580c]" />
               </div>
-            </div>
-            <div className="mt-3">
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono">
+              <div className="text-2xl font-black text-slate-900 tracking-tight font-mono mt-1">
                 {data.kpis.profit}
               </div>
-              <div className="text-[11px] font-medium text-slate-400 mt-1">
+              <div className="text-[11px] font-medium text-slate-400 mt-0.5">
                 {data.kpis.profitChange}
               </div>
             </div>
-          </div>
 
-          {/* Customers */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
-            <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
-              <span>Customers Served</span>
-              <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
-                <Users className="w-4 h-4" />
+            <div className="p-2">
+              <div className="text-xs text-slate-500 font-semibold flex items-center justify-between">
+                <span>Gross Margin</span>
+                <ReceiptIcon className="w-3.5 h-3.5 text-purple-600" />
               </div>
-            </div>
-            <div className="mt-3">
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono">
-                {data.kpis.customers}
-              </div>
-              <div className="text-[11px] font-medium text-slate-400 mt-1">
-                {data.kpis.customersChange}
-              </div>
-            </div>
-          </div>
-
-          {/* Gross Margin */}
-          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
-            <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
-              <span>Gross Margin</span>
-              <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
-                <ReceiptIcon className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="mt-3">
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono">
+              <div className="text-2xl font-black text-slate-900 tracking-tight font-mono mt-1">
                 {data.kpis.grossMargin}
               </div>
-              <div className="text-[11px] font-medium text-slate-400 mt-1">
+              <div className="text-[11px] font-medium text-slate-400 mt-0.5">
                 {data.kpis.marginChange}
               </div>
             </div>
-          </div>
 
-          {/* Overdue */}
-          <div className="bg-white border border-rose-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
-            <div className="flex items-center justify-between text-xs text-[#e11d48] font-semibold">
-              <span>Supplier Payables</span>
-              <div className="w-8 h-8 rounded-xl bg-[#ffe4e6] text-[#e11d48] flex items-center justify-center">
-                <CreditCard className="w-4 h-4" />
+            <div className="p-2">
+              <div className="text-xs text-slate-500 font-semibold flex items-center justify-between">
+                <span>Customers Served</span>
+                <Users className="w-3.5 h-3.5 text-slate-600" />
+              </div>
+              <div className="text-2xl font-black text-slate-900 tracking-tight font-mono mt-1">
+                {data.kpis.customers}
+              </div>
+              <div className="text-[11px] font-medium text-slate-400 mt-0.5">
+                {data.kpis.customersChange}
               </div>
             </div>
-            <div className="mt-3">
-              <div className="text-2xl sm:text-3xl font-black text-[#e11d48] tracking-tight font-mono">
+
+            <div className="p-2">
+              <div className="text-xs text-[#e11d48] font-semibold flex items-center justify-between">
+                <span>Supplier Payables</span>
+                <CreditCard className="w-3.5 h-3.5 text-[#e11d48]" />
+              </div>
+              <div className="text-2xl font-black text-[#e11d48] tracking-tight font-mono mt-1">
                 {data.kpis.payables}
               </div>
-              <div className="text-[11px] font-semibold text-[#e11d48] mt-1 flex items-center gap-1">
-                <span>{data.kpis.payablesHint}</span>
+              <div className="text-[11px] font-semibold text-[#e11d48] mt-0.5">
+                {data.kpis.payablesHint}
               </div>
             </div>
           </div>
