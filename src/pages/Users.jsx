@@ -89,9 +89,6 @@ export function UsersPanel({ hideHeader = false, addingProp, setAddingProp }) {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-black text-slate-900 tracking-tight">User Roles &amp; Staff</h1>
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd]">
-                  {db.users?.length || 0} Staff Accounts
-                </span>
               </div>
               <p className="text-xs text-slate-600 font-medium mt-0.5">
                 Manage employees, roles, branch access &amp; passwords

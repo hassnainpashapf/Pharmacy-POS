@@ -203,9 +203,6 @@ export default function Branches() {
               <h1 className="text-xl font-black text-slate-900 tracking-tight">
                 Enterprise Multi-Branch & HQ Portal
               </h1>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd]">
-                {db.branches?.length || 0} Hubs Active
-              </span>
             </div>
             <p className="text-xs text-slate-600 font-medium mt-0.5">
               Regional hierarchy monitoring, autonomous inter-branch transfers, and multi-location revenue

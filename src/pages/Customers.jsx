@@ -537,9 +537,6 @@ export function Customers() {
                   <h1 className="text-xl font-black text-slate-900 tracking-tight">
                     Customers & Credit Accounts
                   </h1>
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd]">
-                    {customers.length} accounts
-                  </span>
                 </div>
                 <p className="text-xs text-slate-600 font-medium mt-0.5">
                   Customer ledger accounts, credit ceilings, outstanding dues (Udhar), and loyalty points.
