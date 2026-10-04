@@ -1959,12 +1959,32 @@ export function deleteUser(id) {
 export function auditLogs() { return [...db.auditLogs].reverse() }
 
 // ---------- multi-branch: management & transfers ----------
-export function addBranch({ name, city, address }) {
-  const b = { id: uid(), name, city: city || '', address: address || '', active: true }
+export function addBranch({ name, city, address, region, phone }) {
+  const b = { id: uid(), name, city: city || '', address: address || '', region: region || 'Central Region (Punjab)', phone: phone || '', active: true }
   db.branches.push(b)
   log('BRANCH_ADD', name)
   save()
   return b
+}
+
+export function updateBranch(id, patch) {
+  const b = db.branches.find((x) => x.id === id)
+  if (!b) return null
+  Object.assign(b, patch)
+  log('BRANCH_UPDATE', b.name)
+  save()
+  return b
+}
+
+export function deleteBranch(id) {
+  if (id === 'main') throw new Error('Cannot delete main headquarters branch')
+  const idx = db.branches.findIndex((x) => x.id === id)
+  if (idx === -1) return false
+  const [removed] = db.branches.splice(idx, 1)
+  if (db.currentBranch === id) db.currentBranch = 'ALL'
+  log('BRANCH_DELETE', removed.name)
+  save()
+  return true
 }
 
 export function requestTransfer({ fromBranch, toBranch, items }) {
