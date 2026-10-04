@@ -515,33 +515,8 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
           </div>
         </div>
 
-        {/* View Switcher, Branch Filter & Period Controls */}
+        {/* View Switcher, CSV Export & Print */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Branch Filter */}
-          <div className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-xs">
-            <Building2 className="w-3.5 h-3.5 text-[#714B67] shrink-0" />
-            <select
-              value={branchFilter}
-              onChange={(e) => setBranchFilter(e.target.value)}
-              className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer"
-            >
-              <option value="ALL">🌐 Network Consolidated (All Hubs)</option>
-              {(db.branches || []).map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Date Filter Bar Dropdown */}
-          <DateFilterBar
-            filterState={reportDateFilter}
-            onChange={setReportDateFilter}
-            asDropdown
-            dropdownClassName="rounded-xl py-2 px-3 text-xs"
-          />
-
           {/* View Toggle */}
           <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
             <button
@@ -563,7 +538,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
 
           <button
             onClick={handleExportOverviewCSV}
-            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 shadow-xs cursor-pointer"
+            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold transition inline-flex items-center gap-1.5 shadow-xs cursor-pointer"
             title="Download analytics summary CSV"
           >
             <Download className="w-3.5 h-3.5 text-slate-500" />
@@ -651,52 +626,79 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
         />
       </div>
 
-      {/* ── Analytical Perspective Sub-Tabs ── */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto text-xs font-bold custom-scroll">
-        <button
-          onClick={() => setActiveTab('overview')}
-          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl transition cursor-pointer shrink-0 ${
-            activeTab === 'overview'
-              ? 'bg-[#3b1734] text-white shadow-xs'
-              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-          }`}
-        >
-          <Activity className="w-3.5 h-3.5" />
-          <span>📈 Revenue & Timeline Dynamics</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('pharma')}
-          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl transition cursor-pointer shrink-0 ${
-            activeTab === 'pharma'
-              ? 'bg-[#3b1734] text-white shadow-xs'
-              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-          }`}
-        >
-          <Building2 className="w-3.5 h-3.5" />
-          <span>🏢 Pharma & Inventory Demand</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('payments')}
-          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl transition cursor-pointer shrink-0 ${
-            activeTab === 'payments'
-              ? 'bg-[#3b1734] text-white shadow-xs'
-              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-          }`}
-        >
-          <Wallet className="w-3.5 h-3.5" />
-          <span>💳 Payment Channels & Udhar</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('staff')}
-          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl transition cursor-pointer shrink-0 ${
-            activeTab === 'staff'
-              ? 'bg-[#3b1734] text-white shadow-xs'
-              : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
-          }`}
-        >
-          <Users className="w-3.5 h-3.5" />
-          <span>👥 Counter & Staff Productivity</span>
-        </button>
+      {/* ── Toolbar Card (Branch Filter, Date Filter & Perspective Tabs - matching Image 2) ── */}
+      <div className="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        {/* Left Side: Branch Selector & Date Range Filter */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Branch Filter Dropdown */}
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700">
+            <Building2 className="w-3.5 h-3.5 text-[#714B67] shrink-0" />
+            <select
+              value={branchFilter}
+              onChange={(e) => setBranchFilter(e.target.value)}
+              className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer"
+            >
+              <option value="ALL">🌐 Network Consolidated (All Hubs)</option>
+              {(db.branches || []).map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Date Filter Bar */}
+          <DateFilterBar
+            filterState={reportDateFilter}
+            onChange={setReportDateFilter}
+            asDropdown
+            dropdownClassName="rounded-xl py-2 px-3 text-xs bg-slate-50 border border-slate-200 font-bold text-slate-700"
+          />
+        </div>
+
+        {/* Right Side: Analytical Perspective Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto text-xs font-bold custom-scroll">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`px-3 py-1.5 rounded-xl transition cursor-pointer text-xs font-bold shrink-0 ${
+              activeTab === 'overview'
+                ? 'bg-[#3b1734] text-white shadow-xs'
+                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+            }`}
+          >
+            📈 Revenue Dynamics
+          </button>
+          <button
+            onClick={() => setActiveTab('pharma')}
+            className={`px-3 py-1.5 rounded-xl transition cursor-pointer text-xs font-bold shrink-0 ${
+              activeTab === 'pharma'
+                ? 'bg-[#3b1734] text-white shadow-xs'
+                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+            }`}
+          >
+            🏢 Pharma Demand
+          </button>
+          <button
+            onClick={() => setActiveTab('payments')}
+            className={`px-3 py-1.5 rounded-xl transition cursor-pointer text-xs font-bold shrink-0 ${
+              activeTab === 'payments'
+                ? 'bg-[#3b1734] text-white shadow-xs'
+                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+            }`}
+          >
+            💳 Payment Channels
+          </button>
+          <button
+            onClick={() => setActiveTab('staff')}
+            className={`px-3 py-1.5 rounded-xl transition cursor-pointer text-xs font-bold shrink-0 ${
+              activeTab === 'staff'
+                ? 'bg-[#3b1734] text-white shadow-xs'
+                : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
+            }`}
+          >
+            👥 Counter & Staff
+          </button>
+        </div>
       </div>
 
       {/* ── TAB 1: REVENUE & TIMELINE DYNAMICS ── */}
