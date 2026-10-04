@@ -833,7 +833,6 @@ export function CompanyStockGraph({ db, nav }) {
               <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#714B67] transition-colors">
                 Company Stock
               </h3>
-              <p className="text-[11px] text-slate-400 font-medium">Manufacturer Valuation</p>
             </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
@@ -843,8 +842,8 @@ export function CompanyStockGraph({ db, nav }) {
           <div className="text-2xl font-black text-slate-900 tracking-tight font-mono">
             {fmt(stats.totalStockValuation)}
           </div>
-          <div className="text-xs text-slate-500 font-medium mt-0.5">
-            {stats.totalStockUnits.toLocaleString()} units · {stats.totalCompanies} brands
+          <div className="text-xs text-slate-400 font-medium mt-0.5">
+            {stats.totalCompanies} brands
           </div>
         </div>
 
@@ -941,7 +940,6 @@ export function StockAuditGraph({ db, nav }) {
               <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#008f8b] transition-colors">
                 Stock Audit
               </h3>
-              <p className="text-[11px] text-slate-400 font-medium">Physical Variance Count</p>
             </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#008f8b] transition-colors" />
@@ -951,8 +949,8 @@ export function StockAuditGraph({ db, nav }) {
           <div className="text-2xl font-black text-[#008f8b] tracking-tight font-mono">
             {stats.accuracy}%
           </div>
-          <div className="text-xs text-slate-500 font-medium mt-0.5">
-            {stats.totalItems.toLocaleString()} items counted
+          <div className="text-xs text-slate-400 font-medium mt-0.5">
+            {stats.totalItems.toLocaleString()} items
           </div>
         </div>
 
@@ -1087,7 +1085,6 @@ export function ExpiryActionGraph({ db, nav }) {
               <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#714B67] transition-colors">
                 Expiry Action
               </h3>
-              <p className="text-[11px] text-slate-400 font-medium">FEFO Risk & Expirations</p>
             </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
@@ -1097,8 +1094,8 @@ export function ExpiryActionGraph({ db, nav }) {
           <div className={`text-2xl font-black tracking-tight font-mono ${stats.capitalAtRisk > 0 ? 'text-rose-600' : 'text-[#008f8b]'}`}>
             {fmt(stats.capitalAtRisk)}
           </div>
-          <div className="text-xs text-slate-500 font-medium mt-0.5">
-            {totalAtRisk.toLocaleString()} units at risk
+          <div className="text-xs text-slate-400 font-medium mt-0.5">
+            {totalAtRisk.toLocaleString()} at risk
           </div>
         </div>
 
@@ -1202,7 +1199,6 @@ export function PurchaseReturnsGraph({ db, nav }) {
               <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#714B67] transition-colors">
                 Purchase Returns
               </h3>
-              <p className="text-[11px] text-slate-400 font-medium">Supplier Debit Claims</p>
             </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
@@ -1212,8 +1208,8 @@ export function PurchaseReturnsGraph({ db, nav }) {
           <div className="text-2xl font-black text-slate-900 tracking-tight font-mono">
             {fmt(stats.totalClaims)}
           </div>
-          <div className="text-xs text-slate-500 font-medium mt-0.5">
-            {stats.totalReturns} debit notes · {stats.totalUnits.toLocaleString()} units
+          <div className="text-xs text-slate-400 font-medium mt-0.5">
+            {stats.totalReturns} debit notes
           </div>
         </div>
 
@@ -1267,12 +1263,9 @@ export function StockOperationsGraphs({ db, nav }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-2.5 h-5 bg-[#714B67] rounded-full" />
-          <div>
-            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
-              Inventory &amp; Stock Operations
-            </h2>
-            <p className="text-xs text-slate-400 font-medium">Real-time valuation, audit accuracy, FEFO risk & supplier debit claims</p>
-          </div>
+          <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+            Inventory &amp; Stock Operations
+          </h2>
         </div>
       </div>
 
