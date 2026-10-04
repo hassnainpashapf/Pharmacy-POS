@@ -682,8 +682,8 @@ function DashboardDonutChart({
   data = [],
   centerMain = '',
   centerSub = '',
-  size = 94,
-  strokeWidth = 9,
+  size = 148,
+  strokeWidth = 12,
 }) {
   const total = data.reduce((sum, d) => sum + (Number(d.value) || 0), 0)
   const r = 38
@@ -710,9 +710,9 @@ function DashboardDonutChart({
   })
 
   return (
-    <div className="flex justify-center my-2">
-      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-        <svg width={size} height={size} viewBox="0 0 100 100" className="transform -rotate-90">
+    <div className="flex justify-center my-3">
+      <div className="relative flex items-center justify-center transition-transform group-hover:scale-105 duration-200" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox="0 0 100 100" className="transform -rotate-90 drop-shadow-xs">
           <circle
             cx="50"
             cy="50"
@@ -753,12 +753,12 @@ function DashboardDonutChart({
             })
           )}
         </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none select-none px-1">
-          <span className="text-xs font-black text-slate-900 tracking-tight leading-none truncate max-w-[55px]">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none select-none px-2">
+          <span className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-none truncate max-w-[85px]">
             {centerMain}
           </span>
           {centerSub && (
-            <span className="text-[9px] font-semibold text-slate-400 mt-1 leading-none uppercase tracking-wider truncate max-w-[55px]">
+            <span className="text-[10px] font-bold text-slate-400 mt-1 leading-none uppercase tracking-wider truncate max-w-[85px]">
               {centerSub}
             </span>
           )}
@@ -828,26 +828,29 @@ export function CompanyStockGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/company-stock')}
-      className="group bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/60 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
-              <Building2 className="w-4 h-4" />
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+              <Building2 className="w-5 h-5" />
             </div>
-            <h3 className="text-xs font-bold text-slate-800 group-hover:text-[#714B67]">
-              Company Stock
-            </h3>
+            <div>
+              <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#714B67] transition-colors">
+                Company Stock
+              </h3>
+              <p className="text-[11px] text-slate-400 font-medium">Manufacturer Valuation</p>
+            </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
         <div className="mb-2">
-          <div className="text-xl font-black text-slate-900 tracking-tight">
+          <div className="text-2xl font-black text-slate-900 tracking-tight font-mono">
             {fmt(stats.totalStockValuation)}
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-xs text-slate-500 font-medium mt-0.5">
             {stats.totalStockUnits.toLocaleString()} units · {stats.totalCompanies} brands
           </div>
         </div>
@@ -857,22 +860,24 @@ export function CompanyStockGraph({ db, nav }) {
           data={donutData}
           centerMain={String(stats.totalCompanies)}
           centerSub="brands"
+          size={150}
+          strokeWidth={12}
         />
 
         {/* Legend */}
-        <div className="space-y-1.5 pt-2 border-t border-slate-100">
+        <div className="space-y-2 pt-3 border-t border-slate-100">
           {stats.list.length === 0 ? (
             <div className="text-xs text-slate-400 py-2 text-center">No stock recorded</div>
           ) : (
             stats.list.map((c, i) => {
               const pct = stats.totalStockValuation > 0 ? Math.round((c.valuation / stats.totalStockValuation) * 100) : 0
               return (
-                <div key={i} className="flex items-center justify-between text-[11px]">
-                  <span className="flex items-center gap-1.5 text-slate-600 truncate max-w-[130px]" title={c.name}>
-                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: donutColors[i % donutColors.length] }} />
-                    <span className="truncate">{c.name}</span>
+                <div key={i} className="flex items-center justify-between text-xs">
+                  <span className="flex items-center gap-2 text-slate-600 truncate max-w-[150px]" title={c.name}>
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: donutColors[i % donutColors.length] }} />
+                    <span className="truncate font-medium">{c.name}</span>
                   </span>
-                  <span className="font-semibold text-slate-800 tabular-nums">{pct}%</span>
+                  <span className="font-bold text-slate-800 tabular-nums">{pct}%</span>
                 </div>
               )
             })
@@ -931,26 +936,29 @@ export function StockAuditGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/stock-audit')}
-      className="group bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#008f8b]/60 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
-              <ClipboardCheck className="w-4 h-4" />
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center font-bold">
+              <ClipboardCheck className="w-5 h-5" />
             </div>
-            <h3 className="text-xs font-bold text-slate-800 group-hover:text-[#008f8b]">
-              Stock Audit
-            </h3>
+            <div>
+              <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#008f8b] transition-colors">
+                Stock Audit
+              </h3>
+              <p className="text-[11px] text-slate-400 font-medium">Physical Variance Count</p>
+            </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#008f8b] transition-colors" />
         </div>
 
         <div className="mb-2">
-          <div className="text-xl font-black text-[#008f8b] tracking-tight">
+          <div className="text-2xl font-black text-[#008f8b] tracking-tight font-mono">
             {stats.accuracy}%
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-xs text-slate-500 font-medium mt-0.5">
             {stats.totalItems.toLocaleString()} items counted
           </div>
         </div>
@@ -960,34 +968,36 @@ export function StockAuditGraph({ db, nav }) {
           data={auditDonutData}
           centerMain={`${stats.accuracy}%`}
           centerSub="accuracy"
+          size={150}
+          strokeWidth={12}
         />
 
         {/* Legend */}
-        <div className="space-y-1.5 pt-2 border-t border-slate-100">
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-[#008f8b]" />
-              <span>Matched</span>
+        <div className="space-y-2 pt-3 border-t border-slate-100">
+          <div className="flex items-center justify-between text-xs">
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#008f8b]" />
+              <span className="font-medium">Matched</span>
             </span>
-            <span className="font-semibold text-[#008f8b] tabular-nums">
+            <span className="font-bold text-[#008f8b] tabular-nums">
               {stats.matched} ({stats.matchedPct}%)
             </span>
           </div>
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-rose-500" />
-              <span>Shortage</span>
+          <div className="flex items-center justify-between text-xs">
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-rose-500" />
+              <span className="font-medium">Shortage (Kam)</span>
             </span>
-            <span className={`font-semibold tabular-nums ${stats.shortage > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+            <span className={`font-bold tabular-nums ${stats.shortage > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
               {stats.shortage} ({stats.shortagePct}%)
             </span>
           </div>
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-[#714B67]" />
-              <span>Excess</span>
+          <div className="flex items-center justify-between text-xs">
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#714B67]" />
+              <span className="font-medium">Excess (Zyada)</span>
             </span>
-            <span className={`font-semibold tabular-nums ${stats.surplus > 0 ? 'text-[#714B67]' : 'text-slate-400'}`}>
+            <span className={`font-bold tabular-nums ${stats.surplus > 0 ? 'text-[#714B67]' : 'text-slate-400'}`}>
               {stats.surplus} ({stats.surplusPct}%)
             </span>
           </div>
@@ -1072,26 +1082,29 @@ export function ExpiryActionGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/expiry-management')}
-      className="group bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-amber-400 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
-              <Clock className="w-4 h-4" />
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+              <Clock className="w-5 h-5" />
             </div>
-            <h3 className="text-xs font-bold text-slate-800 group-hover:text-[#714B67]">
-              Expiry Action
-            </h3>
+            <div>
+              <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#714B67] transition-colors">
+                Expiry Action
+              </h3>
+              <p className="text-[11px] text-slate-400 font-medium">FEFO Risk & Expirations</p>
+            </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
         <div className="mb-2">
-          <div className={`text-xl font-black tracking-tight ${stats.capitalAtRisk > 0 ? 'text-rose-600' : 'text-[#008f8b]'}`}>
+          <div className={`text-2xl font-black tracking-tight font-mono ${stats.capitalAtRisk > 0 ? 'text-rose-600' : 'text-[#008f8b]'}`}>
             {fmt(stats.capitalAtRisk)}
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-xs text-slate-500 font-medium mt-0.5">
             {totalAtRisk.toLocaleString()} units at risk
           </div>
         </div>
@@ -1101,34 +1114,36 @@ export function ExpiryActionGraph({ db, nav }) {
           data={expiryDonutData}
           centerMain={totalAtRisk > 0 ? `${totalAtRisk.toLocaleString()}` : '0'}
           centerSub="at risk"
+          size={150}
+          strokeWidth={12}
         />
 
         {/* Legend */}
-        <div className="space-y-1.5 pt-2 border-t border-slate-100">
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-rose-500" />
-              <span>Expired</span>
+        <div className="space-y-2 pt-3 border-t border-slate-100">
+          <div className="flex items-center justify-between text-xs">
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-rose-500" />
+              <span className="font-medium">Expired</span>
             </span>
-            <span className={`font-semibold tabular-nums ${stats.expiredUnits > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
+            <span className={`font-bold tabular-nums ${stats.expiredUnits > 0 ? 'text-rose-600' : 'text-slate-400'}`}>
               {stats.expiredUnits.toLocaleString()} units
             </span>
           </div>
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-amber-500" />
-              <span>Critical (0–30d)</span>
+          <div className="flex items-center justify-between text-xs">
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-amber-500" />
+              <span className="font-medium">Critical (0–30d)</span>
             </span>
-            <span className={`font-semibold tabular-nums ${stats.criticalUnits > 0 ? 'text-amber-600' : 'text-slate-400'}`}>
+            <span className={`font-bold tabular-nums ${stats.criticalUnits > 0 ? 'text-amber-600' : 'text-slate-400'}`}>
               {stats.criticalUnits.toLocaleString()} units
             </span>
           </div>
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-[#008f8b]" />
-              <span>Safe Stock</span>
+          <div className="flex items-center justify-between text-xs">
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#008f8b]" />
+              <span className="font-medium">Safe Stock</span>
             </span>
-            <span className="font-semibold text-[#008f8b] tabular-nums">
+            <span className="font-bold text-[#008f8b] tabular-nums">
               {(stats.safeUnits + stats.nearUnits).toLocaleString()} units
             </span>
           </div>
@@ -1182,26 +1197,29 @@ export function PurchaseReturnsGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/purchase-returns')}
-      className="group bg-white hover:bg-slate-50/70 border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/60 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
-              <RotateCcw className="w-4 h-4" />
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+              <RotateCcw className="w-5 h-5" />
             </div>
-            <h3 className="text-xs font-bold text-slate-800 group-hover:text-[#714B67]">
-              Purchase Returns
-            </h3>
+            <div>
+              <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#714B67] transition-colors">
+                Purchase Returns
+              </h3>
+              <p className="text-[11px] text-slate-400 font-medium">Supplier Debit Claims</p>
+            </div>
           </div>
           <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-[#714B67] transition-colors" />
         </div>
 
         <div className="mb-2">
-          <div className="text-xl font-black text-slate-900 tracking-tight">
+          <div className="text-2xl font-black text-slate-900 tracking-tight font-mono">
             {fmt(stats.totalClaims)}
           </div>
-          <div className="text-[11px] text-slate-400 mt-0.5">
+          <div className="text-xs text-slate-500 font-medium mt-0.5">
             {stats.totalReturns} debit notes · {stats.totalUnits.toLocaleString()} units
           </div>
         </div>
@@ -1211,34 +1229,36 @@ export function PurchaseReturnsGraph({ db, nav }) {
           data={returnsDonutData}
           centerMain={`${stats.totalReturns}`}
           centerSub="debit notes"
+          size={150}
+          strokeWidth={12}
         />
 
         {/* Legend */}
-        <div className="space-y-1.5 pt-2 border-t border-slate-100">
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-[#714B67]" />
-              <span>Credit Notes</span>
+        <div className="space-y-2 pt-3 border-t border-slate-100">
+          <div className="flex items-center justify-between text-xs">
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#714B67]" />
+              <span className="font-medium">Credit Notes</span>
             </span>
-            <span className="font-semibold text-[#714B67] tabular-nums">
+            <span className="font-bold text-[#714B67] tabular-nums">
               {fmt(stats.creditNotes)}
             </span>
           </div>
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-[#008f8b]" />
-              <span>Cash Refunds</span>
+          <div className="flex items-center justify-between text-xs">
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#008f8b]" />
+              <span className="font-medium">Cash Refunds</span>
             </span>
-            <span className="font-semibold text-[#008f8b] tabular-nums">
+            <span className="font-bold text-[#008f8b] tabular-nums">
               {fmt(stats.cashRefunds)}
             </span>
           </div>
-          <div className="flex items-center justify-between text-[11px]">
-            <span className="flex items-center gap-1.5 text-slate-600">
-              <span className="w-2 h-2 rounded-full shrink-0 bg-slate-300" />
-              <span>Items Returned</span>
+          <div className="flex items-center justify-between text-xs">
+            <span className="flex items-center gap-2 text-slate-600">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-slate-300" />
+              <span className="font-medium">Items Returned</span>
             </span>
-            <span className="font-semibold text-slate-600 tabular-nums">
+            <span className="font-bold text-slate-700 tabular-nums">
               {stats.totalUnits.toLocaleString()} units
             </span>
           </div>
@@ -1250,17 +1270,20 @@ export function PurchaseReturnsGraph({ db, nav }) {
 
 export function StockOperationsGraphs({ db, nav }) {
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-3.5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-4 bg-[#714B67] rounded-full" />
-          <h2 className="text-sm font-bold text-slate-800 tracking-tight">
-            Inventory &amp; Stock Operations
-          </h2>
+        <div className="flex items-center gap-2.5">
+          <div className="w-2.5 h-5 bg-[#714B67] rounded-full" />
+          <div>
+            <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
+              Inventory &amp; Stock Operations
+            </h2>
+            <p className="text-xs text-slate-400 font-medium">Real-time valuation, audit accuracy, FEFO risk & supplier debit claims</p>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         <CompanyStockGraph db={db} nav={nav} />
         <StockAuditGraph db={db} nav={nav} />
         <ExpiryActionGraph db={db} nav={nav} />
