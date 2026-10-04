@@ -18,7 +18,6 @@ import {
   currentUser,
 } from '../lib/db'
 import { getSmartTransferRecommendations } from '../lib/forecasting'
-import { UsersPanel } from './Users'
 import {
   Building2,
   ArrowRight,
@@ -81,8 +80,7 @@ export default function Branches() {
   const location = useLocation()
   const navigate = useNavigate()
   const queryTab = new URLSearchParams(location.search).get('tab')
-  const [tab, setTab] = useState(queryTab && ['overview', 'users', 'smart', 'transfers'].includes(queryTab) ? queryTab : 'overview')
-  const [staffAdding, setStaffAdding] = useState(false)
+  const [tab, setTab] = useState(queryTab && ['overview', 'smart', 'transfers'].includes(queryTab) ? queryTab : 'overview')
   const [viewMode, setViewMode] = useState('cards') // 'cards' | 'table'
   const [search, setSearch] = useState('')
   const [regionFilter, setRegionFilter] = useState('ALL')
@@ -198,21 +196,19 @@ export default function Branches() {
       <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
-            {tab === 'users' ? <UserCog className="w-6 h-6 text-white" /> : <Building2 className="w-6 h-6 text-white" />}
+            <Building2 className="w-6 h-6 text-white" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-black text-slate-900 tracking-tight">
-                {tab === 'users' ? 'User Roles & Staff' : 'Enterprise Multi-Branch & HQ Portal'}
+                Enterprise Multi-Branch & HQ Portal
               </h1>
               <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd]">
-                {tab === 'users' ? `${db.users?.length || 0} Staff Accounts` : `${db.branches?.length || 0} Hubs Active`}
+                {db.branches?.length || 0} Hubs Active
               </span>
             </div>
             <p className="text-xs text-slate-600 font-medium mt-0.5">
-              {tab === 'users'
-                ? 'Manage employees, roles, branch access & passwords across all operational hubs'
-                : 'Regional hierarchy monitoring, autonomous inter-branch transfers, and multi-location revenue'}
+              Regional hierarchy monitoring, autonomous inter-branch transfers, and multi-location revenue
             </p>
           </div>
         </div>
@@ -226,23 +222,13 @@ export default function Branches() {
               <span>Head Office (All Hubs)</span>
             </button>
           )}
-          {tab === 'users' ? (
-            <button
-              onClick={() => setStaffAdding(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Add New Staff</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => setAdding(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>New Branch Hub</span>
-            </button>
-          )}
+          <button
+            onClick={() => setAdding(true)}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Branch Hub</span>
+          </button>
         </div>
       </div>
 
@@ -294,7 +280,6 @@ export default function Branches() {
         <div className="flex items-center gap-2 p-1.5 bg-slate-100/80 rounded-2xl">
           {[
             { id: 'overview', label: 'Regional & Branch Matrix', icon: Building2, count: db.branches.length },
-            { id: 'users', label: 'User Roles & Staff', icon: UserCog, count: db.users?.length || 0 },
             { id: 'smart', label: 'Smart AI Transfers', icon: Sparkles, count: smartRecs.length },
             { id: 'transfers', label: 'Stock Transfer Requests', icon: ArrowLeftRight, count: transfers.length },
           ].map((t) => (
@@ -668,10 +653,6 @@ export default function Branches() {
         </div>
       )}
 
-      {/* ── TAB: USER ROLES & STAFF ── */}
-      {tab === 'users' && (
-        <UsersPanel hideHeader={true} addingProp={staffAdding} setAddingProp={setStaffAdding} />
-      )}
 
       {/* ── TAB: SMART AI TRANSFERS ── */}
       {tab === 'smart' && (

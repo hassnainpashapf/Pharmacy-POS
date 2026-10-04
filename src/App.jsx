@@ -159,7 +159,7 @@ const navGroups = [
     title: 'MANAGEMENT',
     items: [
       { to: '/branches', label: 'Branches', icon: Building2 },
-      { to: '/branches?tab=users', label: 'User Roles & Staff', icon: UserCog },
+      { to: '/users', label: 'User Roles & Staff', icon: UserCog },
     ],
   },
   {
