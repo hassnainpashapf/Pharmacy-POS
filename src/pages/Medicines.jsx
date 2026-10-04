@@ -31,6 +31,7 @@ import {
   Pill,
   Printer,
   DollarSign,
+  AlertOctagon,
 } from 'lucide-react'
 import MedicineGroupFilter from '../components/MedicineGroupFilter'
 import {
@@ -65,6 +66,12 @@ function getCompanyInitials(name = '') {
   return (parts[0][0] + (parts[1][0] || '')).toUpperCase()
 }
 
+const isControlledDrug = (m) =>
+  m?.controlled === true ||
+  /clonazepam|alprazolam|diazepam|lorazepam|morphine|fentanyl|codeine|tramadol|buprenorphine|methadone/i.test(
+    `${m?.name || ''} ${m?.generic || ''}`
+  )
+
 export default function Medicines() {
   const db = useDB()
   let search = ''
@@ -74,6 +81,12 @@ export default function Medicines() {
   const requestedView = urlParams.get('view')
 
   const requestedSearch = urlParams.get('search') || urlParams.get('q') || ''
+
+  // Filtered source
+  const source = useMemo(
+    () => (controlledMode ? (db.medicines || []).filter(isControlledDrug) : db.medicines || []),
+    [controlledMode, db.medicines]
+  )
 
   // View modes: 'companies' (Company-Wise Directory) or 'table' (Flat Product Catalogue)
   const [viewMode, setViewMode] = useState(requestedView === 'table' ? 'table' : (requestedView === 'companies' || !controlledMode ? 'companies' : 'table'))
@@ -128,8 +141,10 @@ export default function Medicines() {
     let totalCostVal = 0
     let totalRetailVal = 0
     let lowStockCount = 0
+    const sourceComps = new Set()
 
-    for (const m of (db.medicines || [])) {
+    for (const m of source) {
+      if (m.manufacturer) sourceComps.add(m.manufacturer.trim())
       const st = stockOf(m.id)
       totalStockUnits += st
       totalCostVal += (m.purchasePrice || 0) * st
@@ -140,15 +155,15 @@ export default function Medicines() {
     }
 
     return {
-      totalMedicines: (db.medicines || []).length,
-      totalCompanies: distinctCompanies.length,
+      totalMedicines: source.length,
+      totalCompanies: controlledMode ? sourceComps.size : distinctCompanies.length,
       totalStockUnits,
       totalCostVal,
       totalRetailVal,
       lowStockCount,
       estimatedProfit: totalRetailVal - totalCostVal,
     }
-  }, [db.medicines, distinctCompanies])
+  }, [source, distinctCompanies, controlledMode])
 
   // Company-wise aggregate data
   const companyData = useMemo(() => {
@@ -256,8 +271,6 @@ export default function Medicines() {
     setEditing({ manufacturer: clean })
   }
 
-  const controlled = medicine => medicine.controlled === true || /clonazepam|alprazolam|diazepam|lorazepam|morphine|fentanyl|codeine|tramadol|buprenorphine|methadone/i.test(`${medicine.name} ${medicine.generic}`)
-  const source = controlledMode ? db.medicines.filter(controlled) : db.medicines
   const { matches: list, counts } = filterMedicineRecords(source, { query: q, group, company: companyFilter })
 
   return (
@@ -267,14 +280,16 @@ export default function Medicines() {
         <div>
           <div className="flex items-center gap-2.5">
             <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
-              <Pill className="w-5 h-5" />
+              {controlledMode ? <AlertOctagon className="w-5 h-5 text-amber-300" /> : <Pill className="w-5 h-5" />}
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-slate-900">
-                Medicines Catalogue
+                {controlledMode ? 'Controlled Substances' : 'Medicines Catalogue'}
               </h1>
               <p className="text-xs text-slate-400 font-medium">
-                Master pharmaceutical database, pricing, and product directory
+                {controlledMode
+                  ? 'Schedule narcotics, psychotropics & restricted substance register'
+                  : 'Master pharmaceutical database, pricing, and product directory'}
               </p>
             </div>
           </div>
@@ -291,24 +306,26 @@ export default function Medicines() {
             <span>Print</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setCompanyAddOpen(true)}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
-            title="Add medicines grouped by pharma manufacturer"
-          >
-            <Building2 className="w-4 h-4" />
-            <span>+ Add by Company</span>
-          </button>
+          {!controlledMode && (
+            <button
+              type="button"
+              onClick={() => setCompanyAddOpen(true)}
+              className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+              title="Add medicines grouped by pharma manufacturer"
+            >
+              <Building2 className="w-4 h-4" />
+              <span>+ Add by Company</span>
+            </button>
+          )}
 
           <button
             type="button"
-            onClick={() => setEditing({})}
+            onClick={() => setEditing(controlledMode ? { controlled: true } : {})}
             className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
-            title="Quickly add a single medicine product"
+            title={controlledMode ? 'Quickly add a schedule / controlled substance' : 'Quickly add a single medicine product'}
           >
             <Plus className="w-4 h-4" />
-            <span>+ Quick Add Product</span>
+            <span>{controlledMode ? '+ Add Controlled Substance' : '+ Quick Add Product'}</span>
           </button>
         </div>
       </div>
@@ -339,7 +356,7 @@ export default function Medicines() {
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-slate-900">{overallStats.totalMedicines}</div>
-            <div className="text-[11px] text-slate-400 mt-0.5">Catalog medicines</div>
+            <div className="text-[11px] text-slate-400 mt-0.5">{controlledMode ? 'Controlled drugs' : 'Catalog medicines'}</div>
           </div>
         </div>
 
