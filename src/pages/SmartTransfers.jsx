@@ -246,17 +246,6 @@ export default function SmartTransfers() {
         </div>
       )}
 
-      {/* ── Explanation Banner ── */}
-      <div className="bg-gradient-to-r from-[#3b1734] to-[#714B67] text-white rounded-2xl p-5 shadow-sm">
-        <div className="flex items-center gap-2 mb-1">
-          <Sparkles className="w-5 h-5 text-amber-300" />
-          <h3 className="font-black text-base tracking-tight">Smart Autonomous Rebalancing</h3>
-        </div>
-        <p className="text-xs text-white/80 max-w-3xl leading-relaxed">
-          AI continuously scans branch stock levels to identify surplus hubs (&gt;60 units) and deficit locations (&lt;15 units), preventing localized stockouts and minimizing overall supply replenishment expenses.
-        </p>
-      </div>
-
       {/* ── Search & Filter Toolbar ── */}
       <div className="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm flex flex-wrap items-center gap-2.5">
         <div className="relative flex-1 min-w-[240px]">
