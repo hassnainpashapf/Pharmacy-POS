@@ -208,13 +208,13 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* 2. Attention & Action Required (6 Cards matching top Quick Action styling) */}
+      {/* 2. Attention & Action Required (5 Cards matching top Quick Action styling & size) */}
       <div className="space-y-2.5">
         <div className="flex items-center gap-2">
           <div className="w-2 h-4 bg-amber-500 rounded-full" />
           <h2 className="text-sm font-bold text-slate-800 tracking-tight">Attention & Action Required</h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {/* Low Stock */}
           <button
             type="button"
@@ -272,21 +272,6 @@ export default function Dashboard() {
             <div>
               <div className="text-xs font-bold text-slate-800 group-hover:text-rose-700">{data.attention.expired} Batches</div>
               <div className="text-[10px] text-slate-400">Have expired</div>
-            </div>
-          </button>
-
-          {/* Awaiting Processing */}
-          <button
-            type="button"
-            onClick={() => nav('/pos')}
-            className="bg-white border border-slate-200 hover:border-sky-400 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
-          >
-            <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Package className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="text-xs font-bold text-slate-800 group-hover:text-sky-700">{data.attention.awaitingOrders} Orders</div>
-              <div className="text-[10px] text-slate-400">Open wholesale/PO</div>
             </div>
           </button>
 
