@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { useLocation } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 import {
   useDB,
   addCustomer,
@@ -66,6 +66,7 @@ function getTierBadge(tierName = 'Silver') {
 export function Customers() {
   const db = useDB()
   const location = useLocation()
+  const navigate = useNavigate()
   const isLoyaltyTab = new URLSearchParams(location.search).get('tab') === 'loyalty'
 
   const customers = db.customers || []
@@ -246,8 +247,8 @@ export function Customers() {
           ========================================================================= */}
       {isLoyaltyTab ? (
         <>
-          {/* 1. Standard Loyalty Header Banner */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 md:p-5 flex flex-wrap justify-between items-center gap-4">
+          {/* 1. Standard Loyalty Header Banner (Merged into Page) */}
+          <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
                 <Award className="w-6 h-6 text-white" />
@@ -289,6 +290,34 @@ export function Customers() {
                 <span>+ New Member</span>
               </button>
             </div>
+          </div>
+
+          {/* Tab Switcher */}
+          <div className="flex items-center gap-2 p-1.5 bg-slate-100/80 rounded-2xl w-fit">
+            <button
+              onClick={() => navigate('/customers', { replace: true })}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                !isLoyaltyTab ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5 text-[#714B67]" />
+              <span>Customers Directory</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-black bg-[#f5eef4] text-[#714B67]">
+                {customers.length}
+              </span>
+            </button>
+            <button
+              onClick={() => navigate('/customers?tab=loyalty', { replace: true })}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                isLoyaltyTab ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Award className="w-3.5 h-3.5 text-[#714B67]" />
+              <span>Loyalty & Credits</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-black bg-purple-50 text-purple-700 border border-purple-200">
+                {loyaltyTiers().length} Tiers
+              </span>
+            </button>
           </div>
 
 
@@ -532,8 +561,8 @@ export function Customers() {
            VIEW B: STANDARD CUSTOMERS & CREDIT ACCOUNTS DIRECTORY (/customers)
            ========================================================================= */
         <>
-          {/* 1. Standard Header Banner */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 md:p-5 flex flex-wrap justify-between items-center gap-4">
+          {/* 1. Standard Header Banner (Merged into Page) */}
+          <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
                 <Users className="w-6 h-6 text-white" />
@@ -571,6 +600,34 @@ export function Customers() {
                 <span>+ New Customer</span>
               </button>
             </div>
+          </div>
+
+          {/* Tab Switcher */}
+          <div className="flex items-center gap-2 p-1.5 bg-slate-100/80 rounded-2xl w-fit">
+            <button
+              onClick={() => navigate('/customers', { replace: true })}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                !isLoyaltyTab ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Users className="w-3.5 h-3.5 text-[#714B67]" />
+              <span>Customers Directory</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-black bg-[#f5eef4] text-[#714B67]">
+                {customers.length}
+              </span>
+            </button>
+            <button
+              onClick={() => navigate('/customers?tab=loyalty', { replace: true })}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                isLoyaltyTab ? 'bg-white text-slate-900 shadow-xs' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Award className="w-3.5 h-3.5 text-[#714B67]" />
+              <span>Loyalty & Credits</span>
+              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-black bg-purple-50 text-purple-700 border border-purple-200">
+                {loyaltyTiers().length} Tiers
+              </span>
+            </button>
           </div>
 
           {/* 2. 5 KPI Summary Cards */}
