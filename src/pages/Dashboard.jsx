@@ -449,8 +449,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* 6. Row 2 Analytics: Sales Trend (Full-width Multi-Year Comparison Chart) */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
+      {/* 6. Row 2 Analytics: Sales Trend (Merged directly into page layout) */}
+      <div className="py-3 border-y border-slate-200/80">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-sm text-slate-900">Sales Trend</h3>
           <span className="text-xs text-slate-500">Monthly year comparison · Rs.</span>
