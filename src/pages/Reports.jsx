@@ -195,65 +195,175 @@ function ReportSection({ section, onSwitchToGui }) {
     switch (selectedReportId) {
       case 'SALES_DAILY': {
         const byDay = {}
+        let periodRev = 0
+        let periodProfit = 0
         for (const s of periodSales) {
           const day = s.date.slice(0, 10)
-          if (!byDay[day]) byDay[day] = { date: day, count: 0, revenue: 0, discount: 0, profit: 0 }
-          byDay[day].count += 1
+          if (!byDay[day]) {
+            byDay[day] = {
+              date: day,
+              invoices: 0,
+              units: 0,
+              revenue: 0,
+              cost: 0,
+              discount: 0,
+              profit: 0,
+            }
+          }
+          const units = s.items?.reduce((a, b) => a + (b.qty || 0), 0) || 0
+          const cost = s.items?.reduce((a, b) => a + (b.qty * (b.cost || (b.price * 0.75))), 0) || (s.total - (s.profit || 0))
+          byDay[day].invoices += 1
+          byDay[day].units += units
           byDay[day].revenue += s.total
+          byDay[day].cost += cost
           byDay[day].discount += s.discount || 0
-          byDay[day].profit += s.profit || 0
+          byDay[day].profit += (s.profit !== undefined ? s.profit : (s.total - cost))
+          periodRev += s.total
+          periodProfit += (s.profit !== undefined ? s.profit : (s.total - cost))
         }
         const rows = Object.values(byDay).sort((a, b) => b.date.localeCompare(a.date))
         return {
-          columns: ['Date', 'Invoices', 'Gross Revenue', 'Discounts', 'Net Profit'],
-          rows: rows.map((r) => [r.date, r.count, fmt(r.revenue), fmt(r.discount), fmt(r.profit)]),
+          columns: [
+            'Date',
+            'Invoices',
+            'Units Sold',
+            'Sales Revenue',
+            'Cost of Sales',
+            'Discounts',
+            'Net Profit',
+            'Margin %',
+            'Daily Share',
+          ],
+          rows: rows.map((r) => {
+            const share = periodRev > 0 ? `${Math.round((r.revenue / periodRev) * 100)}%` : '0%'
+            const marginPct = r.revenue > 0 ? `${Math.round((r.profit / r.revenue) * 100)}%` : '0%'
+            return [
+              r.date,
+              r.invoices,
+              r.units,
+              fmt(r.revenue),
+              fmt(r.cost),
+              fmt(r.discount),
+              fmt(r.profit),
+              marginPct,
+              share,
+            ]
+          }),
           summary: {
-            'Total Days': rows.length,
-            'Total Invoices': rows.reduce((a, b) => a + b.count, 0),
-            'Total Revenue': fmt(rows.reduce((a, b) => a + b.revenue, 0)),
-            'Total Profit': fmt(rows.reduce((a, b) => a + b.profit, 0)),
+            'Days Recorded': rows.length,
+            'Total Invoices': rows.reduce((a, b) => a + b.invoices, 0),
+            'Units Sold': rows.reduce((a, b) => a + b.units, 0),
+            'Total Sales Revenue': fmt(periodRev),
+            'Total Net Profit': fmt(periodProfit),
           },
         }
       }
 
       case 'SALES_MONTHLY': {
         const byMonth = {}
+        let allRev = 0
+        let allProfit = 0
         for (const s of db.sales || []) {
           const month = s.date.slice(0, 7)
-          if (!byMonth[month]) byMonth[month] = { month, count: 0, revenue: 0, profit: 0 }
-          byMonth[month].count += 1
+          if (!byMonth[month]) {
+            byMonth[month] = {
+              month,
+              invoices: 0,
+              units: 0,
+              revenue: 0,
+              cost: 0,
+              profit: 0,
+            }
+          }
+          const units = s.items?.reduce((a, b) => a + (b.qty || 0), 0) || 0
+          const cost = s.items?.reduce((a, b) => a + (b.qty * (b.cost || (b.price * 0.75))), 0) || (s.total - (s.profit || 0))
+          const profit = s.profit !== undefined ? s.profit : (s.total - cost)
+          byMonth[month].invoices += 1
+          byMonth[month].units += units
           byMonth[month].revenue += s.total
-          byMonth[month].profit += s.profit || 0
+          byMonth[month].cost += cost
+          byMonth[month].profit += profit
+          allRev += s.total
+          allProfit += profit
         }
         const rows = Object.values(byMonth).sort((a, b) => b.month.localeCompare(a.month))
         return {
-          columns: ['Month', 'Invoices Count', 'Gross Revenue', 'Estimated Net Profit'],
-          rows: rows.map((r) => [r.month, r.count, fmt(r.revenue), fmt(r.profit)]),
+          columns: [
+            'Month',
+            'Invoices',
+            'Units Sold',
+            'Gross Revenue',
+            'Cost of Sales',
+            'Net Profit',
+            'Profit Margin %',
+            'Revenue Share',
+          ],
+          rows: rows.map((r) => {
+            const share = allRev > 0 ? `${Math.round((r.revenue / allRev) * 100)}%` : '0%'
+            const marginPct = r.revenue > 0 ? `${Math.round((r.profit / r.revenue) * 100)}%` : '0%'
+            return [
+              r.month,
+              r.invoices,
+              r.units,
+              fmt(r.revenue),
+              fmt(r.cost),
+              fmt(r.profit),
+              marginPct,
+              share,
+            ]
+          }),
           summary: {
             'Recorded Months': rows.length,
-            'All-Time Revenue': fmt(rows.reduce((a, b) => a + b.revenue, 0)),
+            'Total Invoices': rows.reduce((a, b) => a + b.invoices, 0),
+            'Total Units Sold': rows.reduce((a, b) => a + b.units, 0),
+            'All-Time Revenue': fmt(allRev),
+            'All-Time Net Profit': fmt(allProfit),
           },
         }
       }
 
       case 'SALES_DATE_RANGE': {
-        const rows = periodSales.slice(0, 100).map((s) => [
-          s.invoiceNo,
-          new Date(s.date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }),
-          s.customerId ? customerById(s.customerId)?.name || 'Member' : 'Walk-in',
-          s.soldByName || s.soldBy || 'Cashier',
-          s.items?.reduce((a, b) => a + b.qty, 0) || 0,
-          s.payMethod,
-          fmt(s.total),
-          fmt(s.profit || 0),
-        ])
+        const rows = periodSales.slice(0, 100).map((s) => {
+          const units = s.items?.reduce((a, b) => a + b.qty, 0) || 0
+          const cost = s.items?.reduce((a, b) => a + (b.qty * (b.cost || (b.price * 0.75))), 0) || (s.total - (s.profit || 0))
+          const profit = s.profit !== undefined ? s.profit : (s.total - cost)
+          const marginPct = s.total > 0 ? `${Math.round((profit / s.total) * 100)}%` : '0%'
+          return [
+            s.invoiceNo,
+            new Date(s.date).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }),
+            s.customerId ? customerById(s.customerId)?.name || 'Member' : 'Walk-in Retail',
+            s.soldByName || s.soldBy || 'Cashier',
+            units,
+            s.payMethod || 'CASH',
+            fmt(s.total),
+            fmt(cost),
+            fmt(profit),
+            marginPct,
+          ]
+        })
+        const totalRev = periodSales.reduce((a, b) => a + b.total, 0)
+        const totalProfit = periodSales.reduce((a, b) => a + (b.profit !== undefined ? b.profit : (b.total * 0.25)), 0)
+        const totalUnits = periodSales.reduce((a, b) => a + (b.items?.reduce((x, y) => x + y.qty, 0) || 0), 0)
         return {
-          columns: ['Invoice #', 'Date & Time', 'Customer', 'Cashier', 'Units', 'Payment', 'Total', 'Profit'],
+          columns: [
+            'Invoice #',
+            'Date & Time',
+            'Customer',
+            'Cashier',
+            'Units Sold',
+            'Payment Method',
+            'Sales Revenue',
+            'Cost of Sales',
+            'Net Profit',
+            'Margin %',
+          ],
           rows,
           summary: {
             'Invoices in Range': periodSales.length,
-            'Total Revenue': fmt(periodSales.reduce((a, b) => a + b.total, 0)),
-            'Total Profit': fmt(periodSales.reduce((a, b) => a + (b.profit || 0), 0)),
+            'Units Billed': totalUnits,
+            'Total Revenue': fmt(totalRev),
+            'Total Net Profit': fmt(totalProfit),
+            'Avg Bill Size': periodSales.length > 0 ? fmt(totalRev / periodSales.length) : '0',
           },
         }
       }
@@ -323,44 +433,118 @@ function ReportSection({ section, onSwitchToGui }) {
 
       case 'SALES_CASHIER': {
         const byCashier = {}
+        let totalCashierRev = 0
         for (const s of periodSales) {
           const name = s.soldByName || s.soldBy || 'Cashier'
-          if (!byCashier[name]) byCashier[name] = { name, count: 0, items: 0, revenue: 0, profit: 0 }
+          if (!byCashier[name]) byCashier[name] = { name, count: 0, items: 0, revenue: 0, cost: 0, profit: 0 }
+          const units = s.items?.reduce((a, b) => a + (b.qty || 0), 0) || 0
+          const cost = s.items?.reduce((a, b) => a + (b.qty * (b.cost || (b.price * 0.75))), 0) || (s.total - (s.profit || 0))
           byCashier[name].count += 1
-          byCashier[name].items += s.items?.reduce((a, b) => a + b.qty, 0) || 0
+          byCashier[name].items += units
           byCashier[name].revenue += s.total
-          byCashier[name].profit += s.profit || 0
+          byCashier[name].cost += cost
+          byCashier[name].profit += (s.profit !== undefined ? s.profit : (s.total - cost))
+          totalCashierRev += s.total
         }
         const rows = Object.values(byCashier).sort((a, b) => b.revenue - a.revenue)
         return {
-          columns: ['Cashier Name', 'Invoices', 'Items Sold', 'Revenue', 'Profit Contribution'],
-          rows: rows.map((r) => [r.name, r.count, r.items, fmt(r.revenue), fmt(r.profit)]),
+          columns: [
+            'Cashier Name',
+            'Invoices',
+            'Units Sold',
+            'Sales Revenue',
+            'Cost of Sales',
+            'Profit Contribution',
+            'Margin %',
+            'Sales Share',
+          ],
+          rows: rows.map((r) => {
+            const share = totalCashierRev > 0 ? `${Math.round((r.revenue / totalCashierRev) * 100)}%` : '0%'
+            const marginPct = r.revenue > 0 ? `${Math.round((r.profit / r.revenue) * 100)}%` : '0%'
+            return [
+              r.name,
+              r.count,
+              r.items,
+              fmt(r.revenue),
+              fmt(r.cost),
+              fmt(r.profit),
+              marginPct,
+              share,
+            ]
+          }),
           summary: {
             'Active Cashiers': rows.length,
-            'Total Sales': fmt(rows.reduce((a, b) => a + b.revenue, 0)),
+            'Total Invoices Billed': rows.reduce((a, b) => a + b.count, 0),
+            'Total Cashier Revenue': fmt(totalCashierRev),
+            'Total Cashier Profit': fmt(rows.reduce((a, b) => a + b.profit, 0)),
+            'Top Cashier': rows[0]?.name || 'None',
           },
         }
       }
 
       case 'SALES_MEDICINE': {
         const byMed = {}
+        let totalMedRev = 0
         for (const s of periodSales) {
           for (const it of s.items || []) {
             const m = medicineById(it.medicineId)
-            const name = m ? `${m.name} ${m.strength}` : 'Unknown'
-            if (!byMed[name]) byMed[name] = { name, qty: 0, revenue: 0, profit: 0 }
+            const name = m ? `${m.name} ${m.strength}` : 'Unknown Medicine'
+            const comp = (m?.manufacturer || 'Unassigned').trim()
+            if (!byMed[name]) {
+              byMed[name] = {
+                name,
+                company: comp,
+                invoices: new Set(),
+                qty: 0,
+                revenue: 0,
+                cost: 0,
+                profit: 0,
+              }
+            }
+            byMed[name].invoices.add(s.id || s.invoiceNo)
             byMed[name].qty += it.qty
-            byMed[name].revenue += it.qty * it.price
-            byMed[name].profit += it.qty * (it.price - (it.cost || it.price * 0.75))
+            const lineRev = it.qty * it.price
+            const lineCost = it.qty * (it.cost || (it.price * 0.75))
+            byMed[name].revenue += lineRev
+            byMed[name].cost += lineCost
+            byMed[name].profit += (lineRev - lineCost)
+            totalMedRev += lineRev
           }
         }
-        const rows = Object.values(byMed).sort((a, b) => b.revenue - a.revenue)
+        const rows = Object.values(byMed).sort((a, b) => b.qty - a.qty)
         return {
-          columns: ['Medicine Name', 'Units Sold', 'Total Revenue', 'Profit'],
-          rows: rows.map((r) => [r.name, r.qty, fmt(r.revenue), fmt(r.profit)]),
+          columns: [
+            'Medicine Name',
+            'Company',
+            'Invoices',
+            'Units Sold',
+            'Sales Revenue',
+            'Cost of Sales',
+            'Gross Profit',
+            'Margin %',
+            'Volume Share',
+          ],
+          rows: rows.map((r) => {
+            const share = totalMedRev > 0 ? `${Math.round((r.revenue / totalMedRev) * 100)}%` : '0%'
+            const marginPct = r.revenue > 0 ? `${Math.round((r.profit / r.revenue) * 100)}%` : '0%'
+            return [
+              r.name,
+              r.company,
+              r.invoices.size,
+              r.qty,
+              fmt(r.revenue),
+              fmt(r.cost),
+              fmt(r.profit),
+              marginPct,
+              share,
+            ]
+          }),
           summary: {
             'Unique Medicines Sold': rows.length,
-            'Total Units': rows.reduce((a, b) => a + b.qty, 0),
+            'Total Units Sold': rows.reduce((a, b) => a + b.qty, 0),
+            'Total Medicine Revenue': fmt(totalMedRev),
+            'Total Gross Profit': fmt(rows.reduce((a, b) => a + b.profit, 0)),
+            'Top Selling Medicine': rows[0]?.name || 'None',
           },
         }
       }
@@ -1286,16 +1470,45 @@ function ReportSection({ section, onSwitchToGui }) {
             <tbody className="divide-y divide-slate-100">
               {displayRows.map((row, rIdx) => (
                 <tr key={rIdx} className="hover:bg-slate-50/80 transition-colors">
-                  {row.map((cell, cIdx) => (
-                    <td
-                      key={cIdx}
-                      className={`px-4 py-2.5 ${
-                        cIdx === 0 ? 'text-left font-semibold text-slate-900' : 'text-right text-slate-700'
-                      }`}
-                    >
-                      {cell}
-                    </td>
-                  ))}
+                  {row.map((cell, cIdx) => {
+                    const isFirst = cIdx === 0
+                    const colName = reportData.columns[cIdx] || ''
+                    const isProfit = colName.toLowerCase().includes('profit')
+                    const isMargin = colName.toLowerCase().includes('margin') || colName.toLowerCase().includes('share')
+                    const isCompany = colName.toLowerCase().includes('company')
+                    const isCost = colName.toLowerCase().includes('cost')
+
+                    return (
+                      <td
+                        key={cIdx}
+                        className={`px-4 py-2.5 ${
+                          isFirst
+                            ? 'text-left font-bold text-slate-900 text-xs'
+                            : 'text-right text-slate-700'
+                        }`}
+                      >
+                        {isCompany && !isFirst ? (
+                          <span className="px-2 py-0.5 rounded bg-[#f5eef4] border border-[#decddd] text-[#714B67] font-semibold text-[11px] inline-block">
+                            {cell}
+                          </span>
+                        ) : isProfit ? (
+                          <span className="font-mono font-bold text-emerald-700">
+                            {cell}
+                          </span>
+                        ) : isMargin ? (
+                          <span className="font-semibold text-slate-800 text-[11px] bg-slate-100 px-1.5 py-0.5 rounded">
+                            {cell}
+                          </span>
+                        ) : isCost ? (
+                          <span className="font-mono text-slate-500">
+                            {cell}
+                          </span>
+                        ) : (
+                          <span className={isFirst ? '' : 'font-mono'}>{cell}</span>
+                        )}
+                      </td>
+                    )
+                  })}
                 </tr>
               ))}
               {!displayRows.length && (
