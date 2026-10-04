@@ -508,9 +508,6 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <h1 className="text-xl font-black text-slate-900 tracking-tight">
                 Business Analytics & Intelligence
               </h1>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Live Data Sync
-              </span>
             </div>
             <p className="text-xs text-slate-600 font-medium mt-0.5">
               Consolidated financial intelligence, margin dynamics, multi-channel payment channels & staff efficiency
