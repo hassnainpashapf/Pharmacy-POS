@@ -112,56 +112,18 @@ function CustomBarTooltip({ active, payload, label }) {
   return null
 }
 
-/* ---------- Standard KPI Card Component with Delta Badge ---------- */
+/* ---------- Simple KPI Card ---------- */
 
-function MetricCard({ title, value, sub, icon: Icon, tone = 'default', badge, delta, deltaType = 'up' }) {
-  const tones = {
-    default: { iconBg: 'bg-[#f5eef4] text-[#714B67]', val: 'text-slate-900' },
-    green: { iconBg: 'bg-emerald-50 text-emerald-700', val: 'text-emerald-700' },
-    blue: { iconBg: 'bg-blue-50 text-blue-700', val: 'text-blue-700' },
-    purple: { iconBg: 'bg-purple-50 text-purple-700', val: 'text-purple-700' },
-    amber: { iconBg: 'bg-amber-50 text-amber-700', val: 'text-amber-700' },
-    rose: { iconBg: 'bg-rose-50 text-rose-700', val: 'text-rose-700' },
-  }
-  const t = tones[tone] || tones.default
+function MetricCard({ title, value, sub, icon: Icon }) {
 
   return (
-    <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</span>
-        <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${t.iconBg}`}>
-          <Icon className="w-4 h-4" />
-        </div>
+    <div className="bg-white px-4 py-3.5 rounded-xl border border-slate-200">
+      <div className="flex items-center gap-2">
+        <Icon className="w-4 h-4 text-slate-400" />
+        <span className="text-xs font-medium text-slate-500">{title}</span>
       </div>
-      <div className="mt-2.5">
-        <div className="flex items-baseline justify-between gap-1.5">
-          <div className={`text-2xl font-black tracking-tight ${t.val}`}>{value}</div>
-          {delta && (
-            <span
-              className={`inline-flex items-center text-[10px] font-black px-1.5 py-0.5 rounded-full ${
-                deltaType === 'up'
-                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                  : 'bg-rose-50 text-rose-700 border border-rose-200'
-              }`}
-            >
-              {deltaType === 'up' ? (
-                <ArrowUpRight className="w-3 h-3 mr-0.5" />
-              ) : (
-                <ArrowDownRight className="w-3 h-3 mr-0.5" />
-              )}
-              {delta}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center justify-between mt-1 text-[11px] text-slate-500 font-medium">
-          <span className="line-clamp-1">{sub}</span>
-          {badge && (
-            <span className="px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-700 text-[10px] shrink-0 ml-1">
-              {badge}
-            </span>
-          )}
-        </div>
-      </div>
+      <div className="mt-1.5 text-xl font-bold text-slate-900">{value}</div>
+      <div className="mt-0.5 text-[11px] text-slate-400 line-clamp-1">{sub}</div>
     </div>
   )
 }
@@ -585,74 +547,30 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
         </div>
       </div>
 
-      {/* ── 8 Rich Executive KPI Metric Cards ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-3.5">
+      {/* ── KPI Cards ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <MetricCard title="Total Sales" value={fmt(kpis.revenue)} sub={`${kpis.invoices} invoices`} icon={CircleDollarSign} />
+        <MetricCard title="Profit" value={fmt(kpis.profit)} sub={`${kpis.marginPct}% margin`} icon={TrendingUp} />
+        <MetricCard title="Avg. Bill" value={fmt(kpis.avgBasket)} sub="Per invoice" icon={Receipt} />
+        <MetricCard title="Units Sold" value={kpis.units.toLocaleString()} sub="Packs / units" icon={Package} />
         <MetricCard
-          title="Gross Revenue"
-          value={fmt(kpis.revenue)}
-          sub={`${kpis.invoices} customer invoices`}
-          delta="+8.4%"
-          deltaType="up"
-          icon={CircleDollarSign}
-          tone="default"
-        />
-        <MetricCard
-          title="Net Operating Profit"
-          value={fmt(kpis.profit)}
-          sub="Net margin contribution"
-          badge={`${kpis.marginPct}% Margin`}
-          delta="+12.1%"
-          deltaType="up"
-          icon={TrendingUp}
-          tone="green"
-        />
-        <MetricCard
-          title="Average Basket (AIV)"
-          value={fmt(kpis.avgBasket)}
-          sub="Avg value per checkout"
-          delta="+3.2%"
-          deltaType="up"
-          icon={Receipt}
-          tone="blue"
-        />
-        <MetricCard
-          title="Units Dispensed"
-          value={kpis.units.toLocaleString()}
-          sub="Total packs and dosage units"
-          badge="High Velocity"
-          icon={Package}
-          tone="purple"
-        />
-        <MetricCard
-          title="Discounts Given"
+          title="Discounts"
           value={fmt(kpis.discount)}
-          sub={`${kpis.revenue > 0 ? ((kpis.discount / (kpis.revenue + kpis.discount)) * 100).toFixed(1) : 0}% of retail gross`}
+          sub={`${kpis.revenue > 0 ? ((kpis.discount / (kpis.revenue + kpis.discount)) * 100).toFixed(1) : 0}% of sales`}
           icon={Percent}
-          tone="amber"
         />
         <MetricCard
-          title="Digital Settlements"
+          title="Card / Digital"
           value={`${kpis.digitalRatio}%`}
-          sub="Cards & mobile wallets"
-          badge={`${fmt((kpis.revenue * kpis.digitalRatio) / 100)}`}
+          sub={fmt((kpis.revenue * kpis.digitalRatio) / 100)}
           icon={CreditCard}
-          tone="blue"
         />
+        <MetricCard title="Returns" value={fmt(kpis.totalRefunds)} sub={`${kpis.refundRatio}% of sales`} icon={RotateCcw} />
         <MetricCard
-          title="Return & Refunds"
-          value={fmt(kpis.totalRefunds)}
-          sub={`${kpis.refundRatio}% of gross revenue`}
-          badge="Low Exposure"
-          icon={RotateCcw}
-          tone="rose"
-        />
-        <MetricCard
-          title="Stock Valuation"
+          title="Stock Value"
           value={fmt(kpis.stockCost)}
-          sub="Inventory valuation at cost"
-          badge={`${db.medicines?.length || 0} Products`}
+          sub={`${db.medicines?.length || 0} products (at cost)`}
           icon={Building2}
-          tone="default"
         />
       </div>
 
