@@ -80,7 +80,7 @@ export default function Branches() {
   const location = useLocation()
   const navigate = useNavigate()
   const queryTab = new URLSearchParams(location.search).get('tab')
-  const [tab, setTab] = useState(queryTab && ['overview', 'smart', 'transfers'].includes(queryTab) ? queryTab : 'overview')
+  const [tab, setTab] = useState(queryTab && ['overview', 'transfers'].includes(queryTab) ? queryTab : 'overview')
   const [viewMode, setViewMode] = useState('table') // 'cards' | 'table'
   const [search, setSearch] = useState('')
   const [regionFilter, setRegionFilter] = useState('ALL')
@@ -277,7 +277,6 @@ export default function Branches() {
         <div className="flex items-center gap-2 p-1.5 bg-slate-100/80 rounded-2xl">
           {[
             { id: 'overview', label: 'Regional & Branch Matrix', icon: Building2, count: db.branches.length },
-            { id: 'smart', label: 'Smart AI Transfers', icon: Sparkles, count: smartRecs.length },
             { id: 'transfers', label: 'Stock Transfer Requests', icon: ArrowLeftRight, count: transfers.length },
           ].map((t) => (
             <button
@@ -626,95 +625,6 @@ export default function Branches() {
       )}
 
 
-      {/* ── TAB: SMART AI TRANSFERS ── */}
-      {tab === 'smart' && (
-        <div className="space-y-4">
-          <div className="bg-gradient-to-r from-[#3b1734] to-[#714B67] text-white rounded-2xl p-5 shadow-sm">
-            <div className="flex items-center gap-2 mb-1">
-              <Sparkles className="w-5 h-5 text-amber-300" />
-              <h3 className="font-black text-base tracking-tight">Smart Inter-Branch AI Rebalancing</h3>
-            </div>
-            <p className="text-xs text-white/80 max-w-3xl leading-relaxed">
-              Scans inventory levels across all regional branches to identify high-surplus locations (&gt;60 units) and low-deficit hubs (&lt;15 units), preventing localized stockouts and minimizing overall replenishment costs.
-            </p>
-          </div>
-
-          {recMsg && (
-            <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-between">
-              <span>{recMsg}</span>
-              <button onClick={() => setRecMsg('')} className="text-emerald-700 hover:text-emerald-900">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center">
-              <div>
-                <h4 className="font-black text-slate-900 text-sm">Recommended Inter-Branch Transfers</h4>
-                <p className="text-[11px] text-slate-500 mt-0.5">Autonomous inventory rebalancing suggestions</p>
-              </div>
-              <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd]">
-                {smartRecs.length} Recommendations
-              </span>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border-collapse">
-                <thead className="bg-slate-50/80 text-slate-600 font-bold uppercase tracking-wider text-[11px] border-b border-slate-100">
-                  <tr>
-                    <th className="py-3 px-4">Medicine Item</th>
-                    <th className="py-3 px-4">Surplus Origin</th>
-                    <th className="py-3 px-4">Deficit Destination</th>
-                    <th className="py-3 px-4 text-center">Transfer Qty</th>
-                    <th className="py-3 px-4">Rebalance Rationale</th>
-                    <th className="py-3 px-4 text-center">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {smartRecs.map((rec, i) => (
-                    <tr key={i} className="hover:bg-slate-50/70 transition-colors">
-                      <td className="py-3.5 px-4 font-bold text-slate-900">{rec.medicineName}</td>
-                      <td className="py-3.5 px-4">
-                        <span className="font-semibold text-slate-800">{rec.fromBranch.name}</span>
-                        <div className="text-[10px] text-emerald-700 font-bold">{rec.fromStock} units in stock (Surplus)</div>
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className="font-semibold text-slate-800">{rec.toBranch.name}</span>
-                        <div className="text-[10px] text-rose-600 font-bold">{rec.toStock} units in stock (Deficit)</div>
-                      </td>
-                      <td className="py-3.5 px-4 text-center">
-                        <span className="bg-[#f5eef4] text-[#714B67] border border-[#decddd] px-2.5 py-1 rounded-lg font-black text-xs">
-                          {rec.recommendedQty} units
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-slate-600 text-[11px] max-w-xs">{rec.reason}</td>
-                      <td className="py-3.5 px-4 text-center">
-                        <button
-                          onClick={() => handleAutoTransfer(rec)}
-                          className="bg-[#3b1734] hover:bg-[#522249] text-white px-3 py-1.5 rounded-xl font-bold text-xs inline-flex items-center gap-1 transition-all shadow-xs cursor-pointer"
-                        >
-                          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                          <span>1-Click Transfer</span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                  {!smartRecs.length && (
-                    <tr>
-                      <td colSpan="6" className="py-12 text-center text-slate-400">
-                        <Sparkles className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                        <div className="text-sm font-bold text-slate-600">All Regional Hubs Are Balanced</div>
-                        <p className="text-xs text-slate-400 mt-0.5">No immediate inter-branch stock transfers required.</p>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── TAB 3: STOCK TRANSFERS ── */}
       {tab === 'transfers' && <TransfersView />}

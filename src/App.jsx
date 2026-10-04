@@ -35,6 +35,7 @@ import Settings from './pages/Settings'
 import SmartInventory from './pages/SmartInventory'
 import Accounting from './pages/Accounting'
 import Branches from './pages/Branches'
+import SmartTransfers from './pages/SmartTransfers'
 import OfflineIndicator from './components/OfflineIndicator'
 import { initSyncEngine } from './lib/syncEngine'
 import { isElectronShell, isNativeApp } from './lib/platformConfig'
@@ -159,6 +160,7 @@ const navGroups = [
     title: 'MANAGEMENT',
     items: [
       { to: '/branches', label: 'Branches', icon: Building2 },
+      { to: '/smart-transfers', label: 'Smart AI Transfers', icon: Sparkles },
       { to: '/users', label: 'User Roles & Staff', icon: UserCog },
     ],
   },
@@ -807,8 +809,9 @@ function LegacyApp() {
         <Route path="/returns" element={<Returns />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/branches" element={<Branches />} />
+        <Route path="/smart-transfers" element={<SmartTransfers />} />
         <Route path="/hardware" element={<HardwareStation />} />
-        <Route path="/users" element={<Navigate to="/branches?tab=users" replace />} />
+        <Route path="/users" element={<Users />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
