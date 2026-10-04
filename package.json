@@ -8,9 +8,9 @@
   "engines": { "node": ">=22.0.0" },
   "main": "electron/main.cjs",
   "scripts": {
-    "predev": "node scripts/prepare-ocr.mjs",
+    "predev": "node scripts/prepare-ocr.mjs && python3 scripts/generate-icons.py",
     "dev": "node scripts/dev.mjs",
-    "prebuild": "node scripts/prepare-ocr.mjs",
+    "prebuild": "node scripts/prepare-ocr.mjs && python3 scripts/generate-icons.py",
     "build": "vite build && node scripts/postbuild.mjs",
     "deploy": "wrangler deploy",
     "preview": "vite preview",
@@ -63,7 +63,7 @@
       "!node_modules/**/*"
     ],
     "win": {
-      "icon": "public/icon.ico",
+      "icon": "build/icon.ico",
       "target": [
         {
           "target": "nsis",
@@ -74,9 +74,9 @@
       ]
     },
     "nsis": {
-      "installerIcon": "public/icon.ico",
-      "uninstallerIcon": "public/icon.ico",
-      "installerHeaderIcon": "public/icon.ico",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico",
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
@@ -85,6 +85,7 @@
       "shortcutName": "Pharmacy POS Station"
     },
     "mac": {
+      "icon": "build/icon.icns",
       "target": [
         "dmg",
         "zip"

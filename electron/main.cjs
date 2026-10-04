@@ -1,5 +1,17 @@
 const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron')
 const path = require('path')
+const fs = require('fs')
+
+function getAppIcon() {
+  const candidates = [
+    path.join(__dirname, 'icon.ico'),
+    path.join(__dirname, 'icon.png'),
+    path.join(__dirname, '../build/icon.ico'),
+    path.join(__dirname, '../public/icon.ico'),
+    path.join(__dirname, '../dist/icon.ico'),
+  ]
+  return candidates.find((p) => fs.existsSync(p)) || undefined
+}
 
 // Disable hardware acceleration on Windows to eliminate GPU rasterization
 // bugs, black/white flickers, and half-screen rendering glitches across different display drivers.
@@ -29,7 +41,7 @@ function createWindow() {
       contextIsolation: true,
       sandbox: false,
     },
-    icon: path.join(__dirname, '../public/icon.ico'),
+    icon: getAppIcon(),
     show: false,
   })
 
