@@ -1362,142 +1362,133 @@ function ReportSection({ section, onSwitchToGui }) {
         </div>
       )}
 
-      {/* ── Search, Company & Report Menu Toolbar (unified single bar like CompanyStockHub) ── */}
-      <div className="space-y-2.5 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-        {/* Top Controls Row: Search, Date Filter & Company Selector */}
-        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
-          {/* Direct Search Bar */}
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search in report table..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
-            />
-          </div>
-
-          {/* Date Filter Dropdown */}
-          <DateFilterBar
-            filterState={reportDateFilter}
-            onChange={setReportDateFilter}
-            asDropdown
-            dropdownClassName="rounded-lg py-1.5 px-3 text-xs bg-slate-50 border border-slate-200 font-bold text-slate-700"
+      {/* ── Search, Date Filter, Submenu Button & Company Toolbar ── */}
+      <div className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
+        {/* Direct Search Bar */}
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search in report table..."
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
           />
-
-          {/* Company Filter Dropdown */}
-          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
-            <Building2 className="w-3.5 h-3.5 text-[#714B67]" />
-            <select
-              value={selectedCompany}
-              onChange={(e) => setSelectedCompany(e.target.value)}
-              className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
-              title="Filter by Pharma Company"
-            >
-              <option value="ALL">🏢 All Companies ({distinctCompanies.length})</option>
-              {distinctCompanies.map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
-            </select>
-          </div>
         </div>
 
-        {/* Single Submenu Button Row with dropdown underneath */}
-        <div className="relative pt-1 border-t border-slate-100 flex items-center justify-between">
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setShowMenuDropdown((prev) => !prev)}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#3b1734] hover:bg-[#2a0f25] text-white text-xs font-bold shadow-xs transition cursor-pointer"
-            >
-              {(() => {
-                const Icon = REPORT_ICONS[currentReportMeta.id] || FileSpreadsheet
-                return <Icon className="w-3.5 h-3.5 text-white" />
-              })()}
-              <span>{currentReportMeta.title}</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showMenuDropdown ? 'rotate-180' : ''}`} />
-            </button>
+        {/* Date Filter Dropdown (Days Filter) */}
+        <DateFilterBar
+          filterState={reportDateFilter}
+          onChange={setReportDateFilter}
+          asDropdown
+          dropdownClassName="rounded-lg py-1.5 px-3 text-xs bg-slate-50 border border-slate-200 font-bold text-slate-700"
+        />
 
-            {/* Submenu Dropdown Panel */}
-            {showMenuDropdown && (
-              <>
-                <div
-                  className="fixed inset-0 z-20"
-                  onClick={() => setShowMenuDropdown(false)}
-                />
-                <div className="absolute left-0 top-full mt-1.5 w-80 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-150 max-h-96 overflow-y-auto">
-                  <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">
-                    Select Sales Report
-                  </div>
-                  {primaryReports.map((r) => {
-                    const Icon = REPORT_ICONS[r.id] || FileSpreadsheet
-                    const active = selectedReportId === r.id
-                    return (
-                      <button
-                        key={r.id}
-                        type="button"
-                        onClick={() => {
-                          setSelectedReportId(r.id)
-                          setSearchTerm('')
-                          setShowMenuDropdown(false)
-                        }}
-                        className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-semibold text-left transition cursor-pointer ${
-                          active
-                            ? 'bg-[#f5eef4] text-[#3b1734] font-bold'
-                            : 'text-slate-700 hover:bg-slate-50'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Icon className={`w-3.5 h-3.5 ${active ? 'text-[#3b1734]' : 'text-slate-400'}`} />
-                          <span>{r.title}</span>
-                        </div>
-                        {active && <Check className="w-3.5 h-3.5 text-[#3b1734]" />}
-                      </button>
-                    )
-                  })}
+        {/* Submenu Button — Placed directly next to Days/Date Filter */}
+        <div className="relative shrink-0">
+          <button
+            type="button"
+            onClick={() => setShowMenuDropdown((prev) => !prev)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#3b1734] hover:bg-[#2a0f25] text-white text-xs font-bold shadow-xs transition cursor-pointer"
+          >
+            {(() => {
+              const Icon = REPORT_ICONS[currentReportMeta.id] || FileSpreadsheet
+              return <Icon className="w-3.5 h-3.5 text-white" />
+            })()}
+            <span>{currentReportMeta.title}</span>
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${showMenuDropdown ? 'rotate-180' : ''}`} />
+          </button>
 
-                  {secondaryReports.length > 0 && (
-                    <>
-                      <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 mt-1 mb-1">
-                        More Sales Reports
-                      </div>
-                      {secondaryReports.map((r) => {
-                        const Icon = REPORT_ICONS[r.id] || FileSpreadsheet
-                        const active = selectedReportId === r.id
-                        return (
-                          <button
-                            key={r.id}
-                            type="button"
-                            onClick={() => {
-                              setSelectedReportId(r.id)
-                              setSearchTerm('')
-                              setShowMenuDropdown(false)
-                            }}
-                            className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-semibold text-left transition cursor-pointer ${
-                              active
-                                ? 'bg-[#f5eef4] text-[#3b1734] font-bold'
-                                : 'text-slate-700 hover:bg-slate-50'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2">
-                              <Icon className={`w-3.5 h-3.5 ${active ? 'text-[#3b1734]' : 'text-slate-400'}`} />
-                              <span>{r.title}</span>
-                            </div>
-                            {active && <Check className="w-3.5 h-3.5 text-[#3b1734]" />}
-                          </button>
-                        )
-                      })}
-                    </>
-                  )}
+          {/* Submenu Dropdown Panel */}
+          {showMenuDropdown && (
+            <>
+              <div
+                className="fixed inset-0 z-20"
+                onClick={() => setShowMenuDropdown(false)}
+              />
+              <div className="absolute right-0 sm:left-0 top-full mt-1.5 w-76 sm:w-80 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-30 animate-in fade-in zoom-in-95 duration-150 max-h-96 overflow-y-auto">
+                <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">
+                  Select Sales Report
                 </div>
-              </>
-            )}
-          </div>
+                {primaryReports.map((r) => {
+                  const Icon = REPORT_ICONS[r.id] || FileSpreadsheet
+                  const active = selectedReportId === r.id
+                  return (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedReportId(r.id)
+                        setSearchTerm('')
+                        setShowMenuDropdown(false)
+                      }}
+                      className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-semibold text-left transition cursor-pointer ${
+                        active
+                          ? 'bg-[#f5eef4] text-[#3b1734] font-bold'
+                          : 'text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Icon className={`w-3.5 h-3.5 ${active ? 'text-[#3b1734]' : 'text-slate-400'}`} />
+                        <span>{r.title}</span>
+                      </div>
+                      {active && <Check className="w-3.5 h-3.5 text-[#3b1734]" />}
+                    </button>
+                  )
+                })}
 
-          <div className="text-[11px] font-medium text-slate-400 hidden sm:block">
-            Viewing: <span className="font-bold text-slate-700">{currentReportMeta.title}</span>
-          </div>
+                {secondaryReports.length > 0 && (
+                  <>
+                    <div className="px-3 py-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-t border-slate-100 mt-1 mb-1">
+                      More Sales Reports
+                    </div>
+                    {secondaryReports.map((r) => {
+                      const Icon = REPORT_ICONS[r.id] || FileSpreadsheet
+                      const active = selectedReportId === r.id
+                      return (
+                        <button
+                          key={r.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedReportId(r.id)
+                            setSearchTerm('')
+                            setShowMenuDropdown(false)
+                          }}
+                          className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-semibold text-left transition cursor-pointer ${
+                            active
+                              ? 'bg-[#f5eef4] text-[#3b1734] font-bold'
+                              : 'text-slate-700 hover:bg-slate-50'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Icon className={`w-3.5 h-3.5 ${active ? 'text-[#3b1734]' : 'text-slate-400'}`} />
+                            <span>{r.title}</span>
+                          </div>
+                          {active && <Check className="w-3.5 h-3.5 text-[#3b1734]" />}
+                        </button>
+                      )
+                    })}
+                  </>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Company Filter Dropdown */}
+        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+          <Building2 className="w-3.5 h-3.5 text-[#714B67]" />
+          <select
+            value={selectedCompany}
+            onChange={(e) => setSelectedCompany(e.target.value)}
+            className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
+            title="Filter by Pharma Company"
+          >
+            <option value="ALL">🏢 All Companies ({distinctCompanies.length})</option>
+            {distinctCompanies.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
         </div>
       </div>
 
