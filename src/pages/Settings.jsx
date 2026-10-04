@@ -3,49 +3,122 @@ import { useSearchParams } from 'react-router'
 import AuditLogs from './AuditLogs'
 import Users from './Users'
 import { useDB, updateSettings, fmt, loyaltyTiers, LOYALTY_TIERS, can, getActiveTenantKey } from '../lib/db'
-import { Input } from './Medicines'
-import { Save, Download, Upload, CheckCircle2, Settings as SettingsIcon, UserCog, ClipboardList } from 'lucide-react'
+import {
+  Save,
+  Download,
+  Upload,
+  CheckCircle2,
+  Settings as SettingsIcon,
+  UserCog,
+  ClipboardList,
+  Building2,
+  Receipt,
+  MessageSquare,
+  Award,
+  Database,
+  Printer,
+  Sparkles,
+  Phone,
+  MapPin,
+  Percent,
+  CreditCard,
+  Plus,
+  Trash2,
+  ShieldCheck,
+  RotateCcw,
+} from 'lucide-react'
+
+function SettingsInputField({ label, icon: Icon, required, ...props }) {
+  return (
+    <div>
+      <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+        {Icon && <Icon className="w-3.5 h-3.5 text-[#714B67]" />}
+        <span>{label}</span>
+        {required && <span className="text-rose-500">*</span>}
+      </label>
+      <input
+        {...props}
+        className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#714B67] focus:ring-2 focus:ring-[#714B67]/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 transition outline-none"
+      />
+    </div>
+  )
+}
 
 function CreditReminderTemplate({ f, set, onSave }) {
   const tpl = f.udharTemplate ?? ''
   const preview = tpl
-    .replaceAll('{{name}}', 'John Doe')
-    .replaceAll('{{amount}}', '3,500')
-    .replaceAll('{{pharmacy}}', f.pharmacyName || 'Pharmacy')
+    .replaceAll('{{name}}', 'Hussnain Pasha')
+    .replaceAll('{{amount}}', 'Rs. 3,500')
+    .replaceAll('{{pharmacy}}', f.pharmacyName || 'Ellahabad Pharmacy')
     .replaceAll('{{phone}}', f.phone || '0300-1234567')
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-bold text-slate-900 text-sm sm:text-base">📱 Credit Reminder Template</h3>
-        <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">WhatsApp / SMS</span>
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+            <MessageSquare className="w-4 h-4" />
+          </div>
+          <div>
+            <h3 className="font-bold text-slate-900 text-sm">Credit Reminder Template</h3>
+            <p className="text-[11px] text-slate-400">Automated WhatsApp & SMS templates for Udhar recovery</p>
+          </div>
+        </div>
+        <span className="text-[11px] font-bold text-[#714B67] bg-[#f5eef4] border border-[#decddd] px-2.5 py-0.5 rounded-full">
+          WhatsApp / SMS
+        </span>
       </div>
-      <textarea
-        value={tpl}
-        rows="7"
-        onChange={(e) => {
-          set({ ...f, udharTemplate: e.target.value })
-          onSave()
-        }}
-        className="border border-slate-200 rounded-xl w-full px-3 py-2 text-xs font-mono bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-      />
-      <div className="flex flex-wrap gap-1.5 mt-2">
-        {['{{name}}', '{{amount}}', '{{pharmacy}}', '{{phone}}'].map((ph) => (
-          <button
-            key={ph}
-            onClick={() => {
-              set({ ...f, udharTemplate: tpl + ' ' + ph })
-              onSave()
-            }}
-            className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg text-[11px] font-mono cursor-pointer transition-colors"
-          >
-            {ph}
-          </button>
-        ))}
+
+      <div>
+        <label className="block text-xs font-bold text-slate-700 mb-1.5">Template Message Body</label>
+        <textarea
+          value={tpl}
+          rows="5"
+          placeholder="Mohtaram {{name}}, aap ka {{pharmacy}} ki taraf {{amount}} udhar baqi hai..."
+          onChange={(e) => {
+            set({ ...f, udharTemplate: e.target.value })
+            onSave()
+          }}
+          className="border border-slate-200 rounded-xl w-full px-3.5 py-2.5 text-xs font-mono bg-slate-50 focus:bg-white focus:border-[#714B67] focus:ring-2 focus:ring-[#714B67]/20 outline-none transition"
+        />
       </div>
-      <p className="text-xs font-semibold text-slate-600 mt-4 mb-1.5">Live Message Preview:</p>
-      <div className="bg-[#dcf8c6] rounded-2xl p-3.5 text-xs text-slate-800 whitespace-pre-line shadow-inner border border-emerald-200">
-        {preview || <span className="text-slate-400 italic">Template is currently empty...</span>}
+
+      <div>
+        <span className="text-[11px] font-bold text-slate-500 block mb-1.5">Insert Dynamic Tags:</span>
+        <div className="flex flex-wrap gap-1.5">
+          {[
+            { tag: '{{name}}', label: 'Customer Name' },
+            { tag: '{{amount}}', label: 'Due Amount' },
+            { tag: '{{pharmacy}}', label: 'Pharmacy Name' },
+            { tag: '{{phone}}', label: 'Pharmacy Phone' },
+          ].map((item) => (
+            <button
+              key={item.tag}
+              type="button"
+              onClick={() => {
+                set({ ...f, udharTemplate: (tpl ? tpl + ' ' : '') + item.tag })
+                onSave()
+              }}
+              className="bg-slate-100 hover:bg-[#f5eef4] hover:text-[#714B67] hover:border-[#decddd] border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg text-[11px] font-mono cursor-pointer transition-all"
+            >
+              {item.tag}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-xs font-bold text-slate-700 mb-2">Live WhatsApp Message Preview:</p>
+        <div className="bg-[#e9f7ef] rounded-2xl p-4 text-xs text-slate-800 whitespace-pre-line border border-emerald-200/80 shadow-xs font-sans">
+          {preview ? (
+            <div className="space-y-1">
+              <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">💬 WhatsApp Message</span>
+              <p className="leading-relaxed text-slate-800">{preview}</p>
+            </div>
+          ) : (
+            <span className="text-slate-400 italic">Type template or click tags above to preview live message...</span>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -60,14 +133,26 @@ function LoyaltySettings({ f, set, onSave }) {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-bold text-slate-900 text-sm sm:text-base">⭐ Loyalty & Reward System</h3>
-        <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded">Points Engine</span>
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+            <Award className="w-4 h-4" />
+          </div>
+          <div>
+            <h3 className="font-bold text-slate-900 text-sm">Customer Loyalty & Reward Points</h3>
+            <p className="text-[11px] text-slate-400">Configure point accumulation and membership status tiers</p>
+          </div>
+        </div>
+        <span className="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">
+          Points Engine
+        </span>
       </div>
-      <div className="grid grid-cols-2 gap-3 text-xs mb-4">
-        <Input
-          label="Earn Rate (Rs. spent per 1 point)"
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <SettingsInputField
+          label="Earn Rate (Spend in PKR per 1 Point)"
+          icon={CreditCard}
           type="number"
           value={f.loyaltyEarnRate ?? 100}
           onChange={(e) => {
@@ -75,8 +160,9 @@ function LoyaltySettings({ f, set, onSave }) {
             onSave()
           }}
         />
-        <Input
-          label="Redeem Rate (Rs. credit per 1 point)"
+        <SettingsInputField
+          label="Redeem Value (PKR credit per 1 Point)"
+          icon={Award}
           type="number"
           value={f.loyaltyRedeemRate ?? 1}
           onChange={(e) => {
@@ -86,54 +172,62 @@ function LoyaltySettings({ f, set, onSave }) {
         />
       </div>
 
-      <p className="text-xs font-semibold text-slate-600 mb-2">Tier Thresholds & Status Badges:</p>
-      <div className="space-y-2">
-        {tiers.map((t, i) => (
-          <div key={i} className="flex gap-2 items-center text-xs">
-            <input
-              value={t.name}
-              onChange={setTier(i, 'name')}
-              className="border border-slate-200 rounded-lg px-2.5 py-1.5 w-28 bg-slate-50 focus:bg-white text-xs font-medium"
-              placeholder="Tier name"
-            />
-            <span className="text-slate-400 text-[11px]">min</span>
-            <input
-              type="number"
-              value={t.min}
-              onChange={setTier(i, 'min')}
-              className="border border-slate-200 rounded-lg px-2.5 py-1.5 w-24 text-right bg-slate-50 focus:bg-white text-xs font-bold font-mono"
-            />
-            <span className="text-slate-400 text-[11px]">pts</span>
-            <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold ${t.color}`}>{t.name}</span>
-            {i > 0 && (
-              <button
-                onClick={() => {
-                  set({ ...f, loyaltyTiers: tiers.filter((_, j) => j !== i) })
-                  onSave()
-                }}
-                className="text-rose-500 hover:text-rose-700 ml-auto p-1"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        ))}
+      <div className="pt-2">
+        <p className="text-xs font-bold text-slate-700 mb-2.5">Membership Tiers & Minimum Thresholds:</p>
+        <div className="space-y-2">
+          {tiers.map((t, i) => (
+            <div key={i} className="flex gap-2 items-center p-2 rounded-xl bg-slate-50 border border-slate-200/80">
+              <input
+                value={t.name}
+                onChange={setTier(i, 'name')}
+                className="border border-slate-200 rounded-lg px-2.5 py-1.5 w-28 bg-white focus:outline-none focus:border-[#714B67] text-xs font-bold text-slate-800"
+                placeholder="Tier name"
+              />
+              <span className="text-slate-400 text-[11px] font-semibold">Min</span>
+              <input
+                type="number"
+                value={t.min}
+                onChange={setTier(i, 'min')}
+                className="border border-slate-200 rounded-lg px-2.5 py-1.5 w-24 text-right bg-white focus:outline-none focus:border-[#714B67] text-xs font-bold font-mono text-slate-900"
+              />
+              <span className="text-slate-400 text-[11px] font-semibold">pts</span>
+              <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border ${t.color || 'bg-slate-100 text-slate-800'}`}>
+                {t.name}
+              </span>
+              {i > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    set({ ...f, loyaltyTiers: tiers.filter((_, j) => j !== i) })
+                    onSave()
+                  }}
+                  className="text-slate-400 hover:text-rose-600 ml-auto p-1.5 transition-colors cursor-pointer"
+                  title="Remove Tier"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            set({
+              ...f,
+              loyaltyTiers: [
+                ...tiers,
+                { min: (tiers[tiers.length - 1]?.min || 0) + 1000, name: 'VIP Diamond', color: 'bg-purple-100 text-purple-800 border-purple-200' },
+              ],
+            })
+            onSave()
+          }}
+          className="mt-3 text-xs bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-bold transition-all shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5 text-[#714B67]" /> Add Membership Tier
+        </button>
       </div>
-      <button
-        onClick={() => {
-          set({
-            ...f,
-            loyaltyTiers: [
-              ...tiers,
-              { min: (tiers[tiers.length - 1]?.min || 0) + 1000, name: 'Platinum', color: 'bg-indigo-100 text-indigo-800' },
-            ],
-          })
-          onSave()
-        }}
-        className="mt-3 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-bold transition-colors"
-      >
-        + Add Membership Tier
-      </button>
     </div>
   )
 }
@@ -175,21 +269,43 @@ function BackupRestore() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
-      <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-1">💾 Backup & Data Portability</h3>
-      <p className="text-xs text-slate-500 mb-4">Export database records or restore existing pharmacy snapshots.</p>
-      <div className="flex flex-wrap gap-2.5 items-center">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
+      <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+            <Database className="w-4 h-4" />
+          </div>
+          <div>
+            <h3 className="font-bold text-slate-900 text-sm">Database Backup & Recovery</h3>
+            <p className="text-[11px] text-slate-400">Download complete encrypted database snapshots or restore historical data</p>
+          </div>
+        </div>
+        <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full">
+          JSON Snapshot
+        </span>
+      </div>
+
+      <div className="flex flex-wrap gap-3 items-center pt-1">
         <button
+          type="button"
           onClick={exportBackup}
-          className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-colors shadow-sm"
+          className="inline-flex items-center gap-2 bg-[#3b1734] hover:bg-[#280c23] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
         >
-          <Download className="w-4 h-4" /> Export JSON
+          <Download className="w-4 h-4" />
+          <span>Download JSON Backup</span>
         </button>
-        <label className="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer transition-colors shadow-sm">
-          <Upload className="w-4 h-4" /> Import Backup
+
+        <label className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer transition-all shadow-xs">
+          <Upload className="w-4 h-4 text-slate-500" />
+          <span>Restore Backup Archive</span>
           <input type="file" accept=".json" onChange={importBackup} className="hidden" />
         </label>
-        {msg && <span className="text-xs font-semibold text-emerald-700">{msg}</span>}
+
+        {msg && (
+          <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl animate-in fade-in duration-200">
+            {msg}
+          </span>
+        )}
       </div>
     </div>
   )
@@ -198,8 +314,6 @@ function BackupRestore() {
 export default function Settings() {
   const [searchParams, setSearchParams] = useSearchParams()
   const requestedTab = searchParams.get('tab') || 'general'
-  // Tabs are gated by the same permissions as the rest of the app: a revoked
-  // staff/audit tab is neither offered nor reachable by editing the URL.
   const canUsers = can('users')
   const canAudit = can('auditLogs')
   const activeTab = (
@@ -207,54 +321,73 @@ export default function Settings() {
   ) ? 'general' : requestedTab
 
   return (
-    <div className="space-y-5 font-sans">
-      {/* Settings Navigation Tabs */}
-      <div className="flex items-center gap-2 p-1.5 bg-white border border-slate-300 rounded-2xl shadow-sm text-xs font-bold overflow-x-auto">
-        <button
-          type="button"
-          onClick={() => setSearchParams({ tab: 'general' })}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer ${
-            activeTab === 'general'
-              ? 'bg-[#3b1734] text-white border border-[#280c23] shadow-sm'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
-        >
-          <SettingsIcon className="w-4 h-4" />
-          <span>General Configuration</span>
-        </button>
+    <div className="space-y-6 font-sans text-slate-800 pb-16">
+      {/* 1. Header Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23]">
+              <SettingsIcon className="w-5 h-5" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                Pharmacy Settings
+              </h1>
+              <p className="text-xs text-slate-400 font-medium">
+                System parameters, store profile, receipt formats & staff permissions
+              </p>
+            </div>
+          </div>
+        </div>
 
-        {canUsers && (
+        {/* Tab Navigation Menu Pills */}
+        <div className="flex items-center gap-1.5 bg-white p-1.5 border border-slate-200 rounded-2xl shadow-xs overflow-x-auto">
           <button
             type="button"
-            onClick={() => setSearchParams({ tab: 'users' })}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer ${
-              activeTab === 'users'
-                ? 'bg-[#3b1734] text-white border border-[#280c23] shadow-sm'
+            onClick={() => setSearchParams({ tab: 'general' })}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === 'general'
+                ? 'bg-[#3b1734] text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
-            <UserCog className="w-4 h-4" />
-            <span>Staff & User Roles</span>
+            <SettingsIcon className="w-3.5 h-3.5" />
+            <span>General Setup</span>
           </button>
-        )}
 
-        {canAudit && (
-          <button
-            type="button"
-            onClick={() => setSearchParams({ tab: 'audit' })}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all cursor-pointer ${
-              activeTab === 'audit'
-                ? 'bg-[#3b1734] text-white border border-[#280c23] shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
-          >
-            <ClipboardList className="w-4 h-4" />
-            <span>Security Audit Logs</span>
-          </button>
-        )}
+          {canUsers && (
+            <button
+              type="button"
+              onClick={() => setSearchParams({ tab: 'users' })}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                activeTab === 'users'
+                  ? 'bg-[#3b1734] text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <UserCog className="w-3.5 h-3.5" />
+              <span>Staff & Roles</span>
+            </button>
+          )}
+
+          {canAudit && (
+            <button
+              type="button"
+              onClick={() => setSearchParams({ tab: 'audit' })}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                activeTab === 'audit'
+                  ? 'bg-[#3b1734] text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <ClipboardList className="w-3.5 h-3.5" />
+              <span>Audit Trail</span>
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Tab Content */}
+      {/* Tab Content Display */}
       {activeTab === 'users' ? (
         <Users />
       ) : activeTab === 'audit' ? (
@@ -291,106 +424,268 @@ function Configuration() {
     setTimeout(() => setSaved(false), 2500)
   }
 
+  const staffCount = (db.users || []).length
+  const medicinesCount = (db.medicines || []).length
+  const branchCount = (db.branches || []).length || 1
+
   return (
-    <div className="space-y-4 w-full pb-6">
-      <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-        <div>
-          <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">⚙️ Pharmacy Configuration</h2>
+    <div className="space-y-6 w-full">
+      {/* 2. Top Overview KPI Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs sm:text-sm font-semibold text-slate-600">Store Profile</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <Building2 className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-xl sm:text-2xl font-black text-slate-900 truncate" title={f.pharmacyName || 'Pharmacy'}>
+              {f.pharmacyName || 'Pharmacy'}
+            </div>
+            <div className="text-[11px] text-slate-400 mt-0.5 font-medium">{f.phone || '0300-1234567'}</div>
+          </div>
         </div>
-        <button
-          onClick={save}
-          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-700/20 active:scale-95"
-        >
-          {saved ? <CheckCircle2 className="w-4 h-4 text-emerald-200" /> : <Save className="w-4 h-4" />}
-          <span>{saved ? 'Saved ✓' : 'Save Changes'}</span>
-        </button>
+
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs sm:text-sm font-semibold text-slate-600">Active Staff</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <UserCog className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">{staffCount}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5 font-medium">Authorized operators</div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs sm:text-sm font-semibold text-slate-600">Catalogue Size</span>
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+              <Sparkles className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl sm:text-3xl font-black text-slate-900">{medicinesCount}</div>
+            <div className="text-[11px] text-slate-400 mt-0.5 font-medium">Configured SKUs</div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between text-slate-500">
+            <span className="text-xs sm:text-sm font-semibold text-slate-600">Tax & Currency</span>
+            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+              <Percent className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl sm:text-3xl font-black text-[#008f8b]">{f.currency || 'Rs.'} ({f.taxPct || 0}%)</div>
+            <div className="text-[11px] text-slate-400 mt-0.5 font-medium">Sales tax rate</div>
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Pharmacy Info Card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 space-y-3.5">
-          <h3 className="font-bold text-slate-900 text-sm sm:text-base">Business & Receipt Details</h3>
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <Input label="Pharmacy Name" value={f.pharmacyName || ''} onChange={set('pharmacyName')} />
-            <Input label="Phone Number" value={f.phone || ''} onChange={set('phone')} />
+      {/* 3. Action Toolbar */}
+      <div className="flex items-center justify-between bg-white p-3.5 rounded-2xl border border-slate-200 shadow-xs">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-xs font-bold text-slate-700">Settings Status: Ready</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setF({ ...db.settings })}
+            className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
+            <span>Reset</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={save}
+            className="px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] text-white text-xs font-bold transition shadow-xs inline-flex items-center gap-2 cursor-pointer active:scale-95"
+          >
+            {saved ? <CheckCircle2 className="w-4 h-4 text-emerald-300" /> : <Save className="w-4 h-4" />}
+            <span>{saved ? 'Changes Saved ✓' : 'Save Changes'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 4. Form Cards Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        {/* Pharmacy Details Form */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+                <Building2 className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-900 text-sm">Pharmacy Profile & Invoicing</h3>
+                <p className="text-[11px] text-slate-400">Official business name, contact info & tax details</p>
+              </div>
+            </div>
           </div>
-          <label className="block text-xs font-semibold text-slate-600">
-            Store Address
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <SettingsInputField
+              label="Pharmacy Name"
+              icon={Building2}
+              required
+              value={f.pharmacyName || ''}
+              onChange={set('pharmacyName')}
+              placeholder="e.g. Al-Shifa Pharmacy"
+            />
+            <SettingsInputField
+              label="Contact Phone Number"
+              icon={Phone}
+              value={f.phone || ''}
+              onChange={set('phone')}
+              placeholder="0300-1234567"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-[#714B67]" />
+              <span>Pharmacy Address & Location</span>
+            </label>
             <textarea
               value={f.address || ''}
               onChange={set('address')}
               rows="2"
-              className="border border-slate-200 rounded-xl w-full px-3 py-2 text-xs mt-1 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              placeholder="Shop # 12, Main Bazar, Ellahabad..."
+              className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#714B67] focus:ring-2 focus:ring-[#714B67]/20 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800 transition outline-none"
             />
-          </label>
-          <div className="grid grid-cols-3 gap-3 text-xs">
-            <Input label="Currency" value={f.currency || 'Rs.'} onChange={set('currency')} />
-            <Input label="Sales Tax %" type="number" value={f.taxPct ?? 0} onChange={set('taxPct')} />
-            <Input label="Tax ID / NTN" value={f.ntn || ''} onChange={set('ntn')} />
           </div>
-          <label className="block text-xs font-semibold text-slate-600">
-            Receipt Footer Message
+
+          <div className="grid grid-cols-3 gap-3">
+            <SettingsInputField
+              label="Currency Symbol"
+              value={f.currency || 'Rs.'}
+              onChange={set('currency')}
+              placeholder="Rs."
+            />
+            <SettingsInputField
+              label="Sales Tax (%)"
+              type="number"
+              value={f.taxPct ?? 0}
+              onChange={set('taxPct')}
+              placeholder="0"
+            />
+            <SettingsInputField
+              label="Tax ID / NTN #"
+              value={f.ntn || ''}
+              onChange={set('ntn')}
+              placeholder="1234567-8"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+              <Receipt className="w-3.5 h-3.5 text-[#714B67]" />
+              <span>Receipt Thermal Footer Message</span>
+            </label>
             <input
               value={f.receiptFooter ?? 'Thank you! Get well soon 🌿'}
               onChange={set('receiptFooter')}
-              className="border border-slate-200 rounded-xl w-full px-3 py-2 text-xs mt-1 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              placeholder="e.g. No return without original receipt"
+              className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#714B67] focus:ring-2 focus:ring-[#714B67]/20 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800 transition outline-none"
             />
-          </label>
-        </div>
-
-        {/* Live Thermal Receipt Preview */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col items-center">
-          <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-3 self-start">Receipt Preview (80mm)</h3>
-          <div className="bg-white border border-slate-200 shadow-sm p-4 w-72 rounded-xl text-xs font-mono text-slate-800">
-            <div className="text-center font-bold text-sm text-slate-900">{f.pharmacyName || 'Pharmacy'}</div>
-            <div className="text-center text-[10px] text-slate-500 whitespace-pre-line mt-0.5">{f.address}</div>
-            <div className="text-center text-[10px] text-slate-500">
-              {f.phone}
-              {f.ntn ? ` · NTN: ${f.ntn}` : ''}
-            </div>
-            <div className="border-t border-dashed border-slate-300 my-2" />
-            <div className="flex justify-between text-[11px]">
-              <span className="font-bold">INV-00001</span>
-              <span>{new Date().toLocaleDateString()}</span>
-            </div>
-            <div className="border-t border-dashed border-slate-300 my-2" />
-            <div className="flex justify-between text-[11px]">
-              <span>Panadol 500mg × 2</span>
-              <span>{fmt(300)}</span>
-            </div>
-            <div className="flex justify-between text-[11px]">
-              <span>Augmentin 625mg × 1</span>
-              <span>{fmt(850)}</span>
-            </div>
-            <div className="border-t border-dashed border-slate-300 my-2" />
-            <div className="flex justify-between text-[11px] text-slate-600">
-              <span>Subtotal</span>
-              <span>{fmt(1150)}</span>
-            </div>
-            <div className="flex justify-between text-[11px] text-slate-600">
-              <span>Tax ({f.taxPct || 0}%)</span>
-              <span>{fmt(((1150 * (f.taxPct || 0)) / 100))}</span>
-            </div>
-            <div className="flex justify-between font-bold text-sm text-slate-900 pt-1">
-              <span>TOTAL</span>
-              <span>{fmt(1150 * (1 + (f.taxPct || 0) / 100))}</span>
-            </div>
-            <div className="flex justify-between text-[11px] text-slate-600 pt-0.5">
-              <span>Payment</span>
-              <span className="font-bold">CASH</span>
-            </div>
-            <div className="border-t border-dashed border-slate-300 my-2" />
-            <div className="text-center text-[11px] text-slate-500">{f.receiptFooter || 'Thank you! Get well soon 🌿'}</div>
           </div>
         </div>
 
-        {/* Credit Template */}
+        {/* 80mm Receipt Thermal Live Preview */}
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 flex flex-col items-center">
+          <div className="w-full flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+                <Printer className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-900 text-sm">Receipt Thermal Preview</h3>
+                <p className="text-[11px] text-slate-400">80mm POS receipt simulation in real-time</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+              80mm Width
+            </span>
+          </div>
+
+          <div className="bg-slate-50 border border-slate-200 shadow-xs p-4 w-72 rounded-2xl text-xs font-mono text-slate-800 transition-all">
+            <div className="text-center font-bold text-sm text-slate-900 tracking-tight">
+              {f.pharmacyName || 'Ellahabad Pharmacy'}
+            </div>
+            <div className="text-center text-[10px] text-slate-500 whitespace-pre-line mt-0.5">
+              {f.address || 'Main Road, Pharmacy Center'}
+            </div>
+            <div className="text-center text-[10px] text-slate-500">
+              {f.phone || '0300-1234567'}
+              {f.ntn ? ` · NTN: ${f.ntn}` : ''}
+            </div>
+
+            <div className="border-t border-dashed border-slate-300 my-2" />
+
+            <div className="flex justify-between text-[11px]">
+              <span className="font-bold">INV-00109</span>
+              <span>{new Date().toLocaleDateString('en-PK')}</span>
+            </div>
+
+            <div className="border-t border-dashed border-slate-300 my-2" />
+
+            <div className="space-y-1 text-[11px]">
+              <div className="flex justify-between">
+                <span>Panadol Extra × 2</span>
+                <span>{fmt(300)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Augmentin 625mg × 1</span>
+                <span>{fmt(850)}</span>
+              </div>
+            </div>
+
+            <div className="border-t border-dashed border-slate-300 my-2" />
+
+            <div className="space-y-0.5 text-[11px] text-slate-600">
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>{fmt(1150)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Sales Tax ({f.taxPct || 0}%)</span>
+                <span>{fmt(((1150 * (Number(f.taxPct) || 0)) / 100))}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between font-bold text-sm text-slate-900 pt-1.5 border-t border-slate-300 mt-1.5">
+              <span>TOTAL DUE</span>
+              <span className="text-emerald-700">{fmt(1150 * (1 + (Number(f.taxPct) || 0) / 100))}</span>
+            </div>
+
+            <div className="flex justify-between text-[11px] text-slate-600 pt-1">
+              <span>Paid via</span>
+              <span className="font-bold">CASH COUNTER</span>
+            </div>
+
+            <div className="border-t border-dashed border-slate-300 my-2" />
+
+            <div className="text-center text-[11px] text-slate-500 italic">
+              {f.receiptFooter || 'Thank you! Get well soon 🌿'}
+            </div>
+          </div>
+        </div>
+
+        {/* Credit Template Card */}
         <CreditReminderTemplate f={f} set={setF} onSave={save} />
 
-        {/* Loyalty Program */}
+        {/* Loyalty Program Card */}
         <LoyaltySettings f={f} set={setF} onSave={save} />
 
-        {/* Backup & Restore span */}
+        {/* Backup & Restore Full Span */}
         <div className="lg:col-span-2">
           <BackupRestore />
         </div>
@@ -398,3 +693,4 @@ function Configuration() {
     </div>
   )
 }
+
