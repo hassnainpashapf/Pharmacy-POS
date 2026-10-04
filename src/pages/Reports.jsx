@@ -1065,8 +1065,8 @@ function ReportSection({ section }) {
 
   return (
     <div className="space-y-4 w-full pb-8">
-      {/* Top Header Card */}
-      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      {/* Top Header (Merged into Page) */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-1 py-1">
         <div>
           <h2 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
             <span>📊 {config.title}</span>

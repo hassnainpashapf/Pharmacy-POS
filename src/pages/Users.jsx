@@ -81,7 +81,7 @@ export function UsersPanel({ hideHeader = false, addingProp, setAddingProp }) {
     <div className="space-y-6 font-sans pb-8">
       {/* Header */}
       {!hideHeader && (
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 md:p-5 flex flex-wrap justify-between items-center gap-4">
+        <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
               <UsersIcon className="w-6 h-6 text-white" />
