@@ -515,26 +515,17 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
           </div>
         </div>
 
-        {/* View Switcher, CSV Export & Print */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* View Toggle */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs font-bold">
-            <button
-              type="button"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-xs cursor-default"
-            >
-              <Activity className="w-3.5 h-3.5 text-[#714B67]" />
-              <span>Graphical Dashboard</span>
-            </button>
-            <button
-              type="button"
-              onClick={onSwitchToTabular}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-slate-500 hover:text-slate-900 transition cursor-pointer"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5 text-slate-400" />
-              <span>Tabular Reports (8)</span>
-            </button>
-          </div>
+        {/* Global Action Buttons - Single clean row without line wrap */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={onSwitchToTabular}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs cursor-pointer"
+            title="Switch to detailed tabular reports"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 text-slate-500" />
+            <span>Tabular Reports (8)</span>
+          </button>
 
           <button
             onClick={handleExportOverviewCSV}
