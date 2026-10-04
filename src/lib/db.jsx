@@ -4,26 +4,35 @@ import { useEffect, useState } from 'react'
 const KEY = 'pharmacy_pos_db_v2'
 const ACTIVE_TENANT_KEY = 'pharmacy_pos_active_tenant'
 const SESSION_STORAGE_KEY = 'pharmacy_pos_active_session'
+const LOCAL_SESSION_KEY = 'pharmacy_pos_saved_session'
+export const LAST_USER_KEY = 'pharmacy_pos_last_username'
 // Bump to regenerate demo (seeded) sales for analytics; real POS sales are always kept
 const SALES_SEED_VERSION = 3
 
 export function getStoredSession() {
   if (typeof window === 'undefined') return null
   try {
-    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY)
+    const raw = localStorage.getItem(LOCAL_SESSION_KEY) || sessionStorage.getItem(SESSION_STORAGE_KEY)
     return raw ? JSON.parse(raw) : null
   } catch {
     return null
   }
 }
 
-export function setStoredSession(session) {
+export function setStoredSession(session, remember = true) {
   if (typeof window === 'undefined') return
   try {
     if (session) {
       sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session))
+      if (remember) {
+        localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(session))
+        if (session.username) {
+          localStorage.setItem(LAST_USER_KEY, session.username)
+        }
+      }
     } else {
       sessionStorage.removeItem(SESSION_STORAGE_KEY)
+      localStorage.removeItem(LOCAL_SESSION_KEY)
     }
   } catch {}
 }
@@ -748,6 +757,9 @@ function save() {
   try {
     const toSave = { ...db, session: null }
     localStorage.setItem(storageKey, JSON.stringify(toSave))
+    if (db.session) {
+      localStorage.setItem(LOCAL_SESSION_KEY, JSON.stringify(db.session))
+    }
   } catch (e) {
     console.error('Storage save error:', e)
   }
@@ -1743,7 +1755,7 @@ export function syncCloudSession(cloudUser, password) {
   return db.session
 }
 
-export function login(identifier, password) {
+export function login(identifier, password, { remember = true } = {}) {
   const name = (identifier || 'admin').trim()
   const lowerName = name.toLowerCase()
 
@@ -1800,7 +1812,7 @@ export function login(identifier, password) {
     appId: db.session?.appId || 'PH-A1A4534D5D1B',
   }
 
-  setStoredSession(db.session)
+  setStoredSession(db.session, remember)
 
   if (u.branchId) db.currentBranch = u.branchId
   else db.currentBranch = 'ALL'
@@ -1815,10 +1827,12 @@ export function logout() {
   log('LOGOUT')
   db.session = null
   setStoredSession(null)
-  save()
   try {
     localStorage.removeItem(ACTIVE_TENANT_KEY)
+    localStorage.removeItem(LOCAL_SESSION_KEY)
+    sessionStorage.removeItem(SESSION_STORAGE_KEY)
   } catch (_) {}
+  save()
   db = seed(empty())
   notifyListeners()
 }

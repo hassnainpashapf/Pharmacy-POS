@@ -6,8 +6,14 @@ import BrandLogo from '../components/BrandLogo'
 
 export default function Login() {
   const db = useDB()
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('pharmacy_pos_last_username') || 'admin'
+    }
+    return 'admin'
+  })
   const [password, setPassword] = useState('')
+  const [remember, setRemember] = useState(true)
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState('')
 
@@ -29,7 +35,7 @@ export default function Login() {
 
     // 1. Local Station First (0ms instant response, 100% offline)
     try {
-      login(trimmed, password)
+      login(trimmed, password, { remember })
       setLoading(false)
       return
     } catch (localErr) {
@@ -62,7 +68,7 @@ export default function Login() {
     setPassword(userPass)
     setErr('')
     try {
-      login(userIdentifier, userPass)
+      login(userIdentifier, userPass, { remember: true })
     } catch (e) {
       setErr(e.message || 'Quick login failed')
     }
@@ -98,6 +104,18 @@ export default function Login() {
               className="border border-slate-200 rounded-xl w-full px-4 py-2.5 text-sm bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#008f8b]/20 focus:border-[#008f8b] transition-all"
               placeholder="••••••••"
             />
+          </div>
+
+          <div className="flex items-center justify-between text-xs pt-0.5">
+            <label className="flex items-center gap-2 cursor-pointer text-slate-600 select-none font-medium">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="w-4 h-4 rounded accent-[#008f8b] cursor-pointer"
+              />
+              <span>Remember login locally on this station</span>
+            </label>
           </div>
 
           {err && (
