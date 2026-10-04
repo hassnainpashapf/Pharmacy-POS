@@ -258,9 +258,6 @@ export function Customers() {
                   <h1 className="text-xl font-black text-slate-900 tracking-tight">
                     Loyalty Program & Customer Credits
                   </h1>
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-purple-50 text-purple-700 border border-purple-200">
-                    {loyaltyTiers().length} Tiers Active
-                  </span>
                 </div>
                 <p className="text-xs text-slate-600 font-medium mt-0.5">
                   Customer reward points, redemption rates, tier privileges, and member credits.
