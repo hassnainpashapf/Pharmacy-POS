@@ -828,13 +828,13 @@ export function CompanyStockGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/company-stock')}
-      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/60 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group p-2 cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-3.5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
-              <Building2 className="w-5 h-5" />
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+              <Building2 className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#714B67] transition-colors">
@@ -860,12 +860,12 @@ export function CompanyStockGraph({ db, nav }) {
           data={donutData}
           centerMain={String(stats.totalCompanies)}
           centerSub="brands"
-          size={176}
-          strokeWidth={13}
+          size={180}
+          strokeWidth={14}
         />
 
         {/* Legend */}
-        <div className="space-y-2 pt-3 border-t border-slate-100">
+        <div className="space-y-1.5 pt-2.5 border-t border-slate-100">
           {stats.list.length === 0 ? (
             <div className="text-xs text-slate-400 py-2 text-center">No stock recorded</div>
           ) : (
@@ -936,13 +936,13 @@ export function StockAuditGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/stock-audit')}
-      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#008f8b]/60 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group p-2 cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-3.5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center font-bold">
-              <ClipboardCheck className="w-5 h-5" />
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center font-bold">
+              <ClipboardCheck className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#008f8b] transition-colors">
@@ -968,12 +968,12 @@ export function StockAuditGraph({ db, nav }) {
           data={auditDonutData}
           centerMain={`${stats.accuracy}%`}
           centerSub="accuracy"
-          size={176}
-          strokeWidth={13}
+          size={180}
+          strokeWidth={14}
         />
 
         {/* Legend */}
-        <div className="space-y-2 pt-3 border-t border-slate-100">
+        <div className="space-y-1.5 pt-2.5 border-t border-slate-100">
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center gap-2 text-slate-600">
               <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#008f8b]" />
@@ -1082,13 +1082,13 @@ export function ExpiryActionGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/expiry-management')}
-      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-amber-400 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group p-2 cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-3.5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
-              <Clock className="w-5 h-5" />
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+              <Clock className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#714B67] transition-colors">
@@ -1114,12 +1114,12 @@ export function ExpiryActionGraph({ db, nav }) {
           data={expiryDonutData}
           centerMain={totalAtRisk > 0 ? `${totalAtRisk.toLocaleString()}` : '0'}
           centerSub="at risk"
-          size={176}
-          strokeWidth={13}
+          size={180}
+          strokeWidth={14}
         />
 
         {/* Legend */}
-        <div className="space-y-2 pt-3 border-t border-slate-100">
+        <div className="space-y-1.5 pt-2.5 border-t border-slate-100">
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center gap-2 text-slate-600">
               <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-rose-500" />
@@ -1197,13 +1197,13 @@ export function PurchaseReturnsGraph({ db, nav }) {
   return (
     <div
       onClick={() => nav('/purchase-returns')}
-      className="group bg-white hover:bg-slate-50/80 border border-slate-200 hover:border-[#714B67]/60 rounded-2xl p-5 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col justify-between"
+      className="group p-2 cursor-pointer transition-all flex flex-col justify-between"
     >
       <div>
-        <div className="flex items-center justify-between mb-3.5">
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
-              <RotateCcw className="w-5 h-5" />
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+              <RotateCcw className="w-4 h-4" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-800 group-hover:text-[#714B67] transition-colors">
@@ -1229,12 +1229,12 @@ export function PurchaseReturnsGraph({ db, nav }) {
           data={returnsDonutData}
           centerMain={`${stats.totalReturns}`}
           centerSub="debit notes"
-          size={176}
-          strokeWidth={13}
+          size={180}
+          strokeWidth={14}
         />
 
         {/* Legend */}
-        <div className="space-y-2 pt-3 border-t border-slate-100">
+        <div className="space-y-1.5 pt-2.5 border-t border-slate-100">
           <div className="flex items-center justify-between text-xs">
             <span className="flex items-center gap-2 text-slate-600">
               <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#714B67]" />
@@ -1270,7 +1270,7 @@ export function PurchaseReturnsGraph({ db, nav }) {
 
 export function StockOperationsGraphs({ db, nav }) {
   return (
-    <div className="space-y-3.5">
+    <div className="space-y-4 py-2 border-y border-slate-200/80">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="w-2.5 h-5 bg-[#714B67] rounded-full" />
@@ -1283,11 +1283,11 @@ export function StockOperationsGraphs({ db, nav }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <CompanyStockGraph db={db} nav={nav} />
-        <StockAuditGraph db={db} nav={nav} />
-        <ExpiryActionGraph db={db} nav={nav} />
-        <PurchaseReturnsGraph db={db} nav={nav} />
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+        <div className="pt-2 md:pt-0"><CompanyStockGraph db={db} nav={nav} /></div>
+        <div className="pt-4 md:pt-0 md:pl-6"><StockAuditGraph db={db} nav={nav} /></div>
+        <div className="pt-4 md:pt-0 md:pl-6"><ExpiryActionGraph db={db} nav={nav} /></div>
+        <div className="pt-4 md:pt-0 md:pl-6"><PurchaseReturnsGraph db={db} nav={nav} /></div>
       </div>
     </div>
   )
