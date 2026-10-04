@@ -1360,23 +1360,64 @@ function ReportSection({ section, onSwitchToGui }) {
         </div>
       )}
 
-      {/* ── Reports Navigation Menu Bar ── */}
-      <div className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-1.5 overflow-x-auto custom-scroll pb-0.5">
+      {/* ── Search, Company & Report Menu Toolbar (unified single bar like CompanyStockHub) ── */}
+      <div className="space-y-2.5 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+        {/* Top Controls Row: Search, Date Filter & Company Selector */}
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2.5">
+          {/* Direct Search Bar */}
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search in report table..."
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+            />
+          </div>
+
+          {/* Date Filter Dropdown */}
+          <DateFilterBar
+            filterState={reportDateFilter}
+            onChange={setReportDateFilter}
+            asDropdown
+            dropdownClassName="rounded-lg py-1.5 px-3 text-xs bg-slate-50 border border-slate-200 font-bold text-slate-700"
+          />
+
+          {/* Company Filter Dropdown */}
+          <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
+            <Building2 className="w-3.5 h-3.5 text-[#714B67]" />
+            <select
+              value={selectedCompany}
+              onChange={(e) => setSelectedCompany(e.target.value)}
+              className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[170px] truncate"
+              title="Filter by Pharma Company"
+            >
+              <option value="ALL">🏢 All Companies ({distinctCompanies.length})</option>
+              {distinctCompanies.map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Bottom Menu Pills Row: Integrated report tabs + More Reports dropdown */}
+        <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg shrink-0 overflow-x-auto custom-scroll">
           {primaryReports.map((r) => {
             const Icon = REPORT_ICONS[r.id] || FileSpreadsheet
             const active = selectedReportId === r.id
             return (
               <button
                 key={r.id}
+                type="button"
                 onClick={() => {
                   setSelectedReportId(r.id)
                   setSearchTerm('')
                 }}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer whitespace-nowrap shrink-0 ${
+                className={`flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-md transition cursor-pointer whitespace-nowrap ${
                   active
                     ? 'bg-[#3b1734] text-white shadow-xs'
-                    : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/80'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                 }`}
               >
                 <Icon className={`w-3.5 h-3.5 ${active ? 'text-white' : 'text-[#714B67]'}`} />
@@ -1386,7 +1427,7 @@ function ReportSection({ section, onSwitchToGui }) {
           })}
 
           {secondaryReports.length > 0 && (
-            <div className="relative shrink-0">
+            <div className="relative shrink-0 ml-auto">
               <select
                 value={secondaryReports.some((r) => r.id === selectedReportId) ? selectedReportId : ''}
                 onChange={(e) => {
@@ -1395,10 +1436,10 @@ function ReportSection({ section, onSwitchToGui }) {
                     setSearchTerm('')
                   }
                 }}
-                className={`appearance-none bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/80 rounded-xl px-3.5 py-2 pr-7 text-xs font-bold outline-none cursor-pointer ${
+                className={`appearance-none rounded-md px-2.5 py-1 pr-6 text-xs font-bold outline-none cursor-pointer transition ${
                   secondaryReports.some((r) => r.id === selectedReportId)
-                    ? 'bg-[#3b1734] text-white border-[#3b1734]'
-                    : ''
+                    ? 'bg-[#3b1734] text-white'
+                    : 'bg-transparent text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <option value="" disabled className="text-slate-500 bg-white">
@@ -1410,43 +1451,9 @@ function ReportSection({ section, onSwitchToGui }) {
                   </option>
                 ))}
               </select>
-              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
+              <ChevronDown className="w-3 h-3 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60" />
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Toolbar Card: filters & search */}
-      <div className="bg-white p-3 rounded-xl border border-slate-200 flex flex-wrap items-center gap-2.5">
-        <DateFilterBar
-          filterState={reportDateFilter}
-          onChange={setReportDateFilter}
-          asDropdown
-          dropdownClassName="rounded-xl py-2 px-3 text-xs bg-slate-50 border border-slate-200 font-bold text-slate-700"
-        />
-        <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
-          <Building2 className="w-3.5 h-3.5 text-[#714B67] flex-shrink-0" />
-          <select
-            value={selectedCompany}
-            onChange={(e) => setSelectedCompany(e.target.value)}
-            className="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer max-w-[180px] truncate"
-            title="Filter by Pharma Company"
-          >
-            <option value="ALL">All Companies ({distinctCompanies.length})</option>
-            {distinctCompanies.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-        </div>
-        <div className="relative flex-1 min-w-[200px] sm:max-w-xs sm:ml-auto">
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search in report table..."
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium outline-none focus:border-[#714B67]"
-          />
         </div>
       </div>
 
