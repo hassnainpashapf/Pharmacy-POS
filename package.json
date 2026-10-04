@@ -8,9 +8,9 @@
   "engines": { "node": ">=22.0.0" },
   "main": "electron/main.cjs",
   "scripts": {
-    "predev": "node scripts/prepare-ocr.mjs && python3 scripts/generate-icons.py",
+    "predev": "node scripts/prepare-ocr.mjs",
     "dev": "node scripts/dev.mjs",
-    "prebuild": "node scripts/prepare-ocr.mjs && python3 scripts/generate-icons.py",
+    "prebuild": "node scripts/prepare-ocr.mjs",
     "build": "vite build && node scripts/postbuild.mjs",
     "deploy": "wrangler deploy",
     "preview": "vite preview",
