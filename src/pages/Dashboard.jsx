@@ -208,6 +208,101 @@ export default function Dashboard() {
         </button>
       </div>
 
+      {/* 2. Attention & Action Required (6 Pill Cards in a Row) */}
+      <div className="space-y-2.5">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-4 bg-amber-500 rounded-full" />
+          <h2 className="text-sm font-bold text-slate-800 tracking-tight">Attention & Action Required</h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {/* Low Stock */}
+          <div
+            onClick={() => nav('/inventory')}
+            className="bg-amber-50/60 border border-amber-200 hover:border-amber-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
+          >
+            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-amber-950">{data.attention.lowStock} Items</div>
+              <div className="text-[11px] text-amber-800 font-semibold">Low Stock</div>
+            </div>
+          </div>
+
+          {/* Out of Stock */}
+          <div
+            onClick={() => nav('/inventory')}
+            className="bg-rose-50/60 border border-rose-200 hover:border-rose-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
+          >
+            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+              <AlertCircle className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-rose-950">{data.attention.outOfStock} Items</div>
+              <div className="text-[11px] text-rose-700 font-semibold">Out of Stock</div>
+            </div>
+          </div>
+
+          {/* Near Expiry */}
+          <div
+            onClick={() => nav('/inventory')}
+            className="bg-amber-50/50 border border-amber-200 hover:border-amber-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
+          >
+            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+              <Calendar className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-amber-950">{data.attention.nearExpiry} Batches</div>
+              <div className="text-[11px] text-amber-800 font-semibold">Near Expiry (0–30d)</div>
+            </div>
+          </div>
+
+          {/* Have Expired */}
+          <div
+            onClick={() => nav('/inventory')}
+            className="bg-rose-50/60 border border-rose-200 hover:border-rose-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
+          >
+            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+              <Clock className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-rose-950">{data.attention.expired} Batches</div>
+              <div className="text-[11px] text-rose-700 font-semibold">Have expired</div>
+            </div>
+          </div>
+
+          {/* Awaiting Processing */}
+          <div
+            onClick={() => nav('/pos')}
+            className="bg-sky-50/60 border border-sky-200 hover:border-sky-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
+          >
+            <div className="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+              <Package className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-sky-950">{data.attention.awaitingOrders} Orders</div>
+              <div className="text-[11px] text-sky-700 font-semibold">Open wholesale/PO</div>
+            </div>
+          </div>
+
+          {/* Pending Payments */}
+          <div
+            onClick={() => nav('/suppliers')}
+            className="bg-[#f5eef4] border border-[#714B67]/30 hover:border-[#714B67] rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
+          >
+            <div className="w-9 h-9 rounded-xl bg-[#e8dae5] text-[#714B67] flex items-center justify-center shrink-0">
+              <CreditCard className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="text-sm font-black text-[#3b1734]">
+                {data.attention.pendingPayments === null ? '0' : `${data.attention.pendingPayments} Vendors`}
+              </div>
+              <div className="text-[11px] text-[#714B67] font-semibold">Unpaid Balances</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 3. Today's Overview (6 KPI Cards in a row) */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
@@ -320,101 +415,6 @@ export default function Dashboard() {
               <div className="text-[11px] font-semibold text-[#e11d48] mt-1 flex items-center gap-1">
                 <span>{data.kpis.payablesHint}</span>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Attention Required (6 Pill Cards in a Row) */}
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-4 bg-amber-500 rounded-full" />
-          <h2 className="text-sm font-bold text-slate-800 tracking-tight">Attention & Action Required</h2>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          {/* Low Stock */}
-          <div
-            onClick={() => nav('/inventory')}
-            className="bg-amber-50/60 border border-amber-200 hover:border-amber-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-              <AlertTriangle className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-sm font-black text-amber-950">{data.attention.lowStock} Items</div>
-              <div className="text-[11px] text-amber-800 font-semibold">Low Stock</div>
-            </div>
-          </div>
-
-          {/* Out of Stock */}
-          <div
-            onClick={() => nav('/inventory')}
-            className="bg-rose-50/60 border border-rose-200 hover:border-rose-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-              <AlertCircle className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-sm font-black text-rose-950">{data.attention.outOfStock} Items</div>
-              <div className="text-[11px] text-rose-700 font-semibold">Out of Stock</div>
-            </div>
-          </div>
-
-          {/* Near Expiry */}
-          <div
-            onClick={() => nav('/inventory')}
-            className="bg-amber-50/50 border border-amber-200 hover:border-amber-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
-              <Calendar className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-sm font-black text-amber-950">{data.attention.nearExpiry} Batches</div>
-              <div className="text-[11px] text-amber-800 font-semibold">Near Expiry (0–30d)</div>
-            </div>
-          </div>
-
-          {/* Have Expired */}
-          <div
-            onClick={() => nav('/inventory')}
-            className="bg-rose-50/60 border border-rose-200 hover:border-rose-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-              <Clock className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-sm font-black text-rose-950">{data.attention.expired} Batches</div>
-              <div className="text-[11px] text-rose-700 font-semibold">Have expired</div>
-            </div>
-          </div>
-
-          {/* Awaiting Processing */}
-          <div
-            onClick={() => nav('/pos')}
-            className="bg-sky-50/60 border border-sky-200 hover:border-sky-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
-              <Package className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-sm font-black text-sky-950">{data.attention.awaitingOrders} Orders</div>
-              <div className="text-[11px] text-sky-700 font-semibold">Open wholesale/PO</div>
-            </div>
-          </div>
-
-          {/* Pending Payments */}
-          <div
-            onClick={() => nav('/suppliers')}
-            className="bg-[#f5eef4] border border-[#714B67]/30 hover:border-[#714B67] rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-[#e8dae5] text-[#714B67] flex items-center justify-center shrink-0">
-              <CreditCard className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="text-sm font-black text-[#3b1734]">
-                {data.attention.pendingPayments === null ? '0' : `${data.attention.pendingPayments} Vendors`}
-              </div>
-              <div className="text-[11px] text-[#714B67] font-semibold">Unpaid Balances</div>
             </div>
           </div>
         </div>
