@@ -1769,6 +1769,7 @@ export const PERMISSION_CATALOG = [
   { key: 'accounting',         label: 'Accounting',              group: 'Finance',     to: '/accounting' },
   { key: 'expenses',           label: 'Expenses',                group: 'Finance',     to: '/accounting?tab=expenses' },
   { key: 'branches',           label: 'Branches & Transfers',    group: 'Management',  to: '/branches' },
+  { key: 'users',              label: 'User Management',         group: 'Management',  to: '/branches?tab=users' },
   { key: 'users',              label: 'User Management',         group: 'Management',  to: '/users' },
   { key: 'users',              label: 'User Management',         group: 'Management',  to: '/settings?tab=users' },
   { key: 'reports',            label: 'View Reports',            group: 'Reports',     to: '/reports' },

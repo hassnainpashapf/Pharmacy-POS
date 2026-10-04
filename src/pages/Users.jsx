@@ -33,10 +33,12 @@ function matrixCell(key, roleDefaults, effective) {
   return <span className="text-slate-300">—</span>
 }
 
-export default function Users() {
+export function UsersPanel({ hideHeader = false, addingProp, setAddingProp }) {
   const db = useDB()
   const me = currentUser()
-  const [adding, setAdding]   = useState(false)
+  const [internalAdding, setInternalAdding] = useState(false)
+  const adding = addingProp !== undefined ? addingProp : internalAdding
+  const setAdding = setAddingProp || setInternalAdding
   const [editing, setEditing] = useState(null)   // user object being edited
   const [deleting, setDeleting] = useState(null) // user object being deleted
   const [resetUser, setResetUser] = useState(null)
@@ -78,24 +80,33 @@ export default function Users() {
   return (
     <div className="space-y-6 font-sans pb-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#714B67]/10 flex items-center justify-center">
-            <UsersIcon className="w-5 h-5 text-[#714B67]" />
+      {!hideHeader && (
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 md:p-5 flex flex-wrap justify-between items-center gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
+              <UsersIcon className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-black text-slate-900 tracking-tight">User Roles &amp; Staff</h1>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd]">
+                  {db.users?.length || 0} Staff Accounts
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 font-medium mt-0.5">
+                Manage employees, roles, branch access &amp; passwords
+              </p>
+            </div>
           </div>
-          <div>
-            <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">User Roles &amp; Staff</h2>
-            <p className="text-[11px] text-slate-500 mt-0.5">Manage employees, roles, branch access &amp; passwords</p>
-          </div>
+          <button
+            onClick={() => setAdding(true)}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New Staff</span>
+          </button>
         </div>
-        <button
-          onClick={() => setAdding(true)}
-          className="inline-flex items-center gap-2 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-4 py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add New Staff</span>
-        </button>
-      </div>
+      )}
 
       {err && (
         <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl p-3 font-medium">
@@ -725,3 +736,8 @@ function ResetPassModal({ user, onClose, onSave }) {
     </Modal>
   )
 }
+
+export default function Users() {
+  return <UsersPanel />
+}
+

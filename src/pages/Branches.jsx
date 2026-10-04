@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useLocation, useNavigate } from 'react-router'
 import {
   useDB,
   headOfficeDashboard,
@@ -17,6 +18,7 @@ import {
   currentUser,
 } from '../lib/db'
 import { getSmartTransferRecommendations } from '../lib/forecasting'
+import { UsersPanel } from './Users'
 import {
   Building2,
   ArrowRight,
@@ -42,6 +44,7 @@ import {
   Building,
   Phone,
   Layers,
+  UserCog,
 } from 'lucide-react'
 
 /* ---------- Standard KPI Card Component ---------- */
@@ -75,13 +78,36 @@ function KpiCard({ label, value, sub, icon: Icon, tone = 'default' }) {
 
 export default function Branches() {
   const db = useDB()
-  const [tab, setTab] = useState('overview')
+  const location = useLocation()
+  const navigate = useNavigate()
+  const queryTab = new URLSearchParams(location.search).get('tab')
+  const [tab, setTab] = useState(queryTab && ['overview', 'users', 'smart', 'transfers'].includes(queryTab) ? queryTab : 'overview')
+  const [staffAdding, setStaffAdding] = useState(false)
   const [viewMode, setViewMode] = useState('cards') // 'cards' | 'table'
   const [search, setSearch] = useState('')
   const [regionFilter, setRegionFilter] = useState('ALL')
   const [editingBranch, setEditingBranch] = useState(null)
   const [adding, setAdding] = useState(false)
   const [recMsg, setRecMsg] = useState('')
+
+  useEffect(() => {
+    const qTab = new URLSearchParams(location.search).get('tab')
+    if (qTab && ['overview', 'users', 'smart', 'transfers'].includes(qTab)) {
+      setTab(qTab)
+    } else if (!qTab) {
+      setTab('overview')
+    }
+  }, [location.search])
+
+  function handleTabChange(t) {
+    setTab(t)
+    setRecMsg('')
+    if (t === 'overview') {
+      navigate('/branches', { replace: true })
+    } else {
+      navigate(`/branches?tab=${t}`, { replace: true })
+    }
+  }
 
   const ho = headOfficeDashboard()
   const smartRecs = getSmartTransferRecommendations(db)
@@ -172,17 +198,21 @@ export default function Branches() {
       <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 md:p-5 flex flex-wrap justify-between items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
-            <Building2 className="w-6 h-6 text-white" />
+            {tab === 'users' ? <UserCog className="w-6 h-6 text-white" /> : <Building2 className="w-6 h-6 text-white" />}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-black text-slate-900 tracking-tight">Enterprise Multi-Branch & HQ Portal</h1>
+              <h1 className="text-xl font-black text-slate-900 tracking-tight">
+                {tab === 'users' ? 'User Roles & Staff' : 'Enterprise Multi-Branch & HQ Portal'}
+              </h1>
               <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd]">
-                {db.branches?.length || 0} Hubs Active
+                {tab === 'users' ? `${db.users?.length || 0} Staff Accounts` : `${db.branches?.length || 0} Hubs Active`}
               </span>
             </div>
             <p className="text-xs text-slate-600 font-medium mt-0.5">
-              Regional hierarchy monitoring, autonomous inter-branch transfers, and multi-location revenue
+              {tab === 'users'
+                ? 'Manage employees, roles, branch access & passwords across all operational hubs'
+                : 'Regional hierarchy monitoring, autonomous inter-branch transfers, and multi-location revenue'}
             </p>
           </div>
         </div>
@@ -196,71 +226,81 @@ export default function Branches() {
               <span>Head Office (All Hubs)</span>
             </button>
           )}
-          <button
-            onClick={() => setAdding(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span>New Branch Hub</span>
-          </button>
+          {tab === 'users' ? (
+            <button
+              onClick={() => setStaffAdding(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add New Staff</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => setAdding(true)}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>New Branch Hub</span>
+            </button>
+          )}
         </div>
       </div>
 
-      {/* ── 5 Standard KPI Cards ── */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
-        <KpiCard
-          label="Total Hubs"
-          value={`${db.branches?.length || 0} Hubs`}
-          sub="Operational branches"
-          icon={Building2}
-          tone="default"
-        />
-        <KpiCard
-          label="Network Revenue"
-          value={fmt(networkSales)}
-          sub="Last 30-day sales"
-          icon={TrendingUp}
-          tone="green"
-        />
-        <KpiCard
-          label="Network Margin"
-          value={fmt(networkProfit)}
-          sub="Consolidated net profit"
-          icon={CircleDollarSign}
-          tone="blue"
-        />
-        <KpiCard
-          label="Stock Valuation"
-          value={fmt(networkStock)}
-          sub="Total inventory at cost"
-          icon={Package}
-          tone="purple"
-        />
-        <div className="col-span-2 md:col-span-1">
+      {/* ── 5 Standard KPI Cards (Only on Overview) ── */}
+      {tab === 'overview' && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
           <KpiCard
-            label="Low Stock Alerts"
-            value={`${totalLowStock} items`}
-            sub={totalLowStock > 0 ? 'Replenishment needed' : 'All hubs optimal'}
-            icon={AlertTriangle}
-            tone={totalLowStock > 0 ? 'amber' : 'green'}
+            label="Total Hubs"
+            value={`${db.branches?.length || 0} Hubs`}
+            sub="Operational branches"
+            icon={Building2}
+            tone="default"
           />
+          <KpiCard
+            label="Network Revenue"
+            value={fmt(networkSales)}
+            sub="Last 30-day sales"
+            icon={TrendingUp}
+            tone="green"
+          />
+          <KpiCard
+            label="Network Margin"
+            value={fmt(networkProfit)}
+            sub="Consolidated net profit"
+            icon={CircleDollarSign}
+            tone="blue"
+          />
+          <KpiCard
+            label="Stock Valuation"
+            value={fmt(networkStock)}
+            sub="Total inventory at cost"
+            icon={Package}
+            tone="purple"
+          />
+          <div className="col-span-2 md:col-span-1">
+            <KpiCard
+              label="Low Stock Alerts"
+              value={`${totalLowStock} items`}
+              sub={totalLowStock > 0 ? 'Replenishment needed' : 'All hubs optimal'}
+              icon={AlertTriangle}
+              tone={totalLowStock > 0 ? 'amber' : 'green'}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── Tab Switcher Options ── */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 p-1.5 bg-slate-100/80 rounded-2xl">
           {[
             { id: 'overview', label: 'Regional & Branch Matrix', icon: Building2, count: db.branches.length },
+            { id: 'users', label: 'User Roles & Staff', icon: UserCog, count: db.users?.length || 0 },
             { id: 'smart', label: 'Smart AI Transfers', icon: Sparkles, count: smartRecs.length },
             { id: 'transfers', label: 'Stock Transfer Requests', icon: ArrowLeftRight, count: transfers.length },
           ].map((t) => (
             <button
               key={t.id}
-              onClick={() => {
-                setTab(t.id)
-                setRecMsg('')
-              }}
+              onClick={() => handleTabChange(t.id)}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 tab === t.id
                   ? 'bg-white text-slate-900 shadow-xs'
@@ -628,7 +668,12 @@ export default function Branches() {
         </div>
       )}
 
-      {/* ── TAB 2: SMART AI TRANSFERS ── */}
+      {/* ── TAB: USER ROLES & STAFF ── */}
+      {tab === 'users' && (
+        <UsersPanel hideHeader={true} addingProp={staffAdding} setAddingProp={setStaffAdding} />
+      )}
+
+      {/* ── TAB: SMART AI TRANSFERS ── */}
       {tab === 'smart' && (
         <div className="space-y-4">
           <div className="bg-gradient-to-r from-[#3b1734] to-[#714B67] text-white rounded-2xl p-5 shadow-sm">

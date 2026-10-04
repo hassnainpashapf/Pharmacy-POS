@@ -159,7 +159,7 @@ const navGroups = [
     title: 'MANAGEMENT',
     items: [
       { to: '/branches', label: 'Branches', icon: Building2 },
-      { to: '/users', label: 'User Roles & Staff', icon: UserCog },
+      { to: '/branches?tab=users', label: 'User Roles & Staff', icon: UserCog },
     ],
   },
   {
@@ -808,7 +808,7 @@ function LegacyApp() {
         <Route path="/reports" element={<Reports />} />
         <Route path="/branches" element={<Branches />} />
         <Route path="/hardware" element={<HardwareStation />} />
-        <Route path="/users" element={<Users />} />
+        <Route path="/users" element={<Navigate to="/branches?tab=users" replace />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
