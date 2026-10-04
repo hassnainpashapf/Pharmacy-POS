@@ -270,10 +270,6 @@ export function Customers() {
 
             {/* Header Actions */}
             <div className="flex items-center gap-2">
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 text-xs font-bold">
-                <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-                <span>Earn 1 pt / Rs. 100 • 1 pt = Rs. 1 off</span>
-              </div>
               <button
                 onClick={() => window.print()}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition shadow-xs cursor-pointer"
