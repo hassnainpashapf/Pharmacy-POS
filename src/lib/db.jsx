@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 const KEY = 'pharmacy_pos_db_v2'
 const ACTIVE_TENANT_KEY = 'pharmacy_pos_active_tenant'
 // Bump to regenerate demo (seeded) sales for analytics; real POS sales are always kept
-const SALES_SEED_VERSION = 2
+const SALES_SEED_VERSION = 3
 
 export function getActiveTenantKey() {
   if (typeof window === 'undefined') return KEY
@@ -386,6 +386,8 @@ export function seedHistoricalSales(d) {
         name: med.name,
         batchId: `batch_init_${med.id.slice(0, 6)}`,
         qty,
+        price: unitPrice,
+        cost: purchasePrice,
         unitPrice,
         purchasePrice,
         total: itemTotal,
