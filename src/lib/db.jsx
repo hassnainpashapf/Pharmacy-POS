@@ -311,6 +311,10 @@ function load(targetTenantId) {
         })
       }
 
+      if (!d.sales || d.sales.length < 15) {
+        seedHistoricalSales(d)
+      }
+
       localStorage.setItem(storageKey, JSON.stringify(d))
       return d
     } else if (targetTenantId && !isMainTenant) {
@@ -319,6 +323,113 @@ function load(targetTenantId) {
     }
   } catch (e) { console.error(e) }
   return seed(empty())
+}
+
+export function seedHistoricalSales(d) {
+  if (!d.medicines || d.medicines.length === 0) return
+  const now = new Date()
+  const sales = []
+  
+  // Pick active medicines
+  const popularMeds = d.medicines.slice(0, 30)
+  const payMethods = ['CASH', 'CASH', 'CASH', 'CARD', 'CARD', 'DIGITAL', 'CREDIT']
+  const branches = ['main', 'main', 'main', 'branch_khi', 'branch_isb']
+  const cashiers = [
+    { username: 'usr_cashier', name: 'Bilal Cashier' },
+    { username: 'usr_pharmacist', name: 'Dr. Sara Khan' },
+    { username: 'usr_admin', name: 'Hussnain Pasha' },
+  ]
+  const counters = ['counter-1', 'counter-1', 'counter-2', 'counter-3']
+
+  // Create 125 realistic sales across the past 30 days
+  for (let i = 0; i < 125; i++) {
+    // Distribution over 30 days
+    let daysAgo
+    if (i < 22) {
+      daysAgo = 0 // Today
+    } else if (i < 40) {
+      daysAgo = 1 // Yesterday
+    } else if (i < 80) {
+      daysAgo = (i % 6) + 2 // Past 2 to 7 days
+    } else {
+      daysAgo = (i % 22) + 8 // Past 8 to 29 days
+    }
+
+    // Operating hours 08:30 to 22:45
+    // Evening rush peak 17:00 - 21:00 (50%), Afternoon 12:00 - 16:00 (30%), Morning 08:30 - 11:00 (20%)
+    let hour
+    const cycle = i % 10
+    if (cycle < 5) {
+      hour = 17 + (i % 5) // 17, 18, 19, 20, 21
+    } else if (cycle < 8) {
+      hour = 12 + (i % 5) // 12, 13, 14, 15, 16
+    } else {
+      hour = 8 + (i % 4) // 8, 9, 10, 11
+    }
+    const minute = (i * 17) % 60
+    const second = (i * 23) % 60
+
+    const saleDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000)
+    saleDate.setHours(hour, minute, second, 0)
+
+    // Items count (1 to 3 items per transaction)
+    const itemsCount = 1 + (i % 3)
+    const saleItems = []
+    let subtotal = 0
+    let cost = 0
+
+    for (let k = 0; k < itemsCount; k++) {
+      const med = popularMeds[(i * 2 + k * 7) % popularMeds.length]
+      const qty = 1 + ((i + k) % 3)
+      const unitPrice = med.salePrice || 120
+      const purchasePrice = med.purchasePrice || Math.round(unitPrice * 0.76)
+      const itemTotal = qty * unitPrice
+      subtotal += itemTotal
+      cost += qty * purchasePrice
+      saleItems.push({
+        medicineId: med.id,
+        name: med.name,
+        batchId: `batch_init_${med.id.slice(0, 6)}`,
+        qty,
+        unitPrice,
+        purchasePrice,
+        total: itemTotal,
+      })
+    }
+
+    const discount = i % 5 === 0 ? Math.round(subtotal * 0.05) : 0
+    const total = Math.max(0, subtotal - discount)
+    const profit = Math.max(0, subtotal - cost - discount)
+    const payMethod = payMethods[i % payMethods.length]
+    const cashier = cashiers[i % cashiers.length]
+    const branchId = branches[i % branches.length]
+    const counterId = counters[i % counters.length]
+
+    sales.push({
+      id: `sale_seed_${i + 1}`,
+      invoiceNo: `INV-${String(1001 + i).padStart(5, '0')}`,
+      customerId: i % 4 === 0 ? 'walkin' : (d.customers?.[0]?.id || 'walkin'),
+      date: saleDate.toISOString(),
+      items: saleItems,
+      subtotal,
+      discount,
+      total,
+      paid: total,
+      profit,
+      payMethod,
+      paymentMethod: payMethod,
+      paymentType: payMethod,
+      soldBy: cashier.username,
+      soldByName: cashier.name,
+      branchId,
+      counterId,
+      shiftId: null,
+    })
+  }
+
+  // Sort chronological
+  sales.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  d.sales = sales
 }
 
 function seed(d) {
@@ -547,8 +658,8 @@ function seed(d) {
   // Walk-in customer default
   d.customers = [{ id: 'walkin', name: 'Walk-in Customer', phone: '', creditLimit: 0, balance: 0, points: 0 }]
 
-  // Clean empty operational history (Real sales, purchases, and expenses start from zero)
-  d.sales = []
+  // Clean operational history with realistic baseline sales for analytics
+  seedHistoricalSales(d)
   d.expenses = []
   d.returns = []
   d.purchaseOrders = []

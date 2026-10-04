@@ -42,6 +42,7 @@ import {
   CheckCircle2,
   Layers,
   ArrowDownRight,
+  Calendar,
 } from 'lucide-react'
 
 // Distinct vibrant palette for charts
@@ -391,6 +392,30 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
     return hours
   }, [periodSales])
 
+  // Weekly Day of Week Velocity & Pattern
+  const dayOfWeekData = useMemo(() => {
+    const days = [
+      { day: 'Mon', full: 'Monday', revenue: 0, invoices: 0 },
+      { day: 'Tue', full: 'Tuesday', revenue: 0, invoices: 0 },
+      { day: 'Wed', full: 'Wednesday', revenue: 0, invoices: 0 },
+      { day: 'Thu', full: 'Thursday', revenue: 0, invoices: 0 },
+      { day: 'Fri', full: 'Friday', revenue: 0, invoices: 0 },
+      { day: 'Sat', full: 'Saturday', revenue: 0, invoices: 0 },
+      { day: 'Sun', full: 'Sunday', revenue: 0, invoices: 0 },
+    ]
+    for (const s of periodSales) {
+      if (!s.date) continue
+      const dateObj = new Date(s.date)
+      const jsDay = dateObj.getDay() // 0=Sun, 1=Mon, ..., 6=Sat
+      const index = jsDay === 0 ? 6 : jsDay - 1
+      if (days[index]) {
+        days[index].revenue += s.total || 0
+        days[index].invoices += 1
+      }
+    }
+    return days
+  }, [periodSales])
+
   // Top 5 Profit-Yielding Medicines
   const topMedicines = useMemo(() => {
     const map = {}
@@ -695,6 +720,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
       {/* ── TAB 1: REVENUE & TIMELINE DYNAMICS ── */}
       {activeTab === 'overview' && (
         <div className="space-y-4">
+          {/* Row 1: Dual Trajectory Area Chart (2 Cols) + Dosage Form Donut (1 Col) */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Left: Revenue & Profit Curve (2 Columns) */}
             <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
@@ -710,8 +736,8 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                     Timeline comparison between gross customer sales and generated net profit margin
                   </p>
                 </div>
-                <div className="flex items-center gap-3 text-xs font-bold">
-                  <span className="flex items-center gap-1.5 text-slate-700">
+                <div className="flex items-center gap-3 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl text-xs font-bold">
+                  <span className="flex items-center gap-1.5 text-slate-800">
                     <span className="w-2.5 h-2.5 rounded-full bg-[#714B67]" />
                     Gross Sales
                   </span>
@@ -773,8 +799,14 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="h-full flex items-center justify-center text-xs text-slate-400 font-medium">
-                    No transaction records found for the selected timeframe.
+                  <div className="h-full min-h-[220px] flex flex-col items-center justify-center text-center p-6 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                    <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-[#714B67] mb-2">
+                      <Activity className="w-5 h-5" />
+                    </div>
+                    <p className="text-xs font-bold text-slate-700">No Sales in Selected Period</p>
+                    <p className="text-[11px] text-slate-400 mt-1 max-w-xs">
+                      Switch date range or branch filter to view performance trajectory.
+                    </p>
                   </div>
                 )}
               </div>
@@ -782,14 +814,19 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
 
             {/* Right: Sales by Dosage Form Donut (1 Column) */}
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
-              <div className="mb-2">
-                <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 text-[#714B67]" />
-                  <h3 className="font-black text-sm text-slate-900 tracking-tight">
-                    Dosage Form Breakdown
-                  </h3>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Package className="w-4 h-4 text-[#714B67]" />
+                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                      Dosage Form Breakdown
+                    </h3>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">Revenue distribution across medicine formats</p>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">Revenue distribution across medicine formats</p>
+                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  Form Mix
+                </span>
               </div>
 
               <div className="h-44 w-full flex items-center justify-center relative">
@@ -832,7 +869,10 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                     </div>
                   </>
                 ) : (
-                  <div className="text-xs text-slate-400 font-medium">No sales categorized</div>
+                  <div className="h-full min-h-[160px] flex flex-col items-center justify-center text-center p-4 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                    <Package className="w-8 h-8 text-slate-300 mb-1" />
+                    <p className="text-xs font-bold text-slate-500">No Dosage Data</p>
+                  </div>
                 )}
               </div>
 
@@ -859,59 +899,266 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
             </div>
           </div>
 
-          {/* Operational Rush Hours Distribution */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5">
-            <div className="flex items-center justify-between mb-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#714B67]" />
-                  <h3 className="font-black text-sm text-slate-900 tracking-tight">
-                    Counter Rush & Hourly Frequency Distribution
-                  </h3>
+          {/* Row 2: Top Pharma Manufacturers (1 Col) + 24-Hour Counter Rush Velocity (1 Col) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Top Pharma Manufacturers Demand */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-[#714B67]" />
+                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                      Top Pharma Manufacturers Demand
+                    </h3>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Ranked by gross customer prescription & OTC demand revenue
+                  </p>
                 </div>
-                <p className="text-[11px] text-slate-500 mt-0.5">
-                  Volume of customer checkouts across operating hours (8:00 AM to 11:00 PM)
-                </p>
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                  Top 7 Brands
+                </span>
               </div>
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700">
-                Staffing Velocity
-              </span>
+
+              <div className="h-60 w-full pt-1">
+                {topCompanies.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={topCompanies}
+                      layout="vertical"
+                      margin={{ top: 5, right: 20, left: 30, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+                      <XAxis
+                        type="number"
+                        stroke="#94a3b8"
+                        fontSize={10}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => (v >= 1000 ? `${Math.round(v / 1000)}k` : v)}
+                      />
+                      <YAxis
+                        type="category"
+                        dataKey="name"
+                        stroke="#64748b"
+                        fontSize={11}
+                        tickLine={false}
+                        axisLine={{ stroke: '#e2e8f0' }}
+                        width={110}
+                      />
+                      <Tooltip content={<CustomBarTooltip />} />
+                      <Bar dataKey="revenue" fill="#714B67" radius={[0, 6, 6, 0]} barSize={14} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-center p-4 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+                    <Building2 className="w-8 h-8 text-slate-300 mb-1" />
+                    <p className="text-xs font-bold text-slate-500">No Pharma Demand Data</p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div className="h-56 w-full pt-1">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={hourlyRush} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                  <XAxis
-                    dataKey="label"
-                    stroke="#94a3b8"
-                    fontSize={10}
-                    tickLine={false}
-                    axisLine={{ stroke: '#e2e8f0' }}
-                  />
-                  <YAxis
-                    stroke="#94a3b8"
-                    fontSize={10}
-                    tickLine={false}
-                    axisLine={false}
-                    allowDecimals={false}
-                  />
-                  <Tooltip
-                    formatter={(val, name) => [
-                      name === 'invoices' ? `${val} checkouts` : fmt(val),
-                      name === 'invoices' ? 'Invoices' : 'Sales',
-                    ]}
-                    contentStyle={{
-                      borderRadius: '12px',
-                      background: '#0f172a',
-                      color: '#fff',
-                      border: 'none',
-                      fontSize: '11px',
-                    }}
-                  />
-                  <Bar dataKey="invoices" fill="#0284c7" radius={[6, 6, 0, 0]} barSize={16} />
-                </BarChart>
-              </ResponsiveContainer>
+            {/* Operational Rush Hours Distribution */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-[#714B67]" />
+                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                      Counter Rush & Hourly Frequency
+                    </h3>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Customer checkout traffic velocity across operating hours (8:00 AM to 11:00 PM)
+                  </p>
+                </div>
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700">
+                  Peak: 5 PM – 9 PM
+                </span>
+              </div>
+
+              <div className="h-60 w-full pt-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={hourlyRush} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                    <XAxis
+                      dataKey="label"
+                      stroke="#94a3b8"
+                      fontSize={10}
+                      tickLine={false}
+                      axisLine={{ stroke: '#e2e8f0' }}
+                    />
+                    <YAxis
+                      stroke="#94a3b8"
+                      fontSize={10}
+                      tickLine={false}
+                      axisLine={false}
+                      allowDecimals={false}
+                    />
+                    <Tooltip
+                      formatter={(val, name) => [
+                        name === 'invoices' ? `${val} checkouts` : fmt(val),
+                        name === 'invoices' ? 'Invoices' : 'Sales',
+                      ]}
+                      contentStyle={{
+                        borderRadius: '12px',
+                        background: '#0f172a',
+                        color: '#fff',
+                        border: 'none',
+                        fontSize: '11px',
+                      }}
+                    />
+                    <Bar dataKey="invoices" fill="#0284c7" radius={[6, 6, 0, 0]} barSize={16} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 3: Day-of-Week Velocity (1 Col) + Multi-Channel Payment Channels (1 Col) */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Day of Week Sales Performance */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-[#714B67]" />
+                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                      Weekly Day-of-Week Sales Performance
+                    </h3>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Customer footfall and gross revenue pattern from Monday through Sunday
+                  </p>
+                </div>
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
+                  Weekly Footfall
+                </span>
+              </div>
+
+              <div className="h-60 w-full pt-1">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dayOfWeekData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                    <XAxis
+                      dataKey="day"
+                      stroke="#94a3b8"
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={{ stroke: '#e2e8f0' }}
+                    />
+                    <YAxis
+                      stroke="#94a3b8"
+                      fontSize={10}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(v) => (v >= 1000 ? `${Math.round(v / 1000)}k` : v)}
+                    />
+                    <Tooltip
+                      formatter={(val, name, item) => [
+                        fmt(val),
+                        `Sales (${item.payload.invoices} tickets)`,
+                      ]}
+                      contentStyle={{
+                        borderRadius: '12px',
+                        background: '#0f172a',
+                        color: '#fff',
+                        border: 'none',
+                        fontSize: '11px',
+                      }}
+                    />
+                    <Bar dataKey="revenue" fill="#10b981" radius={[6, 6, 0, 0]} barSize={22} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Payment Channels & Settlement Mix */}
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4.5 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-[#714B67]" />
+                    <h3 className="font-black text-sm text-slate-900 tracking-tight">
+                      Payment Channels & Settlement Mix
+                    </h3>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-0.5">
+                    Cash counter vs card terminals vs mobile digital wallets vs customer credit
+                  </p>
+                </div>
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-purple-50 text-[#714B67]">
+                  Omnichannel
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 items-center gap-4 pt-1">
+                <div className="h-44 w-full flex items-center justify-center relative">
+                  {paymentData.length > 0 ? (
+                    <>
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={paymentData}
+                            dataKey="value"
+                            nameKey="name"
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={46}
+                            outerRadius={68}
+                            paddingAngle={3}
+                          >
+                            {paymentData.map((entry, index) => (
+                              <Cell key={`pay-cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            formatter={(val) => [fmt(val), 'Volume']}
+                            contentStyle={{
+                              borderRadius: '12px',
+                              background: '#0f172a',
+                              color: '#fff',
+                              border: 'none',
+                              fontSize: '11px',
+                            }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span className="text-[9px] uppercase font-bold text-slate-400">Paid In</span>
+                        <span className="text-xs font-black text-slate-900">{fmt(kpis.revenue)}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-xs text-slate-400 font-medium">No settlements recorded</div>
+                  )}
+                </div>
+
+                {/* Breakdown List */}
+                <div className="space-y-1.5 text-xs">
+                  {paymentData.map((item) => (
+                    <div
+                      key={item.key}
+                      className="flex items-center justify-between text-[11px] bg-slate-50/80 p-1.5 rounded-xl border border-slate-100"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span
+                          className="w-2.5 h-2.5 rounded-full shrink-0"
+                          style={{ backgroundColor: item.color }}
+                        />
+                        <span className="font-bold text-slate-700 truncate">{item.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="font-mono font-bold text-slate-800">{fmt(item.value)}</span>
+                        <span className="font-black text-slate-500 text-[10px] w-8 text-right bg-white px-1 py-0.5 rounded border border-slate-200">
+                          {item.percentage}%
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
