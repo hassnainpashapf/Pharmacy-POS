@@ -71,149 +71,178 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="dashboard-view space-y-5 w-full pb-12 pt-1 text-[#1e293b] font-sans">
-      {/* 1. Top Greeting & View Switchers Header */}
-      <div className="dashboard-heading space-y-2.5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-[#0f172a]">
-              {data.greeting}, <span className="text-[#0f172a]">{me?.name || 'Team Member'}</span>
-            </h1>
-            <p className="text-xs text-slate-500 font-medium mt-0.5">
-              {curBranch} · {data.dateLabel}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            {/* View Switchers */}
-            <div className="view-switcher inline-flex items-center p-0.5 rounded-lg border border-slate-300 bg-white shadow-sm text-xs font-medium" aria-label="Dashboard views">
-              {['OWNER', 'MANAGER', 'PHARMACIST', 'CASHIER', 'RECEPTIONIST'].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => setActiveRoleView(item)}
-                  className={`px-3 py-1 rounded-md transition-all ${
-                    activeRoleView === item
-                      ? 'bg-[#e6f7f2] text-[#00A09D] font-bold border border-[#00A09D]/30'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {item === 'OWNER' ? 'Owner' : item[0] + item.slice(1).toLowerCase()} View
-                </button>
-              ))}
+    <div className="dashboard-view space-y-6 w-full pb-16 font-sans text-slate-800">
+      {/* 1. Header Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+        <div>
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23]">
+              <Sparkles className="w-5 h-5 text-amber-300" />
             </div>
-
-            {/* All Branches Dropdown */}
-            <div
-              onClick={() => nav('/branches')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-xs font-medium text-slate-700 hover:bg-slate-50 cursor-pointer shadow-sm"
-            >
-              <span>{curBranch}</span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold tracking-tight text-slate-900">
+                  {data.greeting}, <span className="text-[#3b1734]">{me?.name || 'Store Admin'}</span>
+                </h1>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Live POS
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 font-medium">
+                {curBranch} · {data.dateLabel}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Right-aligned + New Sale Button */}
-        <div className="flex justify-end">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* View Switchers */}
+          <div className="view-switcher inline-flex items-center p-1 rounded-2xl border border-slate-200 bg-white shadow-xs text-xs font-semibold" aria-label="Dashboard views">
+            {['OWNER', 'MANAGER', 'PHARMACIST', 'CASHIER', 'RECEPTIONIST'].map((item) => (
+              <button
+                key={item}
+                onClick={() => setActiveRoleView(item)}
+                className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+                  activeRoleView === item
+                    ? 'bg-[#3b1734] text-white font-bold shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                }`}
+              >
+                {item === 'OWNER' ? 'Owner' : item[0] + item.slice(1).toLowerCase()}
+              </button>
+            ))}
+          </div>
+
+          {/* All Branches Dropdown */}
+          <div
+            onClick={() => nav('/branches')}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer shadow-xs transition-all"
+          >
+            <Building2 className="w-3.5 h-3.5 text-[#714B67]" />
+            <span>{curBranch}</span>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+          </div>
+
+          {/* New Sale Button */}
           <button
             onClick={() => nav('/pos')}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold text-sm shadow-sm active:scale-95 transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold text-xs shadow-sm active:scale-95 transition-all cursor-pointer"
           >
-            <span className="text-base font-light leading-none">+</span>
-            <span>New Sale</span>
+            <ShoppingCart className="w-4 h-4" />
+            <span>+ New Sale</span>
           </button>
         </div>
       </div>
 
-      <div className="quick-actions grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+      {/* 2. Quick Action Toolbar */}
+      <div className="quick-actions grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {/* New Sale */}
         <button type="button"
           onClick={() => nav('/pos')}
-          className="bg-white border border-slate-300 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-400 cursor-pointer transition-all flex flex-col items-center justify-center gap-2.5 text-center group"
+          className="bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
         >
-          <div className="w-12 h-12 rounded-full bg-[#e6f7f2] text-[#00A09D] flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-10 h-10 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform">
             <ShoppingCart className="w-5 h-5" />
           </div>
-          <span className="text-xs font-semibold text-slate-700 group-hover:text-slate-950">New Sale</span>
+          <div>
+            <div className="text-xs font-bold text-slate-800 group-hover:text-[#714B67]">New Sale POS</div>
+            <div className="text-[10px] text-slate-400">Fast checkout & print</div>
+          </div>
         </button>
 
         {/* Add Customer */}
         <button type="button"
           onClick={() => setShowAddCustomer(true)}
-          className="bg-white border border-slate-300 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-400 cursor-pointer transition-all flex flex-col items-center justify-center gap-2.5 text-center group"
+          className="bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
         >
-          <div className="w-12 h-12 rounded-full bg-[#ffedd5] text-[#ea580c] flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-10 h-10 rounded-xl bg-[#ffedd5] text-[#ea580c] flex items-center justify-center group-hover:scale-105 transition-transform">
             <UserPlus className="w-5 h-5" />
           </div>
-          <span className="text-xs font-semibold text-slate-700 group-hover:text-slate-950">Add Customer</span>
+          <div>
+            <div className="text-xs font-bold text-slate-800 group-hover:text-[#ea580c]">Add Customer</div>
+            <div className="text-[10px] text-slate-400">Register patient & ledger</div>
+          </div>
         </button>
 
         {/* Add Medicine */}
         <button type="button"
           onClick={() => nav('/medicines')}
-          className="bg-white border border-slate-300 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-400 cursor-pointer transition-all flex flex-col items-center justify-center gap-2.5 text-center group"
+          className="bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
         >
-          <div className="w-12 h-12 rounded-full bg-[#f5eef4] text-[#714B67] flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-10 h-10 rounded-xl bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center group-hover:scale-105 transition-transform">
             <PlusCircle className="w-5 h-5" />
           </div>
-          <span className="text-xs font-semibold text-slate-700 group-hover:text-slate-950">Add Medicine</span>
+          <div>
+            <div className="text-xs font-bold text-slate-800 group-hover:text-[#008f8b]">Add Medicine</div>
+            <div className="text-[10px] text-slate-400">Expand drug catalogue</div>
+          </div>
         </button>
 
-        {/* New Prescription */}
+        {/* Dispensing POS */}
         <button type="button"
           onClick={() => nav('/pos')}
-          className="bg-white border border-slate-300 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-400 cursor-pointer transition-all flex flex-col items-center justify-center gap-2.5 text-center group"
+          className="bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
         >
-          <div className="w-12 h-12 rounded-full bg-[#fef9c3] text-[#ca8a04] flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-10 h-10 rounded-xl bg-[#fef9c3] text-[#ca8a04] flex items-center justify-center group-hover:scale-105 transition-transform">
             <FileText className="w-5 h-5" />
           </div>
-          <span className="text-xs font-semibold text-slate-700 group-hover:text-slate-950">Open Dispensing POS</span>
+          <div>
+            <div className="text-xs font-bold text-slate-800 group-hover:text-[#ca8a04]">Dispensing POS</div>
+            <div className="text-[10px] text-slate-400">Rx queue & counter billing</div>
+          </div>
         </button>
 
         {/* New Purchase */}
         <button type="button"
           onClick={() => nav('/purchases')}
-          className="bg-white border border-slate-300 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-slate-400 cursor-pointer transition-all flex flex-col items-center justify-center gap-2.5 text-center group"
+          className="bg-white border border-slate-200 hover:border-[#714B67]/40 rounded-2xl p-4 shadow-xs hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group"
         >
-          <div className="w-12 h-12 rounded-full bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-10 h-10 rounded-xl bg-[#e0f2fe] text-[#0284c7] flex items-center justify-center group-hover:scale-105 transition-transform">
             <Truck className="w-5 h-5" />
           </div>
-          <span className="text-xs font-semibold text-slate-700 group-hover:text-slate-950">New Purchase</span>
+          <div>
+            <div className="text-xs font-bold text-slate-800 group-hover:text-[#0284c7]">New Purchase</div>
+            <div className="text-[10px] text-slate-400">Stock in & bills ledger</div>
+          </div>
         </button>
       </div>
 
       {/* 3. Today's Overview (6 KPI Cards in a row) */}
-      <div className="space-y-2">
-        <h2 className="text-sm font-bold text-slate-800 tracking-tight">Today's Overview</h2>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-4 bg-[#3b1734] rounded-full" />
+          <h2 className="text-sm font-bold text-slate-800 tracking-tight">Today's Overview</h2>
+        </div>
         <div className="kpi-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {/* Sales */}
-          <div className="bg-white border border-slate-300 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
-              <span>Sales</span>
-              <div className="w-6 h-6 rounded-full bg-[#e6f7f2] text-[#00A09D] flex items-center justify-center">
-                <DollarSign className="w-3.5 h-3.5" />
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
+              <span>Sales Revenue</span>
+              <div className="w-8 h-8 rounded-xl bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+                <DollarSign className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2.5">
-              <div className="text-xl font-black text-slate-900 tracking-tight font-mono">
+            <div className="mt-3">
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono">
                 {data.kpis.sales}
               </div>
-              <div className="text-[11px] font-semibold text-slate-500 mt-1 flex items-center gap-1">
+              <div className="text-[11px] font-semibold text-emerald-700 mt-1 flex items-center gap-1">
                 <span>{data.kpis.salesChange}</span>
               </div>
             </div>
           </div>
 
           {/* Orders */}
-          <div className="bg-white border border-slate-300 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
-              <span>Orders</span>
-              <div className="w-6 h-6 rounded-full bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
-                <CreditCard className="w-3.5 h-3.5" />
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
+              <span>Orders / Invoices</span>
+              <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                <CreditCard className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2.5">
-              <div className="text-xl font-black text-slate-900 tracking-tight font-mono">
+            <div className="mt-3">
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono">
                 {data.kpis.orders}
               </div>
               <div className="text-[11px] font-semibold text-slate-500 mt-1 flex items-center gap-1">
@@ -223,15 +252,15 @@ export default function Dashboard() {
           </div>
 
           {/* Profit */}
-          <div className="bg-white border border-slate-300 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
               <span>Gross Profit</span>
-              <div className="w-6 h-6 rounded-full bg-[#ffedd5] text-[#ea580c] flex items-center justify-center">
-                <TrendingUp className="w-3.5 h-3.5" />
+              <div className="w-8 h-8 rounded-xl bg-[#ffedd5] text-[#ea580c] flex items-center justify-center">
+                <TrendingUp className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2.5">
-              <div className="text-xl font-black text-slate-900 tracking-tight font-mono">
+            <div className="mt-3">
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono">
                 {data.kpis.profit}
               </div>
               <div className="text-[11px] font-medium text-slate-400 mt-1">
@@ -241,15 +270,15 @@ export default function Dashboard() {
           </div>
 
           {/* Customers */}
-          <div className="bg-white border border-slate-300 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
-              <span>Customers</span>
-              <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center">
-                <Users className="w-3.5 h-3.5" />
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
+              <span>Customers Served</span>
+              <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
+                <Users className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2.5">
-              <div className="text-xl font-black text-slate-900 tracking-tight font-mono">
+            <div className="mt-3">
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono">
                 {data.kpis.customers}
               </div>
               <div className="text-[11px] font-medium text-slate-400 mt-1">
@@ -259,15 +288,15 @@ export default function Dashboard() {
           </div>
 
           {/* Gross Margin */}
-          <div className="bg-white border border-slate-300 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+          <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
+            <div className="flex items-center justify-between text-xs text-slate-500 font-semibold">
               <span>Gross Margin</span>
-              <div className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center">
-                <ReceiptIcon className="w-3.5 h-3.5" />
+              <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
+                <ReceiptIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2.5">
-              <div className="text-xl font-black text-slate-900 tracking-tight font-mono">
+            <div className="mt-3">
+              <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-mono">
                 {data.kpis.grossMargin}
               </div>
               <div className="text-[11px] font-medium text-slate-400 mt-1">
@@ -277,15 +306,15 @@ export default function Dashboard() {
           </div>
 
           {/* Overdue */}
-          <div className="bg-white border border-rose-300 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+          <div className="bg-white border border-rose-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-sm transition-shadow">
             <div className="flex items-center justify-between text-xs text-[#e11d48] font-semibold">
               <span>Supplier Payables</span>
-              <div className="w-6 h-6 rounded-full bg-[#ffe4e6] text-[#e11d48] flex items-center justify-center">
-                <CreditCard className="w-3.5 h-3.5" />
+              <div className="w-8 h-8 rounded-xl bg-[#ffe4e6] text-[#e11d48] flex items-center justify-center">
+                <CreditCard className="w-4 h-4" />
               </div>
             </div>
-            <div className="mt-2.5">
-              <div className="text-xl font-black text-[#e11d48] tracking-tight font-mono">
+            <div className="mt-3">
+              <div className="text-2xl sm:text-3xl font-black text-[#e11d48] tracking-tight font-mono">
                 {data.kpis.payables}
               </div>
               <div className="text-[11px] font-semibold text-[#e11d48] mt-1 flex items-center gap-1">
@@ -297,90 +326,95 @@ export default function Dashboard() {
       </div>
 
       {/* 4. Attention Required (6 Pill Cards in a Row) */}
-      <div className="space-y-2">
-        <h2 className="text-sm font-bold text-slate-800 tracking-tight">Attention Required</h2>
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-4 bg-amber-500 rounded-full" />
+          <h2 className="text-sm font-bold text-slate-800 tracking-tight">Attention & Action Required</h2>
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {/* Low Stock */}
           <div
             onClick={() => nav('/inventory')}
-            className="bg-[#faedd9] border border-amber-300 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-sm transition-all"
+            className="bg-amber-50/60 border border-amber-200 hover:border-amber-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
           >
-            <div className="w-8 h-8 rounded-full bg-[#f7c999] text-[#9a3412] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
               <AlertTriangle className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-[#7c2d12]">{data.attention.lowStock} Items</div>
-              <div className="text-[11px] text-[#b45309] font-medium">Low Stock</div>
+              <div className="text-sm font-black text-amber-950">{data.attention.lowStock} Items</div>
+              <div className="text-[11px] text-amber-800 font-semibold">Low Stock</div>
             </div>
           </div>
 
           {/* Out of Stock */}
           <div
             onClick={() => nav('/inventory')}
-            className="bg-[#fde2e6] border border-rose-300 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-sm transition-all"
+            className="bg-rose-50/60 border border-rose-200 hover:border-rose-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
           >
-            <div className="w-8 h-8 rounded-full bg-[#f8b4be] text-[#9f1239] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
               <AlertCircle className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-[#9f1239]">{data.attention.outOfStock} Items</div>
-              <div className="text-[11px] text-[#be123c] font-medium">Out of Stock</div>
+              <div className="text-sm font-black text-rose-950">{data.attention.outOfStock} Items</div>
+              <div className="text-[11px] text-rose-700 font-semibold">Out of Stock</div>
             </div>
           </div>
 
           {/* Near Expiry */}
           <div
             onClick={() => nav('/inventory')}
-            className="bg-[#fef9c3] border border-amber-300 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-sm transition-all"
+            className="bg-amber-50/50 border border-amber-200 hover:border-amber-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
           >
-            <div className="w-8 h-8 rounded-full bg-[#fae48f] text-[#854d0e] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
               <Calendar className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-[#713f12]">{data.attention.nearExpiry} Batches</div>
-              <div className="text-[11px] text-[#854d0e] font-medium">Near Expiry (0–30d)</div>
+              <div className="text-sm font-black text-amber-950">{data.attention.nearExpiry} Batches</div>
+              <div className="text-[11px] text-amber-800 font-semibold">Near Expiry (0–30d)</div>
             </div>
           </div>
 
           {/* Have Expired */}
           <div
             onClick={() => nav('/inventory')}
-            className="bg-[#fde2e6] border border-rose-300 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-sm transition-all"
+            className="bg-rose-50/60 border border-rose-200 hover:border-rose-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
           >
-            <div className="w-8 h-8 rounded-full bg-[#f8b4be] text-[#9f1239] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
               <Clock className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-[#9f1239]">{data.attention.expired} Batches</div>
-              <div className="text-[11px] text-[#be123c] font-medium">Have expired</div>
+              <div className="text-sm font-black text-rose-950">{data.attention.expired} Batches</div>
+              <div className="text-[11px] text-rose-700 font-semibold">Have expired</div>
             </div>
           </div>
 
           {/* Awaiting Processing */}
           <div
             onClick={() => nav('/pos')}
-            className="bg-[#faedd9] border border-amber-300 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-sm transition-all"
+            className="bg-sky-50/60 border border-sky-200 hover:border-sky-400 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
           >
-            <div className="w-8 h-8 rounded-full bg-[#f7c999] text-[#9a3412] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
               <Package className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-[#7c2d12]">{data.attention.awaitingOrders} orders</div>
-              <div className="text-[11px] text-[#c2410c] font-medium">Open purchase / wholesale</div>
+              <div className="text-sm font-black text-sky-950">{data.attention.awaitingOrders} Orders</div>
+              <div className="text-[11px] text-sky-700 font-semibold">Open wholesale/PO</div>
             </div>
           </div>
 
           {/* Pending Payments */}
           <div
             onClick={() => nav('/suppliers')}
-            className="bg-[#f9e2eb] border border-pink-300 rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-sm transition-all"
+            className="bg-[#f5eef4] border border-[#714B67]/30 hover:border-[#714B67] rounded-2xl p-3.5 flex items-center gap-3 cursor-pointer hover:shadow-xs transition-all"
           >
-            <div className="w-8 h-8 rounded-full bg-[#f4a7c3] text-[#831843] flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-[#e8dae5] text-[#714B67] flex items-center justify-center shrink-0">
               <CreditCard className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-xs font-bold text-[#831843]">{data.attention.pendingPayments === null ? 'Unavailable' : `${data.attention.pendingPayments} suppliers`}</div>
-              <div className="text-[11px] text-[#9d174d] font-medium">With unpaid balances</div>
+              <div className="text-sm font-black text-[#3b1734]">
+                {data.attention.pendingPayments === null ? '0' : `${data.attention.pendingPayments} Vendors`}
+              </div>
+              <div className="text-[11px] text-[#714B67] font-semibold">Unpaid Balances</div>
             </div>
           </div>
         </div>
@@ -392,7 +426,7 @@ export default function Dashboard() {
       {/* 5. Row 1 Analytics: Multi-Branch Revenue Trend (52%), Category Breakdown (25%), Inventory Health (23%) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Multi-Branch Revenue Trend (6 of 12 cols) */}
-        <div className="lg:col-span-6 bg-white rounded-2xl p-5 border border-slate-300 shadow-sm flex flex-col justify-between">
+        <div className="lg:col-span-6 bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
           <div className="mb-4">
             <h3 className="font-bold text-sm text-slate-900">Branch Revenue · {data.monthLabel}</h3>
           </div>
@@ -401,7 +435,7 @@ export default function Dashboard() {
         </div>
 
         {/* Category Breakdown (3 of 12 cols) */}
-        <div className="lg:col-span-3 bg-white rounded-2xl p-5 border border-slate-300 shadow-sm flex flex-col justify-between">
+        <div className="lg:col-span-3 bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
           <div className="mb-2">
             <h3 className="font-bold text-sm text-slate-900">Category Breakdown</h3>
             <p className="text-[11px] text-slate-500 mt-1">{data.monthLabel} · category or dosage form</p>
@@ -411,7 +445,7 @@ export default function Dashboard() {
         </div>
 
         {/* Inventory Health (3 of 12 cols) */}
-        <div className="lg:col-span-3 bg-white rounded-2xl p-5 border border-slate-300 shadow-sm flex flex-col justify-between">
+        <div className="lg:col-span-3 bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
           <div className="mb-2">
             <h3 className="font-bold text-sm text-slate-900">Inventory Health</h3>
           </div>
@@ -423,7 +457,7 @@ export default function Dashboard() {
       </div>
 
       {/* 6. Row 2 Analytics: Sales Trend (Full-width Multi-Year Comparison Chart) */}
-      <div className="bg-white rounded-2xl p-5 border border-slate-300 shadow-sm">
+      <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold text-sm text-slate-900">Sales Trend</h3>
           <span className="text-xs text-slate-500">Monthly year comparison · Rs.</span>
@@ -435,13 +469,13 @@ export default function Dashboard() {
       {/* 7. Row 3 Analytics: Branch Performance Ranking, Capital at Risk, Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Branch Performance Ranking */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-300 shadow-sm flex flex-col justify-between">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-sm text-slate-900">Branch Performance Ranking <span className="block text-[11px] text-slate-500 font-normal mt-1">{data.monthLabel}</span></h3>
               <button
                 onClick={() => nav('/branches')}
-                className="text-xs font-semibold text-[#00A09D] hover:text-[#008784]"
+                className="text-xs font-semibold text-[#008f8b] hover:underline"
               >
                 View All
               </button>
@@ -523,13 +557,13 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white rounded-2xl p-5 border border-slate-300 shadow-sm flex flex-col justify-between">
+        <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-sm text-slate-900">Recent Activity</h3>
               <button
                 onClick={() => nav('/reports')}
-                className="text-xs font-semibold text-[#00A09D] hover:text-[#008784]"
+                className="text-xs font-semibold text-[#008f8b] hover:underline"
               >
                 View All
               </button>
@@ -540,9 +574,9 @@ export default function Dashboard() {
               {data.recentActivity.map((act) => (
                 <div key={act.id} className="flex items-start gap-3">
                   <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                    className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                       act.type === 'sale'
-                        ? 'bg-[#e6f7f2] text-[#00A09D]'
+                        ? 'bg-[#e6f7f2] text-[#008f8b]'
                         : act.type === 'purchase'
                         ? 'bg-[#e0f2fe] text-[#0284c7]'
                         : 'bg-[#fef3c7] text-[#d97706]'
@@ -574,40 +608,45 @@ export default function Dashboard() {
           onClick={() => setShowAddCustomer(false)}
         >
           <div
-            className="bg-white rounded-2xl p-5 w-full max-w-sm shadow-xl border border-slate-200 space-y-4"
+            className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl border border-slate-200 space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b pb-2 border-slate-100">
-              <h3 className="text-sm font-bold text-slate-900">Add New Customer</h3>
+            <div className="flex items-center justify-between border-b pb-3 border-slate-100">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-[#ffedd5] text-[#ea580c] flex items-center justify-center">
+                  <UserPlus className="w-4 h-4" />
+                </div>
+                <h3 className="text-sm font-bold text-slate-900">Add New Customer</h3>
+              </div>
               <button
                 onClick={() => setShowAddCustomer(false)}
-                className="text-slate-400 hover:text-slate-600 text-xs"
+                className="w-7 h-7 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 text-xs transition-colors cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleAddCustomerSubmit} className="space-y-3 text-xs">
+            <form onSubmit={handleAddCustomerSubmit} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Customer Full Name *</label>
+                <label className="block text-slate-700 font-bold mb-1.5">Customer Full Name *</label>
                 <input
                   type="text"
                   required
                   value={newCustName}
                   onChange={(e) => setNewCustName(e.target.value)}
                   placeholder="e.g. Tariq Mehmood"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#714B67] focus:ring-1 focus:ring-[#714B67] font-medium"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-700 font-bold mb-1">Mobile / Phone Number</label>
+                <label className="block text-slate-700 font-bold mb-1.5">Mobile / Phone Number</label>
                 <input
                   type="text"
                   value={newCustPhone}
                   onChange={(e) => setNewCustPhone(e.target.value)}
                   placeholder="e.g. 0300-1234567"
-                  className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-[#714B67] focus:ring-1 focus:ring-[#714B67] font-medium"
                 />
               </div>
 
@@ -615,13 +654,13 @@ export default function Dashboard() {
                 <button
                   type="button"
                   onClick={() => setShowAddCustomer(false)}
-                  className="flex-1 py-2 rounded-lg border border-slate-300 text-slate-600 font-bold text-xs"
+                  className="flex-1 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm"
+                  className="flex-1 py-2.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
                 >
                   Save Customer
                 </button>
@@ -1293,22 +1332,41 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
   }
 
   return (
-    <div className="dashboard-view space-y-5 w-full pb-12 font-sans">
-      <div className="dashboard-heading flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="dashboard-view space-y-6 w-full pb-16 font-sans text-slate-800">
+      {/* Role Header Banner */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#0f172a]">{title}</h1>
-          <p className="text-xs text-slate-600 mt-1">{data.greeting}, {me?.name || 'Team Member'} · {data.scopeLabel} · {data.dateLabel}</p>
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23]">
+              <Sparkles className="w-5 h-5 text-amber-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold tracking-tight text-slate-900">{title}</h1>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#f5eef4] text-[#714B67] border border-[#714B67]/20">
+                  {role} Station
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 font-medium">
+                {data.greeting}, {me?.name || 'Team Member'} · {data.scopeLabel} · {data.dateLabel}
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="view-switcher inline-flex items-center p-0.5 rounded-lg border border-slate-300 bg-white shadow-sm text-xs font-medium" aria-label="Dashboard views">
+
+        {/* View Switchers */}
+        <div className="view-switcher inline-flex items-center p-1 rounded-2xl border border-slate-200 bg-white shadow-xs text-xs font-semibold" aria-label="Dashboard views">
           {['OWNER', 'MANAGER', 'PHARMACIST', 'CASHIER', 'RECEPTIONIST'].map((item) => (
             <button
               key={item}
               onClick={() => setRole(item)}
-              className={`px-3 py-1 rounded-md transition-all ${
-                role === item ? 'bg-[#e6f7f2] text-[#008f8b] font-bold border border-[#008f8b]/30' : 'text-slate-700 hover:text-slate-900'
+              className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
+                role === item
+                  ? 'bg-[#3b1734] text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
-              {item === 'OWNER' ? 'Owner' : item[0] + item.slice(1).toLowerCase()} View
+              {item === 'OWNER' ? 'Owner' : item[0] + item.slice(1).toLowerCase()}
             </button>
           ))}
         </div>
@@ -1318,17 +1376,17 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
         {cards.map(([label, value, hint], index) => {
           const Icon = [DollarSign, ReceiptIcon, Package, Truck, AlertTriangle, Clock, CreditCard, TrendingUp][index]
           return (
-            <section key={label} className="metric-card bg-white border border-slate-300 rounded-2xl p-4 shadow-sm flex flex-col justify-between">
+            <section key={label} className="metric-card bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-sm transition-shadow flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start gap-2">
                   <h2 className="text-xs font-bold text-slate-700">{label}</h2>
-                  <span aria-hidden="true" className={`metric-icon ${index % 2 ? 'metric-icon-teal' : ''}`}>
-                    <Icon size={17} />
-                  </span>
+                  <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                    <Icon className="w-4 h-4" />
+                  </div>
                 </div>
-                <div className="metric-value text-2xl font-black text-slate-900 mt-2 tabular-nums">{value}</div>
+                <div className="metric-value text-2xl font-black text-slate-900 mt-2.5 tabular-nums">{value}</div>
               </div>
-              {hint && <p className="text-[10px] text-slate-400 mt-1.5 line-clamp-1">{hint}</p>}
+              {hint && <p className="text-[11px] text-slate-400 mt-2 line-clamp-1">{hint}</p>}
             </section>
           )
         })}
@@ -1342,51 +1400,54 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Quick Actions Card tailored to Role */}
-        <div className="bg-white border border-slate-300 rounded-2xl p-5 shadow-sm">
-          <h3 className="font-bold text-slate-900 mb-3">Quick Actions</h3>
-          <div className="grid grid-cols-2 gap-2">
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-2 h-4 bg-[#714B67] rounded-full" />
+            <h3 className="font-bold text-sm text-slate-900">Role Quick Actions</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-2.5">
             {isCashier ? (
               <>
-                <button onClick={() => nav('/pos')} className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl p-3 text-xs font-bold shadow-sm transition-all cursor-pointer">
+                <button onClick={() => nav('/pos')} className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl p-3 text-xs font-bold shadow-xs transition-all cursor-pointer">
                   ⚡ Open POS Checkout
                 </button>
-                <button onClick={() => nav('/returns')} className="bg-[#e6f7f2] text-[#008f8b] hover:bg-[#d6f2ea] rounded-xl p-3 text-xs font-bold transition-all">
+                <button onClick={() => nav('/returns')} className="bg-[#e6f7f2] text-[#008f8b] hover:bg-[#d6f2ea] rounded-xl p-3 text-xs font-bold transition-all cursor-pointer">
                   🔄 Process Return
                 </button>
-                <button onClick={() => nav('/customers')} className="bg-slate-50 text-slate-800 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-slate-200">
+                <button onClick={() => nav('/customers')} className="bg-slate-50 text-slate-800 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-slate-200 cursor-pointer">
                   👥 Customer Lookup
                 </button>
-                <button onClick={() => nav('/hardware')} className="bg-slate-50 text-slate-800 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-slate-200">
+                <button onClick={() => nav('/hardware')} className="bg-slate-50 text-slate-800 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-slate-200 cursor-pointer">
                   🖨️ Receipt & Drawer
                 </button>
               </>
             ) : isReceptionist ? (
               <>
-                <button onClick={() => nav('/customers')} className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl p-3 text-xs font-bold shadow-sm transition-all cursor-pointer">
+                <button onClick={() => nav('/customers')} className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl p-3 text-xs font-bold shadow-xs transition-all cursor-pointer">
                   ➕ New Patient / Customer
                 </button>
-                <button onClick={() => nav('/customers?tab=loyalty')} className="bg-[#e6f7f2] text-[#008f8b] hover:bg-[#d6f2ea] rounded-xl p-3 text-xs font-bold transition-all">
+                <button onClick={() => nav('/customers?tab=loyalty')} className="bg-[#e6f7f2] text-[#008f8b] hover:bg-[#d6f2ea] rounded-xl p-3 text-xs font-bold transition-all cursor-pointer">
                   ⭐ Loyalty & Credits
                 </button>
-                <button onClick={() => nav('/pos?tab=rx')} className="bg-slate-50 text-slate-800 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-slate-200">
+                <button onClick={() => nav('/pos?tab=rx')} className="bg-slate-50 text-slate-800 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-slate-200 cursor-pointer">
                   📋 Prescription Queue
                 </button>
-                <button onClick={() => nav('/pos')} className="bg-slate-50 text-slate-800 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-slate-200">
+                <button onClick={() => nav('/pos')} className="bg-slate-50 text-slate-800 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-slate-200 cursor-pointer">
                   🔍 Check Order Status
                 </button>
               </>
             ) : (
               <>
-                <button onClick={() => nav('/pos')} className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl p-3 text-xs font-bold shadow-sm transition-all cursor-pointer">
+                <button onClick={() => nav('/pos')} className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl p-3 text-xs font-bold shadow-xs transition-all cursor-pointer">
                   Open Sales POS
                 </button>
-                <button onClick={() => nav(isManager ? '/inventory' : '/inventory?tab=NEAR_EXPIRY')} className="bg-[#e6f7f2] text-[#008f8b] rounded-xl p-3 text-xs font-bold">
+                <button onClick={() => nav(isManager ? '/inventory' : '/inventory?tab=NEAR_EXPIRY')} className="bg-[#e6f7f2] text-[#008f8b] rounded-xl p-3 text-xs font-bold cursor-pointer">
                   {isManager ? 'Manage Stock' : 'Check Expiry'}
                 </button>
-                <button onClick={() => nav('/customers')} className="bg-slate-50 text-slate-800 rounded-xl p-3 text-xs font-bold">
+                <button onClick={() => nav('/customers')} className="bg-slate-50 text-slate-800 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-slate-200 cursor-pointer">
                   Customers
                 </button>
-                <button onClick={() => nav('/reports?tab=sales')} className="bg-slate-50 text-slate-800 rounded-xl p-3 text-xs font-bold">
+                <button onClick={() => nav('/reports?tab=sales')} className="bg-slate-50 text-slate-800 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-slate-200 cursor-pointer">
                   View Reports
                 </button>
               </>
@@ -1395,18 +1456,21 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
         </div>
 
         {/* Priority Alerts Card */}
-        <div className="bg-white border border-slate-300 rounded-2xl p-5 shadow-sm">
-          <h3 className="font-bold text-slate-900 mb-3">Priority Alerts</h3>
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-2 h-4 bg-rose-500 rounded-full" />
+            <h3 className="font-bold text-sm text-slate-900">Priority Operational Alerts</h3>
+          </div>
           <div className="space-y-2 text-xs">
-            <button onClick={() => nav('/inventory?tab=EXPIRED')} className="block w-full text-left p-3 rounded-xl bg-rose-50 text-rose-800 hover:bg-rose-100">
+            <button onClick={() => nav('/inventory?tab=EXPIRED')} className="block w-full text-left p-3 rounded-xl bg-rose-50 text-rose-800 hover:bg-rose-100 transition-colors border border-rose-100 cursor-pointer">
               Expired batches / items: <b>{data.attention.expired}</b>
               <span className="block mt-1 text-[10px]">Review inventory alerts →</span>
             </button>
-            <button onClick={() => nav('/inventory')} className="block w-full text-left p-3 rounded-xl bg-amber-50 text-amber-800 hover:bg-amber-100">
+            <button onClick={() => nav('/inventory')} className="block w-full text-left p-3 rounded-xl bg-amber-50 text-amber-800 hover:bg-amber-100 transition-colors border border-amber-100 cursor-pointer">
               Low stock items: <b>{data.attention.lowStock}</b> · Out of stock: <b>{data.attention.outOfStock}</b>
               <span className="block mt-1 text-[10px]">Review replenishment stock →</span>
             </button>
-            <div className="p-3 rounded-xl bg-[#f5eef4] text-[#714b67]">
+            <div className="p-3 rounded-xl bg-[#f5eef4] text-[#714b67] border border-[#714b67]/20">
               Medicines in catalogue: <b>{data.catalogueCount}</b> · Active Branch: <b>{data.scopeLabel}</b>
             </div>
           </div>
