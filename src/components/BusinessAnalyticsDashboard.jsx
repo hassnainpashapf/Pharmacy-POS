@@ -69,24 +69,26 @@ const PAYMENT_COLORS = {
 
 function CustomAreaTooltip({ active, payload, label }) {
   if (active && payload && payload.length) {
+    const rev = payload.find((p) => p.dataKey === 'revenue')?.value ?? payload[0]?.value ?? 0
+    const prof = payload.find((p) => p.dataKey === 'profit')?.value ?? payload[1]?.value ?? 0
     return (
       <div className="bg-slate-900/95 backdrop-blur-xs text-white p-3 rounded-xl shadow-xl border border-slate-700 text-xs min-w-[170px]">
         <div className="font-bold text-slate-300 pb-1.5 mb-1.5 border-b border-slate-800 flex items-center justify-between">
           <span>{label}</span>
-          <Activity className="w-3.5 h-3.5 text-[#f472b6]" />
+          <Activity className="w-3.5 h-3.5 text-[#10b981]" />
         </div>
         <div className="space-y-1">
+          <div className="flex items-center justify-between gap-3 text-slate-200">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#714B67]" /> Gross Sales:
+            </span>
+            <span className="font-bold font-mono">{fmt(rev)}</span>
+          </div>
           <div className="flex items-center justify-between gap-3 text-emerald-400 font-bold">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-400" /> Net Profit:
             </span>
-            <span>{fmt(payload[1]?.value || 0)}</span>
-          </div>
-          <div className="flex items-center justify-between gap-3 text-slate-200">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#f472b6]" /> Gross Sales:
-            </span>
-            <span className="font-bold">{fmt(payload[0]?.value || 0)}</span>
+            <span className="font-mono">{fmt(prof)}</span>
           </div>
         </div>
       </div>
@@ -228,7 +230,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
     // Digital Payment Ratio
     const digitalSales = periodSales
       .filter((s) => {
-        const pm = (s.paymentMethod || s.paymentType || 'CASH').toUpperCase()
+        const pm = (s.paymentMethod || s.paymentType || s.payMethod || 'CASH').toUpperCase()
         return pm === 'CARD' || pm === 'DIGITAL'
       })
       .reduce((a, b) => a + (b.total || 0), 0)
@@ -293,6 +295,18 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
     }
 
     const sorted = Object.values(dateMap).sort((a, b) => a.rawDate.localeCompare(b.rawDate))
+    if (sorted.length === 1) {
+      const prevDate = new Date(new Date(sorted[0].rawDate).getTime() - 24 * 3600 * 1000)
+      const pParts = prevDate.toISOString().slice(0, 10).split('-')
+      const pStr = pParts.length === 3 ? `${pParts[2]}/${pParts[1]}` : 'Prev'
+      const cParts = sorted[0].rawDate.split('-')
+      const cStr = cParts.length === 3 ? `${cParts[2]}/${cParts[1]}` : sorted[0].rawDate
+      return [
+        { label: pStr, revenue: 0, profit: 0, count: 0 },
+        { label: cStr, revenue: sorted[0].revenue, profit: sorted[0].profit, count: sorted[0].count },
+      ]
+    }
+
     return sorted.map((item) => {
       const parts = item.rawDate.split('-')
       const formatted = parts.length === 3 ? `${parts[2]}/${parts[1]}` : item.rawDate
@@ -333,7 +347,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
   const paymentData = useMemo(() => {
     const map = { CASH: 0, CARD: 0, DIGITAL: 0, CREDIT: 0, SPLIT: 0 }
     for (const s of periodSales) {
-      const pm = (s.paymentMethod || s.paymentType || 'CASH').toUpperCase()
+      const pm = (s.paymentMethod || s.paymentType || s.payMethod || 'CASH').toUpperCase()
       const key = map[pm] !== undefined ? pm : 'CASH'
       map[key] += s.total || 0
     }
@@ -748,9 +762,9 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                 </div>
               </div>
 
-              <div className="h-68 w-full pt-2">
+              <div className="w-full pt-2" style={{ height: 280, minHeight: 280 }}>
                 {trendData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={280}>
                     <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
@@ -1185,9 +1199,9 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                 </span>
               </div>
 
-              <div className="h-68 w-full pt-1">
+              <div className="w-full pt-1" style={{ height: 280, minHeight: 280 }}>
                 {topCompanies.length > 0 ? (
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={280}>
                     <BarChart
                       data={topCompanies}
                       layout="vertical"
