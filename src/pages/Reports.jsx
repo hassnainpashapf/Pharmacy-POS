@@ -1344,18 +1344,26 @@ function ReportSection({ section, onSwitchToGui }) {
         </div>
       </div>
 
-      {/* KPI Cards (same simple style as Business Analytics) */}
+      {/* KPI Cards (enlarged & styled like CompanyStockHub) */}
       {summaryEntries.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
           {summaryEntries.slice(0, 4).map(([label, val], idx) => {
             const Icon = summaryIcons[idx] || Receipt
+            const isProfitOrRevenue = label.toLowerCase().includes('revenue') || label.toLowerCase().includes('profit')
             return (
-              <div key={label} className="bg-white px-4 py-3.5 rounded-xl border border-slate-200">
-                <div className="flex items-center gap-2">
-                  <Icon className="w-4 h-4 text-slate-400" />
-                  <span className="text-xs font-medium text-slate-500">{label}</span>
+              <div key={label} className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between transition-shadow hover:shadow-sm">
+                <div className="flex items-center justify-between text-slate-500">
+                  <span className="text-xs sm:text-sm font-semibold text-slate-600">{label}</span>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isProfitOrRevenue ? 'bg-[#e6f7f2] text-[#008f8b]' : 'bg-[#f5eef4] text-[#714B67]'}`}>
+                    <Icon className="w-4 h-4" />
+                  </div>
                 </div>
-                <div className="mt-1.5 text-xl font-bold text-slate-900 truncate">{val}</div>
+                <div className="mt-3">
+                  <div className={`text-2xl sm:text-3xl font-black tracking-tight truncate ${isProfitOrRevenue ? 'text-[#008f8b]' : 'text-slate-900'}`}>
+                    {val}
+                  </div>
+                  <div className="text-[11px] text-slate-400 mt-0.5 font-medium">Performance summary</div>
+                </div>
               </div>
             )
           })}
