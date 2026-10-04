@@ -3,8 +3,30 @@ import { useEffect, useState } from 'react'
 
 const KEY = 'pharmacy_pos_db_v2'
 const ACTIVE_TENANT_KEY = 'pharmacy_pos_active_tenant'
+const SESSION_STORAGE_KEY = 'pharmacy_pos_active_session'
 // Bump to regenerate demo (seeded) sales for analytics; real POS sales are always kept
 const SALES_SEED_VERSION = 3
+
+export function getStoredSession() {
+  if (typeof window === 'undefined') return null
+  try {
+    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
+}
+
+export function setStoredSession(session) {
+  if (typeof window === 'undefined') return
+  try {
+    if (session) {
+      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session))
+    } else {
+      sessionStorage.removeItem(SESSION_STORAGE_KEY)
+    }
+  } catch {}
+}
 
 export function getActiveTenantKey() {
   if (typeof window === 'undefined') return KEY
@@ -120,6 +142,13 @@ function load(targetTenantId) {
     const raw = localStorage.getItem(storageKey)
     if (raw) {
       const d = { ...empty(), ...JSON.parse(raw) }
+      // In browser/Electron: POS station requires fresh login on application startup.
+      // Active session only persists in sessionStorage for the duration of the current window session.
+      if (typeof window !== 'undefined') {
+        d.session = getStoredSession()
+      } else {
+        d.session = getStoredSession() || JSON.parse(raw).session || null
+      }
       d.settings = { ...empty().settings, ...d.settings, udharTemplate: d.settings?.udharTemplate || DEFAULT_TPL }
       
       // Automatic migration: rename default Al-Shifa Pharmacy to Pharmacy POS
@@ -318,7 +347,8 @@ function load(targetTenantId) {
         seedHistoricalSales(d)
       }
 
-      localStorage.setItem(storageKey, JSON.stringify(d))
+      const toSave = { ...d, session: null }
+      localStorage.setItem(storageKey, JSON.stringify(toSave))
       return d
     } else if (targetTenantId && !isMainTenant) {
       // New franchise logging in: create fresh isolated tenant database
@@ -716,7 +746,8 @@ export function uid() { return Math.random().toString(36).slice(2, 10) }
 function save() {
   const storageKey = getActiveTenantKey()
   try {
-    localStorage.setItem(storageKey, JSON.stringify(db))
+    const toSave = { ...db, session: null }
+    localStorage.setItem(storageKey, JSON.stringify(toSave))
   } catch (e) {
     console.error('Storage save error:', e)
   }
@@ -1702,6 +1733,7 @@ export function syncCloudSession(cloudUser, password) {
     tenantId: tenantId,
     appId: cloudUser.appId || 'PH-A1A4534D5D1B',
   }
+  setStoredSession(db.session)
   if (cloudUser.pharmacyName) {
     db.settings.pharmacyName = cloudUser.pharmacyName
   }
@@ -1768,6 +1800,8 @@ export function login(identifier, password) {
     appId: db.session?.appId || 'PH-A1A4534D5D1B',
   }
 
+  setStoredSession(db.session)
+
   if (u.branchId) db.currentBranch = u.branchId
   else db.currentBranch = 'ALL'
   u.lastLogin = db.session.loginAt
@@ -1780,6 +1814,7 @@ export function login(identifier, password) {
 export function logout() {
   log('LOGOUT')
   db.session = null
+  setStoredSession(null)
   save()
   try {
     localStorage.removeItem(ACTIVE_TENANT_KEY)
@@ -1801,6 +1836,7 @@ export function switchRoleUser(roleKey) {
       branchId: target.branchId || null,
       loginAt: new Date().toISOString(),
     }
+    setStoredSession(db.session)
     target.lastLogin = new Date().toISOString()
     log('ROLE_SWITCH', `${target.username} (${target.role})`)
     save()

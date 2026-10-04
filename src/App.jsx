@@ -682,7 +682,7 @@ function Shell({ children }) {
                 {me?.avatar ? (
                   <img src={me.avatar} alt="avatar" className="w-full h-full rounded-full object-cover" />
                 ) : (
-                  <span>{me?.name ? me.name.slice(0, 2).toUpperCase() : 'AA'}</span>
+                  <span>{me?.name ? me.name.slice(0, 2).toUpperCase() : 'HP'}</span>
                 )}
               </button>
 
@@ -699,12 +699,12 @@ function Shell({ children }) {
                         {me?.avatar ? (
                           <img src={me.avatar} alt="avatar" className="w-full h-full object-cover" />
                         ) : (
-                          <span>{me?.name ? me.name.slice(0, 2).toUpperCase() : 'AA'}</span>
+                          <span>{me?.name ? me.name.slice(0, 2).toUpperCase() : 'HP'}</span>
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="text-xs font-bold text-slate-900 truncate">
-                          {me?.name || 'Akib Ahamed'}
+                          {me?.name || 'Hussnain Pasha (Admin)'}
                         </div>
                         <div
                           className="text-[11px] font-bold mt-0.5 inline-flex items-center gap-1"
