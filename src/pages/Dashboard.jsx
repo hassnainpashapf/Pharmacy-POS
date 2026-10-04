@@ -414,36 +414,38 @@ export default function Dashboard() {
       {/* Dedicated Stock & Inventory Operations Graphs */}
       <StockOperationsGraphs db={db} nav={nav} />
 
-      {/* 5. Row 1 Analytics: Multi-Branch Revenue Trend (52%), Category Breakdown (25%), Inventory Health (23%) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-        {/* Multi-Branch Revenue Trend (6 of 12 cols) */}
-        <div className="lg:col-span-6 bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="mb-4">
-            <h3 className="font-bold text-sm text-slate-900">Branch Revenue · {data.monthLabel}</h3>
+      {/* 5. Row 1 Analytics: Multi-Branch Revenue Trend, Category Breakdown, Inventory Health (Merged directly into page) */}
+      <div className="py-2 border-y border-slate-200/80">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-slate-100">
+          {/* Multi-Branch Revenue Trend (6 of 12 cols) */}
+          <div className="lg:col-span-6 flex flex-col justify-between pt-2 lg:pt-0">
+            <div className="mb-4">
+              <h3 className="font-bold text-sm text-slate-900">Branch Revenue · {data.monthLabel}</h3>
+            </div>
+
+            <span className="sr-only">Owner branch revenue bar chart</span><RevenueBars entries={data.branchRevenueTrend.map((b) => ({ key: b.id || 'unassigned', label: b.name, total: b.total, color: b.color }))} hasRecords={data.hasMonthlySales} empty="No sales recorded this month in this scope." />
           </div>
 
-          <span className="sr-only">Owner branch revenue bar chart</span><RevenueBars entries={data.branchRevenueTrend.map((b) => ({ key: b.id || 'unassigned', label: b.name, total: b.total, color: b.color }))} hasRecords={data.hasMonthlySales} empty="No sales recorded this month in this scope." />
-        </div>
+          {/* Category Breakdown (3 of 12 cols) */}
+          <div className="lg:col-span-3 flex flex-col justify-between pt-4 lg:pt-0 lg:pl-6">
+            <div className="mb-2">
+              <h3 className="font-bold text-sm text-slate-900">Category Breakdown</h3>
+              <p className="text-[11px] text-slate-500 mt-1">{data.monthLabel} · category or dosage form</p>
+            </div>
 
-        {/* Category Breakdown (3 of 12 cols) */}
-        <div className="lg:col-span-3 bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="mb-2">
-            <h3 className="font-bold text-sm text-slate-900">Category Breakdown</h3>
-            <p className="text-[11px] text-slate-500 mt-1">{data.monthLabel} · category or dosage form</p>
+            <span className="sr-only">Owner category sales distribution: no data</span><Donut entries={data.categoryBreakdown} center={data.totalCategorySales} empty="No category sales recorded this month." label="Owner category sales distribution" keepFrame />
           </div>
 
-          <span className="sr-only">Owner category sales distribution: no data</span><Donut entries={data.categoryBreakdown} center={data.totalCategorySales} empty="No category sales recorded this month." label="Owner category sales distribution" keepFrame />
-        </div>
+          {/* Inventory Health (3 of 12 cols) */}
+          <div className="lg:col-span-3 flex flex-col justify-between pt-4 lg:pt-0 lg:pl-6">
+            <div className="mb-2">
+              <h3 className="font-bold text-sm text-slate-900">Inventory Health</h3>
+            </div>
 
-        {/* Inventory Health (3 of 12 cols) */}
-        <div className="lg:col-span-3 bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between">
-          <div className="mb-2">
-            <h3 className="font-bold text-sm text-slate-900">Inventory Health</h3>
+            <span className="sr-only">Owner inventory health distribution: no data</span><Donut entries={data.inventoryHealth} center={`${data.catalogueCount} items`} empty="No medicines in the saved catalogue." label="Owner inventory health distribution" keepFrame />
+            <p className="text-xs text-slate-600 mt-3">Stock cost <b>{data.stockValue}</b></p>
+            <p className="text-[10px] text-amber-800 mt-1">Includes held/expired stock. Check expiry before dispensing.</p>
           </div>
-
-          <span className="sr-only">Owner inventory health distribution: no data</span><Donut entries={data.inventoryHealth} center={`${data.catalogueCount} items`} empty="No medicines in the saved catalogue." label="Owner inventory health distribution" keepFrame />
-          <p className="text-xs text-slate-600 mt-3">Stock cost <b>{data.stockValue}</b></p>
-          <p className="text-[10px] text-amber-800 mt-1">Includes held/expired stock. Check expiry before dispensing.</p>
         </div>
       </div>
 
