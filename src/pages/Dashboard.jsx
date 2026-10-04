@@ -1223,16 +1223,7 @@ export function PurchaseReturnsGraph({ db, nav }) {
 
 export function StockOperationsGraphs({ db, nav }) {
   return (
-    <div className="space-y-4 py-2 border-y border-slate-200/80">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-2.5 h-5 bg-[#714B67] rounded-full" />
-          <h2 className="text-base font-extrabold text-slate-900 tracking-tight">
-            Inventory &amp; Stock Operations
-          </h2>
-        </div>
-      </div>
-
+    <div className="py-2 border-y border-slate-200/80">
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-slate-100">
         <div className="pt-2 md:pt-0"><CompanyStockGraph db={db} nav={nav} /></div>
         <div className="pt-4 md:pt-0 md:pl-6"><StockAuditGraph db={db} nav={nav} /></div>
