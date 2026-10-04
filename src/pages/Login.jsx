@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useDB, login, clearLock, syncCloudSession, ROLES } from '../lib/db'
 import { mobileApi } from '../lib/mobileApi'
 import { syncNow } from '../lib/syncEngine'
+import BrandLogo from '../components/BrandLogo'
 
 export default function Login() {
   const db = useDB()
@@ -60,11 +61,7 @@ export default function Login() {
     <div className="w-full min-h-screen flex items-center justify-center bg-slate-900 py-10 px-4 font-sans">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md border border-slate-100">
         <div className="text-center mb-6">
-          <img
-            src="/icon.svg"
-            alt="Pharmacy Logo"
-            className="w-12 h-12 rounded-2xl mx-auto shadow-md shadow-emerald-500/20 mb-3"
-          />
+          <BrandLogo className="w-12 h-12 rounded-2xl mx-auto shadow-md shadow-emerald-500/20 mb-3" />
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{db.settings.pharmacyName}</h1>
           <p className="text-slate-400 text-sm mt-1">Sign in to your account</p>
         </div>

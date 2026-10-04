@@ -42,6 +42,7 @@ import { isElectronShell, isNativeApp } from './lib/platformConfig'
 import Users from './pages/Users'
 import Login from './pages/Login'
 import CommandPalette from './components/CommandPalette'
+import BrandLogo from './components/BrandLogo'
 
 // V4 Enterprise & Local Additions
 import HardwareStation from './pages/HardwareStation'
@@ -331,7 +332,7 @@ function Shell({ children }) {
       >
         {/* Brand Header */}
         <div className="brand-header p-4 border-b border-slate-100 flex items-center gap-3">
-          <img src="/icon.svg" alt="Pharmacy Logo" className="w-8 h-8 rounded-lg shrink-0 shadow-sm" />
+          <BrandLogo className="w-8 h-8 rounded-lg shrink-0 shadow-sm" />
           <div className="min-w-0">
             <div className="brand-name">{db.settings.pharmacyName || 'System Optix'}</div>
             <div className="brand-caption">Pharmacy Station</div>
