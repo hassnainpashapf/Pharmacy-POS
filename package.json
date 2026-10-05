@@ -97,7 +97,8 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Optix MedSync"
+      "shortcutName": "Optix MedSync",
+      "include": "build/installer.nsh"
     },
     "mac": {
       "icon": "build/icon.icns",
