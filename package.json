@@ -1,7 +1,7 @@
 {
   "name": "pharmacy-pos",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Optix MedSync - offline-first desktop station with cloud-synced mobile inventory",
   "author": "Optix MedSync",
   "type": "module",

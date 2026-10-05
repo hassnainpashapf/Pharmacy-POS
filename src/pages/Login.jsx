@@ -155,7 +155,7 @@ export default function Login() {
           </a>
 
           <a
-            href="https://github.com/hassnainpashapf/Pharmacy-POS/releases/download/v1.0.0/Pharmacy-POS-Station-Setup.exe"
+            href="https://github.com/hassnainpashapf/Pharmacy-POS/releases/download/v2.0.0/Optix-MedSync-Setup-2.0.0.exe"
             download
             className="inline-flex items-center gap-1 font-bold text-[#8b94a7] hover:text-[#2f6df6] transition-colors py-1"
           >
