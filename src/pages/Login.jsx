@@ -74,10 +74,10 @@ export default function Login() {
         {/* Header */}
         <div className="text-center mb-7">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1b2a4a] tracking-tight">
-            {db.settings?.pharmacyName || 'Sign In to Station'}
+            Sign In
           </h1>
           <p className="text-[#8b94a7] text-xs font-medium mt-1.5">
-            Sign in to your Pharmacy POS Station
+            Enter your credentials to continue
           </p>
         </div>
 
@@ -137,7 +137,7 @@ export default function Login() {
               <span>Authenticating…</span>
             ) : (
               <>
-                <span>Sign In to POS</span>
+                <span>Sign In</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
