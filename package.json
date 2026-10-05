@@ -2,8 +2,8 @@
   "name": "pharmacy-pos",
   "private": true,
   "version": "1.0.0",
-  "description": "System Optix Pharmacy POS - offline-first desktop station with cloud-synced mobile inventory",
-  "author": "System Optix",
+  "description": "Optix MedSync - offline-first desktop station with cloud-synced mobile inventory",
+  "author": "Optix MedSync",
   "type": "module",
   "engines": {
     "node": ">=22.0.0"
@@ -55,7 +55,7 @@
   },
   "build": {
     "appId": "com.pharmacypos.station",
-    "productName": "System Optix Pharmacy Station",
+    "productName": "Optix MedSync",
     "directories": {
       "output": "release"
     },
@@ -97,7 +97,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Pharmacy POS Station"
+      "shortcutName": "Optix MedSync"
     },
     "mac": {
       "icon": "build/icon.icns",
@@ -110,7 +110,7 @@
       "gatekeeperAssess": false
     },
     "dmg": {
-      "title": "Pharmacy POS Station Installer",
+      "title": "Optix MedSync Installer",
       "contents": [
         {
           "x": 130,

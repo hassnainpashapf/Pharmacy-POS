@@ -1998,7 +1998,7 @@ function PurchaseForm({ initialPO, onClose, onSaved }) {
 function GRNDetailModal({ grn, onClose }) {
   const db = useDB()
   const sup = supplierById(grn.supplierId)
-  const pharmacyName = db.settings?.pharmacyName || 'Pharmacy POS'
+  const pharmacyName = db.settings?.pharmacyName || 'Optix MedSync'
   const pharmacyPhone = db.settings?.phone || ''
   const pharmacyAddress = db.settings?.address || ''
 
@@ -2435,7 +2435,7 @@ function NewPOModal({ onClose, onCreated }) {
 function PODetailModal({ po, onClose, onReceive }) {
   const db = useDB()
   const sup = supplierById(po.supplierId)
-  const pharmacyName = db.settings?.pharmacyName || 'Pharmacy POS'
+  const pharmacyName = db.settings?.pharmacyName || 'Optix MedSync'
   const pharmacyPhone = db.settings?.phone || ''
   const pharmacyAddress = db.settings?.address || ''
 
@@ -2993,7 +2993,7 @@ function NewPurchaseReturnModal({ onClose, onCreated }) {
 function PurchaseReturnSlipModal({ pr, onClose }) {
   const db = useDB()
   const sup = supplierById(pr.supplierId)
-  const pharmacyName = db.settings?.pharmacyName || 'Pharmacy POS'
+  const pharmacyName = db.settings?.pharmacyName || 'Optix MedSync'
   const pharmacyPhone = db.settings?.phone || ''
   const pharmacyAddress = db.settings?.address || ''
 

@@ -17,7 +17,7 @@ export default function CustomerDisplay({ isOpen, onClose, cart = [], subtotal =
             </div>
             <div>
               <h3 className="font-extrabold text-sm text-white tracking-wide">
-                {db.settings?.pharmacyName || 'Pharmacy POS'}
+                {db.settings?.pharmacyName || 'Optix MedSync'}
               </h3>
               <p className="text-[10px] text-emerald-400 font-mono">
                 CUSTOMER FACING DISPLAY (DUAL-SCREEN STATION)

@@ -137,7 +137,7 @@ export default function Dashboard() {
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#edf2fd] text-[#2f6df6] text-[10px] font-bold tracking-wide mb-0.5 border border-[#2f6df6]/15">
                 <span className="text-[#38a89d]">✦</span>
-                <span>MEDSYNC LIVE STATION</span>
+                <span>OPTIX MEDSYNC STATION</span>
               </div>
               <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#1b2a4a]">
                 {data.greeting}, <span className="text-[#2f6df6]">{me?.name || 'Store Admin'}</span>

@@ -1,14 +1,14 @@
 {
   "id": "/mobile",
-  "name": "System Optix Inventory",
-  "short_name": "Optix Inventory",
-  "description": "Shared inventory and stock-in. Sign-in and a server connection are required.",
+  "name": "Optix MedSync Inventory",
+  "short_name": "Optix MedSync",
+  "description": "Shared inventory and stock-in for Optix MedSync. Sign-in and a server connection are required.",
   "start_url": "/mobile",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#f8fafc",
-  "theme_color": "#008f8b",
+  "theme_color": "#2f6df6",
   "icons": [
     {
       "src": "/icon-192.png",

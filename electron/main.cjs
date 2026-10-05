@@ -37,7 +37,7 @@ function createWindow() {
     height: 768,
     minWidth: 800,
     minHeight: 550,
-    title: 'System Optix Pharmacy Station',
+    title: 'Optix MedSync',
     autoHideMenuBar: true,
     backgroundColor: '#f8fafc',
     webPreferences: {

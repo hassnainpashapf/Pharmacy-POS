@@ -86,8 +86,8 @@ const empty = () => ({
     customerDisplayPort: 'COM3 / Virtual Second Screen',
     labelPaperSize: '50x25mm',
     barcodeFormat: 'CODE128',
-    headerText: 'Pharmacy POS\nMain Bazar, Lahore · Tel: 0300-0000000',
-    footerText: 'Thank you for choosing Pharmacy POS!\nOriginal computer receipt required for exchanges within 3 days.\nKeep medicines stored below 25°C away from sunlight.',
+    headerText: 'Optix MedSync\nMain Bazar, Lahore · Tel: 0300-0000000',
+    footerText: 'Thank you for choosing Optix MedSync!\nOriginal computer receipt required for exchanges within 3 days.\nKeep medicines stored below 25°C away from sunlight.',
   },
   localNetwork: {
     stationName: 'POS-Counter-01',
@@ -99,7 +99,7 @@ const empty = () => ({
     lastLocalBackup: new Date().toISOString(),
   },
   settings: {
-    pharmacyName: 'Pharmacy POS',
+    pharmacyName: 'Optix MedSync',
     address: 'Main Bazar, Lahore',
     phone: '0300-0000000',
     taxPct: 0,
@@ -134,7 +134,7 @@ export function createFreshTenantDB(tenantId, options = {}) {
   d.returns = []
   d.expenses = []
   d.batches = []
-  d.settings = { ...empty().settings, pharmacyName: options.pharmacyName || 'Pharmacy POS' }
+  d.settings = { ...empty().settings, pharmacyName: options.pharmacyName || 'Optix MedSync' }
   d.users = options.adminUser ? [options.adminUser] : []
   const storageKey = tenantId ? `${KEY}_tenant_${tenantId}` : getActiveTenantKey()
   try {
@@ -144,7 +144,7 @@ export function createFreshTenantDB(tenantId, options = {}) {
 }
 
 function load(targetTenantId) {
-  const DEFAULT_TPL = 'Dear Customer,\n\nThank you for choosing Pharmacy POS.\n\nThank you,\n{{pharmacy}}\n{{phone}}'
+  const DEFAULT_TPL = 'Dear Customer,\n\nThank you for choosing Optix MedSync.\n\nThank you,\n{{pharmacy}}\n{{phone}}'
   try {
     const storageKey = targetTenantId ? `${KEY}_tenant_${targetTenantId}` : getActiveTenantKey()
     const isMainTenant = !targetTenantId || targetTenantId === '51fce6e61f3a4065aef0bbbac3810f7a' || targetTenantId === 'default' || storageKey === KEY
@@ -160,15 +160,15 @@ function load(targetTenantId) {
       }
       d.settings = { ...empty().settings, ...d.settings, udharTemplate: d.settings?.udharTemplate || DEFAULT_TPL }
       
-      // Automatic migration: rename default Al-Shifa Pharmacy to Pharmacy POS
-      if (d.settings?.pharmacyName === 'Al-Shifa Pharmacy' || !d.settings?.pharmacyName) {
-        d.settings.pharmacyName = 'Pharmacy POS'
+      // Automatic migration: rename default names to Optix MedSync
+      if (d.settings?.pharmacyName === 'Al-Shifa Pharmacy' || d.settings?.pharmacyName === 'Pharmacy POS' || d.settings?.pharmacyName === 'System Optix' || !d.settings?.pharmacyName) {
+        d.settings.pharmacyName = 'Optix MedSync'
       }
-      if (d.hardware?.headerText?.includes('Al-Shifa Pharmacy')) {
-        d.hardware.headerText = d.hardware.headerText.replace(/Al-Shifa Pharmacy/g, 'Pharmacy POS')
+      if (d.hardware?.headerText && (d.hardware.headerText.includes('Al-Shifa Pharmacy') || d.hardware.headerText.includes('Pharmacy POS'))) {
+        d.hardware.headerText = d.hardware.headerText.replace(/(Al-Shifa Pharmacy|Pharmacy POS)/g, 'Optix MedSync')
       }
-      if (d.hardware?.footerText?.includes('Al-Shifa Pharmacy')) {
-        d.hardware.footerText = d.hardware.footerText.replace(/Al-Shifa Pharmacy/g, 'Pharmacy POS')
+      if (d.hardware?.footerText && (d.hardware.footerText.includes('Al-Shifa Pharmacy') || d.hardware.footerText.includes('Pharmacy POS'))) {
+        d.hardware.footerText = d.hardware.footerText.replace(/(Al-Shifa Pharmacy|Pharmacy POS)/g, 'Optix MedSync')
       }
       d.wholesaleOrders = Array.isArray(d.wholesaleOrders) ? d.wholesaleOrders : []
       d.deliveries = Array.isArray(d.deliveries) ? d.deliveries : []
@@ -3077,7 +3077,7 @@ export function updateNetworkSettings(patch) {
 
 export function exportLocalDatabase() {
   const exportPayload = {
-    appName: 'Pharmacy POS',
+    appName: 'Optix MedSync',
     schemaVersion: '4.0.0-LAN-LOCAL',
     exportedAt: new Date().toISOString(),
     exportedBy: db.session?.username || 'system',

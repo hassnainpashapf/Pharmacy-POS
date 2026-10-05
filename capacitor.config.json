@@ -1,6 +1,6 @@
 {
   "appId": "com.pharmacypos.cloud",
-  "appName": "System Optix Pharmacy",
+  "appName": "Optix MedSync",
   "webDir": "dist",
   "server": {
     "androidScheme": "https",

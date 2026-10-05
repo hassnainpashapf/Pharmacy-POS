@@ -739,7 +739,7 @@ export default function PurchaseReturnsDashboard() {
             {/* Printable Voucher Paper */}
             <div className="p-6 space-y-4 font-sans text-xs bg-white">
               <div className="text-center pb-3 border-b border-slate-200">
-                <h2 className="text-lg font-black text-slate-900">{db.settings.pharmacyName || 'Pharmacy POS'}</h2>
+                <h2 className="text-lg font-black text-slate-900">{db.settings.pharmacyName || 'Optix MedSync'}</h2>
                 <p className="text-[11px] text-slate-500">{db.settings.address || 'Medical Store'}</p>
                 <div className="inline-block mt-2 px-3 py-1 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd] font-black text-xs uppercase tracking-wider">
                   PURCHASE RETURN DEBIT NOTE

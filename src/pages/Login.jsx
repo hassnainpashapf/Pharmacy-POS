@@ -151,7 +151,7 @@ export default function Login() {
             className="inline-flex items-center gap-1.5 font-bold text-[#3c4761] hover:text-[#2f6df6] transition-colors py-1 group"
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-            <span>MedSync Website</span>
+            <span>Optix MedSync Website</span>
           </a>
 
           <a

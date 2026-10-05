@@ -14,3 +14,9 @@ release/
 # Capacitor regenerates this copy of dist/ on every `cap copy` / `cap sync`.
 android/app/src/main/assets/public/
 ios/App/App/public/
+
+# Local deployment and runner scripts
+scripts/remote_exec.py
+scripts/upload_release.py
+scripts/update_remote.py
+scripts/setup_remote_desktop.py

@@ -332,7 +332,7 @@ function Shell({ children }) {
         <div className="brand-header p-4 border-b border-slate-100 flex items-center gap-3">
           <BrandLogo className="w-8 h-8 rounded-lg shrink-0 shadow-sm" />
           <div className="min-w-0">
-            <div className="brand-name">{db.settings.pharmacyName || 'System Optix'}</div>
+            <div className="brand-name">{db.settings.pharmacyName || 'Optix MedSync'}</div>
             <div className="brand-caption">Pharmacy Station</div>
           </div>
         </div>
@@ -725,7 +725,7 @@ function LegacyApp() {
     if (loc.pathname === '/' || loc.pathname === '/website' || loc.pathname === '/landing') {
       if (!isElectronShell()) {
         return (
-          <Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading MedSync…</div>}>
+          <Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading Optix MedSync…</div>}>
             <LandingPage />
           </Suspense>
         )
@@ -773,7 +773,7 @@ function MobileRoute() {
     const previousZoom = elements.map((element) => element.style.zoom)
     const previousTitle = document.title
     elements.forEach((element) => { element.style.zoom = '100%' })
-    document.title = 'System Optix Inventory'
+    document.title = 'Optix MedSync Inventory'
     return () => {
       elements.forEach((element, index) => { element.style.zoom = previousZoom[index] })
       document.title = previousTitle
@@ -808,8 +808,8 @@ export default function App() {
       <ErrorBoundary>
         <Routes>
           {/* The shared module has its own server session and permissions. */}
-          <Route path="/website/*" element={<Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading MedSync…</div>}><LandingPage /></Suspense>} />
-          <Route path="/landing/*" element={<Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading MedSync…</div>}><LandingPage /></Suspense>} />
+          <Route path="/website/*" element={<Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading Optix MedSync…</div>}><LandingPage /></Suspense>} />
+          <Route path="/landing/*" element={<Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading Optix MedSync…</div>}><LandingPage /></Suspense>} />
           <Route path="/mobile/*" element={<MobileRoute />} />
           <Route path="/admin/*" element={<AdminRoute />} />
           <Route path="/superadmin/*" element={<div className="fixed inset-0 h-full w-full overflow-y-auto"><Suspense fallback={<main className="min-h-screen p-6" role="status">Loading platform console…</main>}><Superadmin /></Suspense></div>} />

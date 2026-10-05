@@ -1,4 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#008f8b"/>
-  <path d="M216 128h80v88h88v80h-88v88h-80v-88h-88v-80h88z" fill="#fff"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="optix_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b7bfa"/>
+      <stop offset="40%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#113694"/>
+    </linearGradient>
+    <linearGradient id="mint_glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5eead4"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#optix_bg)"/>
+  <!-- Outer Orbit -->
+  <circle cx="256" cy="256" r="160" stroke="#ffffff" stroke-width="26" fill="none" opacity="0.95"/>
+  <!-- Healthcare Sync Arc -->
+  <path d="M 256 150 A 106 106 0 1 1 150 256" stroke="url(#mint_glow)" stroke-width="28" stroke-linecap="round" fill="none"/>
+  <!-- Center Optix Core -->
+  <circle cx="256" cy="256" r="52" stroke="#ffffff" stroke-width="20" fill="#173da6"/>
+  <circle cx="256" cy="256" r="18" fill="url(#mint_glow)"/>
 </svg>

@@ -64,7 +64,7 @@ function worker(fetcher = async () => response()) {
 
 test('manifest installs the mobile route and points at real correctly-sized PNGs', async () => {
   const manifest = JSON.parse(await read('public/manifest.webmanifest'))
-  assert.equal(manifest.name, 'System Optix Inventory')
+  assert.equal(manifest.name, 'Optix MedSync Inventory')
   assert.equal(manifest.start_url, '/mobile')
   assert.equal(manifest.display, 'standalone')
   for (const size of [192, 512]) {
