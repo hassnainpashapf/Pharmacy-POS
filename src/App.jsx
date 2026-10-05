@@ -475,17 +475,6 @@ function Shell({ children }) {
               <Globe className="w-4 h-4" />
             </button>
 
-            {!isElectronShell() && (
-              <a
-                href="#/website"
-                title="MedSync Website"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-900 bg-blue-100 hover:bg-blue-200 border border-blue-300 rounded-lg transition-all shadow-sm"
-              >
-                <span>🌐</span>
-                <span className="hidden xl:inline">MedSync Website</span>
-              </a>
-            )}
-
             {/* Installer downloads exist only on the web host: they are kept out of
                 every app bundle (that is what keeps the APK and the desktop
                 installers small). The packaged desktop app runs from file://, where
