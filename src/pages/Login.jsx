@@ -63,17 +63,6 @@ export default function Login() {
     }
   }
 
-  function handleQuickLogin(userIdentifier, userPass) {
-    setUsername(userIdentifier)
-    setPassword(userPass)
-    setErr('')
-    try {
-      login(userIdentifier, userPass, { remember: true })
-    } catch (e) {
-      setErr(e.message || 'Quick login failed')
-    }
-  }
-
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-slate-900 py-10 px-4 font-sans">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md border border-slate-100">
@@ -133,76 +122,6 @@ export default function Login() {
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
-
-        {/* Quick Staff Sign-In for Fast Counter Access */}
-        <div className="pt-5 mt-5 border-t border-slate-100">
-          <div className="flex items-center justify-between mb-2.5">
-            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-              Quick Counter Sign-In
-            </span>
-            <span className="text-[10px] text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">
-              1-Click
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('admin', 'Password@786123')}
-              className="flex items-center gap-2.5 p-2 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-[#e6f7f6] hover:border-[#008f8b]/40 transition-all text-left group cursor-pointer"
-            >
-              <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-sm shrink-0 font-bold">
-                👑
-              </div>
-              <div className="min-w-0">
-                <div className="font-bold text-xs text-slate-800 group-hover:text-[#008f8b] truncate">Admin (Owner)</div>
-                <div className="text-[10px] text-slate-400 truncate">admin</div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('cashier', 'cashier123')}
-              className="flex items-center gap-2.5 p-2 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-[#e6f7f6] hover:border-[#008f8b]/40 transition-all text-left group cursor-pointer"
-            >
-              <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0 font-bold">
-                🧾
-              </div>
-              <div className="min-w-0">
-                <div className="font-bold text-xs text-slate-800 group-hover:text-[#008f8b] truncate">Cashier</div>
-                <div className="text-[10px] text-slate-400 truncate">cashier</div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('pharmacist', 'pharmacist123')}
-              className="flex items-center gap-2.5 p-2 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-[#e6f7f6] hover:border-[#008f8b]/40 transition-all text-left group cursor-pointer"
-            >
-              <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0 font-bold">
-                💊
-              </div>
-              <div className="min-w-0">
-                <div className="font-bold text-xs text-slate-800 group-hover:text-[#008f8b] truncate">Pharmacist</div>
-                <div className="text-[10px] text-slate-400 truncate">pharmacist</div>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('manager', 'manager123')}
-              className="flex items-center gap-2.5 p-2 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-[#e6f7f6] hover:border-[#008f8b]/40 transition-all text-left group cursor-pointer"
-            >
-              <div className="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-sm shrink-0 font-bold">
-                👔
-              </div>
-              <div className="min-w-0">
-                <div className="font-bold text-xs text-slate-800 group-hover:text-[#008f8b] truncate">Manager</div>
-                <div className="text-[10px] text-slate-400 truncate">manager</div>
-              </div>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   )
