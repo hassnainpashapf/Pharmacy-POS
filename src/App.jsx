@@ -95,11 +95,8 @@ import {
   Globe,
   Download,
   Smartphone,
-  Monitor,
-  Laptop,
   ExternalLink,
   Layers,
-  Zap,
 } from 'lucide-react'
 
 const MobileInventory = lazy(() => import('./pages/MobileInventory'))
@@ -507,28 +504,6 @@ function Shell({ children }) {
                         <span className="text-[9px] font-bold text-slate-400">Offline-First</span>
                       </div>
 
-                      {/* Windows App (Portable - Zero Install) - Rich Emerald/Teal Card */}
-                      <a
-                        href="https://github.com/hassnainpashapf/Pharmacy-POS/releases/download/v1.0.0/Pharmacy-POS-Station-Portable.exe"
-                        download="Pharmacy-POS-Station-Portable.exe"
-                        onClick={() => setDownloadMenuOpen(false)}
-                        className="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100/90 transition-all group shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-[#008f8b] text-white flex items-center justify-center shrink-0 shadow-sm font-black text-xs">
-                            <Zap className="w-4 h-4 text-white" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-bold text-emerald-950 group-hover:text-emerald-900 truncate text-xs flex items-center gap-1.5">
-                              <span>Windows Portable App</span>
-                              <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-200/80 text-emerald-800">Direct Run</span>
-                            </div>
-                            <div className="text-[11px] text-emerald-700 font-medium truncate">No install/uninstall needed • Run instantly</div>
-                          </div>
-                        </div>
-                        <Download className="w-4 h-4 text-emerald-700 group-hover:text-emerald-950 transition-colors shrink-0" />
-                      </a>
-
                       {/* Windows App (Installer) - Rich Blue Card */}
                       <a
                         href="https://github.com/hassnainpashapf/Pharmacy-POS/releases/download/v1.0.0/Pharmacy-POS-Station-Setup.exe"
@@ -549,69 +524,6 @@ function Shell({ children }) {
                         </div>
                         <Download className="w-4 h-4 text-blue-600 group-hover:text-blue-950 transition-colors shrink-0" />
                       </a>
-
-                      {/* Windows Desktop App - Rich Indigo Card */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDownloadMenuOpen(false)
-                          installAdminApp()
-                        }}
-                        className="w-full flex items-center justify-between gap-3 p-2.5 rounded-xl border border-indigo-200/90 bg-indigo-50/80 hover:bg-indigo-100/90 transition-all group shadow-[0_1px_2px_rgba(0,0,0,0.04)] text-left"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-                            <Monitor className="w-4 h-4" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-bold text-indigo-950 group-hover:text-indigo-900 truncate text-xs">Windows Desktop App</div>
-                            <div className="text-[11px] text-indigo-700/90 font-medium truncate">Instant desktop app</div>
-                          </div>
-                        </div>
-                        <ExternalLink className="w-4 h-4 text-indigo-600 group-hover:text-indigo-950 transition-colors shrink-0" />
-                      </button>
-
-                      {/* Mac App (Installer) - Rich Slate Card */}
-                      <a
-                        href="/downloads/Pharmacy-POS-Station-mac.dmg"
-                        download="Pharmacy-POS-Station-mac.dmg"
-                        onClick={() => setDownloadMenuOpen(false)}
-                        className="flex items-center justify-between gap-3 p-2.5 rounded-xl border border-slate-300 bg-slate-100/90 hover:bg-slate-200/90 transition-all group shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center shrink-0 shadow-sm">
-                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-2 .6-2.64 1.35-.56.65-.98 1.7-0.85 2.73.99.08 2.02-.51 2.57-1.23z" />
-                            </svg>
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-bold text-slate-950 group-hover:text-black truncate text-xs">Mac App (Installer)</div>
-                            <div className="text-[11px] text-slate-700 font-medium truncate">DMG package for macOS (128 MB)</div>
-                          </div>
-                        </div>
-                        <Download className="w-4 h-4 text-slate-700 group-hover:text-black transition-colors shrink-0" />
-                      </a>
-
-                      {/* Mac Desktop App - Rich Zinc Card */}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDownloadMenuOpen(false)
-                          installAdminApp()
-                        }}
-                        className="w-full flex items-center justify-between gap-3 p-2.5 rounded-xl border border-zinc-300 bg-zinc-100/90 hover:bg-zinc-200/90 transition-all group shadow-[0_1px_2px_rgba(0,0,0,0.04)] text-left"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-zinc-800 text-white flex items-center justify-center shrink-0 shadow-sm">
-                            <Laptop className="w-4 h-4" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="font-bold text-zinc-950 group-hover:text-black truncate text-xs">Mac Desktop App</div>
-                            <div className="text-[11px] text-zinc-700 font-medium truncate">Instant desktop app</div>
-                          </div>
-                        </div>
-                        <ExternalLink className="w-4 h-4 text-zinc-700 group-hover:text-black transition-colors shrink-0" />
-                      </button>
 
                       <div className="px-2 py-1 text-[10px] font-extrabold text-slate-700 uppercase tracking-wider border-t border-slate-200 pt-2 mb-1 flex items-center justify-between">
                         <span>Mobile Apps</span>
