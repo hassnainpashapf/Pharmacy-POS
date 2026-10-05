@@ -71,26 +71,13 @@ export default function Login() {
 
       {/* Main Login Card - Styled exactly to MedSync Theme */}
       <div className="bg-white rounded-[28px] shadow-[0_30px_80px_-25px_rgba(27,42,74,0.18)] p-8 sm:p-10 w-full max-w-md border border-[#e2e8f1] relative z-10 transition-all">
-        {/* Brand Header */}
+        {/* Header */}
         <div className="text-center mb-7">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#edf2fd] mb-3.5 shadow-sm border border-[#2f6df6]/20">
-            <svg viewBox="0 0 32 32" fill="none" className="w-8 h-8" aria-hidden="true">
-              <circle cx="16" cy="16" r="13" stroke="#2f6df6" strokeWidth="2.6" />
-              <path d="M16 7.5a8.5 8.5 0 1 1-8.5 8.5" stroke="#38a89d" strokeWidth="2.6" strokeLinecap="round" />
-              <path d="M16 12.2a3.8 3.8 0 1 1-3.8 3.8" stroke="#2f6df6" strokeWidth="2.2" strokeLinecap="round" />
-            </svg>
-          </div>
-
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#edf2fd] text-[#2f6df6] text-[11px] font-bold tracking-wide mb-2 border border-[#2f6df6]/15">
-            <span className="text-[#38a89d]">✦</span>
-            <span>MEDSYNC PHARMACY OS</span>
-          </div>
-
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1b2a4a] tracking-tight">
-            Sign In to Station
+            {db.settings?.pharmacyName || 'Sign In to Station'}
           </h1>
-          <p className="text-[#8b94a7] text-xs font-medium mt-1">
-            Access counter billing, inventory &amp; cloud sync
+          <p className="text-[#8b94a7] text-xs font-medium mt-1.5">
+            Sign in to your Pharmacy POS Station
           </p>
         </div>
 
