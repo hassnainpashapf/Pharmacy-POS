@@ -66,14 +66,17 @@
     ${EndIf}
   ${EndIf}
 
-  # If application is already installed, notify user, launch existing app and abort installer
+  # If application is already installed, confirm with user
   ${If} $R0 == "1"
     ${IfNot} ${Silent}
-      MessageBox MB_ICONINFORMATION|MB_OK "Optix MedSync already installed hai!$\n$\nApplication open ki ja rahi hai..."
+      MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Optix MedSync pehle se installed hai!$\n$\nKya aap isko dobara install ya update karna chahte hain?$\n$\n• Yes: Reinstall ya Update karein$\n• No: Mojuda Optix MedSync open karein" IDYES proceed_with_install
+
+      ${If} $R1 != ""
+        ExecShell "" "$R1"
+      ${EndIf}
+      Quit
+
+      proceed_with_install:
     ${EndIf}
-    ${If} $R1 != ""
-      ExecShell "open" "$R1"
-    ${EndIf}
-    Quit
   ${EndIf}
 !macroend
