@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useDB, login, clearLock, syncCloudSession, ROLES } from '../lib/db'
+import { useDB, login, clearLock, syncCloudSession } from '../lib/db'
 import { mobileApi } from '../lib/mobileApi'
 import { syncNow } from '../lib/syncEngine'
-import BrandLogo from '../components/BrandLogo'
+import { ArrowLeft, ArrowRight, Download, ShieldCheck } from 'lucide-react'
 
 export default function Login() {
   const db = useDB()
@@ -64,52 +64,79 @@ export default function Login() {
   }
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-slate-900 py-10 px-4 font-sans">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md border border-slate-100">
-        <div className="text-center mb-6">
-          <BrandLogo className="w-14 h-14 rounded-2xl mx-auto shadow-md shadow-[#008f8b]/20 mb-3" />
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{db.settings.pharmacyName}</h1>
-          <p className="text-slate-400 text-xs mt-1">Sign in to your Pharmacy POS Station</p>
+    <div className="w-full min-h-screen flex items-center justify-center bg-[#f2f5f9] py-12 px-4 font-sans relative overflow-hidden selection:bg-[#2f6df6] selection:text-white">
+      {/* MedSync Ambient Background Radial Glows */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-gradient-to-br from-[#2f6df6]/10 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-0 right-1/4 w-[450px] h-[450px] bg-gradient-to-tl from-[#38a89d]/10 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+
+      {/* Main Login Card - Styled exactly to MedSync Theme */}
+      <div className="bg-white rounded-[28px] shadow-[0_30px_80px_-25px_rgba(27,42,74,0.18)] p-8 sm:p-10 w-full max-w-md border border-[#e2e8f1] relative z-10 transition-all">
+        {/* Brand Header */}
+        <div className="text-center mb-7">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#edf2fd] mb-3.5 shadow-sm border border-[#2f6df6]/20">
+            <svg viewBox="0 0 32 32" fill="none" className="w-8 h-8" aria-hidden="true">
+              <circle cx="16" cy="16" r="13" stroke="#2f6df6" strokeWidth="2.6" />
+              <path d="M16 7.5a8.5 8.5 0 1 1-8.5 8.5" stroke="#38a89d" strokeWidth="2.6" strokeLinecap="round" />
+              <path d="M16 12.2a3.8 3.8 0 1 1-3.8 3.8" stroke="#2f6df6" strokeWidth="2.2" strokeLinecap="round" />
+            </svg>
+          </div>
+
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#edf2fd] text-[#2f6df6] text-[11px] font-bold tracking-wide mb-2 border border-[#2f6df6]/15">
+            <span className="text-[#38a89d]">✦</span>
+            <span>MEDSYNC PHARMACY OS</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1b2a4a] tracking-tight">
+            Sign In to Station
+          </h1>
+          <p className="text-[#8b94a7] text-xs font-medium mt-1">
+            Access counter billing, inventory &amp; cloud sync
+          </p>
         </div>
 
+        {/* Credentials Form */}
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Username or Email</label>
+            <label className="block text-xs font-bold text-[#3c4761] mb-1.5">
+              Username or Email
+            </label>
             <input
               autoFocus
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="border border-slate-200 rounded-xl w-full px-4 py-2.5 text-sm bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#008f8b]/20 focus:border-[#008f8b] transition-all"
-              placeholder="admin or cashier"
+              className="w-full px-4 py-3 rounded-2xl border border-[#e2e8f1] bg-[#f8fafc] text-sm text-[#1b2a4a] placeholder-[#8b94a7] focus:bg-white focus:outline-none focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/15 transition-all shadow-sm"
+              placeholder="e.g. admin or cashier"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">Password</label>
+            <label className="block text-xs font-bold text-[#3c4761] mb-1.5">
+              Password
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="border border-slate-200 rounded-xl w-full px-4 py-2.5 text-sm bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#008f8b]/20 focus:border-[#008f8b] transition-all"
+              className="w-full px-4 py-3 rounded-2xl border border-[#e2e8f1] bg-[#f8fafc] text-sm text-[#1b2a4a] placeholder-[#8b94a7] focus:bg-white focus:outline-none focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/15 transition-all shadow-sm"
               placeholder="••••••••"
             />
           </div>
 
-          <div className="flex items-center justify-between text-xs pt-0.5">
-            <label className="flex items-center gap-2 cursor-pointer text-slate-600 select-none font-medium">
+          <div className="flex items-center justify-between text-xs pt-1">
+            <label className="flex items-center gap-2.5 cursor-pointer text-[#3c4761] select-none font-semibold">
               <input
                 type="checkbox"
                 checked={remember}
                 onChange={(e) => setRemember(e.target.checked)}
-                className="w-4 h-4 rounded accent-[#008f8b] cursor-pointer"
+                className="w-4 h-4 rounded accent-[#2f6df6] cursor-pointer"
               />
               <span>Remember login locally on this station</span>
             </label>
           </div>
 
           {err && (
-            <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl p-3 font-medium flex items-center gap-2">
-              <span>⚠️</span>
+            <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-2xl p-3.5 font-medium flex items-center gap-2">
+              <span className="text-base">⚠️</span>
               <span>{err}</span>
             </div>
           )}
@@ -117,20 +144,36 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#008f8b] hover:bg-[#007b77] disabled:opacity-60 disabled:cursor-not-allowed text-white py-2.5 rounded-xl font-bold text-sm cursor-pointer shadow-md shadow-[#008f8b]/20 transition-all active:scale-[0.98] mt-2"
+            className="w-full bg-[#2f6df6] hover:bg-[#1f4fd1] disabled:opacity-60 disabled:cursor-not-allowed text-white py-3.5 rounded-2xl font-extrabold text-sm shadow-[0_14px_30px_-10px_rgba(47,109,246,0.5)] hover:shadow-[0_18px_36px_-10px_rgba(47,109,246,0.6)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 mt-3"
           >
-            {loading ? 'Signing in…' : 'Sign In'}
+            {loading ? (
+              <span>Authenticating…</span>
+            ) : (
+              <>
+                <span>Sign In to POS</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </button>
         </form>
 
-        <div className="pt-4 mt-5 border-t border-slate-100 text-center">
+        {/* Footer Navigation Back to MedSync Website */}
+        <div className="pt-5 mt-6 border-t border-[#e2e8f1] flex items-center justify-between text-xs">
           <a
             href="#/website"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#008f8b] transition-colors py-1 group"
+            className="inline-flex items-center gap-1.5 font-bold text-[#3c4761] hover:text-[#2f6df6] transition-colors py-1 group"
           >
-            <span>🌐</span>
-            <span>Visit MedSync Website &amp; Download Center</span>
-            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            <span>MedSync Website</span>
+          </a>
+
+          <a
+            href="https://github.com/hassnainpashapf/Pharmacy-POS/releases/download/v1.0.0/Pharmacy-POS-Station-Setup.exe"
+            download
+            className="inline-flex items-center gap-1 font-bold text-[#8b94a7] hover:text-[#2f6df6] transition-colors py-1"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Setup .exe</span>
           </a>
         </div>
       </div>
