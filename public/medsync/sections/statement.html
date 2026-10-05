@@ -1,0 +1,146 @@
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ---- MedSync · Statement section (st- prefix, fully scoped) ---- */
+.st-section{
+  padding:120px 24px;
+  text-align:center;
+  background:transparent;
+}
+.st-inner{
+  max-width:1000px;
+  margin:0 auto;
+}
+.st-text{
+  margin:0;
+  padding:0;
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:46px;
+  font-weight:600;
+  line-height:1.35;
+  letter-spacing:-0.015em;
+  color:#aeb6c6;
+  text-wrap:balance;
+}
+/* word tokens */
+.st-w{
+  color:#aeb6c6;
+  transition:color .45s ease;
+}
+.st-w.on[data-c="n"]{ color:#1b2a4a; }
+.st-w.on[data-c="g"]{ color:#8b94a7; }
+/* inline pill tokens (icons + avatars) */
+.st-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  vertical-align:middle;
+  border-radius:999px;
+  line-height:1;
+  white-space:nowrap;
+  opacity:.15;
+  transform:translateY(-.06em) scale(.6);
+  transition:transform .55s cubic-bezier(.34,1.56,.64,1), opacity .4s ease;
+}
+.st-pill.on{
+  opacity:1;
+  transform:translateY(-.06em) scale(1);
+}
+.st-pill--mint{
+  background:#aee6cf;
+  padding:.2em .44em;
+}
+.st-pill--lav{
+  background:#c6b3f6;
+  padding:.2em .44em;
+}
+.st-emoji{
+  font-size:.68em;
+  line-height:1;
+  display:inline-block;
+}
+.st-pill--avatars{
+  background:#ffffff;
+  border:1px solid #e2e8f1;
+  box-shadow:0 6px 18px rgba(27,42,74,.10);
+  padding:.12em .34em;
+  font-size:.82em;
+}
+.st-pill--avatars img{
+  width:1.15em;
+  height:1.15em;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #ffffff;
+  margin-left:-.42em;
+  display:block;
+}
+.st-pill--avatars img:first-child{ margin-left:0; }
+
+@media(max-width:900px){
+  .st-text{ font-size:38px; }
+}
+@media(max-width:640px){
+  .st-section{ padding:84px 20px; }
+  .st-text{ font-size:30px; line-height:1.4; }
+}
+</style>
+
+<section class="st-section" aria-label="MedSync statement">
+  <div class="st-inner">
+    <p class="st-text" aria-label="Our solution effectively empowers the home-based healthcare industry by enhancing patient outcomes">
+      <span class="st-tok st-w" data-c="n">Our</span>
+      <span class="st-tok st-w" data-c="n">solution</span>
+      <span class="st-tok st-pill st-pill--mint" aria-hidden="true"><span class="st-emoji">🔒</span></span>
+      <span class="st-tok st-w" data-c="n">effectively</span>
+      <span class="st-tok st-w" data-c="g">empowers</span>
+      <span class="st-tok st-w" data-c="g">the</span>
+      <span class="st-tok st-w" data-c="g">home-based</span>
+      <span class="st-tok st-w" data-c="g">healthcare</span>
+      <span class="st-tok st-pill st-pill--lav" aria-hidden="true"><span class="st-emoji">💊</span></span>
+      <span class="st-tok st-w" data-c="n">industry</span>
+      <span class="st-tok st-w" data-c="n">by</span>
+      <span class="st-tok st-w" data-c="n">enhancing</span>
+      <span class="st-tok st-w" data-c="n">(</span>
+      <span class="st-tok st-pill st-pill--avatars" aria-hidden="true"><img src="https://i.pravatar.cc/64?img=12" alt="" loading="lazy"><img src="https://i.pravatar.cc/64?img=47" alt="" loading="lazy"><img src="https://i.pravatar.cc/64?img=33" alt="" loading="lazy"></span>
+      <span class="st-tok st-w" data-c="n">)</span>
+      <span class="st-tok st-w" data-c="g">patient</span>
+      <span class="st-tok st-w" data-c="g">outcomes</span>
+    </p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var sec = document.querySelector('.st-section');
+  if(!sec) return;
+  var toks = Array.prototype.slice.call(sec.querySelectorAll('.st-tok'));
+  var n = toks.length;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function paint(p){
+    for(var i = 0; i < n; i++){
+      var on = reduce ? true : (p * n >= i + 0.55);
+      var has = toks[i].classList.contains('on');
+      if(has !== on) toks[i].classList.toggle('on', on);
+    }
+  }
+
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var r = sec.getBoundingClientRect();
+    var vh = window.innerHeight || 800;
+    var start = vh * 0.88; /* section top at 88% viewport -> progress 0 */
+    var end   = vh * 0.30; /* section top at 30% viewport -> progress 1 */
+    var p = (start - r.top) / (start - end);
+    p = p < 0 ? 0 : (p > 1 ? 1 : p);
+    paint(p);
+  }
+  function request(){
+    if(!ticking){ ticking = true; requestAnimationFrame(update); }
+  }
+  window.addEventListener('scroll', request, {passive:true});
+  window.addEventListener('resize', request);
+  update();
+})();
+</script>

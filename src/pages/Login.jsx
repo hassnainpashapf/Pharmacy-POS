@@ -129,7 +129,7 @@ export default function Login() {
             className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#008f8b] transition-colors py-1 group"
           >
             <span>🌐</span>
-            <span>Visit 3D Product Website & Download Center</span>
+            <span>Visit MedSync Website &amp; Download Center</span>
             <span className="group-hover:translate-x-0.5 transition-transform">→</span>
           </a>
         </div>

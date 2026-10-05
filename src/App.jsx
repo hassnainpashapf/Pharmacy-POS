@@ -478,11 +478,11 @@ function Shell({ children }) {
             {!isElectronShell() && (
               <a
                 href="#/website"
-                title="3D Showcase Website"
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-cyan-900 bg-cyan-100 hover:bg-cyan-200 border border-cyan-300 rounded-lg transition-all shadow-sm"
+                title="MedSync Website"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-blue-900 bg-blue-100 hover:bg-blue-200 border border-blue-300 rounded-lg transition-all shadow-sm"
               >
                 <span>🌐</span>
-                <span className="hidden xl:inline">3D Website</span>
+                <span className="hidden xl:inline">MedSync Website</span>
               </a>
             )}
 
@@ -730,8 +730,20 @@ function Shell({ children }) {
 
 function LegacyApp() {
   const db = useDB()
+  const loc = useLocation()
 
-  if (!db.session) return <Login />
+  if (!db.session) {
+    if (loc.pathname === '/' || loc.pathname === '/website' || loc.pathname === '/landing') {
+      if (!isElectronShell()) {
+        return (
+          <Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading MedSync…</div>}>
+            <LandingPage />
+          </Suspense>
+        )
+      }
+    }
+    return <Login />
+  }
 
   return (
     <Shell>
@@ -807,8 +819,8 @@ export default function App() {
       <ErrorBoundary>
         <Routes>
           {/* The shared module has its own server session and permissions. */}
-          <Route path="/website/*" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-cyan-400 font-mono text-sm">Loading 3D Website…</div>}><LandingPage /></Suspense>} />
-          <Route path="/landing/*" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-cyan-400 font-mono text-sm">Loading 3D Website…</div>}><LandingPage /></Suspense>} />
+          <Route path="/website/*" element={<Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading MedSync…</div>}><LandingPage /></Suspense>} />
+          <Route path="/landing/*" element={<Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading MedSync…</div>}><LandingPage /></Suspense>} />
           <Route path="/mobile/*" element={<MobileRoute />} />
           <Route path="/admin/*" element={<AdminRoute />} />
           <Route path="/superadmin/*" element={<div className="fixed inset-0 h-full w-full overflow-y-auto"><Suspense fallback={<main className="min-h-screen p-6" role="status">Loading platform console…</main>}><Superadmin /></Suspense></div>} />
