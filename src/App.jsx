@@ -101,6 +101,7 @@ import {
 
 const MobileInventory = lazy(() => import('./pages/MobileInventory'))
 const Superadmin = lazy(() => import('./pages/Superadmin'))
+const LandingPage = lazy(() => import('./pages/LandingPage'))
 
 // Sidebar visibility comes from the permission catalog: every item is filtered
 // with canAccess(item.to), the same check the route guard uses, so the menu can
@@ -474,6 +475,17 @@ function Shell({ children }) {
               <Globe className="w-4 h-4" />
             </button>
 
+            {!isElectronShell() && (
+              <a
+                href="#/website"
+                title="3D Showcase Website"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-cyan-900 bg-cyan-100 hover:bg-cyan-200 border border-cyan-300 rounded-lg transition-all shadow-sm"
+              >
+                <span>🌐</span>
+                <span className="hidden xl:inline">3D Website</span>
+              </a>
+            )}
+
             {/* Installer downloads exist only on the web host: they are kept out of
                 every app bundle (that is what keeps the APK and the desktop
                 installers small). The packaged desktop app runs from file://, where
@@ -795,6 +807,8 @@ export default function App() {
       <ErrorBoundary>
         <Routes>
           {/* The shared module has its own server session and permissions. */}
+          <Route path="/website/*" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-cyan-400 font-mono text-sm">Loading 3D Website…</div>}><LandingPage /></Suspense>} />
+          <Route path="/landing/*" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-cyan-400 font-mono text-sm">Loading 3D Website…</div>}><LandingPage /></Suspense>} />
           <Route path="/mobile/*" element={<MobileRoute />} />
           <Route path="/admin/*" element={<AdminRoute />} />
           <Route path="/superadmin/*" element={<div className="fixed inset-0 h-full w-full overflow-y-auto"><Suspense fallback={<main className="min-h-screen p-6" role="status">Loading platform console…</main>}><Superadmin /></Suspense></div>} />

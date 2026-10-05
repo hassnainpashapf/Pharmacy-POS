@@ -122,6 +122,17 @@ export default function Login() {
             {loading ? 'Signing in…' : 'Sign In'}
           </button>
         </form>
+
+        <div className="pt-4 mt-5 border-t border-slate-100 text-center">
+          <a
+            href="#/website"
+            className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-[#008f8b] transition-colors py-1 group"
+          >
+            <span>🌐</span>
+            <span>Visit 3D Product Website & Download Center</span>
+            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+          </a>
+        </div>
       </div>
     </div>
   )
