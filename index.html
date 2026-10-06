@@ -7,6 +7,8 @@
 <title>Pharmacy POS — Management System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   body{font-family:'Inter',system-ui,sans-serif;}
   @keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
@@ -15,57 +17,18 @@
   @media print{ aside,header,#toasts{display:none!important} }
 </style>
 </head>
-<body><div id="diagline" style="background:#ff0;padding:8px;font:bold 14px sans-serif">DIAG2: static HTML renders</div>
+<body>
 <script>
-/* ===== DIAG error trap (must run first, must not throw) ===== */
-window.__errs=[];
-window.onerror=function(m,s,l,c){try{window.__errs.push(String(m)+' @'+l+':'+c);
-var d=document.getElementById('errbox');if(!d){d=document.createElement('div');d.id='errbox';
-d.style.cssText='position:fixed;top:0;left:0;right:0;background:#fee2e2;color:#991b1b;z-index:99999;padding:10px;font:12px monospace;white-space:pre-wrap;max-height:40vh;overflow:auto';
-(document.body||document.documentElement).appendChild(d);}d.textContent=window.__errs.join('\n');}catch(e){}return false;};
-window.addEventListener('unhandledrejection',function(e){window.onerror('PROMISE: '+((e.reason&&e.reason.message)||e.reason));});
 
-</script>
-<script>
-/* ===== DIAG3 small trap: runs BEFORE the big app script ===== */
-window.__errs=[];
-try{
-  var dl=document.getElementById('diagline');
-  if(dl){ dl.textContent+=' | SMALL-JS-RAN'; dl.style.background='#86efac'; }
-}catch(e){}
-window.onerror=function(m,s,l,c){
-  try{
-    window.__errs.push('ERR: '+String(m)+' @ line '+l+' col '+c);
-    var d=document.getElementById('errbox');
-    if(!d){ d=document.createElement('div'); d.id='errbox';
-      d.style.cssText='position:fixed;top:40px;left:0;right:0;background:#fee2e2;color:#991b1b;z-index:99999;padding:10px;font:12px monospace;white-space:pre-wrap;max-height:40vh;overflow:auto;border:3px solid #f00';
-      (document.body||document.documentElement).appendChild(d); }
-    d.textContent=window.__errs.join('\n');
-  }catch(e2){}
-  return false;
-};
-window.addEventListener('unhandledrejection',function(e){ window.onerror('PROMISE: '+((e.reason&&e.reason.message)||e.reason)); });
-function diagReport(){
-  try{
-    var ss=document.getElementsByTagName('script'), info=[];
-    for(var i=0;i<ss.length;i++){ info.push('script#'+i+':'+(ss[i].textContent||'').length+' chars'); }
-    var r=document.getElementById('diagreport');
-    if(!r){ r=document.createElement('div'); r.id='diagreport';
-      r.style.cssText='background:#dbeafe;padding:8px;font:12px monospace;white-space:pre-wrap';
-      (document.body||document.documentElement).appendChild(r); }
-    r.textContent='SCRIPT SIZES => '+info.join(' | ');
-  }catch(e){}
-}
-if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',diagReport);
-else diagReport();
-</script>
-
-<script>
 /* ===== 00_helpers.js ===== */
 /* 00_helpers.js — global utilities. Loaded first. */
 (function(){
 'use strict';
 const G = window;
+/* GAS HtmlService strips double-slash to end-of-line inside served scripts,
+   so a URL must never contain a literal double-slash inside a JS string.
+   Use HTTPS instead. */
+G.HTTPS = 'https:' + '/' + '/';
 
 /* ---------- element builder ---------- */
 function h(tag, attrs, ...children){
@@ -215,7 +178,7 @@ function printHTML(html, title='Print'){
 function waShare(phone, text){
   let p=String(phone||'').replace(/\D/g,'');
   if(p && !p.startsWith('92') && p.length===11 && p.startsWith('0')) p='92'+p.slice(1);
-  window.open('https://wa.me/'+(p||'')+'?text='+encodeURIComponent(text),'_blank');
+  window.open(HTTPS+'wa.me/'+(p||'')+'?text='+encodeURIComponent(text),'_blank');
 }
 function levelUnits(med, level){ // level: carton|box|packet|unit → units per pack
   const pk=med.pack||{};
@@ -3257,7 +3220,7 @@ async function rxModal(onSaved){
       ${field('Days','days',{type:'number',min:0})}
       ${field('Refills','refills',{type:'number',min:0,value:0})}
       <div class="sm:col-span-2"><label class="block"><span class="block text-xs font-medium text-slate-600 mb-1">Prescription Image URL (optional)</span>
-        <input name="imageUrl" placeholder="https://…" class="border border-slate-300 rounded-lg px-3 py-2 w-full text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+        <input name="imageUrl" placeholder="${HTTPS}…" class="border border-slate-300 rounded-lg px-3 py-2 w-full text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
         <img id="rxImgPrev" class="hidden mt-2 max-h-32 rounded-lg border border-slate-200" alt="preview"></label></div>
       <div class="sm:col-span-2">${field('Notes','notes',{type:'textarea',rows:2})}</div>
       <div class="sm:col-span-2 flex justify-end gap-2 mt-1">
@@ -4493,7 +4456,7 @@ App.routes['#/settings'] = async function(el){
           ${field('Email','email',{value:s.email||'',type:'email'})}
           ${field('Currency','currency',{value:s.currency||'PKR'})}
           <div class="md:col-span-2">${field('Address','address',{value:s.address||''})}</div>
-          <div class="md:col-span-2">${field('Logo URL','logoUrl',{value:s.logoUrl||'',ph:'https://…'})}</div>
+          <div class="md:col-span-2">${field('Logo URL','logoUrl',{value:s.logoUrl||'',ph:HTTPS+'…'})}</div>
           <div class="md:col-span-2">${field('Receipt Footer','receiptFooter',{type:'textarea',value:s.receiptFooter||'',ph:'Thank you for visiting…',rows:2})}</div>
         </div>`)}
         ${card('Payment Methods',`<div id="pmList" class="space-y-2 mb-3">
