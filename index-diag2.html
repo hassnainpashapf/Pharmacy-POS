@@ -7,8 +7,6 @@
 <title>Pharmacy POS — Management System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   body{font-family:'Inter',system-ui,sans-serif;}
   @keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
@@ -17,8 +15,15 @@
   @media print{ aside,header,#toasts{display:none!important} }
 </style>
 </head>
-<body>
+<body><div id="diagline" style="background:#ff0;padding:8px;font:bold 14px sans-serif">DIAG2: static HTML renders</div>
 <script>
+/* ===== DIAG error trap (must run first, must not throw) ===== */
+window.__errs=[];try{document.title='JS-RUNNING';}catch(e){}
+window.onerror=function(m,s,l,c){try{window.__errs.push(String(m)+' @'+l+':'+c);
+var d=document.getElementById('errbox');if(!d){d=document.createElement('div');d.id='errbox';
+d.style.cssText='position:fixed;top:0;left:0;right:0;background:#fee2e2;color:#991b1b;z-index:99999;padding:10px;font:12px monospace;white-space:pre-wrap;max-height:40vh;overflow:auto';
+(document.body||document.documentElement).appendChild(d);}d.textContent=window.__errs.join('\n');}catch(e){}return false;};
+window.addEventListener('unhandledrejection',function(e){window.onerror('PROMISE: '+((e.reason&&e.reason.message)||e.reason));});
 
 /* ===== 00_helpers.js ===== */
 /* 00_helpers.js — global utilities. Loaded first. */
