@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<base target="_top">
 <title>Pharmacy POS — Management System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1085,6 +1084,7 @@ App.routes['#/dashboard'] = async (el)=>{
     body.innerHTML=skeleton();
     try{
       const d=await API.call('getDashboard');
+      if(!d||typeof d!=='object') throw new Error('Server returned empty dashboard data (got '+String(d).slice(0,80)+') — please run setupSheet in the Apps Script editor, then retry.');
       const k=d.kpis||{};
       const alerts=normalizeAlerts(d.alerts);
       const expRows=[...(alerts.expired||[]), ...(alerts.nearExpiry||[])]
