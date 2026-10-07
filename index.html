@@ -1029,29 +1029,42 @@ function shellHTML(){
     else if(e.key==='/'){ e.preventDefault(); openPalette(); }
   });
   renderBell();
+  App.refreshAlerts();
   renderNav();
 }
 
 /* ---------- notifications ---------- */
 const BELLSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M18 9a6 6 0 10-12 0c0 6-2.5 7-2.5 7h17S18 15 18 9z"/><path d="M10 20a2.2 2.2 0 004 0"/></svg>';
-function bellCount(){ const b=Session.bootstrap||{}; return (b.nearExpiry||[]).length+(b.lowStock||[]).length; }
+function bellCount(){ const a=Session.alerts||{}; return (a.expired||[]).length+(a.nearExpiry||[]).length+(a.lowStock||[]).length+(a.outOfStock||[]).length; }
+App.refreshAlerts=async function(data){
+  try{ Session.alerts=data||await API.call('getStockAlerts'); }
+  catch(e){ if(!data) Session.alerts=null; }
+  renderBell();
+};
+App.renderBell=renderBell;
 function renderBell(){
   const btn=document.getElementById('bellBtn'); if(!btn) return;
   const n=bellCount();
   btn.innerHTML=BELLSVG+(n?`<span class="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">${n>99?'99+':n}</span>`:'');
 }
 function closeDrops(except){ ['bellDrop','avatarDrop'].forEach(id=>{ if(id!==except){ const el=document.getElementById(id); if(el) el.classList.add('hidden'); } }); }
+function bellRow(x, dotCls, detail){
+  return `<a href="#/alerts" class="flex gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors"><span class="w-2 h-2 rounded-full ${dotCls} mt-1.5 shrink-0"></span><span class="text-sm min-w-0"><span class="font-medium text-slate-700">${esc(x.brand||'')}</span><span class="text-slate-400"> · ${detail}</span></span></a>`;
+}
 function toggleBell(){
   closeDrops('bellDrop');
   const d=document.getElementById('bellDrop'); if(!d) return;
-  const b=Session.bootstrap||{};
-  const exp=(b.nearExpiry||[]).slice(0,5), low=(b.lowStock||[]).slice(0,5);
+  const a=Session.alerts||{};
+  const rows=[
+    ...(a.expired||[]).slice(0,3).map(x=>bellRow(x,'bg-red-500 pulse-dot','EXPIRED — batch '+esc(x.batchNo||''))),
+    ...(a.nearExpiry||[]).slice(0,4).map(x=>bellRow(x,'bg-amber-500 pulse-dot','batch '+esc(x.batchNo||'')+' expires '+esc(x.expiry||''))),
+    ...(a.outOfStock||[]).slice(0,3).map(x=>bellRow(x,'bg-red-500','out of stock')),
+    ...(a.lowStock||[]).slice(0,4).map(x=>bellRow(x,'bg-amber-500','only '+fmtNum(x.stock)+' left'))
+  ].join('');
   d.innerHTML=`<div class="px-4 py-3 border-b border-slate-100 font-display font-bold text-sm text-slate-800 flex items-center justify-between">Notifications
     ${bellCount()?`<span class="text-[11px] font-semibold text-slate-400">${bellCount()} active</span>`:''}</div>
     <div class="max-h-80 overflow-y-auto p-2">
-    ${exp.map(x=>`<a href="#/alerts" class="flex gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors"><span class="w-2 h-2 rounded-full bg-amber-500 mt-1.5 shrink-0 pulse-dot"></span><span class="text-sm min-w-0"><span class="font-medium text-slate-700">${esc(x.brand||'')}</span><span class="text-slate-400"> · batch ${esc(x.batchNo||'')} expires ${esc(x.expiry||'')}</span></span></a>`).join('')}
-    ${low.map(x=>`<a href="#/alerts" class="flex gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors"><span class="w-2 h-2 rounded-full bg-red-500 mt-1.5 shrink-0"></span><span class="text-sm min-w-0"><span class="font-medium text-slate-700">${esc(x.brand||'')}</span><span class="text-slate-400"> · only ${fmtNum(x.stock)} left</span></span></a>`).join('')}
-    ${!exp.length&&!low.length?'<div class="py-10 text-center"><div class="text-2xl mb-2 text-emerald-500">✓</div><div class="text-sm text-slate-400">All clear — no alerts</div></div>':''}
+    ${rows||'<div class="py-10 text-center"><div class="text-2xl mb-2 text-emerald-500">✓</div><div class="text-sm text-slate-400">All clear — no alerts</div></div>'}
     </div>
     <a href="#/alerts" class="block text-center text-xs font-semibold text-teal-600 hover:text-teal-700 hover:bg-teal-50/50 py-2.5 border-t border-slate-100 transition-colors">View all alerts</a>`;
   d.classList.toggle('hidden');
@@ -2647,6 +2660,7 @@ App.routes['#/alerts']=async function(el,params){
     +'<div id="alertsWrap">'+spinnerHTML()+'</div>';
   try{
     var a=await API.call('getStockAlerts');
+    Session.alerts=a; if(App.renderBell) App.renderBell();
     renderAlerts(el,a);
     el.querySelector('#btnPrintAlerts').onclick=function(){printAlerts(a);};
   }catch(e){
