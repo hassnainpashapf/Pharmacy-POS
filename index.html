@@ -17,9 +17,16 @@
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   @keyframes scaleIn{from{transform:scale(.96) translateY(8px);opacity:0}to{transform:none;opacity:1}}
   @keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
+  @keyframes shimmer{from{background-position:-400px 0}to{background-position:400px 0}}
+  @keyframes drift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(40px,-30px) scale(1.15)}}
+  @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.4}}
   .anim-fadeUp{animation:fadeUp .35s cubic-bezier(.21,.9,.35,1) both}
   .anim-fadeIn{animation:fadeIn .25s ease both}
   .anim-scaleIn{animation:scaleIn .22s cubic-bezier(.21,.9,.35,1) both}
+  .shimmer{background:linear-gradient(90deg,#f1f5f9 25%,#e8eef4 50%,#f1f5f9 75%);background-size:800px 100%;animation:shimmer 1.3s infinite linear}
+  .blob{animation:drift 9s ease-in-out infinite}
+  .pulse-dot{animation:pulseDot 1.6s ease-in-out infinite}
+  kbd.k{font-family:'Inter',sans-serif;font-size:10px;background:#f1f5f9;border:1px solid #e2e8f0;border-bottom-width:2px;border-radius:6px;padding:1px 6px;color:#64748b;font-weight:600}
   ::-webkit-scrollbar{width:9px;height:9px}
   ::-webkit-scrollbar-track{background:transparent}
   ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:99px;border:2px solid transparent;background-clip:content-box}
@@ -153,15 +160,36 @@ function tableHTML(cols, rows, opts={}){
       }).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}" class="px-4 py-12 text-center"><div class="text-slate-300 text-3xl mb-2">◌</div><div class="text-sm text-slate-400">${opts.empty||'No records found'}</div></td></tr>`}</tbody>
     </table></div>`;
 }
-function statCard(label,value,sub='',accent='teal',icon=''){
+function statCard(label,value,sub='',accent='teal',icon='',raw=null,prefix=''){
   const chip={teal:'bg-teal-50 text-teal-600',emerald:'bg-emerald-50 text-emerald-600',red:'bg-red-50 text-red-500',amber:'bg-amber-50 text-amber-500',blue:'bg-blue-50 text-blue-500',slate:'bg-slate-100 text-slate-500',violet:'bg-violet-50 text-violet-500',cyan:'bg-cyan-50 text-cyan-600'}[accent]||'bg-teal-50 text-teal-600';
+  const cnt=raw!=null?` data-countup="${raw}" data-prefix="${esc(prefix)}"`:'';
   return `<div class="bg-white rounded-2xl border border-slate-200/70 shadow-[0_1px_3px_rgba(15,23,42,.05)] p-5 card-hover">
     <div class="flex items-center justify-between mb-3">
       <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">${label}</div>
-      ${icon?`<div class="w-9 h-9 rounded-xl ${chip} flex items-center justify-center text-lg">${icon}</div>`:''}
+      ${icon?`<div class="w-9 h-9 rounded-xl ${chip} flex items-center justify-center">${icon}</div>`:''}
     </div>
-    <div class="font-display text-[26px] leading-8 font-bold text-slate-800 tabular-nums">${value}</div>
+    <div class="font-display text-[26px] leading-8 font-bold text-slate-800 tabular-nums"${cnt}>${value}</div>
     ${sub?`<div class="text-xs text-slate-400 mt-1.5">${sub}</div>`:''}</div>`;
+}
+/* count-up animation for [data-countup] values */
+function animateCounters(root){
+  (root||document).querySelectorAll('[data-countup]').forEach(el=>{
+    const target=parseFloat(el.dataset.countup), prefix=el.dataset.prefix||'';
+    if(!isFinite(target)) return;
+    const t0=performance.now(), dur=900;
+    (function tick(t){ const p=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-p,3);
+      el.textContent=prefix+fmtNum(Math.round(target*e));
+      if(p<1) requestAnimationFrame(tick); })(t0);
+  });
+}
+/* empty state */
+function emptyState(title, sub='', action=''){
+  return `<div class="text-center py-14 px-6 anim-fadeIn">
+    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-300">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" class="w-8 h-8"><path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4M12 12v8"/></svg></div>
+    <div class="font-display font-bold text-slate-700">${title}</div>
+    ${sub?`<div class="text-sm text-slate-400 mt-1.5 max-w-xs mx-auto">${sub}</div>`:''}
+    ${action?`<div class="mt-4">${action}</div>`:''}</div>`;
 }
 function pageHead(title, sub, actions=''){
   return `<div class="flex flex-wrap items-center justify-between gap-3 mb-6 anim-fadeUp">
@@ -880,8 +908,9 @@ function loginPage(){
   <div class="min-h-screen flex">
     <div class="hidden lg:flex w-[46%] relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-800 to-emerald-900 text-white">
       <div class="absolute inset-0 login-pattern opacity-60"></div>
-      <div class="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-teal-500/20 blur-3xl"></div>
-      <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-emerald-400/20 blur-3xl"></div>
+      <div class="blob absolute -bottom-24 -left-24 w-[28rem] h-[28rem] rounded-full bg-teal-400/25 blur-3xl"></div>
+      <div class="blob absolute -top-24 -right-24 w-[28rem] h-[28rem] rounded-full bg-emerald-300/20 blur-3xl" style="animation-delay:-4s"></div>
+      <div class="blob absolute top-1/3 left-1/4 w-72 h-72 rounded-full bg-cyan-300/15 blur-3xl" style="animation-delay:-7s"></div>
       <div class="relative z-10 flex flex-col justify-between p-12 w-full">
         <div class="flex items-center gap-3">${LOGOMARK}
           <div><div class="font-display font-bold text-xl">Pharmacy POS</div>
@@ -898,8 +927,9 @@ function loginPage(){
         <div class="text-teal-200/50 text-xs">Secure sign-in · Your data stays in your Google account</div>
       </div>
     </div>
-    <div class="flex-1 flex items-center justify-center p-6">
-      <div class="w-full max-w-sm anim-fadeUp">
+    <div class="flex-1 flex items-center justify-center p-6 relative">
+      <div class="absolute inset-0 bg-gradient-to-br from-teal-50/60 via-transparent to-emerald-50/40 pointer-events-none"></div>
+      <div class="relative w-full max-w-sm anim-fadeUp bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_20px_60px_-15px_rgba(13,148,136,.25)] rounded-3xl p-8">
         <div class="lg:hidden flex items-center gap-3 mb-8 justify-center">${LOGOMARK}
           <div class="font-display font-bold text-xl text-slate-800">Pharmacy POS</div>
         </div>
@@ -950,16 +980,26 @@ function shellHTML(){
       </div>
     </aside>
     <div class="flex-1 lg:ml-[248px] min-w-0">
-      <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-slate-200/70 px-4 lg:px-8 py-3 flex items-center gap-3">
+      <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-slate-200/70 px-4 lg:px-8 py-3 flex items-center gap-2.5">
         <button id="menuBtn" class="lg:hidden w-9 h-9 rounded-xl hover:bg-slate-100 flex items-center justify-center text-slate-600">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="w-5 h-5"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
-        <div class="flex-1 relative">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="w-[18px] h-[18px] absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-          <input id="gsearch" placeholder="Search medicines…  ( / )" class="w-full max-w-md bg-slate-100/80 border border-transparent rounded-xl pl-10 pr-4 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-teal-500/40 focus:border-teal-500 focus:outline-none transition">
-          <div id="gresults" class="absolute mt-2 w-full max-w-md bg-white border border-slate-200/70 rounded-2xl shadow-xl hidden max-h-80 overflow-y-auto z-50"></div>
+        <div id="crumb" class="font-display font-bold text-slate-800 text-[17px] hidden sm:block truncate"></div>
+        <div class="flex-1"></div>
+        <button id="palBtn" class="hidden md:flex items-center gap-2.5 w-full max-w-xs bg-slate-100/80 hover:bg-slate-100 rounded-xl px-3.5 py-2.5 text-sm text-slate-400 transition">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="w-[18px] h-[18px]"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <span class="flex-1 text-left">Search or jump to…</span><kbd class="k">Ctrl K</kbd></button>
+        <button id="palBtnM" class="md:hidden w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center text-slate-500">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" class="w-5 h-5"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+        <div class="relative">
+          <button id="bellBtn" class="w-10 h-10 rounded-xl hover:bg-slate-100 flex items-center justify-center text-slate-500 transition relative"></button>
+          <div id="bellDrop" class="hidden absolute right-0 mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white rounded-2xl border border-slate-200/70 shadow-xl z-50 overflow-hidden anim-scaleIn"></div>
         </div>
         <button id="posBtn" class="hidden sm:flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-b from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white text-sm font-semibold shadow-[0_2px_8px_rgba(13,148,136,.35)] active:scale-[.98] transition">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="w-4 h-4"><path d="M12 5v14M5 12h14"/></svg>New Sale</button>
+        <div class="relative">
+          <button id="avatarBtn" class="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 to-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-sm hover:shadow transition"></button>
+          <div id="avatarDrop" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl border border-slate-200/70 shadow-xl z-50 overflow-hidden anim-scaleIn"></div>
+        </div>
       </header>
       <main id="view" class="p-4 lg:p-8 max-w-[1440px] mx-auto"></main>
     </div>
@@ -975,22 +1015,120 @@ function shellHTML(){
   const side=document.getElementById('side'), ov=document.getElementById('sideOv');
   const toggle=()=>{ side.classList.toggle('-translate-x-full'); ov.classList.toggle('hidden'); };
   document.getElementById('menuBtn').onclick=toggle; ov.onclick=toggle;
+  const av=document.getElementById('avatarBtn'); if(av) av.textContent=(u.name||'A')[0].toUpperCase();
+  document.getElementById('palBtn').onclick=openPalette;
+  document.getElementById('palBtnM').onclick=openPalette;
+  document.getElementById('bellBtn').onclick=e=>{e.stopPropagation();toggleBell();};
+  document.getElementById('avatarBtn').onclick=e=>{e.stopPropagation();toggleAvatar();};
+  document.addEventListener('click',()=>closeDrops());
+  document.addEventListener('keydown',e=>{
+    const tag=(e.target.tagName||'').toLowerCase();
+    if(tag==='input'||tag==='textarea'||tag==='select') return;
+    if((e.ctrlKey||e.metaKey)&&String(e.key).toLowerCase()==='k'){ e.preventDefault(); openPalette(); }
+    else if(e.key==='/'){ e.preventDefault(); openPalette(); }
+  });
+  renderBell();
   renderNav();
-  // global medicine search
-  const gs=document.getElementById('gsearch'), gr=document.getElementById('gresults');
-  gs.addEventListener('keydown',e=>{ if(e.key==='/'&&document.activeElement!==gs){e.preventDefault();gs.focus();} });
-  gs.addEventListener('input',debounce(async()=>{
-    const q=gs.value.trim(); if(q.length<2){gr.classList.add('hidden');return;}
-    try{
-      const meds=await API.call('listMedicines',q);
-      gr.innerHTML=meds.slice(0,8).map(m=>`<button data-id="${m.id}" class="w-full text-left px-4 py-3 hover:bg-teal-50/60 border-b border-slate-50 last:border-0 transition-colors">
-        <div class="font-semibold text-sm text-slate-700">${esc(m.brand)} <span class="font-normal text-slate-400">${esc(m.strength)}</span></div>
-        <div class="text-xs text-slate-400 mt-0.5">${esc(m.generic)} · Stock: ${fmtNum(m.stock)} units</div></button>`).join('')||'<div class="px-4 py-6 text-sm text-slate-400 text-center">No matches</div>';
-      gr.classList.remove('hidden');
-      gr.querySelectorAll('button').forEach(btn=>btn.onclick=()=>{ gr.classList.add('hidden'); gs.value=''; location.hash='#/inventory?med='+btn.dataset.id; });
-    }catch(e){}
-  },250));
-  document.addEventListener('click',e=>{ if(!gr.contains(e.target)&&e.target!==gs) gr.classList.add('hidden'); });
+}
+
+/* ---------- notifications ---------- */
+const BELLSVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M18 9a6 6 0 10-12 0c0 6-2.5 7-2.5 7h17S18 15 18 9z"/><path d="M10 20a2.2 2.2 0 004 0"/></svg>';
+function bellCount(){ const b=Session.bootstrap||{}; return (b.nearExpiry||[]).length+(b.lowStock||[]).length; }
+function renderBell(){
+  const btn=document.getElementById('bellBtn'); if(!btn) return;
+  const n=bellCount();
+  btn.innerHTML=BELLSVG+(n?`<span class="absolute top-1 right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-white">${n>99?'99+':n}</span>`:'');
+}
+function closeDrops(except){ ['bellDrop','avatarDrop'].forEach(id=>{ if(id!==except){ const el=document.getElementById(id); if(el) el.classList.add('hidden'); } }); }
+function toggleBell(){
+  closeDrops('bellDrop');
+  const d=document.getElementById('bellDrop'); if(!d) return;
+  const b=Session.bootstrap||{};
+  const exp=(b.nearExpiry||[]).slice(0,5), low=(b.lowStock||[]).slice(0,5);
+  d.innerHTML=`<div class="px-4 py-3 border-b border-slate-100 font-display font-bold text-sm text-slate-800 flex items-center justify-between">Notifications
+    ${bellCount()?`<span class="text-[11px] font-semibold text-slate-400">${bellCount()} active</span>`:''}</div>
+    <div class="max-h-80 overflow-y-auto p-2">
+    ${exp.map(x=>`<a href="#/alerts" class="flex gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors"><span class="w-2 h-2 rounded-full bg-amber-500 mt-1.5 shrink-0 pulse-dot"></span><span class="text-sm min-w-0"><span class="font-medium text-slate-700">${esc(x.brand||'')}</span><span class="text-slate-400"> · batch ${esc(x.batchNo||'')} expires ${esc(x.expiry||'')}</span></span></a>`).join('')}
+    ${low.map(x=>`<a href="#/alerts" class="flex gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-50 transition-colors"><span class="w-2 h-2 rounded-full bg-red-500 mt-1.5 shrink-0"></span><span class="text-sm min-w-0"><span class="font-medium text-slate-700">${esc(x.brand||'')}</span><span class="text-slate-400"> · only ${fmtNum(x.stock)} left</span></span></a>`).join('')}
+    ${!exp.length&&!low.length?'<div class="py-10 text-center"><div class="text-2xl mb-2 text-emerald-500">✓</div><div class="text-sm text-slate-400">All clear — no alerts</div></div>':''}
+    </div>
+    <a href="#/alerts" class="block text-center text-xs font-semibold text-teal-600 hover:text-teal-700 hover:bg-teal-50/50 py-2.5 border-t border-slate-100 transition-colors">View all alerts</a>`;
+  d.classList.toggle('hidden');
+}
+function toggleAvatar(){
+  closeDrops('avatarDrop');
+  const d=document.getElementById('avatarDrop'); if(!d) return;
+  const u=Session.user||{};
+  const item=(hash,label)=>`<a href="${hash}" class="flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-slate-600 hover:bg-slate-50 font-medium transition-colors">${label}</a>`;
+  d.innerHTML=`<div class="px-4 py-3.5 border-b border-slate-100 bg-slate-50/60">
+      <div class="font-semibold text-sm text-slate-800">${esc(u.name||u.username||'')}</div>
+      <div class="text-xs text-slate-400 capitalize mt-0.5">${esc(u.role||'')}</div></div>
+    <div class="p-2">
+      ${perm('settings','view')?item('#/settings','Settings'):''}
+      ${perm('users','view')?item('#/users','Users & roles'):''}
+      <button id="avLogout" class="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-sm text-red-600 hover:bg-red-50 font-medium text-left transition-colors">Sign out</button>
+    </div>`;
+  d.classList.toggle('hidden');
+  const lo=d.querySelector('#avLogout');
+  if(lo) lo.onclick=()=>{ Session.clear(); location.hash='#/login'; boot(); };
+}
+
+/* ---------- command palette ---------- */
+let palMeds=null;
+async function palMedsLoad(){ if(!palMeds){ try{ palMeds=await API.call('listMedicines',''); }catch(e){ palMeds=[]; } } return palMeds; }
+function openPalette(){
+  if(document.getElementById('palette')||!Session.user) return;
+  const ov=h('div',{id:'palette',class:'fixed inset-0 z-[9500] bg-slate-900/40 backdrop-blur-[2px] p-4 anim-fadeIn'});
+  const panel=h('div',{class:'max-w-xl mx-auto mt-[10vh] bg-white rounded-2xl shadow-2xl overflow-hidden anim-scaleIn border border-slate-200/60'});
+  const input=h('input',{class:'w-full px-5 py-4 text-[15px] text-slate-800 placeholder:text-slate-400 focus:outline-none border-b border-slate-100',placeholder:'Search pages, medicines, actions…'});
+  input.setAttribute('autocomplete','off');
+  const list=h('div',{class:'max-h-[46vh] overflow-y-auto p-2'});
+  const foot=h('div',{class:'px-4 py-2.5 border-t border-slate-100 flex items-center gap-4 text-[11px] text-slate-400'});
+  foot.innerHTML='<span class="flex items-center gap-1.5"><kbd class="k">↑↓</kbd> navigate</span><span class="flex items-center gap-1.5"><kbd class="k">↵</kbd> open</span><span class="flex items-center gap-1.5"><kbd class="k">esc</kbd> close</span>';
+  panel.append(input,list,foot); ov.append(panel); document.body.append(ov);
+  let items=[], sel=0;
+  function renderItems(){
+    list.innerHTML=items.length?items.map((it,i)=>`
+      <button data-i="${i}" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${i===sel?'bg-teal-50':'hover:bg-slate-50'}">
+        <span class="${i===sel?'text-teal-600':'text-slate-400'}">${it.icon}</span>
+        <span class="flex-1 min-w-0"><span class="block text-sm font-medium ${i===sel?'text-teal-800':'text-slate-700'} truncate">${esc(it.label)}</span>
+        ${it.sub?`<span class="block text-xs text-slate-400 truncate">${esc(it.sub)}</span>`:''}</span>
+        <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-300">${it.kind}</span>
+      </button>`).join(''):'<div class="py-10 text-center text-sm text-slate-400">No matches — try another search</div>';
+    list.querySelectorAll('button').forEach(b=>{
+      b.onclick=()=>go(items[Number(b.dataset.i)]);
+      b.onmousemove=()=>{ const ni=Number(b.dataset.i); if(ni!==sel){ sel=ni; renderItems(); } };
+    });
+  }
+  async function search(q){
+    q=String(q||'').trim().toLowerCase();
+    const pages=App.nav.filter(n=>perm(n.perm,'view')&&(!q||n.label.toLowerCase().includes(q)))
+      .map(n=>({kind:'page',label:n.label,sub:'Navigate to '+n.label,icon:App.ICONS[n.icon]||'',fn:()=>{location.hash=n.path;}}));
+    const acts=[
+      {kind:'action',label:'New sale',sub:'Open POS billing',icon:App.ICONS.pos,fn:()=>{location.hash='#/pos';}},
+      {kind:'action',label:'New purchase order',sub:'Record a supplier purchase',icon:App.ICONS.purchases,fn:()=>{location.hash='#/purchases';}},
+      {kind:'action',label:'Add medicine',sub:'Add to inventory',icon:App.ICONS.inventory,fn:()=>{location.hash='#/inventory';}},
+    ].filter(a=>!q||a.label.toLowerCase().includes(q));
+    let meds=[];
+    if(q.length>1){
+      const all=await palMedsLoad();
+      meds=all.filter(m=>((m.brand||'')+' '+(m.generic||'')).toLowerCase().includes(q)).slice(0,6)
+        .map(m=>({kind:'stock',label:(m.brand||'')+' '+(m.strength||''),sub:(m.generic||'')+' · '+fmtNum(m.stock)+' in stock',icon:App.ICONS.inventory,fn:()=>{location.hash='#/inventory';}}));
+    }
+    items=[...acts,...pages,...meds].slice(0,14); sel=0; renderItems();
+  }
+  function go(it){ close(); if(it&&it.fn) it.fn(); }
+  function close(){ ov.remove(); document.removeEventListener('keydown',onKey,true); }
+  function onKey(e){
+    if(e.key==='Escape'){ e.stopPropagation(); close(); }
+    else if(e.key==='ArrowDown'){ e.preventDefault(); sel=Math.min(items.length-1,sel+1); renderItems(); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); sel=Math.max(0,sel-1); renderItems(); }
+    else if(e.key==='Enter'){ e.preventDefault(); go(items[sel]); }
+  }
+  document.addEventListener('keydown',onKey,true);
+  ov.addEventListener('mousedown',e=>{ if(e.target===ov) close(); });
+  input.addEventListener('input',debounce(()=>search(input.value),150));
+  search(''); setTimeout(()=>input.focus(),50);
 }
 
 function renderNav(){
@@ -1017,7 +1155,9 @@ async function route(){
   // match longest registered prefix
   const keys=Object.keys(App.routes).sort((a,b)=>b.length-a.length);
   const key=keys.find(k=>path===k||path.startsWith(k+'/'));
-  view.innerHTML='<div class="space-y-4 anim-fadeIn"><div class="h-9 bg-white rounded-2xl animate-pulse w-1/3"></div><div class="h-72 bg-white rounded-2xl animate-pulse"></div></div>';
+  const crumb=document.getElementById('crumb');
+  if(crumb){ const n=App.nav.find(n=>n.path===(key||path)); crumb.textContent=n?n.label:''; }
+  view.innerHTML='<div class="space-y-4 anim-fadeIn"><div class="h-9 shimmer rounded-2xl w-1/3"></div><div class="h-72 shimmer rounded-2xl"></div></div>';
   try{
     if(key) await App.routes[key](view, params, path);
     else { view.innerHTML=pageHead('Not found','')+'<p class="text-slate-500">This page does not exist.</p>'; }
@@ -1053,8 +1193,8 @@ App.nav.push({group:'SALES', path:'#/dashboard', label:'Dashboard', icon:'dashbo
 const PALETTE=['#059669','#0ea5e9','#8b5cf6','#f59e0b','#ef4444','#6366f1','#14b8a6','#f97316'];
 
 function skeleton(){
-  const cards = Array.from({length:7},()=>'<div class="bg-white rounded-2xl border border-slate-200/70 p-5"><div class="h-3 bg-slate-100 rounded-full w-1/2 mb-3 animate-pulse"></div><div class="h-8 bg-slate-100 rounded-lg w-3/4 animate-pulse"></div></div>').join('');
-  const blocks = Array.from({length:3},()=>'<div class="bg-white rounded-2xl border border-slate-200/70 p-6"><div class="h-4 bg-slate-100 rounded-full w-1/3 mb-5 animate-pulse"></div><div class="h-48 bg-slate-50 rounded-xl animate-pulse"></div></div>').join('');
+  const cards = Array.from({length:7},()=>'<div class="bg-white rounded-2xl border border-slate-200/70 p-5"><div class="h-3 bg-slate-100 rounded-full w-1/2 mb-3 shimmer"></div><div class="h-8 bg-slate-100 rounded-lg w-3/4 shimmer"></div></div>').join('');
+  const blocks = Array.from({length:3},()=>'<div class="bg-white rounded-2xl border border-slate-200/70 p-6"><div class="h-4 bg-slate-100 rounded-full w-1/3 mb-5 shimmer"></div><div class="h-48 bg-slate-50 rounded-xl shimmer"></div></div>').join('');
   return `<div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-4 mb-5">${cards}</div>
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">${blocks}</div>`;
 }
@@ -1159,13 +1299,13 @@ App.routes['#/dashboard'] = async (el)=>{
         .sort((a,b)=>(Number(a.stock)||0)-(Number(b.stock)||0)).slice(0,5);
 
       const kpiHtml=
-        statCard("Today's Sales", fmt(k.todaySales), 'All payment methods', 'teal', App.ICONS.sales) +
-        statCard("Today's Profit", fmt(k.todayProfit), 'Sales minus COGS', 'emerald', App.ICONS.accounting) +
-        statCard('This Month', fmt(k.monthSales), 'Month-to-date sales', 'violet', App.ICONS.reports) +
-        statCard('Low / Out Stock', fmtNum((k.lowStock||0)), 'Medicines below reorder', 'red', App.ICONS.alerts) +
-        statCard('Near Expiry', fmtNum(k.nearExpiry||0), 'Batches within 90 days', 'amber', App.ICONS.inventory) +
-        statCard('Customers', fmtNum(k.totalCustomers||0), 'Registered', 'blue', App.ICONS.customers) +
-        statCard('Pending Dues', fmt(k.pendingDues), 'Customer receivables', 'cyan', App.ICONS.pos);
+        statCard("Today's Sales", fmt(k.todaySales), 'All payment methods', 'teal', App.ICONS.sales, Math.round(k.todaySales||0), 'Rs ') +
+        statCard("Today's Profit", fmt(k.todayProfit), 'Sales minus COGS', 'emerald', App.ICONS.accounting, Math.round(k.todayProfit||0), 'Rs ') +
+        statCard('This Month', fmt(k.monthSales), 'Month-to-date sales', 'violet', App.ICONS.reports, Math.round(k.monthSales||0), 'Rs ') +
+        statCard('Low / Out Stock', fmtNum((k.lowStock||0)), 'Medicines below reorder', 'red', App.ICONS.alerts, k.lowStock||0) +
+        statCard('Near Expiry', fmtNum(k.nearExpiry||0), 'Batches within 90 days', 'amber', App.ICONS.inventory, k.nearExpiry||0) +
+        statCard('Customers', fmtNum(k.totalCustomers||0), 'Registered', 'blue', App.ICONS.customers, k.totalCustomers||0) +
+        statCard('Pending Dues', fmt(k.pendingDues), 'Customer receivables', 'cyan', App.ICONS.pos, Math.round(k.pendingDues||0), 'Rs ');
 
       const expHtml = expRows.length ? expRows.map(r=>
         `<div class="flex items-center justify-between gap-2 py-2.5 border-b border-slate-100 last:border-0">
@@ -1184,8 +1324,20 @@ App.routes['#/dashboard'] = async (el)=>{
         </div>`;}).join('')
         : '<div class="py-8 text-center text-slate-400 text-sm">Stock levels healthy 🎉</div>';
 
+      const hr=new Date().getHours();
+      const greet=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+      const uname=((Session.user||{}).name||(Session.user||{}).username||'').split(' ')[0];
+      const todayStr=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
       body.innerHTML=
-        `<div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-4 mb-5 anim-fadeUp">${kpiHtml}</div>
+        `<div class="flex flex-wrap items-center justify-between gap-3 mb-6 anim-fadeUp">
+          <div><h1 class="font-display text-[26px] font-bold text-slate-800 tracking-tight">${greet}${uname?', '+esc(uname):''}</h1>
+          <p class="text-sm text-slate-400 mt-1">${todayStr} · Here is your pharmacy at a glance.</p></div>
+          <div class="flex gap-2 flex-wrap">
+            <button class="${btnS}" id="qaSale">+ New Sale</button>
+            <button class="${btnS}" id="qaPO">New Purchase</button>
+            <button class="${btnS}" id="qaMed">Add Medicine</button>
+          </div></div>
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-7 gap-4 mb-5 anim-fadeUp">${kpiHtml}</div>
          <div class="grid grid-cols-1 xl:grid-cols-3 gap-4 mb-5">
            <div class="bg-white rounded-2xl border border-slate-200/70 shadow-[0_1px_3px_rgba(15,23,42,.05)] p-6 xl:col-span-2">
              <div class="flex items-center justify-between mb-5"><h3 class="font-display font-bold text-slate-800">Sales trend</h3><span class="text-xs font-medium text-slate-400 bg-slate-100 px-2.5 py-1 rounded-full">Last 14 days</span></div>
@@ -1215,6 +1367,10 @@ App.routes['#/dashboard'] = async (el)=>{
 
       drawTrend(cid+'-trend', d.salesTrend);
       drawPaySplit(cid+'-pay', d.paySplit);
+      animateCounters(body);
+      body.querySelector('#qaSale').onclick=()=>location.hash='#/pos';
+      body.querySelector('#qaPO').onclick=()=>location.hash='#/purchases';
+      body.querySelector('#qaMed').onclick=()=>location.hash='#/inventory';
     }catch(e){
       body.innerHTML=`<div class="bg-red-50/70 border border-red-200/70 rounded-2xl p-6 text-center">
         <p class="text-red-700 font-medium">Failed to load dashboard</p>
