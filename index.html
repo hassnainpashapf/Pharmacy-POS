@@ -1286,10 +1286,13 @@ App.routes['#/dashboard'] = async (el)=>{
     `<div id="${cid}-body">${skeleton()}</div>`;
 
   const render=async()=>{
-    const body=document.getElementById(cid+'-body');
+    var body=document.getElementById(cid+'-body');
+    if(!body) return; /* stale render */
     body.innerHTML=skeleton();
     try{
       const d=await API.call('getDashboard');
+      body=document.getElementById(cid+'-body');
+      if(!body) return; /* user navigated away while loading */
       if(!d||typeof d!=='object') throw new Error('Server returned empty dashboard data (got '+String(d).slice(0,80)+') — please run setupSheet in the Apps Script editor, then retry.');
       const k=d.kpis||{};
       const alerts=normalizeAlerts(d.alerts);
@@ -1368,9 +1371,9 @@ App.routes['#/dashboard'] = async (el)=>{
       drawTrend(cid+'-trend', d.salesTrend);
       drawPaySplit(cid+'-pay', d.paySplit);
       animateCounters(body);
-      body.querySelector('#qaSale').onclick=()=>location.hash='#/pos';
-      body.querySelector('#qaPO').onclick=()=>location.hash='#/purchases';
-      body.querySelector('#qaMed').onclick=()=>location.hash='#/inventory';
+      var q1=body.querySelector('#qaSale'); if(q1) q1.onclick=()=>location.hash='#/pos';
+      var q2=body.querySelector('#qaPO'); if(q2) q2.onclick=()=>location.hash='#/purchases';
+      var q3=body.querySelector('#qaMed'); if(q3) q3.onclick=()=>location.hash='#/inventory';
     }catch(e){
       body.innerHTML=`<div class="bg-red-50/70 border border-red-200/70 rounded-2xl p-6 text-center">
         <p class="text-red-700 font-medium">Failed to load dashboard</p>
@@ -1693,10 +1696,12 @@ function customerModal(){
     <input id="cq" type="text" placeholder="Search name or phone…" class="border border-slate-300 rounded-lg px-3 py-2 w-full text-sm mb-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
     <div id="clist" class="max-h-80 overflow-y-auto"></div>`);
   const render = async q=>{
-    m.el.querySelector('#clist').innerHTML='<div class="text-center text-slate-400 text-sm py-6">Loading…</div>';
+    var cl=m.el.querySelector('#clist'); if(!cl) return; /* modal closed */
+    cl.innerHTML='<div class="text-center text-slate-400 text-sm py-6">Loading…</div>';
     try{
       const list = await API.call('listCustomers', q||'');
-      m.el.querySelector('#clist').innerHTML = (list||[]).map(c=>
+      cl=m.el.querySelector('#clist'); if(!cl) return; /* modal closed while loading */
+      cl.innerHTML = (list||[]).map(c=>
         `<button data-c="${esc(JSON.stringify({id:c.id,name:c.name,phone:c.phone||''}))}" class="cPick w-full text-left px-3 py-2.5 border-b border-slate-100 hover:bg-emerald-50">
           <div class="font-medium text-sm">${esc(c.name)}</div>
           <div class="text-xs text-slate-400">${esc(c.phone||'')} ${c.id===WALKIN?'· walk-in':''}</div></button>`).join('')
@@ -1705,7 +1710,7 @@ function customerModal(){
         S.customer=JSON.parse(b.dataset.c); m.close(); renderCart();
         const rxSel=document.querySelector('#rxSel'); if(rxSel) loadPrescriptionsInto(rxSel);
       });
-    }catch(e){ m.el.querySelector('#clist').innerHTML=`<div class="text-center text-red-500 text-sm py-6">${esc(e.message)}</div>`; }
+    }catch(e){ var cle=m.el.querySelector('#clist'); if(cle) cle.innerHTML=`<div class="text-center text-red-500 text-sm py-6">${esc(e.message)}</div>`; }
   };
   m.el.querySelector('#cq').addEventListener('input', debounce(e=>render(e.target.value),250));
   render('');
@@ -2651,6 +2656,7 @@ App.routes['#/alerts']=async function(el,params){
 function renderAlerts(el,a){
   var expired=a.expired||[],near=a.nearExpiry||[],low=a.lowStock||[],out=a.outOfStock||[];
   var wrap=el.querySelector('#alertsWrap');
+  if(!wrap) return; /* user navigated away while loading */
   wrap.innerHTML=
     '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">'
     +statCard('Expired',String(expired.length),'already expired','red')
@@ -3460,7 +3466,8 @@ async function rxModal(onSaved){
     }));
     m.el.querySelector('#rxCustQ').addEventListener('input',debounce(async ev=>{
       try{ const list=await API.call('listCustomers',ev.target.value.trim());
-        m.el.querySelector('#rxCust').innerHTML=list.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}${c.phone?' — '+esc(c.phone):''}</option>`).join('')||'<option value="">No match</option>';
+        var rc=m.el.querySelector('#rxCust'); if(!rc) return; /* modal closed while loading */
+        rc.innerHTML=list.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}${c.phone?' — '+esc(c.phone):''}</option>`).join('')||'<option value="">No match</option>';
       }catch(e){/* keep existing options */}
     }));
     m.el.querySelector('#rxCancel').onclick=()=>m.close();
