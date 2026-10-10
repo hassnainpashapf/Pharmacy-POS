@@ -1392,7 +1392,7 @@ function ReportSection({ section, onSwitchToGui }) {
               onClick={onSwitchToGui}
               className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-3.5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
             >
-              <Activity className="w-3.5 h-3.5 text-[#714B67]" /> Graphs
+              <Activity className="w-3.5 h-3.5 text-o-link" /> Graphs
             </button>
           )}
           <button
@@ -1403,7 +1403,7 @@ function ReportSection({ section, onSwitchToGui }) {
           </button>
           <button
             onClick={() => window.print()}
-            className="bg-[#3b1734] hover:bg-[#280c23] text-white px-3.5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
+            className="bg-o-blue hover:bg-o-blue-d text-white px-3.5 py-2 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5" /> Print
           </button>
@@ -1420,12 +1420,12 @@ function ReportSection({ section, onSwitchToGui }) {
               <div key={label} className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between transition-shadow hover:shadow-sm">
                 <div className="flex items-center justify-between text-slate-500">
                   <span className="text-xs sm:text-sm font-semibold text-slate-600">{label}</span>
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isProfitOrRevenue ? 'bg-[#e6f7f2] text-[#008f8b]' : 'bg-[#f5eef4] text-[#714B67]'}`}>
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isProfitOrRevenue ? 'bg-o-teal-tint text-o-teal' : 'bg-o-tint text-o-link'}`}>
                     <Icon className="w-4 h-4" />
                   </div>
                 </div>
                 <div className="mt-3">
-                  <div className={`text-2xl sm:text-3xl font-black tracking-tight truncate ${isProfitOrRevenue ? 'text-[#008f8b]' : 'text-slate-900'}`}>
+                  <div className={`text-2xl sm:text-3xl font-black tracking-tight truncate ${isProfitOrRevenue ? 'text-o-teal' : 'text-slate-900'}`}>
                     {val}
                   </div>
                   <div className="text-[11px] text-slate-400 mt-0.5 font-medium">Performance summary</div>
@@ -1446,7 +1446,7 @@ function ReportSection({ section, onSwitchToGui }) {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search in report table..."
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+            className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
           />
         </div>
 
@@ -1463,7 +1463,7 @@ function ReportSection({ section, onSwitchToGui }) {
           <button
             type="button"
             onClick={() => setShowMenuDropdown((prev) => !prev)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#3b1734] hover:bg-[#2a0f25] text-white text-xs font-bold shadow-xs transition cursor-pointer"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-o-blue hover:bg-o-blue-d text-white text-xs font-bold shadow-xs transition cursor-pointer"
           >
             {(() => {
               const Icon = REPORT_ICONS[currentReportMeta.id] || FileSpreadsheet
@@ -1498,15 +1498,15 @@ function ReportSection({ section, onSwitchToGui }) {
                       }}
                       className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-semibold text-left transition cursor-pointer ${
                         active
-                          ? 'bg-[#f5eef4] text-[#3b1734] font-bold'
+                          ? 'bg-o-tint text-o-link font-bold'
                           : 'text-slate-700 hover:bg-slate-50'
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        <Icon className={`w-3.5 h-3.5 ${active ? 'text-[#3b1734]' : 'text-slate-400'}`} />
+                        <Icon className={`w-3.5 h-3.5 ${active ? 'text-o-link' : 'text-slate-400'}`} />
                         <span>{r.title}</span>
                       </div>
-                      {active && <Check className="w-3.5 h-3.5 text-[#3b1734]" />}
+                      {active && <Check className="w-3.5 h-3.5 text-o-link" />}
                     </button>
                   )
                 })}
@@ -1530,15 +1530,15 @@ function ReportSection({ section, onSwitchToGui }) {
                           }}
                           className={`w-full flex items-center justify-between px-3.5 py-2 text-xs font-semibold text-left transition cursor-pointer ${
                             active
-                              ? 'bg-[#f5eef4] text-[#3b1734] font-bold'
+                              ? 'bg-o-tint text-o-link font-bold'
                               : 'text-slate-700 hover:bg-slate-50'
                           }`}
                         >
                           <div className="flex items-center gap-2">
-                            <Icon className={`w-3.5 h-3.5 ${active ? 'text-[#3b1734]' : 'text-slate-400'}`} />
+                            <Icon className={`w-3.5 h-3.5 ${active ? 'text-o-link' : 'text-slate-400'}`} />
                             <span>{r.title}</span>
                           </div>
-                          {active && <Check className="w-3.5 h-3.5 text-[#3b1734]" />}
+                          {active && <Check className="w-3.5 h-3.5 text-o-link" />}
                         </button>
                       )
                     })}
@@ -1551,7 +1551,7 @@ function ReportSection({ section, onSwitchToGui }) {
 
         {/* Company Filter Dropdown */}
         <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
-          <Building2 className="w-3.5 h-3.5 text-[#714B67]" />
+          <Building2 className="w-3.5 h-3.5 text-o-link" />
           <select
             value={selectedCompany}
             onChange={(e) => setSelectedCompany(e.target.value)}
@@ -1604,7 +1604,7 @@ function ReportSection({ section, onSwitchToGui }) {
                         }`}
                       >
                         {isCompany && !isFirst ? (
-                          <span className="px-2 py-0.5 rounded bg-[#f5eef4] border border-[#decddd] text-[#714B67] font-semibold text-[11px] inline-block">
+                          <span className="px-2 py-0.5 rounded bg-o-tint border border-o-line text-o-link font-semibold text-[11px] inline-block">
                             {cell}
                           </span>
                         ) : isProfit ? (

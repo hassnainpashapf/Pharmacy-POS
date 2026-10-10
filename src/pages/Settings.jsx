@@ -32,13 +32,13 @@ function SettingsInputField({ label, icon: Icon, required, ...props }) {
   return (
     <div>
       <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-        {Icon && <Icon className="w-3.5 h-3.5 text-[#714B67]" />}
+        {Icon && <Icon className="w-3.5 h-3.5 text-o-link" />}
         <span>{label}</span>
         {required && <span className="text-rose-500">*</span>}
       </label>
       <input
         {...props}
-        className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#714B67] focus:ring-2 focus:ring-[#714B67]/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 transition outline-none"
+        className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-o-blue focus:ring-2 focus:ring-o-blue/20 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-800 transition outline-none"
       />
     </div>
   )
@@ -56,7 +56,7 @@ function CreditReminderTemplate({ f, set, onSave }) {
     <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-100">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center font-bold">
             <MessageSquare className="w-4 h-4" />
           </div>
           <div>
@@ -64,7 +64,7 @@ function CreditReminderTemplate({ f, set, onSave }) {
             <p className="text-[11px] text-slate-400">Automated WhatsApp & SMS templates for Udhar recovery</p>
           </div>
         </div>
-        <span className="text-[11px] font-bold text-[#714B67] bg-[#f5eef4] border border-[#decddd] px-2.5 py-0.5 rounded-full">
+        <span className="text-[11px] font-bold text-o-link bg-o-tint border border-o-line px-2.5 py-0.5 rounded-full">
           WhatsApp / SMS
         </span>
       </div>
@@ -79,7 +79,7 @@ function CreditReminderTemplate({ f, set, onSave }) {
             set({ ...f, udharTemplate: e.target.value })
             onSave()
           }}
-          className="border border-slate-200 rounded-xl w-full px-3.5 py-2.5 text-xs font-mono bg-slate-50 focus:bg-white focus:border-[#714B67] focus:ring-2 focus:ring-[#714B67]/20 outline-none transition"
+          className="border border-slate-200 rounded-xl w-full px-3.5 py-2.5 text-xs font-mono bg-slate-50 focus:bg-white focus:border-o-blue focus:ring-2 focus:ring-o-blue/20 outline-none transition"
         />
       </div>
 
@@ -99,7 +99,7 @@ function CreditReminderTemplate({ f, set, onSave }) {
                 set({ ...f, udharTemplate: (tpl ? tpl + ' ' : '') + item.tag })
                 onSave()
               }}
-              className="bg-slate-100 hover:bg-[#f5eef4] hover:text-[#714B67] hover:border-[#decddd] border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg text-[11px] font-mono cursor-pointer transition-all"
+              className="bg-slate-100 hover:bg-o-tint hover:text-o-link hover:border-o-line border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg text-[11px] font-mono cursor-pointer transition-all"
             >
               {item.tag}
             </button>
@@ -109,7 +109,7 @@ function CreditReminderTemplate({ f, set, onSave }) {
 
       <div>
         <p className="text-xs font-bold text-slate-700 mb-2">Live WhatsApp Message Preview:</p>
-        <div className="bg-[#e9f7ef] rounded-2xl p-4 text-xs text-slate-800 whitespace-pre-line border border-emerald-200/80 shadow-xs font-sans">
+        <div className="bg-o-teal-tint rounded-2xl p-4 text-xs text-slate-800 whitespace-pre-line border border-emerald-200/80 shadow-xs font-sans">
           {preview ? (
             <div className="space-y-1">
               <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">💬 WhatsApp Message</span>
@@ -136,7 +136,7 @@ function LoyaltySettings({ f, set, onSave }) {
     <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-100">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center font-bold">
             <Award className="w-4 h-4" />
           </div>
           <div>
@@ -180,7 +180,7 @@ function LoyaltySettings({ f, set, onSave }) {
               <input
                 value={t.name}
                 onChange={setTier(i, 'name')}
-                className="border border-slate-200 rounded-lg px-2.5 py-1.5 w-28 bg-white focus:outline-none focus:border-[#714B67] text-xs font-bold text-slate-800"
+                className="border border-slate-200 rounded-lg px-2.5 py-1.5 w-28 bg-white focus:outline-none focus:border-o-blue text-xs font-bold text-slate-800"
                 placeholder="Tier name"
               />
               <span className="text-slate-400 text-[11px] font-semibold">Min</span>
@@ -188,7 +188,7 @@ function LoyaltySettings({ f, set, onSave }) {
                 type="number"
                 value={t.min}
                 onChange={setTier(i, 'min')}
-                className="border border-slate-200 rounded-lg px-2.5 py-1.5 w-24 text-right bg-white focus:outline-none focus:border-[#714B67] text-xs font-bold font-mono text-slate-900"
+                className="border border-slate-200 rounded-lg px-2.5 py-1.5 w-24 text-right bg-white focus:outline-none focus:border-o-blue text-xs font-bold font-mono text-slate-900"
               />
               <span className="text-slate-400 text-[11px] font-semibold">pts</span>
               <span className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border ${t.color || 'bg-slate-100 text-slate-800'}`}>
@@ -225,7 +225,7 @@ function LoyaltySettings({ f, set, onSave }) {
           }}
           className="mt-3 text-xs bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-3.5 py-2 rounded-xl font-bold transition-all shadow-xs inline-flex items-center gap-1.5 cursor-pointer"
         >
-          <Plus className="w-3.5 h-3.5 text-[#714B67]" /> Add Membership Tier
+          <Plus className="w-3.5 h-3.5 text-o-link" /> Add Membership Tier
         </button>
       </div>
     </div>
@@ -272,7 +272,7 @@ function BackupRestore() {
     <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
       <div className="flex items-center justify-between pb-3 border-b border-slate-100">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+          <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center font-bold">
             <Database className="w-4 h-4" />
           </div>
           <div>
@@ -289,7 +289,7 @@ function BackupRestore() {
         <button
           type="button"
           onClick={exportBackup}
-          className="inline-flex items-center gap-2 bg-[#3b1734] hover:bg-[#280c23] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
+          className="inline-flex items-center gap-2 bg-o-blue hover:bg-o-blue-d text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95"
         >
           <Download className="w-4 h-4" />
           <span>Download JSON Backup</span>
@@ -326,7 +326,7 @@ export default function Settings() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23]">
+            <div className="w-10 h-10 rounded-xl bg-o-blue text-white flex items-center justify-center font-black shadow-sm border border-o-blue-d">
               <SettingsIcon className="w-5 h-5" />
             </div>
             <div>
@@ -347,7 +347,7 @@ export default function Settings() {
             onClick={() => setSearchParams({ tab: 'general' })}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === 'general'
-                ? 'bg-[#3b1734] text-white shadow-xs'
+                ? 'bg-o-blue text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
@@ -361,7 +361,7 @@ export default function Settings() {
               onClick={() => setSearchParams({ tab: 'users' })}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === 'users'
-                  ? 'bg-[#3b1734] text-white shadow-xs'
+                  ? 'bg-o-blue text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
@@ -376,7 +376,7 @@ export default function Settings() {
               onClick={() => setSearchParams({ tab: 'audit' })}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
                 activeTab === 'audit'
-                  ? 'bg-[#3b1734] text-white shadow-xs'
+                  ? 'bg-o-blue text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
@@ -435,7 +435,7 @@ function Configuration() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs sm:text-sm font-semibold text-slate-600">Store Profile</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
@@ -450,7 +450,7 @@ function Configuration() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs sm:text-sm font-semibold text-slate-600">Active Staff</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <UserCog className="w-4 h-4" />
             </div>
           </div>
@@ -463,7 +463,7 @@ function Configuration() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs sm:text-sm font-semibold text-slate-600">Catalogue Size</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
@@ -476,12 +476,12 @@ function Configuration() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs sm:text-sm font-semibold text-slate-600">Tax & Currency</span>
-            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-teal-tint text-o-teal flex items-center justify-center">
               <Percent className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl sm:text-3xl font-black text-[#008f8b]">{f.currency || 'Rs.'} ({f.taxPct || 0}%)</div>
+            <div className="text-2xl sm:text-3xl font-black text-o-teal">{f.currency || 'Rs.'} ({f.taxPct || 0}%)</div>
             <div className="text-[11px] text-slate-400 mt-0.5 font-medium">Sales tax rate</div>
           </div>
         </div>
@@ -507,7 +507,7 @@ function Configuration() {
           <button
             type="button"
             onClick={save}
-            className="px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] text-white text-xs font-bold transition shadow-xs inline-flex items-center gap-2 cursor-pointer active:scale-95"
+            className="px-4 py-2 rounded-xl bg-o-blue hover:bg-o-blue-d text-white text-xs font-bold transition shadow-xs inline-flex items-center gap-2 cursor-pointer active:scale-95"
           >
             {saved ? <CheckCircle2 className="w-4 h-4 text-emerald-300" /> : <Save className="w-4 h-4" />}
             <span>{saved ? 'Changes Saved ✓' : 'Save Changes'}</span>
@@ -521,7 +521,7 @@ function Configuration() {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+              <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center font-bold">
                 <Building2 className="w-4 h-4" />
               </div>
               <div>
@@ -551,7 +551,7 @@ function Configuration() {
 
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-[#714B67]" />
+              <MapPin className="w-3.5 h-3.5 text-o-link" />
               <span>Pharmacy Address & Location</span>
             </label>
             <textarea
@@ -559,7 +559,7 @@ function Configuration() {
               onChange={set('address')}
               rows="2"
               placeholder="Shop # 12, Main Bazar, Ellahabad..."
-              className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#714B67] focus:ring-2 focus:ring-[#714B67]/20 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800 transition outline-none"
+              className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-o-blue focus:ring-2 focus:ring-o-blue/20 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800 transition outline-none"
             />
           </div>
 
@@ -587,14 +587,14 @@ function Configuration() {
 
           <div>
             <label className="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-              <Receipt className="w-3.5 h-3.5 text-[#714B67]" />
+              <Receipt className="w-3.5 h-3.5 text-o-link" />
               <span>Receipt Thermal Footer Message</span>
             </label>
             <input
               value={f.receiptFooter ?? 'Thank you! Get well soon 🌿'}
               onChange={set('receiptFooter')}
               placeholder="e.g. No return without original receipt"
-              className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-[#714B67] focus:ring-2 focus:ring-[#714B67]/20 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800 transition outline-none"
+              className="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-o-blue focus:ring-2 focus:ring-o-blue/20 rounded-xl px-3.5 py-2 text-xs font-medium text-slate-800 transition outline-none"
             />
           </div>
         </div>
@@ -603,7 +603,7 @@ function Configuration() {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 flex flex-col items-center">
           <div className="w-full flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+              <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center font-bold">
                 <Printer className="w-4 h-4" />
               </div>
               <div>

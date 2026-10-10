@@ -28,7 +28,7 @@ function categoryBadge(cat = '') {
     case 'Rent': return 'bg-purple-50 text-purple-700 border-purple-200'
     case 'Transport': return 'bg-amber-50 text-amber-700 border-amber-200'
     case 'Payroll': return 'bg-emerald-50 text-emerald-700 border-emerald-200'
-    case 'Operations': return 'bg-[#f5eef4] text-[#714B67] border-[#decddd]'
+    case 'Operations': return 'bg-o-tint text-o-link border-o-line'
     default: return 'bg-slate-100 text-slate-700 border-slate-200'
   }
 }
@@ -43,7 +43,7 @@ function PageHeader({ icon: Icon, title, subtitle, children }) {
   return (
     <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
       <div className="flex items-center gap-3">
-        <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
+        <div className="w-11 h-11 rounded-xl bg-o-blue flex items-center justify-center text-white shadow-sm shrink-0">
           <Icon className="w-6 h-6 text-white" />
         </div>
         <div>
@@ -58,7 +58,7 @@ function PageHeader({ icon: Icon, title, subtitle, children }) {
 
 function KpiCard({ label, value, sub, icon: Icon, tone = 'default' }) {
   const tones = {
-    default: { border: 'border-slate-100 hover:border-slate-300', label: 'text-slate-600', icon: 'bg-[#f5eef4] text-[#714B67]', value: 'text-slate-900', sub: 'text-slate-500' },
+    default: { border: 'border-slate-100 hover:border-slate-300', label: 'text-slate-600', icon: 'bg-o-tint text-o-link', value: 'text-slate-900', sub: 'text-slate-500' },
     green: { border: 'border-emerald-100 hover:border-emerald-300', label: 'text-emerald-700', icon: 'bg-emerald-50 text-emerald-600', value: 'text-emerald-700', sub: 'text-emerald-600' },
     red: { border: 'border-rose-100 hover:border-rose-300', label: 'text-rose-700', icon: 'bg-rose-50 text-rose-600', value: 'text-rose-600', sub: 'text-rose-600' },
     blue: { border: 'border-slate-100 hover:border-slate-300', label: 'text-slate-600', icon: 'bg-blue-50 text-blue-600', value: 'text-slate-900', sub: 'text-slate-500' },
@@ -129,7 +129,7 @@ function FinancialStatements() {
         <select
           value={days}
           onChange={(e) => setDays(Number(e.target.value))}
-          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none cursor-pointer"
+          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none cursor-pointer"
         >
           <option value={1}>📅 Today</option>
           <option value={7}>📅 Last 7 days</option>
@@ -191,7 +191,7 @@ function FinancialStatements() {
           <div className="p-4 space-y-3">
             {[
               { label: 'Gross Margin', value: grossMargin, bar: 'bg-emerald-500' },
-              { label: 'Net Profit Margin', value: netMargin, bar: profitable ? 'bg-[#714B67]' : 'bg-rose-500' },
+              { label: 'Net Profit Margin', value: netMargin, bar: profitable ? 'bg-o-blue' : 'bg-rose-500' },
             ].map((m) => (
               <div key={m.label}>
                 <div className="flex justify-between text-[11px] font-bold text-slate-600 mb-1">
@@ -240,8 +240,8 @@ function FinancialStatements() {
             ))}
           </div>
 
-          <div className="mx-4 mb-4 p-3 rounded-xl bg-[#f5eef4] border border-[#decddd] flex items-center justify-between">
-            <span className="flex items-center gap-2 text-xs font-bold text-[#714B67]">
+          <div className="mx-4 mb-4 p-3 rounded-xl bg-o-tint border border-o-line flex items-center justify-between">
+            <span className="flex items-center gap-2 text-xs font-bold text-o-link">
               <Scale className="w-4 h-4" /> Net Working Position
             </span>
             <span className="font-mono font-black text-sm text-slate-900">
@@ -312,7 +312,7 @@ function ExpensesPanel({ db }) {
         </button>
         <button
           onClick={() => setAdding(true)}
-          className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+          className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-o-blue hover:bg-o-blue-d text-white text-xs font-bold shadow-sm transition cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Record Expense</span>
@@ -340,7 +340,7 @@ function ExpensesPanel({ db }) {
               placeholder="Search expense description or category..."
               value={expenseSearch}
               onChange={(e) => setExpenseSearch(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#714B67] transition-all"
+              className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-o-blue transition-all"
             />
             {expenseSearch && (
               <button
@@ -355,7 +355,7 @@ function ExpensesPanel({ db }) {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none cursor-pointer"
+            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none cursor-pointer"
           >
             <option value="ALL">🏷️ All Categories</option>
             {EXPENSE_CATEGORIES.map((c) => (
@@ -442,7 +442,7 @@ function ExpenseModal({ onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm overflow-hidden border border-slate-100">
-        <div className="p-4 bg-gradient-to-r from-[#3b1734] to-[#714B67] text-white flex items-center justify-between">
+        <div className="p-4 bg-gradient-to-r from-o-blue to-o-blue text-white flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Wallet className="w-4 h-4" />
             <h3 className="font-bold text-sm">Record New Expense</h3>
@@ -457,7 +457,7 @@ function ExpenseModal({ onClose }) {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-o-blue focus:outline-none"
             >
               {EXPENSE_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
             </select>
@@ -468,7 +468,7 @@ function ExpenseModal({ onClose }) {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="e.g. Electricity bill"
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none"
             />
           </div>
           <div>
@@ -480,7 +480,7 @@ function ExpenseModal({ onClose }) {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0"
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono font-black text-slate-900 focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm font-mono font-black text-slate-900 focus:ring-2 focus:ring-o-blue focus:outline-none"
             />
           </div>
           {error && <p className="text-[11px] font-semibold text-rose-600">{error}</p>}
@@ -488,7 +488,7 @@ function ExpenseModal({ onClose }) {
             <button type="button" onClick={onClose} className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold transition cursor-pointer">
               Cancel
             </button>
-            <button type="submit" className="px-5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white font-bold shadow-sm transition cursor-pointer">
+            <button type="submit" className="px-5 py-2 rounded-xl bg-o-blue hover:bg-o-blue-d text-white font-bold shadow-sm transition cursor-pointer">
               Save Expense
             </button>
           </div>

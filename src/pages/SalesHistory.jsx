@@ -114,7 +114,7 @@ function ReceiptModal({ sale, onClose, onDelete, onEdit }) {
           <div className="flex gap-2 mt-5 pt-4 border-t border-slate-100">
             <button
               onClick={() => { printReceipt(sale); }}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#00A09D] text-white text-sm font-semibold hover:bg-[#008784] transition-colors cursor-pointer"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-o-teal text-white text-sm font-semibold hover:bg-o-teal transition-colors cursor-pointer"
             >
               <Printer className="w-4 h-4" /> Print
             </button>
@@ -175,7 +175,7 @@ function EditModal({ sale, onClose, onSave }) {
             <input
               type="number" min="0" value={discount}
               onChange={e => setDiscount(e.target.value)}
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#00A09D]/30 focus:border-[#00A09D]"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-o-teal/30 focus:border-o-teal"
             />
           </div>
 
@@ -183,7 +183,7 @@ function EditModal({ sale, onClose, onSave }) {
             <label className="block text-xs font-semibold text-slate-700 mb-1.5">Notes</label>
             <textarea
               value={notes} onChange={e => setNotes(e.target.value)} rows={3}
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#00A09D]/30 focus:border-[#00A09D] resize-none"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-o-teal/30 focus:border-o-teal resize-none"
               placeholder="Add notes to this receipt..."
             />
           </div>
@@ -192,7 +192,7 @@ function EditModal({ sale, onClose, onSave }) {
 
           <div className="flex gap-2 pt-2">
             <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 cursor-pointer">Cancel</button>
-            <button onClick={save} disabled={busy} className="flex-1 px-4 py-2.5 rounded-xl bg-[#3b1734] text-white text-sm font-semibold hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 transition-all">
+            <button onClick={save} disabled={busy} className="flex-1 px-4 py-2.5 rounded-xl bg-o-blue text-white text-sm font-semibold hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 transition-all">
               {busy ? 'Saving…' : <><Check className="w-4 h-4" /> Save</>}
             </button>
           </div>
@@ -299,8 +299,8 @@ export default function SalesHistory() {
   ]
 
   const colorMap = {
-    teal:   { bg: 'bg-[#e6f7f2]', text: 'text-[#00A09D]', badge: 'bg-[#00A09D]' },
-    purple: { bg: 'bg-[#f5eef4]', text: 'text-[#714B67]', badge: 'bg-[#714B67]' },
+    teal:   { bg: 'bg-o-teal-tint', text: 'text-o-teal', badge: 'bg-o-teal' },
+    purple: { bg: 'bg-o-tint', text: 'text-o-link', badge: 'bg-o-blue' },
     orange: { bg: 'bg-amber-50',  text: 'text-amber-700', badge: 'bg-amber-600' },
   }
 
@@ -353,7 +353,7 @@ export default function SalesHistory() {
               placeholder="Search invoice #, customer name, or medicine..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
             />
           </div>
 
@@ -407,7 +407,7 @@ export default function SalesHistory() {
                 {filtered.map(sale => (
                   <tr key={sale.id} className="hover:bg-slate-50/60 transition-colors group">
                     <td className="px-5 py-3">
-                      <span className="font-mono text-xs font-bold text-[#00A09D]">
+                      <span className="font-mono text-xs font-bold text-o-teal">
                         {sale.invoiceNo || sale.id?.slice(0, 8) || '—'}
                       </span>
                     </td>
@@ -442,7 +442,7 @@ export default function SalesHistory() {
                         <button
                           onClick={() => setViewSale(sale)}
                           title="View Receipt"
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-[#00A09D] hover:bg-[#e6f7f2] transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-o-teal hover:bg-o-teal-tint transition-colors cursor-pointer"
                         ><Eye className="w-3.5 h-3.5" /></button>
                         <button
                           onClick={() => printReceipt(sale)}
@@ -452,7 +452,7 @@ export default function SalesHistory() {
                         <button
                           onClick={() => setEditSale(sale)}
                           title="Edit"
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-[#714B67] hover:bg-[#f5eef4] transition-colors cursor-pointer"
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-o-link hover:bg-o-tint transition-colors cursor-pointer"
                         ><Pencil className="w-3.5 h-3.5" /></button>
                         {canDel && (
                           <button

@@ -31,20 +31,20 @@ export default function Sso() {
   }, [params, navigate])
 
   return (
-    <div className="w-full min-h-screen flex items-center justify-center bg-[#f2f5f9] px-4 font-sans">
-      <div className="bg-white rounded-[28px] shadow-[0_30px_80px_-25px_rgba(27,42,74,0.18)] p-10 w-full max-w-md border border-[#e2e8f1] text-center">
+    <div className="w-full min-h-screen flex items-center justify-center bg-o-bg px-4 font-sans">
+      <div className="bg-white rounded-[28px] shadow-[0_30px_80px_-25px_rgba(27,42,74,0.18)] p-10 w-full max-w-md border border-o-line text-center">
         {error ? (
           <>
-            <h1 className="text-xl font-extrabold text-[#1b2a4a]">Could not sign you in</h1>
-            <p className="text-sm text-[#8b94a7] mt-2">{error}</p>
-            <a href="#/" className="inline-block mt-5 bg-[#2f6df6] text-white px-5 py-3 rounded-2xl font-extrabold text-sm">
+            <h1 className="text-xl font-extrabold text-o-ink">Could not sign you in</h1>
+            <p className="text-sm text-o-muted mt-2">{error}</p>
+            <a href="#/" className="inline-block mt-5 bg-o-blue text-white px-5 py-3 rounded-2xl font-extrabold text-sm">
               Go to sign in
             </a>
           </>
         ) : (
           <>
-            <h1 className="text-xl font-extrabold text-[#1b2a4a]">Signing you in…</h1>
-            <p className="text-sm text-[#8b94a7] mt-2">One moment</p>
+            <h1 className="text-xl font-extrabold text-o-ink">Signing you in…</h1>
+            <p className="text-sm text-o-muted mt-2">One moment</p>
           </>
         )}
       </div>

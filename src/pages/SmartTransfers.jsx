@@ -142,7 +142,7 @@ export default function SmartTransfers() {
       {/* ── Top Header (Merged into Page) ── */}
       <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-o-blue flex items-center justify-center text-white shadow-sm shrink-0">
             <Sparkles className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -167,7 +167,7 @@ export default function SmartTransfers() {
           {filteredRecs.length > 0 && (
             <button
               onClick={handleTransferAll}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-o-blue hover:bg-o-blue-d text-white text-xs font-bold shadow-sm transition cursor-pointer"
             >
               <Sparkles className="w-4 h-4 text-amber-300" />
               <span>Execute All ({filteredRecs.length})</span>
@@ -181,7 +181,7 @@ export default function SmartTransfers() {
         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:border-slate-300 transition-colors">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-600">AI Rebalance Items</span>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#f5eef4] text-[#714B67]">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-o-tint text-o-link">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
@@ -255,7 +255,7 @@ export default function SmartTransfers() {
             placeholder="Search medicine item, surplus origin, or deficit hub..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#714B67] transition-all"
+            className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-o-blue transition-all"
           />
           {search && (
             <button
@@ -270,7 +270,7 @@ export default function SmartTransfers() {
         <select
           value={originFilter}
           onChange={(e) => setOriginFilter(e.target.value)}
-          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none cursor-pointer"
+          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none cursor-pointer"
         >
           <option value="ALL">📦 All Surplus Origins</option>
           {branches.map((b) => (
@@ -283,7 +283,7 @@ export default function SmartTransfers() {
         <select
           value={destFilter}
           onChange={(e) => setDestFilter(e.target.value)}
-          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none cursor-pointer"
+          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none cursor-pointer"
         >
           <option value="ALL">🎯 All Deficit Destinations</option>
           {branches.map((b) => (
@@ -334,7 +334,7 @@ export default function SmartTransfers() {
                     <div className="text-[10px] text-rose-600 font-bold">{rec.toStock} units (Deficit)</div>
                   </td>
                   <td className="py-3.5 px-4 text-center">
-                    <span className="bg-[#f5eef4] text-[#714B67] border border-[#decddd] px-2.5 py-1 rounded-lg font-black text-xs">
+                    <span className="bg-o-tint text-o-link border border-o-line px-2.5 py-1 rounded-lg font-black text-xs">
                       {rec.recommendedQty} units
                     </span>
                   </td>
@@ -342,7 +342,7 @@ export default function SmartTransfers() {
                   <td className="py-3.5 px-4 text-center">
                     <button
                       onClick={() => handleAutoTransfer(rec)}
-                      className="bg-[#3b1734] hover:bg-[#522249] text-white px-3 py-1.5 rounded-xl font-bold text-xs inline-flex items-center gap-1 transition-all shadow-xs cursor-pointer"
+                      className="bg-o-blue hover:bg-o-blue-d text-white px-3 py-1.5 rounded-xl font-bold text-xs inline-flex items-center gap-1 transition-all shadow-xs cursor-pointer"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                       <span>1-Click Transfer</span>

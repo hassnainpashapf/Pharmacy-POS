@@ -47,7 +47,7 @@ import {
 
 // Distinct vibrant palette for charts
 const CATEGORY_COLORS = [
-  '#714B67', // Deep plum brand
+  '#2f6df6', // Deep plum brand
   '#0284c7', // Sky blue
   '#10b981', // Emerald
   '#f59e0b', // Amber
@@ -62,7 +62,7 @@ const PAYMENT_COLORS = {
   CARD: '#0284c7', // Sky blue
   DIGITAL: '#8b5cf6', // Violet
   CREDIT: '#f59e0b', // Amber
-  SPLIT: '#714B67', // Plum
+  SPLIT: '#2f6df6', // Plum
 }
 
 /* ---------- Custom Tooltip Components for Recharts ---------- */
@@ -80,7 +80,7 @@ function CustomAreaTooltip({ active, payload, label }) {
         <div className="space-y-1">
           <div className="flex items-center justify-between gap-3 text-slate-200">
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-[#714B67]" /> Gross Sales:
+              <span className="w-2 h-2 rounded-full bg-o-blue" /> Gross Sales:
             </span>
             <span className="font-bold font-mono">{fmt(rev)}</span>
           </div>
@@ -327,7 +327,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
         key,
         name: labels[key] || key,
         value,
-        color: PAYMENT_COLORS[key] || '#714B67',
+        color: PAYMENT_COLORS[key] || '#2f6df6',
         percentage: total > 0 ? Math.round((value / total) * 100) : 0,
       }))
       .sort((a, b) => b.value - a.value)
@@ -501,7 +501,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
       {/* ── Top Header (Merged into Page) ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 px-1 py-1">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-[#3b1734] text-white flex items-center justify-center shadow-sm shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-o-blue text-white flex items-center justify-center shadow-sm shrink-0">
             <BarChart3 className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -539,7 +539,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
 
           <button
             onClick={() => window.print()}
-            className="bg-[#3b1734] hover:bg-[#522249] text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition inline-flex items-center gap-1.5 cursor-pointer"
+            className="bg-o-blue hover:bg-o-blue-d text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm transition inline-flex items-center gap-1.5 cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Print</span>
@@ -580,7 +580,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Branch Filter Dropdown */}
           <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700">
-            <Building2 className="w-3.5 h-3.5 text-[#714B67] shrink-0" />
+            <Building2 className="w-3.5 h-3.5 text-o-link shrink-0" />
             <select
               value={branchFilter}
               onChange={(e) => setBranchFilter(e.target.value)}
@@ -610,7 +610,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
             onClick={() => setActiveTab('overview')}
             className={`px-3 py-1.5 rounded-xl transition cursor-pointer text-xs font-bold shrink-0 ${
               activeTab === 'overview'
-                ? 'bg-[#3b1734] text-white shadow-xs'
+                ? 'bg-o-blue text-white shadow-xs'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
             }`}
           >
@@ -620,7 +620,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
             onClick={() => setActiveTab('pharma')}
             className={`px-3 py-1.5 rounded-xl transition cursor-pointer text-xs font-bold shrink-0 ${
               activeTab === 'pharma'
-                ? 'bg-[#3b1734] text-white shadow-xs'
+                ? 'bg-o-blue text-white shadow-xs'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
             }`}
           >
@@ -630,7 +630,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
             onClick={() => setActiveTab('payments')}
             className={`px-3 py-1.5 rounded-xl transition cursor-pointer text-xs font-bold shrink-0 ${
               activeTab === 'payments'
-                ? 'bg-[#3b1734] text-white shadow-xs'
+                ? 'bg-o-blue text-white shadow-xs'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
             }`}
           >
@@ -640,7 +640,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
             onClick={() => setActiveTab('staff')}
             className={`px-3 py-1.5 rounded-xl transition cursor-pointer text-xs font-bold shrink-0 ${
               activeTab === 'staff'
-                ? 'bg-[#3b1734] text-white shadow-xs'
+                ? 'bg-o-blue text-white shadow-xs'
                 : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border border-slate-200/80'
             }`}
           >
@@ -659,7 +659,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Activity className="w-4 h-4 text-[#714B67]" />
+                    <Activity className="w-4 h-4 text-o-link" />
                     <h3 className="font-semibold text-sm text-slate-800">
                       Sales & Profit
                     </h3>
@@ -670,7 +670,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                 </div>
                 <div className="flex items-center gap-4 text-xs font-medium text-slate-600">
                   <span className="flex items-center gap-1.5">
-                    <span className="inline-block w-3 h-0.5 rounded" style={{ backgroundColor: '#714B67', height: 3 }} />
+                    <span className="inline-block w-3 h-0.5 rounded" style={{ backgroundColor: '#2f6df6', height: 3 }} />
                     Sales
                   </span>
                   <span className="flex items-center gap-1.5">
@@ -686,8 +686,8 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                     <AreaChart data={trendData} margin={{ top: 10, right: 24, left: 4, bottom: 4 }}>
                       <defs>
                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#714B67" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#714B67" stopOpacity={0.0} />
+                          <stop offset="5%" stopColor="#2f6df6" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#2f6df6" stopOpacity={0.0} />
                         </linearGradient>
                         <linearGradient id="colorProfit" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#10b981" stopOpacity={0.35} />
@@ -717,7 +717,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                       <Area
                         type="monotone"
                         dataKey="revenue"
-                        stroke="#714B67"
+                        stroke="#2f6df6"
                         strokeWidth={2.5}
                         fillOpacity={1}
                         fill="url(#colorRevenue)"
@@ -736,7 +736,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                   </ResponsiveContainer>
                 ) : (
                   <div className="h-full min-h-[220px] flex flex-col items-center justify-center text-center p-6 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
-                    <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-[#714B67] mb-2">
+                    <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-o-link mb-2">
                       <Activity className="w-5 h-5" />
                     </div>
                     <p className="text-xs font-bold text-slate-700">No Sales in Selected Period</p>
@@ -753,7 +753,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-[#714B67]" />
+                    <Package className="w-4 h-4 text-o-link" />
                     <h3 className="font-semibold text-sm text-slate-800">
                       Sales by Form
                     </h3>
@@ -839,7 +839,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-[#714B67]" />
+                    <Building2 className="w-4 h-4 text-o-link" />
                     <h3 className="font-semibold text-sm text-slate-800">
                       Top Companies
                     </h3>
@@ -877,7 +877,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                         width={110}
                       />
                       <Tooltip content={<CustomBarTooltip />} />
-                      <Bar dataKey="revenue" fill="#714B67" radius={[0, 6, 6, 0]} barSize={14} />
+                      <Bar dataKey="revenue" fill="#2f6df6" radius={[0, 6, 6, 0]} barSize={14} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
@@ -894,7 +894,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-[#714B67]" />
+                    <Clock className="w-4 h-4 text-o-link" />
                     <h3 className="font-semibold text-sm text-slate-800">
                       Busy Hours
                     </h3>
@@ -950,7 +950,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-[#714B67]" />
+                    <Calendar className="w-4 h-4 text-o-link" />
                     <h3 className="font-semibold text-sm text-slate-800">
                       Sales by Day
                     </h3>
@@ -1003,7 +1003,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-[#714B67]" />
+                    <CreditCard className="w-4 h-4 text-o-link" />
                     <h3 className="font-semibold text-sm text-slate-800">
                       Payment Methods
                     </h3>
@@ -1094,7 +1094,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-[#714B67]" />
+                    <Building2 className="w-4 h-4 text-o-link" />
                     <h3 className="font-semibold text-sm text-slate-800">
                       Top Pharma Manufacturers Market Share
                     </h3>
@@ -1130,7 +1130,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
                         width={95}
                       />
                       <Tooltip content={<CustomBarTooltip />} />
-                      <Bar dataKey="revenue" fill="#714B67" radius={[0, 6, 6, 0]} barSize={18} />
+                      <Bar dataKey="revenue" fill="#2f6df6" radius={[0, 6, 6, 0]} barSize={18} />
                     </BarChart>
                   </ResponsiveContainer>
                 ) : (
@@ -1265,7 +1265,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
             <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <CreditCard className="w-4 h-4 text-[#714B67]" />
+                  <CreditCard className="w-4 h-4 text-o-link" />
                   <h3 className="font-semibold text-sm text-slate-800">
                     Multi-Channel Payment Split
                   </h3>
@@ -1331,7 +1331,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <UserCheck className="w-4 h-4 text-[#714B67]" />
+                    <UserCheck className="w-4 h-4 text-o-link" />
                     <h3 className="font-semibold text-sm text-slate-800">
                       Customer Retention & Profile Dynamics
                     </h3>
@@ -1407,7 +1407,7 @@ export default function BusinessAnalyticsDashboard({ onSwitchToTabular }) {
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-[#714B67]" />
+                <Users className="w-4 h-4 text-o-link" />
                 <div>
                   <h3 className="font-semibold text-sm text-slate-800">
                     Counter Staff & Cashier Performance Velocity

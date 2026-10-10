@@ -252,7 +252,7 @@ export function Customers() {
           {/* 1. Standard Loyalty Header Banner (Merged into Page) */}
           <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-o-blue flex items-center justify-center text-white shadow-sm shrink-0">
                 <Award className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -279,7 +279,7 @@ export function Customers() {
               </button>
               <button
                 onClick={() => setModalCustomer({})}
-                className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-o-blue hover:bg-o-blue-d text-white text-xs font-bold shadow-sm transition cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ New Member</span>
@@ -300,7 +300,7 @@ export function Customers() {
                 placeholder="Search member by name, phone, or ID..."
                 value={loyaltySearch}
                 onChange={(e) => setLoyaltySearch(e.target.value)}
-                className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#714B67] transition-all"
+                className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-o-blue transition-all"
               />
               {loyaltySearch && (
                 <button
@@ -316,7 +316,7 @@ export function Customers() {
             <select
               value={loyaltyTierFilter}
               onChange={(e) => setLoyaltyTierFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none"
             >
               <option value="ALL">⭐ All Reward Tiers</option>
               <option value="SILVER">🛡️ Silver Tier</option>
@@ -328,7 +328,7 @@ export function Customers() {
             <select
               value={loyaltyPointsFilter}
               onChange={(e) => setLoyaltyPointsFilter(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none"
             >
               <option value="ALL">✨ All Members</option>
               <option value="HAS_POINTS">⭐ Available Points &gt; 0</option>
@@ -339,7 +339,7 @@ export function Customers() {
             <select
               value={loyaltySortBy}
               onChange={(e) => setLoyaltySortBy(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none"
             >
               <option value="POINTS_DESC">Sort: Most Points ⭐</option>
               <option value="SPEND_DESC">Sort: Highest Lifetime Spend</option>
@@ -548,7 +548,7 @@ export function Customers() {
           {/* 1. Standard Header Banner (Merged into Page) */}
           <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-o-blue flex items-center justify-center text-white shadow-sm shrink-0">
                 <Users className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -575,7 +575,7 @@ export function Customers() {
               </button>
               <button
                 onClick={() => setModalCustomer({})}
-                className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-o-blue hover:bg-o-blue-d text-white text-xs font-bold shadow-sm transition cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ New Customer</span>
@@ -589,7 +589,7 @@ export function Customers() {
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 hover:border-slate-300 transition-colors">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-600">Total Accounts</span>
-                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] flex items-center justify-center text-[#714B67]">
+                <div className="w-8 h-8 rounded-lg bg-o-tint flex items-center justify-center text-o-link">
                   <Users className="w-4 h-4" />
                 </div>
               </div>
@@ -662,7 +662,7 @@ export function Customers() {
                   placeholder="Search customers by name, phone number, or ID..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#714B67] transition-all"
+                  className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-o-blue transition-all"
                 />
                 {search && (
                   <button
@@ -678,7 +678,7 @@ export function Customers() {
               <select
                 value={balanceFilter}
                 onChange={(e) => setBalanceFilter(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none"
               >
                 <option value="ALL">💰 All Balances</option>
                 <option value="DUE">🔴 Udhar Due Only</option>
@@ -689,7 +689,7 @@ export function Customers() {
               <select
                 value={tierFilter}
                 onChange={(e) => setTierFilter(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none"
               >
                 <option value="ALL">⭐ All Reward Tiers</option>
                 <option value="SILVER">🛡️ Silver Tier</option>
@@ -701,7 +701,7 @@ export function Customers() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none"
               >
                 <option value="DUE_DESC">Sort: Highest Udhar First</option>
                 <option value="POINTS_DESC">Sort: Most Points ⭐</option>
@@ -761,7 +761,7 @@ export function Customers() {
                           {/* Customer Details */}
                           <td className="py-3.5 px-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-xl bg-[#f5eef4] text-[#714B67] border border-[#decddd] font-black text-xs flex items-center justify-center shrink-0">
+                              <div className="w-9 h-9 rounded-xl bg-o-tint text-o-link border border-o-line font-black text-xs flex items-center justify-center shrink-0">
                                 {getInitials(c.name)}
                               </div>
                               <div>
@@ -1075,7 +1075,7 @@ function CustomerFormModal({ initialData = {}, onSave, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100">
-        <div className="p-4 bg-gradient-to-r from-[#3b1734] to-[#714B67] text-white flex items-center justify-between">
+        <div className="p-4 bg-gradient-to-r from-o-blue to-o-blue text-white flex items-center justify-between">
           <div className="flex items-center gap-2">
             <User className="w-4 h-4" />
             <h3 className="font-bold text-sm">
@@ -1101,7 +1101,7 @@ function CustomerFormModal({ initialData = {}, onSave, onClose }) {
               placeholder="e.g. Haji Muhammad Aslam"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-o-blue focus:outline-none"
             />
           </div>
 
@@ -1114,7 +1114,7 @@ function CustomerFormModal({ initialData = {}, onSave, onClose }) {
               placeholder="e.g. 03001234567"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-o-blue focus:outline-none"
             />
           </div>
 
@@ -1130,7 +1130,7 @@ function CustomerFormModal({ initialData = {}, onSave, onClose }) {
                 placeholder="e.g. 10000"
                 value={formData.creditLimit}
                 onChange={(e) => setFormData({ ...formData, creditLimit: e.target.value })}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-o-blue focus:outline-none"
               />
             </div>
 
@@ -1146,7 +1146,7 @@ function CustomerFormModal({ initialData = {}, onSave, onClose }) {
                   placeholder="0"
                   value={formData.openingBalance}
                   onChange={(e) => setFormData({ ...formData, openingBalance: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs font-mono focus:ring-2 focus:ring-o-blue focus:outline-none"
                 />
               </div>
             )}
@@ -1161,7 +1161,7 @@ function CustomerFormModal({ initialData = {}, onSave, onClose }) {
               placeholder="e.g. Ellahabad Main Bazaar, Shop # 4"
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none resize-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none resize-none"
             />
           </div>
 
@@ -1175,7 +1175,7 @@ function CustomerFormModal({ initialData = {}, onSave, onClose }) {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white font-bold shadow-sm transition-all cursor-pointer"
+              className="px-5 py-2 rounded-xl bg-o-blue hover:bg-o-blue-d text-white font-bold shadow-sm transition-all cursor-pointer"
             >
               {isEdit ? 'Save Changes' : 'Create Account'}
             </button>

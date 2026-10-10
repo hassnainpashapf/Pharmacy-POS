@@ -122,12 +122,12 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="dashboard-view space-y-6 w-full pb-6 font-sans text-[#3c4761]">
+    <div className="dashboard-view space-y-6 w-full pb-6 font-sans text-o-text2">
       {/* 1. Header Banner - MedSync Theme */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e2e8f1]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-o-line">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center shadow-sm border border-[#2f6df6]/20">
+            <div className="w-11 h-11 rounded-2xl bg-o-chip text-o-link flex items-center justify-center shadow-sm border border-o-blue/20">
               <svg viewBox="0 0 32 32" fill="none" className="w-6 h-6" aria-hidden="true">
                 <circle cx="16" cy="16" r="13" stroke="#2f6df6" strokeWidth="2.6" />
                 <path d="M16 7.5a8.5 8.5 0 1 1-8.5 8.5" stroke="#38a89d" strokeWidth="2.6" strokeLinecap="round" />
@@ -135,14 +135,14 @@ export default function Dashboard() {
               </svg>
             </div>
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#edf2fd] text-[#2f6df6] text-[10px] font-bold tracking-wide mb-0.5 border border-[#2f6df6]/15">
-                <span className="text-[#38a89d]">✦</span>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-o-chip text-o-link text-[10px] font-bold tracking-wide mb-0.5 border border-o-blue/15">
+                <span className="text-o-teal">✦</span>
                 <span>OPTIX MEDSYNC STATION</span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#1b2a4a]">
-                {data.greeting}, <span className="text-[#2f6df6]">{me?.name || 'Store Admin'}</span>
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-o-ink">
+                {data.greeting}, <span className="text-o-link">{me?.name || 'Store Admin'}</span>
               </h1>
-              <p className="text-xs text-[#8b94a7] font-medium">
+              <p className="text-xs text-o-muted font-medium">
                 {curBranch} · {data.dateLabel}
               </p>
             </div>
@@ -151,15 +151,15 @@ export default function Dashboard() {
 
         <div className="flex flex-wrap items-center gap-2">
           {/* View Switchers */}
-          <div className="view-switcher inline-flex items-center p-1 rounded-2xl border border-[#e2e8f1] bg-white shadow-xs text-xs font-semibold" aria-label="Dashboard views">
+          <div className="view-switcher inline-flex items-center p-1 rounded-2xl border border-o-line bg-white shadow-xs text-xs font-semibold" aria-label="Dashboard views">
             {['OWNER', 'MANAGER', 'PHARMACIST', 'CASHIER', 'RECEPTIONIST'].map((item) => (
               <button
                 key={item}
                 onClick={() => setActiveRoleView(item)}
                 className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
                   activeRoleView === item
-                    ? 'bg-[#2f6df6] text-white font-bold shadow-[0_4px_14px_-2px_rgba(47,109,246,0.4)]'
-                    : 'text-[#3c4761] hover:text-[#1b2a4a] hover:bg-[#edf2fd]/50'
+                    ? 'bg-o-blue text-white font-bold shadow-[0_4px_14px_-2px_rgba(47,109,246,0.4)]'
+                    : 'text-o-text2 hover:text-o-ink hover:bg-o-chip/50'
                 }`}
               >
                 {item === 'OWNER' ? 'Owner' : item[0] + item.slice(1).toLowerCase()}
@@ -170,11 +170,11 @@ export default function Dashboard() {
           {/* All Branches Dropdown */}
           <div
             onClick={() => nav('/branches')}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-[#e2e8f1] bg-white text-xs font-bold text-[#1b2a4a] hover:bg-[#edf2fd]/40 cursor-pointer shadow-xs transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-o-line bg-white text-xs font-bold text-o-ink hover:bg-o-chip/40 cursor-pointer shadow-xs transition-all"
           >
-            <Building2 className="w-3.5 h-3.5 text-[#2f6df6]" />
+            <Building2 className="w-3.5 h-3.5 text-o-link" />
             <span>{curBranch}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-[#8b94a7]" />
+            <ChevronDown className="w-3.5 h-3.5 text-o-muted" />
           </div>
         </div>
       </div>
@@ -184,85 +184,85 @@ export default function Dashboard() {
         {/* New Sale */}
         <button type="button"
           onClick={() => nav('/pos')}
-          className="relative bg-white border border-[#e2e8f1] hover:border-[#2f6df6]/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
+          className="relative bg-white border border-o-line hover:border-o-blue/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
         >
-          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-[#8b94a7] group-hover:text-[#2f6df6] bg-slate-50 group-hover:bg-[#edf2fd] px-1.5 py-0.5 rounded border border-[#e2e8f1] transition-colors">
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-o-muted group-hover:text-o-link bg-slate-50 group-hover:bg-o-chip px-1.5 py-0.5 rounded border border-o-line transition-colors">
             F1
           </span>
-          <div className="w-11 h-11 rounded-xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-11 h-11 rounded-xl bg-o-chip text-o-link flex items-center justify-center group-hover:scale-105 transition-transform">
             <ShoppingCart className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-[#1b2a4a] group-hover:text-[#2f6df6] transition-colors">New Sale POS</div>
-            <div className="text-[10px] text-[#8b94a7]">Fast checkout & print</div>
+            <div className="text-xs font-bold text-o-ink group-hover:text-o-link transition-colors">New Sale POS</div>
+            <div className="text-[10px] text-o-muted">Fast checkout & print</div>
           </div>
         </button>
 
         {/* Add Customer */}
         <button type="button"
           onClick={() => setShowAddCustomer(true)}
-          className="relative bg-white border border-[#e2e8f1] hover:border-[#38a89d]/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
+          className="relative bg-white border border-o-line hover:border-o-teal/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
         >
-          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-[#8b94a7] group-hover:text-[#38a89d] bg-slate-50 group-hover:bg-[#e8f7f5] px-1.5 py-0.5 rounded border border-[#e2e8f1] transition-colors">
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-o-muted group-hover:text-o-teal bg-slate-50 group-hover:bg-o-teal-tint px-1.5 py-0.5 rounded border border-o-line transition-colors">
             +C
           </span>
-          <div className="w-11 h-11 rounded-xl bg-[#e8f7f5] text-[#38a89d] flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-11 h-11 rounded-xl bg-o-teal-tint text-o-teal flex items-center justify-center group-hover:scale-105 transition-transform">
             <UserPlus className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-[#1b2a4a] group-hover:text-[#38a89d] transition-colors">Add Customer</div>
-            <div className="text-[10px] text-[#8b94a7]">Register patient & ledger</div>
+            <div className="text-xs font-bold text-o-ink group-hover:text-o-teal transition-colors">Add Customer</div>
+            <div className="text-[10px] text-o-muted">Register patient & ledger</div>
           </div>
         </button>
 
         {/* Add Medicine */}
         <button type="button"
           onClick={() => nav('/medicines')}
-          className="relative bg-white border border-[#e2e8f1] hover:border-[#2f6df6]/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
+          className="relative bg-white border border-o-line hover:border-o-blue/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
         >
-          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-[#8b94a7] group-hover:text-[#2f6df6] bg-slate-50 group-hover:bg-[#edf2fd] px-1.5 py-0.5 rounded border border-[#e2e8f1] transition-colors">
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-o-muted group-hover:text-o-link bg-slate-50 group-hover:bg-o-chip px-1.5 py-0.5 rounded border border-o-line transition-colors">
             +M
           </span>
-          <div className="w-11 h-11 rounded-xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-11 h-11 rounded-xl bg-o-chip text-o-link flex items-center justify-center group-hover:scale-105 transition-transform">
             <PlusCircle className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-[#1b2a4a] group-hover:text-[#2f6df6] transition-colors">Add Medicine</div>
-            <div className="text-[10px] text-[#8b94a7]">Expand drug catalogue</div>
+            <div className="text-xs font-bold text-o-ink group-hover:text-o-link transition-colors">Add Medicine</div>
+            <div className="text-[10px] text-o-muted">Expand drug catalogue</div>
           </div>
         </button>
 
         {/* Dispensing POS */}
         <button type="button"
           onClick={() => nav('/pos')}
-          className="relative bg-white border border-[#e2e8f1] hover:border-amber-400/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
+          className="relative bg-white border border-o-line hover:border-amber-400/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
         >
-          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-[#8b94a7] group-hover:text-amber-600 bg-slate-50 group-hover:bg-[#fef9c3] px-1.5 py-0.5 rounded border border-[#e2e8f1] transition-colors">
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-o-muted group-hover:text-amber-600 bg-slate-50 group-hover:bg-amber-100 px-1.5 py-0.5 rounded border border-o-line transition-colors">
             Rx
           </span>
-          <div className="w-11 h-11 rounded-xl bg-[#fef9c3] text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
             <FileText className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-[#1b2a4a] group-hover:text-amber-600 transition-colors">Dispensing POS</div>
-            <div className="text-[10px] text-[#8b94a7]">Rx queue & counter billing</div>
+            <div className="text-xs font-bold text-o-ink group-hover:text-amber-600 transition-colors">Dispensing POS</div>
+            <div className="text-[10px] text-o-muted">Rx queue & counter billing</div>
           </div>
         </button>
 
         {/* New Purchase */}
         <button type="button"
           onClick={() => nav('/purchases')}
-          className="relative bg-white border border-[#e2e8f1] hover:border-sky-400/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
+          className="relative bg-white border border-o-line hover:border-sky-400/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex flex-col items-center justify-center gap-2 text-center group hover:-translate-y-0.5"
         >
-          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-[#8b94a7] group-hover:text-sky-600 bg-slate-50 group-hover:bg-[#e0f2fe] px-1.5 py-0.5 rounded border border-[#e2e8f1] transition-colors">
+          <span className="absolute top-2.5 right-2.5 text-[9px] font-mono font-bold text-o-muted group-hover:text-sky-600 bg-slate-50 group-hover:bg-sky-100 px-1.5 py-0.5 rounded border border-o-line transition-colors">
             +P
           </span>
-          <div className="w-11 h-11 rounded-xl bg-[#e0f2fe] text-sky-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+          <div className="w-11 h-11 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center group-hover:scale-105 transition-transform">
             <Truck className="w-5 h-5" />
           </div>
           <div>
-            <div className="text-xs font-bold text-[#1b2a4a] group-hover:text-sky-600 transition-colors">New Purchase</div>
-            <div className="text-[10px] text-[#8b94a7]">Stock in & bills ledger</div>
+            <div className="text-xs font-bold text-o-ink group-hover:text-sky-600 transition-colors">New Purchase</div>
+            <div className="text-[10px] text-o-muted">Stock in & bills ledger</div>
           </div>
         </button>
       </div>
@@ -271,22 +271,22 @@ export default function Dashboard() {
       <div className="space-y-2.5">
         <div className="flex items-center gap-2">
           <div className="w-2 h-4 bg-amber-500 rounded-full" />
-          <h2 className="text-sm font-extrabold text-[#1b2a4a] tracking-tight">Attention &amp; Action Required</h2>
+          <h2 className="text-sm font-extrabold text-o-ink tracking-tight">Attention &amp; Action Required</h2>
         </div>
         <div className="quick-actions grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {/* Low Stock */}
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-[#e2e8f1] hover:border-amber-400 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
+            className="bg-white border border-o-line hover:border-amber-400 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-bold text-[#1b2a4a] group-hover:text-amber-700 truncate">{data.attention.lowStock} Items</div>
-                <div className="text-[10px] text-[#8b94a7] truncate">Low Stock</div>
+                <div className="text-xs font-bold text-o-ink group-hover:text-amber-700 truncate">{data.attention.lowStock} Items</div>
+                <div className="text-[10px] text-o-muted truncate">Low Stock</div>
               </div>
             </div>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
@@ -302,15 +302,15 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-[#e2e8f1] hover:border-rose-400 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
+            className="bg-white border border-o-line hover:border-rose-400 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                 <AlertCircle className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-bold text-[#1b2a4a] group-hover:text-rose-700 truncate">{data.attention.outOfStock} Items</div>
-                <div className="text-[10px] text-[#8b94a7] truncate">Out of Stock</div>
+                <div className="text-xs font-bold text-o-ink group-hover:text-rose-700 truncate">{data.attention.outOfStock} Items</div>
+                <div className="text-[10px] text-o-muted truncate">Out of Stock</div>
               </div>
             </div>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
@@ -326,15 +326,15 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-[#e2e8f1] hover:border-amber-400 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
+            className="bg-white border border-o-line hover:border-amber-400 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                 <Calendar className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-bold text-[#1b2a4a] group-hover:text-amber-700 truncate">{data.attention.nearExpiry} Batches</div>
-                <div className="text-[10px] text-[#8b94a7] truncate">Near Expiry (30d)</div>
+                <div className="text-xs font-bold text-o-ink group-hover:text-amber-700 truncate">{data.attention.nearExpiry} Batches</div>
+                <div className="text-[10px] text-o-muted truncate">Near Expiry (30d)</div>
               </div>
             </div>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
@@ -350,15 +350,15 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => nav('/inventory')}
-            className="bg-white border border-[#e2e8f1] hover:border-rose-400 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
+            className="bg-white border border-o-line hover:border-rose-400 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                 <Clock className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-bold text-[#1b2a4a] group-hover:text-rose-700 truncate">{data.attention.expired} Batches</div>
-                <div className="text-[10px] text-[#8b94a7] truncate">Expired</div>
+                <div className="text-xs font-bold text-o-ink group-hover:text-rose-700 truncate">{data.attention.expired} Batches</div>
+                <div className="text-[10px] text-o-muted truncate">Expired</div>
               </div>
             </div>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
@@ -374,22 +374,22 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => nav('/suppliers')}
-            className="bg-white border border-[#e2e8f1] hover:border-[#2f6df6]/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
+            className="bg-white border border-o-line hover:border-o-blue/40 rounded-2xl p-4 shadow-[0_4px_20px_-4px_rgba(27,42,74,0.05)] hover:shadow-md cursor-pointer transition-all flex items-center justify-between gap-2.5 text-left group hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-10 h-10 rounded-xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-o-chip text-o-link flex items-center justify-center group-hover:scale-105 transition-transform shrink-0">
                 <CreditCard className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <div className="text-xs font-bold text-[#1b2a4a] group-hover:text-[#2f6df6] truncate">
+                <div className="text-xs font-bold text-o-ink group-hover:text-o-link truncate">
                   {data.attention.pendingPayments === null ? '0' : `${data.attention.pendingPayments} Vendors`}
                 </div>
-                <div className="text-[10px] text-[#8b94a7] truncate">Unpaid Balances</div>
+                <div className="text-[10px] text-o-muted truncate">Unpaid Balances</div>
               </div>
             </div>
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border shrink-0 ${
               (data.attention.pendingPayments || 0) > 0
-                ? 'text-[#2f6df6] bg-[#edf2fd] border-[#2f6df6]/30'
+                ? 'text-o-link bg-o-chip border-o-blue/30'
                 : 'text-emerald-700 bg-emerald-50 border-emerald-200/80'
             }`}>
               {(data.attention.pendingPayments || 0) > 0 ? 'Due' : 'Settled'}
@@ -399,17 +399,17 @@ export default function Dashboard() {
       </div>
 
       {/* 3. Today's Overview (MedSync Visual Performance Graph & Metrics) */}
-      <div className="space-y-4 py-3 border-y border-[#e2e8f1]">
+      <div className="space-y-4 py-3 border-y border-o-line">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
-            <div className="w-2.5 h-5 bg-[#2f6df6] rounded-full" />
-            <h2 className="text-base font-extrabold text-[#1b2a4a] tracking-tight">Today's Performance</h2>
-            <div className="inline-flex items-center p-0.5 rounded-xl bg-[#edf2fd] border border-[#2f6df6]/15 text-[11px] font-bold ml-2">
+            <div className="w-2.5 h-5 bg-o-blue rounded-full" />
+            <h2 className="text-base font-extrabold text-o-ink tracking-tight">Today's Performance</h2>
+            <div className="inline-flex items-center p-0.5 rounded-xl bg-o-chip border border-o-blue/15 text-[11px] font-bold ml-2">
               <button
                 type="button"
                 onClick={() => setChartRange('7D')}
                 className={`px-3 py-1 rounded-lg transition-all ${
-                  chartRange === '7D' ? 'bg-white text-[#2f6df6] shadow-xs' : 'text-[#8b94a7] hover:text-[#1b2a4a]'
+                  chartRange === '7D' ? 'bg-white text-o-link shadow-xs' : 'text-o-muted hover:text-o-ink'
                 }`}
               >
                 7-Day Trend
@@ -418,7 +418,7 @@ export default function Dashboard() {
                 type="button"
                 onClick={() => setChartRange('HOURLY')}
                 className={`px-3 py-1 rounded-lg transition-all ${
-                  chartRange === 'HOURLY' ? 'bg-white text-[#2f6df6] shadow-xs' : 'text-[#8b94a7] hover:text-[#1b2a4a]'
+                  chartRange === 'HOURLY' ? 'bg-white text-o-link shadow-xs' : 'text-o-muted hover:text-o-ink'
                 }`}
               >
                 Intraday Flow
@@ -426,17 +426,17 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4 text-xs font-semibold">
-            <span className="flex items-center gap-1.5 text-[#3c4761]">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#2f6df6]" />
-              Revenue: <strong className="font-mono text-[#1b2a4a]">{data.kpis.sales}</strong>
+            <span className="flex items-center gap-1.5 text-o-text2">
+              <span className="w-2.5 h-2.5 rounded-full bg-o-blue" />
+              Revenue: <strong className="font-mono text-o-ink">{data.kpis.sales}</strong>
             </span>
-            <span className="flex items-center gap-1.5 text-[#3c4761]">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#38a89d]" />
-              Orders: <strong className="font-mono text-[#1b2a4a]">{data.kpis.orders}</strong>
+            <span className="flex items-center gap-1.5 text-o-text2">
+              <span className="w-2.5 h-2.5 rounded-full bg-o-teal" />
+              Orders: <strong className="font-mono text-o-ink">{data.kpis.orders}</strong>
             </span>
-            <span className="flex items-center gap-1.5 text-[#3c4761]">
+            <span className="flex items-center gap-1.5 text-o-text2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#ea580c]" />
-              Profit: <strong className="font-mono text-[#1b2a4a]">{data.kpis.profit}</strong>
+              Profit: <strong className="font-mono text-o-ink">{data.kpis.profit}</strong>
             </span>
           </div>
         </div>
@@ -474,16 +474,16 @@ export default function Dashboard() {
           </div>
 
           {/* Unified Metrics Flow (5 of 12 cols, MedSync themed cards) */}
-          <div className="lg:col-span-5 grid grid-cols-2 gap-3 lg:pl-6 lg:border-l border-[#e2e8f1]">
+          <div className="lg:col-span-5 grid grid-cols-2 gap-3 lg:pl-6 lg:border-l border-o-line">
             {/* 1. Revenue Today */}
-            <div className="p-3.5 rounded-2xl border border-[#e2e8f1] bg-white hover:border-[#2f6df6]/40 shadow-xs hover:shadow-sm transition-all">
-              <div className="text-[11px] text-[#8b94a7] font-semibold flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl border border-o-line bg-white hover:border-o-blue/40 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-o-muted font-semibold flex items-center justify-between">
                 <span>Revenue Today</span>
-                <div className="w-6 h-6 rounded-lg bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center">
+                <div className="w-6 h-6 rounded-lg bg-o-chip text-o-link flex items-center justify-center">
                   <DollarSign className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <div className="text-xl font-black text-[#1b2a4a] tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-o-ink tracking-tight font-mono mt-1">
                 {data.kpis.sales}
               </div>
               <div className="text-[10px] font-semibold text-emerald-700 mt-1 flex items-center gap-1">
@@ -493,65 +493,65 @@ export default function Dashboard() {
             </div>
 
             {/* 2. Orders */}
-            <div className="p-3.5 rounded-2xl border border-[#e2e8f1] bg-white hover:border-[#38a89d]/40 shadow-xs hover:shadow-sm transition-all">
-              <div className="text-[11px] text-[#8b94a7] font-semibold flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl border border-o-line bg-white hover:border-o-teal/40 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-o-muted font-semibold flex items-center justify-between">
                 <span>Orders / Invoices</span>
-                <div className="w-6 h-6 rounded-lg bg-[#e8f7f5] text-[#38a89d] flex items-center justify-center">
+                <div className="w-6 h-6 rounded-lg bg-o-teal-tint text-o-teal flex items-center justify-center">
                   <CreditCard className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <div className="text-xl font-black text-[#1b2a4a] tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-o-ink tracking-tight font-mono mt-1">
                 {data.kpis.orders}
               </div>
-              <div className="text-[10px] font-semibold text-[#8b94a7] mt-1">
+              <div className="text-[10px] font-semibold text-o-muted mt-1">
                 {data.kpis.ordersChange}
               </div>
             </div>
 
             {/* 3. Gross Profit */}
-            <div className="p-3.5 rounded-2xl border border-[#e2e8f1] bg-white hover:border-amber-300 shadow-xs hover:shadow-sm transition-all">
-              <div className="text-[11px] text-[#8b94a7] font-semibold flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl border border-o-line bg-white hover:border-amber-300 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-o-muted font-semibold flex items-center justify-between">
                 <span>Gross Profit</span>
                 <div className="w-6 h-6 rounded-lg bg-amber-50 text-[#ea580c] flex items-center justify-center">
                   <TrendingUp className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <div className="text-xl font-black text-[#1b2a4a] tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-o-ink tracking-tight font-mono mt-1">
                 {data.kpis.profit}
               </div>
-              <div className="text-[10px] font-medium text-[#8b94a7] mt-1">
+              <div className="text-[10px] font-medium text-o-muted mt-1">
                 {data.kpis.profitChange}
               </div>
             </div>
 
             {/* 4. Gross Margin */}
-            <div className="p-3.5 rounded-2xl border border-[#e2e8f1] bg-white hover:border-purple-300 shadow-xs hover:shadow-sm transition-all">
-              <div className="text-[11px] text-[#8b94a7] font-semibold flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl border border-o-line bg-white hover:border-purple-300 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-o-muted font-semibold flex items-center justify-between">
                 <span>Gross Margin</span>
                 <div className="w-6 h-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
                   <ReceiptIcon className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <div className="text-xl font-black text-[#1b2a4a] tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-o-ink tracking-tight font-mono mt-1">
                 {data.kpis.grossMargin}
               </div>
-              <div className="text-[10px] font-medium text-[#8b94a7] mt-1">
+              <div className="text-[10px] font-medium text-o-muted mt-1">
                 {data.kpis.marginChange}
               </div>
             </div>
 
             {/* 5. Customers Served */}
-            <div className="p-3.5 rounded-2xl border border-[#e2e8f1] bg-white hover:border-[#2f6df6]/30 shadow-xs hover:shadow-sm transition-all">
-              <div className="text-[11px] text-[#8b94a7] font-semibold flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl border border-o-line bg-white hover:border-o-blue/30 shadow-xs hover:shadow-sm transition-all">
+              <div className="text-[11px] text-o-muted font-semibold flex items-center justify-between">
                 <span>Customers Served</span>
-                <div className="w-6 h-6 rounded-lg bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center">
+                <div className="w-6 h-6 rounded-lg bg-o-chip text-o-link flex items-center justify-center">
                   <Users className="w-3.5 h-3.5" />
                 </div>
               </div>
-              <div className="text-xl font-black text-[#1b2a4a] tracking-tight font-mono mt-1">
+              <div className="text-xl font-black text-o-ink tracking-tight font-mono mt-1">
                 {data.kpis.customers}
               </div>
-              <div className="text-[10px] font-medium text-[#8b94a7] mt-1">
+              <div className="text-[10px] font-medium text-o-muted mt-1">
                 {data.kpis.customersChange}
               </div>
             </div>
@@ -579,12 +579,12 @@ export default function Dashboard() {
       <StockOperationsGraphs db={db} nav={nav} />
 
       {/* 5. Row 1 Analytics: Multi-Branch Revenue Trend, Category Breakdown, Inventory Health */}
-      <div className="py-3 border-y border-[#e2e8f1]">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-[#e2e8f1]">
+      <div className="py-3 border-y border-o-line">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-o-line">
           {/* Multi-Branch Revenue Trend (6 of 12 cols) */}
           <div className="lg:col-span-6 flex flex-col justify-between pt-2 lg:pt-0">
             <div className="mb-4">
-              <h3 className="font-extrabold text-sm text-[#1b2a4a]">Branch Revenue · {data.monthLabel}</h3>
+              <h3 className="font-extrabold text-sm text-o-ink">Branch Revenue · {data.monthLabel}</h3>
             </div>
 
             <span className="sr-only">Owner branch revenue bar chart</span><RevenueBars entries={data.branchRevenueTrend.map((b) => ({ key: b.id || 'unassigned', label: b.name, total: b.total, color: b.color || '#2f6df6' }))} hasRecords={data.hasMonthlySales} empty="No sales recorded this month in this scope." />
@@ -593,8 +593,8 @@ export default function Dashboard() {
           {/* Category Breakdown (3 of 12 cols) */}
           <div className="lg:col-span-3 flex flex-col justify-between pt-4 lg:pt-0 lg:pl-6">
             <div className="mb-2">
-              <h3 className="font-extrabold text-sm text-[#1b2a4a]">Category Breakdown</h3>
-              <p className="text-[11px] text-[#8b94a7] mt-1">{data.monthLabel} · category or dosage form</p>
+              <h3 className="font-extrabold text-sm text-o-ink">Category Breakdown</h3>
+              <p className="text-[11px] text-o-muted mt-1">{data.monthLabel} · category or dosage form</p>
             </div>
 
             <span className="sr-only">Owner category sales distribution: no data</span><Donut entries={data.categoryBreakdown} center={data.totalCategorySales} empty="No category sales recorded this month." label="Owner category sales distribution" keepFrame />
@@ -603,45 +603,45 @@ export default function Dashboard() {
           {/* Inventory Health (3 of 12 cols) */}
           <div className="lg:col-span-3 flex flex-col justify-between pt-4 lg:pt-0 lg:pl-6">
             <div className="mb-2">
-              <h3 className="font-extrabold text-sm text-[#1b2a4a]">Inventory Health</h3>
+              <h3 className="font-extrabold text-sm text-o-ink">Inventory Health</h3>
             </div>
 
             <span className="sr-only">Owner inventory health distribution: no data</span><Donut entries={data.inventoryHealth} center={`${data.catalogueCount} items`} empty="No medicines in the saved catalogue." label="Owner inventory health distribution" keepFrame />
-            <p className="text-xs text-[#3c4761] mt-3">Stock cost <b className="text-[#1b2a4a]">{data.stockValue}</b></p>
+            <p className="text-xs text-o-text2 mt-3">Stock cost <b className="text-o-ink">{data.stockValue}</b></p>
             <p className="text-[10px] text-amber-800 mt-1">Includes held/expired stock. Check expiry before dispensing.</p>
           </div>
         </div>
       </div>
 
       {/* 6. Row 2 Analytics: Sales Trend */}
-      <div className="py-3 border-y border-[#e2e8f1]">
+      <div className="py-3 border-y border-o-line">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-extrabold text-sm text-[#1b2a4a]">Sales Trend</h3>
-          <span className="text-xs text-[#8b94a7]">Monthly year comparison · Rs.</span>
+          <h3 className="font-extrabold text-sm text-o-ink">Sales Trend</h3>
+          <span className="text-xs text-o-muted">Monthly year comparison · Rs.</span>
         </div>
 
         <span className="sr-only">Owner monthly sales comparison by year</span><OwnerYearChart comparison={ownerSalesComparison(db)} />
       </div>
 
       {/* 7. Unified Executive Hub: Branch Rankings, Capital at Risk, Recent Activity */}
-      <div className="py-3 border-y border-[#e2e8f1]">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-[#e2e8f1]">
+      <div className="py-3 border-y border-o-line">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-o-line">
           {/* Section 1: Branch Performance Ranking */}
           <div className="pt-2 lg:pt-0 lg:pr-6 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-o-chip text-o-link flex items-center justify-center shrink-0">
                     <Trophy className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-sm text-[#1b2a4a] leading-tight">Branch Rankings</h3>
-                    <p className="text-[11px] text-[#8b94a7] font-medium">{data.monthLabel}</p>
+                    <h3 className="font-extrabold text-sm text-o-ink leading-tight">Branch Rankings</h3>
+                    <p className="text-[11px] text-o-muted font-medium">{data.monthLabel}</p>
                   </div>
                 </div>
                 <button
                   onClick={() => nav('/branches')}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-[#2f6df6] hover:text-[#1f4fd1] hover:underline transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-o-link hover:text-o-link hover:underline transition-colors cursor-pointer"
                 >
                   <span>View All</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -649,7 +649,7 @@ export default function Dashboard() {
               </div>
 
               {!data.hasMonthlySales && (
-                <div className="py-10 text-center text-[#8b94a7] text-xs">
+                <div className="py-10 text-center text-o-muted text-xs">
                   No sales recorded to rank branches this month.
                 </div>
               )}
@@ -663,16 +663,16 @@ export default function Dashboard() {
                       return (
                         <div
                           key={r.rank}
-                          className="p-2.5 rounded-xl border border-[#e2e8f1] bg-white hover:border-[#2f6df6]/40 shadow-xs transition-colors flex items-center gap-3"
+                          className="p-2.5 rounded-xl border border-o-line bg-white hover:border-o-blue/40 shadow-xs transition-colors flex items-center gap-3"
                         >
                           <span
                             className={`w-6 h-6 rounded-md font-black text-[10px] flex items-center justify-center shrink-0 ${
                               r.rank === 1
-                                ? 'bg-[#2f6df6] text-white shadow-xs'
+                                ? 'bg-o-blue text-white shadow-xs'
                                 : r.rank === 2
                                 ? 'bg-slate-400 text-white'
                                 : r.rank === 3
-                                ? 'bg-[#38a89d] text-white'
+                                ? 'bg-o-teal text-white'
                                 : 'bg-slate-200 text-slate-600'
                             }`}
                           >
@@ -681,8 +681,8 @@ export default function Dashboard() {
 
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center justify-between text-xs">
-                              <span className="font-bold text-[#1b2a4a] truncate">{r.name}</span>
-                              <span className="font-bold text-[#1b2a4a] font-mono ml-2 shrink-0">{r.revenue}</span>
+                              <span className="font-bold text-o-ink truncate">{r.name}</span>
+                              <span className="font-bold text-o-ink font-mono ml-2 shrink-0">{r.revenue}</span>
                             </div>
                             <div className="flex items-center justify-between gap-2 mt-1.5">
                               <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
@@ -694,7 +694,7 @@ export default function Dashboard() {
                                   }}
                                 />
                               </div>
-                              <span className="text-[10px] font-semibold text-[#8b94a7] shrink-0">{r.status}</span>
+                              <span className="text-[10px] font-semibold text-o-muted shrink-0">{r.status}</span>
                             </div>
                           </div>
                         </div>
@@ -705,11 +705,11 @@ export default function Dashboard() {
               )}
             </div>
 
-            <div className="pt-3 mt-4 border-t border-[#e2e8f1] flex items-center justify-between text-[11px] text-[#8b94a7]">
+            <div className="pt-3 mt-4 border-t border-o-line flex items-center justify-between text-[11px] text-o-muted">
               <span>Multi-branch revenue share</span>
               <button
                 onClick={() => nav('/branches')}
-                className="font-bold text-[#2f6df6] hover:text-[#1f4fd1] inline-flex items-center gap-1 transition-colors cursor-pointer"
+                className="font-bold text-o-link hover:text-o-link inline-flex items-center gap-1 transition-colors cursor-pointer"
               >
                 <span>Branch Hub</span>
                 <ArrowUpRight className="w-3 h-3" />
@@ -726,27 +726,27 @@ export default function Dashboard() {
                     <AlertTriangle className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-sm text-[#1b2a4a] leading-tight flex items-center gap-1.5">
+                    <h3 className="font-extrabold text-sm text-o-ink leading-tight flex items-center gap-1.5">
                       <span>Capital at Risk</span>
                       <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
                     </h3>
-                    <p className="text-[11px] text-[#8b94a7] font-medium">Expired & 30d near expiry</p>
+                    <p className="text-[11px] text-o-muted font-medium">Expired & 30d near expiry</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-[10px] font-semibold text-[#8b94a7] block uppercase tracking-wider">At Risk</span>
+                  <span className="text-[10px] font-semibold text-o-muted block uppercase tracking-wider">At Risk</span>
                   <span className="text-sm font-black text-rose-600 font-mono tracking-tight">{data.capitalAtRisk.total}</span>
                 </div>
               </div>
 
               <div className="space-y-2.5 max-h-72 overflow-y-auto pr-0.5">
                 {!data.capitalAtRisk.items.length && (
-                  <div className="py-8 text-center flex flex-col items-center justify-center text-[#8b94a7]">
+                  <div className="py-8 text-center flex flex-col items-center justify-center text-o-muted">
                     <div className="w-9 h-9 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1.5">
                       <ClipboardCheck className="w-4 h-4" />
                     </div>
-                    <span className="text-xs font-semibold text-[#1b2a4a]">All Batches Valid</span>
-                    <span className="text-[11px] text-[#8b94a7]">No stock expired or due within 30 days</span>
+                    <span className="text-xs font-semibold text-o-ink">All Batches Valid</span>
+                    <span className="text-[11px] text-o-muted">No stock expired or due within 30 days</span>
                   </div>
                 )}
                 {data.capitalAtRisk.items.map((item) => {
@@ -757,15 +757,15 @@ export default function Dashboard() {
                       className="p-2.5 rounded-xl border border-rose-100/90 bg-white hover:border-rose-300 shadow-xs transition-all flex items-center justify-between gap-3 text-xs group"
                     >
                       <div className="min-w-0 flex-1">
-                        <div className="font-bold text-[#1b2a4a] truncate group-hover:text-rose-900 transition-colors">
+                        <div className="font-bold text-o-ink truncate group-hover:text-rose-900 transition-colors">
                           {item.name}
                         </div>
-                        <div className="text-[10px] text-[#8b94a7] truncate mt-0.5">
+                        <div className="text-[10px] text-o-muted truncate mt-0.5">
                           {item.batch}
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <div className="font-bold text-[#1b2a4a] font-mono text-xs">{item.value}</div>
+                        <div className="font-bold text-o-ink font-mono text-xs">{item.value}</div>
                         <span
                           className={`inline-flex items-center gap-1 text-[10px] font-semibold mt-0.5 px-1.5 py-0.5 rounded-md ${
                             isExpired
@@ -783,7 +783,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="pt-3 mt-4 border-t border-[#e2e8f1] flex items-center justify-between text-[11px] text-[#8b94a7]">
+            <div className="pt-3 mt-4 border-t border-o-line flex items-center justify-between text-[11px] text-o-muted">
               <span>Inventory Expiry Ledger</span>
               <button
                 onClick={() => nav('/inventory/hub?tab=expiry')}
@@ -800,17 +800,17 @@ export default function Dashboard() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-xl bg-o-chip text-o-link flex items-center justify-center shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="font-extrabold text-sm text-[#1b2a4a] leading-tight">Recent Activity</h3>
-                    <p className="text-[11px] text-[#8b94a7] font-medium">Real-time ledger audit</p>
+                    <h3 className="font-extrabold text-sm text-o-ink leading-tight">Recent Activity</h3>
+                    <p className="text-[11px] text-o-muted font-medium">Real-time ledger audit</p>
                   </div>
                 </div>
                 <button
                   onClick={() => nav('/reports')}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-[#2f6df6] hover:text-[#1f4fd1] hover:underline transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-o-link hover:text-o-link hover:underline transition-colors cursor-pointer"
                 >
                   <span>View All</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />
@@ -867,7 +867,7 @@ export default function Dashboard() {
               <span>Complete transaction feed</span>
               <button
                 onClick={() => nav('/sales')}
-                className="font-bold text-[#008f8b] hover:text-[#00706c] inline-flex items-center gap-1 transition-colors"
+                className="font-bold text-o-teal hover:text-o-teal inline-flex items-center gap-1 transition-colors"
               >
                 <span>Sales Log</span>
                 <ArrowUpRight className="w-3 h-3" />
@@ -884,19 +884,19 @@ export default function Dashboard() {
           onClick={() => setShowAddCustomer(false)}
         >
           <div
-            className="bg-white rounded-[24px] p-6 w-full max-w-sm shadow-[0_25px_60px_-15px_rgba(27,42,74,0.2)] border border-[#e2e8f1] space-y-4"
+            className="bg-white rounded-[24px] p-6 w-full max-w-sm shadow-[0_25px_60px_-15px_rgba(27,42,74,0.2)] border border-o-line space-y-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b pb-3 border-[#e2e8f1]">
+            <div className="flex items-center justify-between border-b pb-3 border-o-line">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#e8f7f5] text-[#38a89d] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-o-teal-tint text-o-teal flex items-center justify-center">
                   <UserPlus className="w-4 h-4" />
                 </div>
-                <h3 className="text-sm font-extrabold text-[#1b2a4a]">Add New Customer</h3>
+                <h3 className="text-sm font-extrabold text-o-ink">Add New Customer</h3>
               </div>
               <button
                 onClick={() => setShowAddCustomer(false)}
-                className="w-7 h-7 rounded-lg hover:bg-slate-100 flex items-center justify-center text-[#8b94a7] hover:text-[#1b2a4a] text-xs transition-colors cursor-pointer"
+                className="w-7 h-7 rounded-lg hover:bg-slate-100 flex items-center justify-center text-o-muted hover:text-o-ink text-xs transition-colors cursor-pointer"
               >
                 ✕
               </button>
@@ -904,25 +904,25 @@ export default function Dashboard() {
 
             <form onSubmit={handleAddCustomerSubmit} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-[#3c4761] font-bold mb-1.5">Customer Full Name *</label>
+                <label className="block text-o-text2 font-bold mb-1.5">Customer Full Name *</label>
                 <input
                   type="text"
                   required
                   value={newCustName}
                   onChange={(e) => setNewCustName(e.target.value)}
                   placeholder="e.g. Tariq Mehmood"
-                  className="w-full px-4 py-2.5 bg-[#f8fafc] border border-[#e2e8f1] rounded-2xl focus:outline-none focus:border-[#2f6df6] focus:ring-2 focus:ring-[#2f6df6]/15 font-medium text-[#1b2a4a]"
+                  className="w-full px-4 py-2.5 bg-o-bg border border-o-line rounded-2xl focus:outline-none focus:border-o-blue focus:ring-2 focus:ring-o-blue/15 font-medium text-o-ink"
                 />
               </div>
 
               <div>
-                <label className="block text-[#3c4761] font-bold mb-1.5">Mobile / Phone Number</label>
+                <label className="block text-o-text2 font-bold mb-1.5">Mobile / Phone Number</label>
                 <input
                   type="text"
                   value={newCustPhone}
                   onChange={(e) => setNewCustPhone(e.target.value)}
                   placeholder="e.g. 0300-1234567"
-                  className="w-full px-4 py-2.5 bg-[#f8fafc] border border-[#e2e8f1] rounded-2xl focus:outline-none focus:border-[#2f6df6] focus:ring-2 focus:ring-[#2f6df6]/15 font-medium text-[#1b2a4a]"
+                  className="w-full px-4 py-2.5 bg-o-bg border border-o-line rounded-2xl focus:outline-none focus:border-o-blue focus:ring-2 focus:ring-o-blue/15 font-medium text-o-ink"
                 />
               </div>
 
@@ -930,13 +930,13 @@ export default function Dashboard() {
                 <button
                   type="button"
                   onClick={() => setShowAddCustomer(false)}
-                  className="flex-1 py-3 rounded-2xl border border-[#e2e8f1] hover:bg-slate-50 text-[#3c4761] font-bold text-xs transition-all cursor-pointer"
+                  className="flex-1 py-3 rounded-2xl border border-o-line hover:bg-slate-50 text-o-text2 font-bold text-xs transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 rounded-2xl bg-[#2f6df6] hover:bg-[#1f4fd1] text-white font-extrabold text-xs shadow-[0_10px_24px_-6px_rgba(47,109,246,0.45)] transition-all cursor-pointer"
+                  className="flex-1 py-3 rounded-2xl bg-o-blue hover:bg-o-blue-d text-white font-extrabold text-xs shadow-[0_10px_24px_-6px_rgba(47,109,246,0.45)] transition-all cursor-pointer"
                 >
                   Save Customer
                 </button>
@@ -1109,16 +1109,16 @@ export function CompanyStockGraph({ db, nav }) {
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-xl bg-o-chip text-o-link flex items-center justify-center font-bold">
               <Building2 className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-[#1b2a4a] group-hover:text-[#2f6df6] transition-colors">
+              <h3 className="text-sm font-extrabold text-o-ink group-hover:text-o-link transition-colors">
                 Company Stock
               </h3>
             </div>
           </div>
-          <ArrowUpRight className="w-4 h-4 text-[#8b94a7] group-hover:text-[#2f6df6] transition-colors" />
+          <ArrowUpRight className="w-4 h-4 text-o-muted group-hover:text-o-link transition-colors" />
         </div>
 
         {/* Donut Chart */}
@@ -1131,19 +1131,19 @@ export function CompanyStockGraph({ db, nav }) {
         />
 
         {/* Legend */}
-        <div className="space-y-1.5 pt-2.5 border-t border-[#e2e8f1]">
+        <div className="space-y-1.5 pt-2.5 border-t border-o-line">
           {stats.list.length === 0 ? (
-            <div className="text-xs text-[#8b94a7] py-2 text-center">No stock recorded</div>
+            <div className="text-xs text-o-muted py-2 text-center">No stock recorded</div>
           ) : (
             stats.list.map((c, i) => {
               const pct = stats.totalStockValuation > 0 ? Math.round((c.valuation / stats.totalStockValuation) * 100) : 0
               return (
                 <div key={i} className="flex items-center justify-between text-xs">
-                  <span className="flex items-center gap-2 text-[#3c4761] truncate max-w-[150px]" title={c.name}>
+                  <span className="flex items-center gap-2 text-o-text2 truncate max-w-[150px]" title={c.name}>
                     <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: donutColors[i % donutColors.length] }} />
                     <span className="truncate font-medium">{c.name}</span>
                   </span>
-                  <span className="font-bold text-[#1b2a4a] tabular-nums">{pct}%</span>
+                  <span className="font-bold text-o-ink tabular-nums">{pct}%</span>
                 </div>
               )
             })
@@ -1207,16 +1207,16 @@ export function StockAuditGraph({ db, nav }) {
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#e8f7f5] text-[#38a89d] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-xl bg-o-teal-tint text-o-teal flex items-center justify-center font-bold">
               <ClipboardCheck className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-[#1b2a4a] group-hover:text-[#38a89d] transition-colors">
+              <h3 className="text-sm font-extrabold text-o-ink group-hover:text-o-teal transition-colors">
                 Stock Audit
               </h3>
             </div>
           </div>
-          <ArrowUpRight className="w-4 h-4 text-[#8b94a7] group-hover:text-[#38a89d] transition-colors" />
+          <ArrowUpRight className="w-4 h-4 text-o-muted group-hover:text-o-teal transition-colors" />
         </div>
 
         {/* Donut Chart */}
@@ -1229,31 +1229,31 @@ export function StockAuditGraph({ db, nav }) {
         />
 
         {/* Legend */}
-        <div className="space-y-1.5 pt-2.5 border-t border-[#e2e8f1]">
+        <div className="space-y-1.5 pt-2.5 border-t border-o-line">
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-2 text-[#3c4761]">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#38a89d]" />
+            <span className="flex items-center gap-2 text-o-text2">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-o-teal" />
               <span className="font-medium">Matched</span>
             </span>
-            <span className="font-bold text-[#38a89d] tabular-nums">
+            <span className="font-bold text-o-teal tabular-nums">
               {stats.matched} ({stats.matchedPct}%)
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-2 text-[#3c4761]">
+            <span className="flex items-center gap-2 text-o-text2">
               <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-rose-500" />
               <span className="font-medium">Shortage (Kam)</span>
             </span>
-            <span className={`font-bold tabular-nums ${stats.shortage > 0 ? 'text-rose-600' : 'text-[#8b94a7]'}`}>
+            <span className={`font-bold tabular-nums ${stats.shortage > 0 ? 'text-rose-600' : 'text-o-muted'}`}>
               {stats.shortage} ({stats.shortagePct}%)
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-2 text-[#3c4761]">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#2f6df6]" />
+            <span className="flex items-center gap-2 text-o-text2">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-o-blue" />
               <span className="font-medium">Excess (Zyada)</span>
             </span>
-            <span className={`font-bold tabular-nums ${stats.surplus > 0 ? 'text-[#2f6df6]' : 'text-[#8b94a7]'}`}>
+            <span className={`font-bold tabular-nums ${stats.surplus > 0 ? 'text-o-link' : 'text-o-muted'}`}>
               {stats.surplus} ({stats.surplusPct}%)
             </span>
           </div>
@@ -1343,16 +1343,16 @@ export function ExpiryActionGraph({ db, nav }) {
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-xl bg-o-chip text-o-link flex items-center justify-center font-bold">
               <Clock className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-[#1b2a4a] group-hover:text-[#2f6df6] transition-colors">
+              <h3 className="text-sm font-extrabold text-o-ink group-hover:text-o-link transition-colors">
                 Expiry Action
               </h3>
             </div>
           </div>
-          <ArrowUpRight className="w-4 h-4 text-[#8b94a7] group-hover:text-[#2f6df6] transition-colors" />
+          <ArrowUpRight className="w-4 h-4 text-o-muted group-hover:text-o-link transition-colors" />
         </div>
 
         {/* Donut Chart */}
@@ -1365,31 +1365,31 @@ export function ExpiryActionGraph({ db, nav }) {
         />
 
         {/* Legend */}
-        <div className="space-y-1.5 pt-2.5 border-t border-[#e2e8f1]">
+        <div className="space-y-1.5 pt-2.5 border-t border-o-line">
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-2 text-[#3c4761]">
+            <span className="flex items-center gap-2 text-o-text2">
               <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-rose-500" />
               <span className="font-medium">Expired</span>
             </span>
-            <span className={`font-bold tabular-nums ${stats.expiredUnits > 0 ? 'text-rose-600' : 'text-[#8b94a7]'}`}>
+            <span className={`font-bold tabular-nums ${stats.expiredUnits > 0 ? 'text-rose-600' : 'text-o-muted'}`}>
               {stats.expiredUnits.toLocaleString()} units
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-2 text-[#3c4761]">
+            <span className="flex items-center gap-2 text-o-text2">
               <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-amber-500" />
               <span className="font-medium">Critical (0–30d)</span>
             </span>
-            <span className={`font-bold tabular-nums ${stats.criticalUnits > 0 ? 'text-amber-600' : 'text-[#8b94a7]'}`}>
+            <span className={`font-bold tabular-nums ${stats.criticalUnits > 0 ? 'text-amber-600' : 'text-o-muted'}`}>
               {stats.criticalUnits.toLocaleString()} units
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-2 text-[#3c4761]">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#38a89d]" />
+            <span className="flex items-center gap-2 text-o-text2">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-o-teal" />
               <span className="font-medium">Safe Stock</span>
             </span>
-            <span className="font-bold text-[#38a89d] tabular-nums">
+            <span className="font-bold text-o-teal tabular-nums">
               {(stats.safeUnits + stats.nearUnits).toLocaleString()} units
             </span>
           </div>
@@ -1448,16 +1448,16 @@ export function PurchaseReturnsGraph({ db, nav }) {
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-xl bg-o-chip text-o-link flex items-center justify-center font-bold">
               <RotateCcw className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-extrabold text-[#1b2a4a] group-hover:text-[#2f6df6] transition-colors">
+              <h3 className="text-sm font-extrabold text-o-ink group-hover:text-o-link transition-colors">
                 Purchase Returns
               </h3>
             </div>
           </div>
-          <ArrowUpRight className="w-4 h-4 text-[#8b94a7] group-hover:text-[#2f6df6] transition-colors" />
+          <ArrowUpRight className="w-4 h-4 text-o-muted group-hover:text-o-link transition-colors" />
         </div>
 
         {/* Donut Chart */}
@@ -1470,31 +1470,31 @@ export function PurchaseReturnsGraph({ db, nav }) {
         />
 
         {/* Legend */}
-        <div className="space-y-1.5 pt-2.5 border-t border-[#e2e8f1]">
+        <div className="space-y-1.5 pt-2.5 border-t border-o-line">
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-2 text-[#3c4761]">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#2f6df6]" />
+            <span className="flex items-center gap-2 text-o-text2">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-o-blue" />
               <span className="font-medium">Credit Notes</span>
             </span>
-            <span className="font-bold text-[#2f6df6] tabular-nums">
+            <span className="font-bold text-o-link tabular-nums">
               {fmt(stats.creditNotes)}
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-2 text-[#3c4761]">
-              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-[#38a89d]" />
+            <span className="flex items-center gap-2 text-o-text2">
+              <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-o-teal" />
               <span className="font-medium">Cash Refunds</span>
             </span>
-            <span className="font-bold text-[#38a89d] tabular-nums">
+            <span className="font-bold text-o-teal tabular-nums">
               {fmt(stats.cashRefunds)}
             </span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="flex items-center gap-2 text-[#3c4761]">
+            <span className="flex items-center gap-2 text-o-text2">
               <span className="w-2.5 h-2.5 rounded-full shrink-0 bg-slate-300" />
               <span className="font-medium">Items Returned</span>
             </span>
-            <span className="font-bold text-[#1b2a4a] tabular-nums">
+            <span className="font-bold text-o-ink tabular-nums">
               {stats.totalUnits.toLocaleString()} units
             </span>
           </div>
@@ -1506,8 +1506,8 @@ export function PurchaseReturnsGraph({ db, nav }) {
 
 export function StockOperationsGraphs({ db, nav }) {
   return (
-    <div className="py-3 border-y border-[#e2e8f1]">
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-[#e2e8f1]">
+    <div className="py-3 border-y border-o-line">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-o-line">
         <div className="pt-2 md:pt-0"><CompanyStockGraph db={db} nav={nav} /></div>
         <div className="pt-4 md:pt-0 md:pl-6"><StockAuditGraph db={db} nav={nav} /></div>
         <div className="pt-4 md:pt-0 md:pl-6"><ExpiryActionGraph db={db} nav={nav} /></div>
@@ -1579,12 +1579,12 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
   }
 
   return (
-    <div className="dashboard-view space-y-6 w-full pb-6 font-sans text-[#3c4761]">
+    <div className="dashboard-view space-y-6 w-full pb-6 font-sans text-o-text2">
       {/* Role Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e2e8f1]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-o-line">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center shadow-sm border border-[#2f6df6]/20">
+            <div className="w-11 h-11 rounded-2xl bg-o-chip text-o-link flex items-center justify-center shadow-sm border border-o-blue/20">
               <svg viewBox="0 0 32 32" fill="none" className="w-6 h-6" aria-hidden="true">
                 <circle cx="16" cy="16" r="13" stroke="#2f6df6" strokeWidth="2.6" />
                 <path d="M16 7.5a8.5 8.5 0 1 1-8.5 8.5" stroke="#38a89d" strokeWidth="2.6" strokeLinecap="round" />
@@ -1593,12 +1593,12 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#1b2a4a]">{title}</h1>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#edf2fd] text-[#2f6df6] border border-[#2f6df6]/20">
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-o-ink">{title}</h1>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-o-chip text-o-link border border-o-blue/20">
                   {role} Station
                 </span>
               </div>
-              <p className="text-xs text-[#8b94a7] font-medium mt-0.5">
+              <p className="text-xs text-o-muted font-medium mt-0.5">
                 {data.greeting}, {me?.name || 'Team Member'} · {data.scopeLabel} · {data.dateLabel}
               </p>
             </div>
@@ -1606,15 +1606,15 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
         </div>
 
         {/* View Switchers */}
-        <div className="view-switcher inline-flex items-center p-1 rounded-2xl border border-[#e2e8f1] bg-white shadow-xs text-xs font-semibold" aria-label="Dashboard views">
+        <div className="view-switcher inline-flex items-center p-1 rounded-2xl border border-o-line bg-white shadow-xs text-xs font-semibold" aria-label="Dashboard views">
           {['OWNER', 'MANAGER', 'PHARMACIST', 'CASHIER', 'RECEPTIONIST'].map((item) => (
             <button
               key={item}
               onClick={() => setRole(item)}
               className={`px-3 py-1.5 rounded-xl transition-all cursor-pointer ${
                 role === item
-                  ? 'bg-[#2f6df6] text-white font-bold shadow-[0_4px_14px_-2px_rgba(47,109,246,0.4)]'
-                  : 'text-[#3c4761] hover:text-[#1b2a4a] hover:bg-[#edf2fd]/50'
+                  ? 'bg-o-blue text-white font-bold shadow-[0_4px_14px_-2px_rgba(47,109,246,0.4)]'
+                  : 'text-o-text2 hover:text-o-ink hover:bg-o-chip/50'
               }`}
             >
               {item === 'OWNER' ? 'Owner' : item[0] + item.slice(1).toLowerCase()}
@@ -1627,17 +1627,17 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
         {cards.map(([label, value, hint], index) => {
           const Icon = [DollarSign, ReceiptIcon, Package, Truck, AlertTriangle, Clock, CreditCard, TrendingUp][index]
           return (
-            <section key={label} className="metric-card bg-white border border-[#e2e8f1] rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-sm transition-shadow flex flex-col justify-between">
+            <section key={label} className="metric-card bg-white border border-o-line rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-sm transition-shadow flex flex-col justify-between">
               <div>
                 <div className="flex justify-between items-start gap-2">
-                  <h2 className="text-xs font-bold text-[#8b94a7]">{label}</h2>
-                  <div className="w-8 h-8 rounded-xl bg-[#edf2fd] text-[#2f6df6] flex items-center justify-center">
+                  <h2 className="text-xs font-bold text-o-muted">{label}</h2>
+                  <div className="w-8 h-8 rounded-xl bg-o-chip text-o-link flex items-center justify-center">
                     <Icon className="w-4 h-4" />
                   </div>
                 </div>
-                <div className="metric-value text-2xl font-black text-[#1b2a4a] mt-2.5 tabular-nums">{value}</div>
+                <div className="metric-value text-2xl font-black text-o-ink mt-2.5 tabular-nums">{value}</div>
               </div>
-              {hint && <p className="text-[11px] text-[#8b94a7] mt-2 line-clamp-1">{hint}</p>}
+              {hint && <p className="text-[11px] text-o-muted mt-2 line-clamp-1">{hint}</p>}
             </section>
           )
         })}
@@ -1651,54 +1651,54 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Quick Actions Card tailored to Role */}
-        <div className="bg-white border border-[#e2e8f1] rounded-2xl p-5 shadow-xs">
+        <div className="bg-white border border-o-line rounded-2xl p-5 shadow-xs">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-2 h-4 bg-[#2f6df6] rounded-full" />
-            <h3 className="font-extrabold text-sm text-[#1b2a4a]">Role Quick Actions</h3>
+            <div className="w-2 h-4 bg-o-blue rounded-full" />
+            <h3 className="font-extrabold text-sm text-o-ink">Role Quick Actions</h3>
           </div>
           <div className="grid grid-cols-2 gap-2.5">
             {isCashier ? (
               <>
-                <button onClick={() => nav('/pos')} className="bg-[#2f6df6] hover:bg-[#1f4fd1] text-white rounded-xl p-3 text-xs font-bold shadow-[0_4px_14px_-2px_rgba(47,109,246,0.4)] transition-all cursor-pointer">
+                <button onClick={() => nav('/pos')} className="bg-o-blue hover:bg-o-blue-d text-white rounded-xl p-3 text-xs font-bold shadow-[0_4px_14px_-2px_rgba(47,109,246,0.4)] transition-all cursor-pointer">
                   ⚡ Open POS Checkout
                 </button>
-                <button onClick={() => nav('/returns')} className="bg-[#edf2fd] text-[#2f6df6] hover:bg-[#dfe8fa] border border-[#2f6df6]/20 rounded-xl p-3 text-xs font-bold transition-all cursor-pointer">
+                <button onClick={() => nav('/returns')} className="bg-o-chip text-o-link hover:bg-o-tint border border-o-blue/20 rounded-xl p-3 text-xs font-bold transition-all cursor-pointer">
                   🔄 Process Return
                 </button>
-                <button onClick={() => nav('/customers')} className="bg-slate-50 text-[#3c4761] hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-[#e2e8f1] cursor-pointer">
+                <button onClick={() => nav('/customers')} className="bg-slate-50 text-o-text2 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-o-line cursor-pointer">
                   👥 Customer Lookup
                 </button>
-                <button onClick={() => nav('/hardware')} className="bg-slate-50 text-[#3c4761] hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-[#e2e8f1] cursor-pointer">
+                <button onClick={() => nav('/hardware')} className="bg-slate-50 text-o-text2 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-o-line cursor-pointer">
                   🖨️ Receipt &amp; Drawer
                 </button>
               </>
             ) : isReceptionist ? (
               <>
-                <button onClick={() => nav('/customers')} className="bg-[#2f6df6] hover:bg-[#1f4fd1] text-white rounded-xl p-3 text-xs font-bold shadow-[0_4px_14px_-2px_rgba(47,109,246,0.4)] transition-all cursor-pointer">
+                <button onClick={() => nav('/customers')} className="bg-o-blue hover:bg-o-blue-d text-white rounded-xl p-3 text-xs font-bold shadow-[0_4px_14px_-2px_rgba(47,109,246,0.4)] transition-all cursor-pointer">
                   ➕ New Patient / Customer
                 </button>
-                <button onClick={() => nav('/customers?tab=loyalty')} className="bg-[#edf2fd] text-[#2f6df6] hover:bg-[#dfe8fa] border border-[#2f6df6]/20 rounded-xl p-3 text-xs font-bold transition-all cursor-pointer">
+                <button onClick={() => nav('/customers?tab=loyalty')} className="bg-o-chip text-o-link hover:bg-o-tint border border-o-blue/20 rounded-xl p-3 text-xs font-bold transition-all cursor-pointer">
                   ⭐ Loyalty &amp; Credits
                 </button>
-                <button onClick={() => nav('/pos?tab=rx')} className="bg-slate-50 text-[#3c4761] hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-[#e2e8f1] cursor-pointer">
+                <button onClick={() => nav('/pos?tab=rx')} className="bg-slate-50 text-o-text2 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-o-line cursor-pointer">
                   📋 Prescription Queue
                 </button>
-                <button onClick={() => nav('/pos')} className="bg-slate-50 text-[#3c4761] hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-[#e2e8f1] cursor-pointer">
+                <button onClick={() => nav('/pos')} className="bg-slate-50 text-o-text2 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-o-line cursor-pointer">
                   🔍 Check Order Status
                 </button>
               </>
             ) : (
               <>
-                <button onClick={() => nav('/pos')} className="bg-[#2f6df6] hover:bg-[#1f4fd1] text-white rounded-xl p-3 text-xs font-bold shadow-[0_4px_14px_-2px_rgba(47,109,246,0.4)] transition-all cursor-pointer">
+                <button onClick={() => nav('/pos')} className="bg-o-blue hover:bg-o-blue-d text-white rounded-xl p-3 text-xs font-bold shadow-[0_4px_14px_-2px_rgba(47,109,246,0.4)] transition-all cursor-pointer">
                   Open Sales POS
                 </button>
-                <button onClick={() => nav(isManager ? '/inventory' : '/inventory?tab=NEAR_EXPIRY')} className="bg-[#edf2fd] text-[#2f6df6] hover:bg-[#dfe8fa] border border-[#2f6df6]/20 rounded-xl p-3 text-xs font-bold cursor-pointer">
+                <button onClick={() => nav(isManager ? '/inventory' : '/inventory?tab=NEAR_EXPIRY')} className="bg-o-chip text-o-link hover:bg-o-tint border border-o-blue/20 rounded-xl p-3 text-xs font-bold cursor-pointer">
                   {isManager ? 'Manage Stock' : 'Check Expiry'}
                 </button>
-                <button onClick={() => nav('/customers')} className="bg-slate-50 text-[#3c4761] hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-[#e2e8f1] cursor-pointer">
+                <button onClick={() => nav('/customers')} className="bg-slate-50 text-o-text2 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-o-line cursor-pointer">
                   Customers
                 </button>
-                <button onClick={() => nav('/reports?tab=sales')} className="bg-slate-50 text-[#3c4761] hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-[#e2e8f1] cursor-pointer">
+                <button onClick={() => nav('/reports?tab=sales')} className="bg-slate-50 text-o-text2 hover:bg-slate-100 rounded-xl p-3 text-xs font-bold border border-o-line cursor-pointer">
                   View Reports
                 </button>
               </>
@@ -1707,10 +1707,10 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
         </div>
 
         {/* Priority Alerts Card */}
-        <div className="bg-white border border-[#e2e8f1] rounded-2xl p-5 shadow-xs">
+        <div className="bg-white border border-o-line rounded-2xl p-5 shadow-xs">
           <div className="flex items-center gap-2 mb-3">
             <div className="w-2 h-4 bg-rose-500 rounded-full" />
-            <h3 className="font-extrabold text-sm text-[#1b2a4a]">Priority Operational Alerts</h3>
+            <h3 className="font-extrabold text-sm text-o-ink">Priority Operational Alerts</h3>
           </div>
           <div className="space-y-2 text-xs">
             <button onClick={() => nav('/inventory?tab=EXPIRED')} className="block w-full text-left p-3 rounded-xl bg-rose-50 text-rose-800 hover:bg-rose-100 transition-colors border border-rose-100 cursor-pointer">
@@ -1721,7 +1721,7 @@ export function RoleDashboard({ role, setRole, data, nav, me }) {
               Low stock items: <b>{data.attention.lowStock}</b> · Out of stock: <b>{data.attention.outOfStock}</b>
               <span className="block mt-1 text-[10px]">Review replenishment stock →</span>
             </button>
-            <div className="p-3 rounded-xl bg-[#edf2fd] text-[#2f6df6] border border-[#2f6df6]/20">
+            <div className="p-3 rounded-xl bg-o-chip text-o-link border border-o-blue/20">
               Medicines in catalogue: <b>{data.catalogueCount}</b> · Active Branch: <b>{data.scopeLabel}</b>
             </div>
           </div>
@@ -1810,51 +1810,51 @@ export function pharmacistDashboardData(db, now = new Date()) {
 }
 
 function PharmacistOperations({ data, pharmacy, nav }) {
-  const cardClass = 'min-w-0 bg-white border border-[#e2e8f1] rounded-2xl p-5 shadow-xs'
-  const linkClass = 'text-xs font-bold text-[#2f6df6] hover:text-[#1f4fd1] hover:underline'
+  const cardClass = 'min-w-0 bg-white border border-o-line rounded-2xl p-5 shadow-xs'
+  const linkClass = 'text-xs font-bold text-o-link hover:text-o-link hover:underline'
   return <div className="space-y-4">
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
       <section className={`${cardClass} xl:col-span-2`} aria-label="Dispensing activity">
-        <div className="flex flex-wrap items-start justify-between gap-3 mb-4"><div><h2 className="font-extrabold text-sm text-[#1b2a4a]">Dispensing Activity</h2><p className="text-xs text-[#8b94a7] mt-1">Last 14 calendar days · {data.scopeLabel}</p></div><button onClick={() => nav('/reports?tab=sales')} className={linkClass}>Review sales</button></div>
-        <div className="flex flex-wrap gap-3 mb-4"><div className="rounded-xl bg-[#edf2fd] p-3 flex-1"><p className="text-xs font-semibold text-[#2f6df6]">Units · last 7 days</p><p className="text-2xl font-black text-[#1b2a4a] mt-1">{pharmacy.sevenDayUnits.toLocaleString('en-PK')}</p></div><div className="rounded-xl bg-[#e8f7f5] p-3 flex-1"><p className="text-xs font-semibold text-[#38a89d]">Transactions · last 7 days</p><p className="text-2xl font-black text-[#1b2a4a] mt-1">{data.operations.sevenDayOrders}</p></div></div>
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-4"><div><h2 className="font-extrabold text-sm text-o-ink">Dispensing Activity</h2><p className="text-xs text-o-muted mt-1">Last 14 calendar days · {data.scopeLabel}</p></div><button onClick={() => nav('/reports?tab=sales')} className={linkClass}>Review sales</button></div>
+        <div className="flex flex-wrap gap-3 mb-4"><div className="rounded-xl bg-o-chip p-3 flex-1"><p className="text-xs font-semibold text-o-link">Units · last 7 days</p><p className="text-2xl font-black text-o-ink mt-1">{pharmacy.sevenDayUnits.toLocaleString('en-PK')}</p></div><div className="rounded-xl bg-o-teal-tint p-3 flex-1"><p className="text-xs font-semibold text-o-teal">Transactions · last 7 days</p><p className="text-2xl font-black text-o-ink mt-1">{data.operations.sevenDayOrders}</p></div></div>
         <DispensingUnitsChart entries={pharmacy.dailyUnits} />
       </section>
       <section className={cardClass} aria-label="Stock units by dispensing status">
-        <div className="flex items-center justify-between gap-3 mb-4"><h2 className="font-extrabold text-sm text-[#1b2a4a]">Stock Status · Units</h2><button onClick={() => nav('/inventory')} className={linkClass}>Review stock</button></div>
+        <div className="flex items-center justify-between gap-3 mb-4"><h2 className="font-extrabold text-sm text-o-ink">Stock Status · Units</h2><button onClick={() => nav('/inventory')} className={linkClass}>Review stock</button></div>
         <Donut entries={pharmacy.statuses} center={`${pharmacy.totalUnits.toLocaleString('en-PK')} units`} empty="No positive stock quantities saved in this branch scope. Receive stock to see its status distribution." label="Stock units by status; exact quantities and percentages are in the legend" />
         <p className="text-[11px] text-amber-800 mt-3">Expired, held or undated stock is not available for dispensing.</p>
       </section>
     </div>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <section className={cardClass} aria-label="Expiry exposure by stock units">
-        <div className="flex flex-wrap items-start justify-between gap-3 mb-4"><div><h2 className="font-extrabold text-sm text-[#1b2a4a]">Expiry Exposure</h2><p className="text-xs text-[#8b94a7] mt-1">All positive stock, including held units · calendar days</p></div><button onClick={() => nav('/inventory?tab=NEAR_EXPIRY')} className={linkClass}>Batch & expiry</button></div>
+        <div className="flex flex-wrap items-start justify-between gap-3 mb-4"><div><h2 className="font-extrabold text-sm text-o-ink">Expiry Exposure</h2><p className="text-xs text-o-muted mt-1">All positive stock, including held units · calendar days</p></div><button onClick={() => nav('/inventory?tab=NEAR_EXPIRY')} className={linkClass}>Batch & expiry</button></div>
         <QuantityBars entries={pharmacy.totalUnits ? pharmacy.expiryBuckets : []} label="Expiry buckets in stock units" empty="No stocked batches in this scope. Expiry buckets will appear when batch quantities are recorded." />
       </section>
       <section className={cardClass} aria-label="Top dispensed medicines">
-        <h2 className="font-extrabold text-sm text-[#1b2a4a]">Top Dispensed Medicines</h2><p className="text-xs text-[#8b94a7] mt-1 mb-4">{data.monthLabel} · Top 5</p>
+        <h2 className="font-extrabold text-sm text-o-ink">Top Dispensed Medicines</h2><p className="text-xs text-o-muted mt-1 mb-4">{data.monthLabel} · Top 5</p>
         <QuantityBars entries={data.operations.topMedicines.map((medicine, index) => ({ key: medicine.id || 'unassigned', label: medicine.name, count: medicine.units, color: index % 2 ? '#2f6df6' : '#38a89d' }))} label="Top medicines by recorded sale units" empty="No positive medicine quantities recorded in sales this month in this scope. Complete a sale to start this chart." />
       </section>
     </div>
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
       <section className={cardClass} aria-label="FEFO batch priorities">
-        <div className="flex items-start justify-between gap-3 mb-4"><div><h2 className="font-extrabold text-sm text-[#1b2a4a]">FEFO Batch Priorities</h2><p className="text-xs text-[#8b94a7] mt-1">Available batches due within 90 days · earliest first</p></div><button onClick={() => nav('/inventory?tab=NEAR_EXPIRY')} className={linkClass}>Review batches</button></div>
-        {!pharmacy.expiryQueue.length ? <p className="text-xs text-[#8b94a7] py-8 text-center">No available, dated stock expires within 90 days in this scope. Review the status chart for expired or held stock.</p> : <ul className="space-y-2">{pharmacy.expiryQueue.slice(0, 5).map((batch) => <li key={batch.id} className="rounded-xl border border-[#e2e8f1] p-3"><div className="flex justify-between gap-3 text-xs"><b className="text-[#1b2a4a] break-words">{batch.name}</b><b className="text-[#2f6df6] shrink-0">{batch.qty} units</b></div><div className="flex flex-wrap justify-between gap-2 mt-1 text-[11px]"><span className="text-[#8b94a7]">Batch {batch.batch} · {batch.expiry}</span><span className={batch.days <= 30 ? 'text-amber-700 font-semibold' : 'text-[#3c4761]'}>{batch.days === 0 ? 'Expires today' : `${batch.days} days left`}</span></div></li>)}</ul>}
-        {pharmacy.expiryQueue.length > 5 && <p className="text-[11px] text-[#8b94a7] mt-3">Showing 5 of {pharmacy.expiryQueue.length} batches. Open Batch & expiry for all batches.</p>}
+        <div className="flex items-start justify-between gap-3 mb-4"><div><h2 className="font-extrabold text-sm text-o-ink">FEFO Batch Priorities</h2><p className="text-xs text-o-muted mt-1">Available batches due within 90 days · earliest first</p></div><button onClick={() => nav('/inventory?tab=NEAR_EXPIRY')} className={linkClass}>Review batches</button></div>
+        {!pharmacy.expiryQueue.length ? <p className="text-xs text-o-muted py-8 text-center">No available, dated stock expires within 90 days in this scope. Review the status chart for expired or held stock.</p> : <ul className="space-y-2">{pharmacy.expiryQueue.slice(0, 5).map((batch) => <li key={batch.id} className="rounded-xl border border-o-line p-3"><div className="flex justify-between gap-3 text-xs"><b className="text-o-ink break-words">{batch.name}</b><b className="text-o-link shrink-0">{batch.qty} units</b></div><div className="flex flex-wrap justify-between gap-2 mt-1 text-[11px]"><span className="text-o-muted">Batch {batch.batch} · {batch.expiry}</span><span className={batch.days <= 30 ? 'text-amber-700 font-semibold' : 'text-o-text2'}>{batch.days === 0 ? 'Expires today' : `${batch.days} days left`}</span></div></li>)}</ul>}
+        {pharmacy.expiryQueue.length > 5 && <p className="text-[11px] text-o-muted mt-3">Showing 5 of {pharmacy.expiryQueue.length} batches. Open Batch & expiry for all batches.</p>}
       </section>
       <section className={cardClass} aria-label="Available stock replenishment priorities">
-        <div className="flex items-start justify-between gap-3 mb-4"><div><h2 className="font-extrabold text-sm text-[#1b2a4a]">Available Stock Gaps</h2><p className="text-xs text-[#8b94a7] mt-1">Uses active, unexpired, dated units · shared catalogue</p></div><button onClick={() => nav('/inventory')} className={linkClass}>Review inventory</button></div>
-        {!pharmacy.replenishment.length ? <p className="text-xs text-[#8b94a7] py-8 text-center">{data.catalogueCount ? 'Every catalogue item has available stock above its saved minimum in this scope.' : 'Add medicines and saved minimum quantities to see replenishment priorities.'}</p> : <div className="overflow-x-auto"><table className="w-full text-xs text-left"><caption className="sr-only">First 6 medicines at or below minimum available stock, lowest quantity first</caption><thead className="text-[#8b94a7] border-b border-[#e2e8f1]"><tr><th className="py-2 font-medium">Medicine</th><th className="py-2 text-right font-medium">Available</th><th className="py-2 pl-3 text-right font-medium">Minimum</th></tr></thead><tbody className="divide-y divide-[#e2e8f1]">{pharmacy.replenishment.slice(0, 6).map((medicine) => <tr key={medicine.id}><th scope="row" className="py-3 pr-3 font-semibold text-[#1b2a4a]">{medicine.name}{medicine.qty === 0 && <span className="block text-[10px] text-rose-700 font-normal mt-1">No available units</span>}</th><td className="py-3 text-right text-[#2f6df6] font-bold">{medicine.qty}</td><td className="py-3 text-right text-[#8b94a7]">{medicine.minimum}</td></tr>)}</tbody></table></div>}
-        {pharmacy.replenishment.length > 6 && <p className="text-[11px] text-[#8b94a7] mt-3">Showing 6 of {pharmacy.replenishment.length} priorities.</p>}
+        <div className="flex items-start justify-between gap-3 mb-4"><div><h2 className="font-extrabold text-sm text-o-ink">Available Stock Gaps</h2><p className="text-xs text-o-muted mt-1">Uses active, unexpired, dated units · shared catalogue</p></div><button onClick={() => nav('/inventory')} className={linkClass}>Review inventory</button></div>
+        {!pharmacy.replenishment.length ? <p className="text-xs text-o-muted py-8 text-center">{data.catalogueCount ? 'Every catalogue item has available stock above its saved minimum in this scope.' : 'Add medicines and saved minimum quantities to see replenishment priorities.'}</p> : <div className="overflow-x-auto"><table className="w-full text-xs text-left"><caption className="sr-only">First 6 medicines at or below minimum available stock, lowest quantity first</caption><thead className="text-o-muted border-b border-o-line"><tr><th className="py-2 font-medium">Medicine</th><th className="py-2 text-right font-medium">Available</th><th className="py-2 pl-3 text-right font-medium">Minimum</th></tr></thead><tbody className="divide-y divide-o-line">{pharmacy.replenishment.slice(0, 6).map((medicine) => <tr key={medicine.id}><th scope="row" className="py-3 pr-3 font-semibold text-o-ink">{medicine.name}{medicine.qty === 0 && <span className="block text-[10px] text-rose-700 font-normal mt-1">No available units</span>}</th><td className="py-3 text-right text-o-link font-bold">{medicine.qty}</td><td className="py-3 text-right text-o-muted">{medicine.minimum}</td></tr>)}</tbody></table></div>}
+        {pharmacy.replenishment.length > 6 && <p className="text-[11px] text-o-muted mt-3">Showing 6 of {pharmacy.replenishment.length} priorities.</p>}
       </section>
     </div>
   </div>
 }
 
 function QuantityBars({ entries, label, empty }) {
-  if (!entries.length) return <p className="text-xs text-[#8b94a7] py-8 text-center">{empty}</p>
+  if (!entries.length) return <p className="text-xs text-o-muted py-8 text-center">{empty}</p>
   const max = Math.max(1, ...entries.map((entry) => entry.count))
   return <ul aria-label={label} className="space-y-4">{entries.map((entry) => <li key={entry.key || entry.label}>
-    <div className="flex items-start justify-between gap-3 text-xs mb-2"><span className="font-semibold text-[#1b2a4a] break-words">{entry.label}</span><span className="shrink-0 text-right text-[#2f6df6] font-bold">{entry.count.toLocaleString('en-PK')} units{entry.batches !== undefined && <span className="block text-[10px] font-normal text-[#8b94a7]">{entry.batches} batches</span>}</span></div>
+    <div className="flex items-start justify-between gap-3 text-xs mb-2"><span className="font-semibold text-o-ink break-words">{entry.label}</span><span className="shrink-0 text-right text-o-link font-bold">{entry.count.toLocaleString('en-PK')} units{entry.batches !== undefined && <span className="block text-[10px] font-normal text-o-muted">{entry.batches} batches</span>}</span></div>
     <div aria-hidden="true" className="h-2.5 rounded-full bg-slate-100 overflow-hidden"><div className="h-full rounded-full" style={{ width: `${entry.count / max * 100}%`, backgroundColor: entry.color || '#2f6df6' }} /></div>
   </li>)}</ul>
 }
@@ -1865,8 +1865,8 @@ function DispensingUnitsChart({ entries }) {
 
   if (!hasData) {
     return (
-      <div role="img" aria-label="Owner branch revenue bar chart" className="flex flex-col items-center justify-center h-44 text-[#8b94a7] text-xs gap-2">
-        <div className="w-12 h-12 rounded-full bg-[#edf2fd] flex items-center justify-center text-xl">💊</div>
+      <div role="img" aria-label="Owner branch revenue bar chart" className="flex flex-col items-center justify-center h-44 text-o-muted text-xs gap-2">
+        <div className="w-12 h-12 rounded-full bg-o-chip flex items-center justify-center text-xl">💊</div>
         <p>No dispensing units recorded in the last 14 days.</p>
       </div>
     )
@@ -1897,71 +1897,71 @@ function DispensingUnitsChart({ entries }) {
 function ManagerOperations({ data, nav }) {
   const operations = data.operations
   const topUnits = Math.max(1, ...operations.topMedicines.map((medicine) => medicine.units))
-  const cardClass = 'min-w-0 bg-white border border-[#e2e8f1] rounded-2xl p-5 shadow-xs'
-  const linkClass = 'shrink-0 text-xs font-bold text-[#2f6df6] hover:text-[#1f4fd1] hover:underline'
+  const cardClass = 'min-w-0 bg-white border border-o-line rounded-2xl p-5 shadow-xs'
+  const linkClass = 'shrink-0 text-xs font-bold text-o-link hover:text-o-link hover:underline'
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <section className={`${cardClass} xl:col-span-2`} aria-label="Daily sales overview">
           <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
-            <div><h2 className="font-extrabold text-sm text-[#1b2a4a]">Daily Sales Trend</h2><p className="text-[11px] text-[#8b94a7] mt-1">Last 14 calendar days, including today · {data.scopeLabel}</p></div>
+            <div><h2 className="font-extrabold text-sm text-o-ink">Daily Sales Trend</h2><p className="text-[11px] text-o-muted mt-1">Last 14 calendar days, including today · {data.scopeLabel}</p></div>
             <button onClick={() => nav('/reports?tab=sales')} className={linkClass}>Sales reports</button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-            <div className="rounded-xl bg-[#edf2fd] p-3.5"><p className="text-[11px] font-semibold text-[#2f6df6]">Last 7 days sales</p><p className="text-lg font-black text-[#1b2a4a] mt-1">{fmt(operations.sevenDayRevenue)}</p><p className="text-[10px] text-emerald-700 font-semibold mt-1">{operations.sevenDayChange}</p></div>
-            <div className="rounded-xl bg-[#e8f7f5] p-3.5"><p className="text-[11px] font-semibold text-[#38a89d]">Last 7 days transactions</p><p className="text-lg font-black text-[#1b2a4a] mt-1">{operations.sevenDayOrders}</p></div>
-            <div className="rounded-xl bg-slate-50 p-3.5 border border-[#e2e8f1]"><p className="text-[11px] font-medium text-[#8b94a7]">Last 7 days average sale</p><p className="text-lg font-black text-[#1b2a4a] mt-1">{operations.sevenDayAverage === null ? '—' : fmt(operations.sevenDayAverage)}</p></div>
+            <div className="rounded-xl bg-o-chip p-3.5"><p className="text-[11px] font-semibold text-o-link">Last 7 days sales</p><p className="text-lg font-black text-o-ink mt-1">{fmt(operations.sevenDayRevenue)}</p><p className="text-[10px] text-emerald-700 font-semibold mt-1">{operations.sevenDayChange}</p></div>
+            <div className="rounded-xl bg-o-teal-tint p-3.5"><p className="text-[11px] font-semibold text-o-teal">Last 7 days transactions</p><p className="text-lg font-black text-o-ink mt-1">{operations.sevenDayOrders}</p></div>
+            <div className="rounded-xl bg-slate-50 p-3.5 border border-o-line"><p className="text-[11px] font-medium text-o-muted">Last 7 days average sale</p><p className="text-lg font-black text-o-ink mt-1">{operations.sevenDayAverage === null ? '—' : fmt(operations.sevenDayAverage)}</p></div>
           </div>
           <DailySalesChart entries={operations.salesTrendDaily} /><span className="sr-only">View daily sales data</span>
           {!operations.salesTrendDaily.some((entry) => entry.count > 0) && <span className="sr-only">No sales recorded in the last 14 days</span>}
         </section>
         <section className={cardClass} aria-label="Stock status overview">
-          <div className="flex items-center justify-between gap-2 mb-4"><h2 className="font-extrabold text-sm text-[#1b2a4a]">Stock Status</h2><button onClick={() => nav('/inventory')} className={linkClass}>Manage stock</button></div>
+          <div className="flex items-center justify-between gap-2 mb-4"><h2 className="font-extrabold text-sm text-o-ink">Stock Status</h2><button onClick={() => nav('/inventory')} className={linkClass}>Manage stock</button></div>
           <Donut entries={data.inventoryHealth} center={`${data.catalogueCount} items`} empty="No medicines in the saved catalogue." />
-          <div className="mt-4 border-t border-[#e2e8f1] pt-3 flex justify-between gap-2 text-xs"><span className="text-[#8b94a7]">Scoped stock cost</span><b className="text-[#1b2a4a]">{data.stockValue}</b></div>
+          <div className="mt-4 border-t border-o-line pt-3 flex justify-between gap-2 text-xs"><span className="text-o-muted">Scoped stock cost</span><b className="text-o-ink">{data.stockValue}</b></div>
           <p className="text-[10px] text-amber-800 mt-3">Includes expired and held batches—not all stock is dispensable.</p>
         </section>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <section className={cardClass} aria-label="Top medicines by recorded units">
-          <h2 className="font-extrabold text-sm text-[#1b2a4a]">Top Medicines by Units</h2>
-          <p className="text-[11px] text-[#8b94a7] mt-1 mb-5">{data.monthLabel} · Top 5</p>
-          {!operations.topMedicines.length ? <p className="text-xs text-[#8b94a7] py-8 text-center">No positive medicine quantities recorded in sales this month.</p> : <ol className="space-y-4">
+          <h2 className="font-extrabold text-sm text-o-ink">Top Medicines by Units</h2>
+          <p className="text-[11px] text-o-muted mt-1 mb-5">{data.monthLabel} · Top 5</p>
+          {!operations.topMedicines.length ? <p className="text-xs text-o-muted py-8 text-center">No positive medicine quantities recorded in sales this month.</p> : <ol className="space-y-4">
             {operations.topMedicines.map((medicine, index) => <li key={medicine.id || 'unassigned'}>
-              <div className="flex items-start justify-between gap-3 text-xs mb-2"><span className="font-semibold text-[#1b2a4a] break-words">{index + 1}. {medicine.name}</span><span className="shrink-0 text-[#2f6df6] font-bold">{medicine.units.toLocaleString('en-PK')} units</span></div>
-              <div className="h-2 rounded-full bg-slate-100 overflow-hidden" aria-hidden="true"><div className={`h-full rounded-full ${index % 2 ? 'bg-[#2f6df6]' : 'bg-[#38a89d]'}`} style={{ width: `${medicine.units / topUnits * 100}%` }} /></div>
+              <div className="flex items-start justify-between gap-3 text-xs mb-2"><span className="font-semibold text-o-ink break-words">{index + 1}. {medicine.name}</span><span className="shrink-0 text-o-link font-bold">{medicine.units.toLocaleString('en-PK')} units</span></div>
+              <div className="h-2 rounded-full bg-slate-100 overflow-hidden" aria-hidden="true"><div className={`h-full rounded-full ${index % 2 ? 'bg-o-blue' : 'bg-o-teal'}`} style={{ width: `${medicine.units / topUnits * 100}%` }} /></div>
             </li>)}
           </ol>}
         </section>
         <section className={cardClass} aria-label="Replenishment priorities">
-          <div className="flex items-start justify-between gap-2 mb-3"><div><h2 className="font-extrabold text-sm text-[#1b2a4a]">Replenishment Priorities</h2><p className="text-[11px] text-[#8b94a7] mt-1">{operations.replenishment.length} catalogue items at / below minimum or out of stock</p></div><button onClick={() => nav('/purchases')} className={linkClass}>Purchases</button></div>
-          {!operations.replenishment.length ? <p className="text-xs text-[#8b94a7] py-8 text-center">{data.catalogueCount ? 'No items currently at or below their saved minimum.' : 'Add medicines to see replenishment priorities.'}</p> : <div className="overflow-x-auto"><table className="w-full text-xs text-left">
+          <div className="flex items-start justify-between gap-2 mb-3"><div><h2 className="font-extrabold text-sm text-o-ink">Replenishment Priorities</h2><p className="text-[11px] text-o-muted mt-1">{operations.replenishment.length} catalogue items at / below minimum or out of stock</p></div><button onClick={() => nav('/purchases')} className={linkClass}>Purchases</button></div>
+          {!operations.replenishment.length ? <p className="text-xs text-o-muted py-8 text-center">{data.catalogueCount ? 'No items currently at or below their saved minimum.' : 'Add medicines to see replenishment priorities.'}</p> : <div className="overflow-x-auto"><table className="w-full text-xs text-left">
             <caption className="sr-only">First 6 replenishment priorities, lowest scoped quantity first</caption>
-            <thead className="text-[10px] text-[#8b94a7] border-b border-[#e2e8f1]"><tr><th className="py-2 font-medium">Medicine</th><th className="py-2 text-right font-medium">Stock</th><th className="py-2 text-right font-medium">Minimum</th></tr></thead>
-            <tbody className="divide-y divide-[#e2e8f1]">{operations.replenishment.slice(0, 6).map((medicine) => <tr key={medicine.id}><th scope="row" className="py-3 pr-3 font-semibold text-[#1b2a4a]">{medicine.name}{medicine.qty === 0 && <span className="block text-[10px] font-normal text-rose-600 mt-0.5">Out of stock</span>}</th><td className="py-3 text-right font-bold text-[#2f6df6]">{medicine.qty}</td><td className="py-3 text-right text-[#8b94a7]">{medicine.minimum}</td></tr>)}</tbody>
+            <thead className="text-[10px] text-o-muted border-b border-o-line"><tr><th className="py-2 font-medium">Medicine</th><th className="py-2 text-right font-medium">Stock</th><th className="py-2 text-right font-medium">Minimum</th></tr></thead>
+            <tbody className="divide-y divide-o-line">{operations.replenishment.slice(0, 6).map((medicine) => <tr key={medicine.id}><th scope="row" className="py-3 pr-3 font-semibold text-o-ink">{medicine.name}{medicine.qty === 0 && <span className="block text-[10px] font-normal text-rose-600 mt-0.5">Out of stock</span>}</th><td className="py-3 text-right font-bold text-o-link">{medicine.qty}</td><td className="py-3 text-right text-o-muted">{medicine.minimum}</td></tr>)}</tbody>
           </table></div>}
           <button onClick={() => nav('/inventory')} className={`${linkClass} mt-3`}>Review inventory{operations.replenishment.length > 6 ? ` · ${operations.replenishment.length - 6} more priorities` : ''}</button>
         </section>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <section className={cardClass} aria-label="Expiry actions">
-          <div className="flex items-center justify-between gap-2 mb-3"><h2 className="font-extrabold text-sm text-[#1b2a4a]">Expiry Actions</h2><button onClick={() => nav('/inventory?tab=NEAR_EXPIRY')} className={linkClass}>Batch & expiry</button></div>
-          <p className="text-[11px] text-[#8b94a7] mb-3">{data.attention.expired} expired · {data.attention.nearExpiry} due within 30 days · highest cost at risk first</p>
-          {!data.capitalAtRisk.items.length ? <p className="text-xs text-[#8b94a7] py-8 text-center">No stocked batches expired or due within 30 days.</p> : <ul className="divide-y divide-[#e2e8f1]">{data.capitalAtRisk.items.slice(0, 4).map((item) => <li key={item.id} className="py-3">
-            <div className="flex justify-between gap-2 text-xs"><b className="text-[#1b2a4a]">{item.name}</b><b className="shrink-0 text-[#2f6df6]">{item.value}</b></div><p className="text-[10px] text-[#8b94a7] mt-1">{item.batch}</p><p className={`text-[11px] font-medium mt-1 ${item.days < 0 ? 'text-rose-600' : 'text-amber-700'}`}>{item.expiring}</p>
+          <div className="flex items-center justify-between gap-2 mb-3"><h2 className="font-extrabold text-sm text-o-ink">Expiry Actions</h2><button onClick={() => nav('/inventory?tab=NEAR_EXPIRY')} className={linkClass}>Batch & expiry</button></div>
+          <p className="text-[11px] text-o-muted mb-3">{data.attention.expired} expired · {data.attention.nearExpiry} due within 30 days · highest cost at risk first</p>
+          {!data.capitalAtRisk.items.length ? <p className="text-xs text-o-muted py-8 text-center">No stocked batches expired or due within 30 days.</p> : <ul className="divide-y divide-o-line">{data.capitalAtRisk.items.slice(0, 4).map((item) => <li key={item.id} className="py-3">
+            <div className="flex justify-between gap-2 text-xs"><b className="text-o-ink">{item.name}</b><b className="shrink-0 text-o-link">{item.value}</b></div><p className="text-[10px] text-o-muted mt-1">{item.batch}</p><p className={`text-[11px] font-medium mt-1 ${item.days < 0 ? 'text-rose-600' : 'text-amber-700'}`}>{item.expiring}</p>
           </li>)}</ul>}
-          {data.capitalAtRisk.items.length > 4 && <p className="text-[10px] text-[#8b94a7] mt-2">Showing 4 of {data.capitalAtRisk.items.length} affected batches.</p>}
+          {data.capitalAtRisk.items.length > 4 && <p className="text-[10px] text-o-muted mt-2">Showing 4 of {data.capitalAtRisk.items.length} affected batches.</p>}
         </section>
         <section className={cardClass} aria-label="Recent operations activity">
-          <h2 className="font-extrabold text-sm text-[#1b2a4a] mb-3">Recent Operations Activity</h2>
-          {!data.recentActivity.length ? <p className="text-xs text-[#8b94a7] py-8 text-center">No activity recorded in this scope.</p> : <ul className="space-y-3">{data.recentActivity.map((activity) => <li key={activity.id}><button onClick={() => nav(activity.type === 'purchase' ? '/purchases' : activity.type === 'return' ? '/returns' : '/reports?tab=sales')} className="w-full text-left rounded-xl p-2 hover:bg-[#edf2fd]/40 focus-visible:outline-[#2f6df6] flex items-start gap-2 cursor-pointer transition-colors">
-            <span className="mt-0.5 rounded-full bg-[#edf2fd] text-[#2f6df6] p-1.5 shrink-0">{activity.type === 'purchase' ? <Truck className="w-3.5 h-3.5" /> : <ReceiptIcon className="w-3.5 h-3.5" />}</span><span className="min-w-0"><span className="block text-xs font-semibold text-[#1b2a4a] break-words">{activity.title}</span><span className="block text-[10px] text-[#8b94a7] mt-1">{activity.subtitle}</span></span>
+          <h2 className="font-extrabold text-sm text-o-ink mb-3">Recent Operations Activity</h2>
+          {!data.recentActivity.length ? <p className="text-xs text-o-muted py-8 text-center">No activity recorded in this scope.</p> : <ul className="space-y-3">{data.recentActivity.map((activity) => <li key={activity.id}><button onClick={() => nav(activity.type === 'purchase' ? '/purchases' : activity.type === 'return' ? '/returns' : '/reports?tab=sales')} className="w-full text-left rounded-xl p-2 hover:bg-o-chip/40 focus-visible:outline-o-blue flex items-start gap-2 cursor-pointer transition-colors">
+            <span className="mt-0.5 rounded-full bg-o-chip text-o-link p-1.5 shrink-0">{activity.type === 'purchase' ? <Truck className="w-3.5 h-3.5" /> : <ReceiptIcon className="w-3.5 h-3.5" />}</span><span className="min-w-0"><span className="block text-xs font-semibold text-o-ink break-words">{activity.title}</span><span className="block text-[10px] text-o-muted mt-1">{activity.subtitle}</span></span>
           </button></li>)}</ul>}
         </section>
         <section className={cardClass} aria-label="Branch sales snapshot">
-          <div className="flex items-center justify-between gap-2 mb-3"><h2 className="font-extrabold text-sm text-[#1b2a4a]">Branch Snapshot</h2><button onClick={() => nav('/branches')} className={linkClass}>Branches</button></div>
-          <p className="text-[11px] text-[#8b94a7] mb-3">{data.monthLabel} · {data.scopeLabel}</p>
-          {!data.branchRevenueTrend.length ? <p className="text-xs text-[#8b94a7] py-8 text-center">No branches or branch sales recorded in this scope.</p> : <ul className="divide-y divide-[#e2e8f1] max-h-80 overflow-y-auto">{data.branchRevenueTrend.map((branch) => <li key={branch.id || 'unassigned'} className="py-3 flex items-start justify-between gap-3 text-xs"><div><p className="font-semibold text-[#1b2a4a]">{branch.name}</p><p className="text-[10px] text-[#8b94a7] mt-1">{branch.count} recorded {branch.count === 1 ? 'sale' : 'sales'}</p></div><b className="shrink-0 text-[#2f6df6]">{branch.revenue}</b></li>)}</ul>}
+          <div className="flex items-center justify-between gap-2 mb-3"><h2 className="font-extrabold text-sm text-o-ink">Branch Snapshot</h2><button onClick={() => nav('/branches')} className={linkClass}>Branches</button></div>
+          <p className="text-[11px] text-o-muted mb-3">{data.monthLabel} · {data.scopeLabel}</p>
+          {!data.branchRevenueTrend.length ? <p className="text-xs text-o-muted py-8 text-center">No branches or branch sales recorded in this scope.</p> : <ul className="divide-y divide-o-line max-h-80 overflow-y-auto">{data.branchRevenueTrend.map((branch) => <li key={branch.id || 'unassigned'} className="py-3 flex items-start justify-between gap-3 text-xs"><div><p className="font-semibold text-o-ink">{branch.name}</p><p className="text-[10px] text-o-muted mt-1">{branch.count} recorded {branch.count === 1 ? 'sale' : 'sales'}</p></div><b className="shrink-0 text-o-link">{branch.revenue}</b></li>)}</ul>}
         </section>
       </div>
     </div>
@@ -1975,8 +1975,8 @@ function DailySalesChart({ entries }) {
 
   if (!hasData) {
     return (
-      <div role="img" aria-label="Daily saved sales over the last 14 days" className="flex flex-col items-center justify-center h-44 text-[#8b94a7] text-xs gap-2">
-        <div className="w-12 h-12 rounded-full bg-[#edf2fd] flex items-center justify-center text-xl">📈</div>
+      <div role="img" aria-label="Daily saved sales over the last 14 days" className="flex flex-col items-center justify-center h-44 text-o-muted text-xs gap-2">
+        <div className="w-12 h-12 rounded-full bg-o-chip flex items-center justify-center text-xl">📈</div>
         <p>No sales in the last 14 days.</p>
       </div>
     )
@@ -2022,7 +2022,7 @@ export function OwnerYearChart({ comparison }) {
   return (
     <div>
       {!hasRecords && (
-        <p className="text-xs text-[#8b94a7] text-center mb-3">
+        <p className="text-xs text-o-muted text-center mb-3">
           No sales recorded in the last 14 days. Chart values will appear when sales are saved.
         </p>
       )}
@@ -2046,7 +2046,7 @@ export function OwnerYearChart({ comparison }) {
           ))}
         </BarChart>
       </ResponsiveContainer>
-      <details className="mt-2 text-xs"><summary className="cursor-pointer font-bold text-[#2f6df6] hover:text-[#1f4fd1]">View monthly comparison data</summary><div className="overflow-x-auto mt-2"><table className="w-full text-left"><caption className="sr-only">Owner monthly sales comparison</caption><thead><tr><th className="p-2">Month</th>{years.map(year => <th key={year} className="p-2 text-right">{year}</th>)}</tr></thead><tbody className="divide-y divide-[#e2e8f1]">{months.map(month => <tr key={month.label}><th className="p-2">{month.label}</th>{month.values.map(value => <td key={value.year} className="p-2 text-right">{value.future ? '—' : fmt(value.total)}</td>)}</tr>)}</tbody></table></div></details>
+      <details className="mt-2 text-xs"><summary className="cursor-pointer font-bold text-o-link hover:text-o-link">View monthly comparison data</summary><div className="overflow-x-auto mt-2"><table className="w-full text-left"><caption className="sr-only">Owner monthly sales comparison</caption><thead><tr><th className="p-2">Month</th>{years.map(year => <th key={year} className="p-2 text-right">{year}</th>)}</tr></thead><tbody className="divide-y divide-o-line">{months.map(month => <tr key={month.label}><th className="p-2">{month.label}</th>{month.values.map(value => <td key={value.year} className="p-2 text-right">{value.future ? '—' : fmt(value.total)}</td>)}</tr>)}</tbody></table></div></details>
     </div>
   )
 }

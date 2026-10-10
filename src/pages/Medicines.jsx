@@ -279,7 +279,7 @@ export default function Medicines() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-o-blue text-white flex items-center justify-center font-black shadow-sm border border-o-blue-d shrink-0">
               {controlledMode ? <AlertOctagon className="w-5 h-5 text-amber-300" /> : <Pill className="w-5 h-5" />}
             </div>
             <div>
@@ -310,7 +310,7 @@ export default function Medicines() {
             <button
               type="button"
               onClick={() => setCompanyAddOpen(true)}
-              className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+              className="bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
               title="Add medicines grouped by pharma manufacturer"
             >
               <Building2 className="w-4 h-4" />
@@ -321,7 +321,7 @@ export default function Medicines() {
           <button
             type="button"
             onClick={() => setEditing(controlledMode ? { controlled: true } : {})}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            className="bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
             title={controlledMode ? 'Quickly add a schedule / controlled substance' : 'Quickly add a single medicine product'}
           >
             <Plus className="w-4 h-4" />
@@ -336,7 +336,7 @@ export default function Medicines() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Manufacturers</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
@@ -350,7 +350,7 @@ export default function Medicines() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Total Products</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Package className="w-4 h-4" />
             </div>
           </div>
@@ -364,7 +364,7 @@ export default function Medicines() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Stock Units</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Layers className="w-4 h-4" />
             </div>
           </div>
@@ -378,12 +378,12 @@ export default function Medicines() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Retail Worth</span>
-            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-teal-tint text-o-teal flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-[#008f8b]">{fmt(overallStats.totalRetailVal)}</div>
+            <div className="text-2xl font-black text-o-teal">{fmt(overallStats.totalRetailVal)}</div>
             <div className="text-[11px] text-slate-400 mt-0.5">Profit: {fmt(overallStats.estimatedProfit)}</div>
           </div>
         </div>
@@ -392,7 +392,7 @@ export default function Medicines() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Low Stock</span>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${overallStats.lowStockCount > 0 ? 'bg-rose-50 text-rose-600' : 'bg-[#f5eef4] text-[#714B67]'}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${overallStats.lowStockCount > 0 ? 'bg-rose-50 text-rose-600' : 'bg-o-tint text-o-link'}`}>
               <AlertTriangle className="w-4 h-4" />
             </div>
           </div>
@@ -416,7 +416,7 @@ export default function Medicines() {
                 onChange={(e) => setQ(e.target.value)}
                 aria-label="Search medicines"
                 placeholder="Search medicine name, generic chemical, brand or barcode..."
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none"
               />
               {q && (
                 <button
@@ -627,7 +627,7 @@ function RegisterCompanyModal({ onSave, onClose }) {
               if (!name.trim()) return alert('Please enter a company name')
               onSave(name.trim())
             }}
-            className="px-4 py-1.5 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-lg font-bold shadow-sm cursor-pointer"
+            className="px-4 py-1.5 bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white rounded-lg font-bold shadow-sm cursor-pointer"
           >
             Register & Add Product
           </button>
@@ -856,7 +856,7 @@ function BatchForm({ medicine, onClose }) {
             addBatch({ ...f, medicineId: medicine.id })
             onClose()
           }}
-          className="w-full bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold transition-all shadow-sm cursor-pointer"
+          className="w-full bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white py-2.5 rounded-xl font-bold transition-all shadow-sm cursor-pointer"
         >
           Confirm Inward Batch Stock
         </button>
@@ -1212,7 +1212,7 @@ export function CompanyAddMedicineModal({ onClose, initialCompany = '' }) {
           <button
             type="button"
             onClick={() => handleSave(true)}
-            className="flex-1 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold transition-all shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
+            className="flex-1 bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white py-2.5 rounded-xl font-bold transition-all shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
           >
             <Plus className="w-4 h-4" /> Save & Add Next
           </button>

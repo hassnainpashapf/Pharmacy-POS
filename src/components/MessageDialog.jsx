@@ -115,7 +115,7 @@ export default function MessageDialog({ open, onClose, name = '', phone = '', em
               type="button"
               onClick={send}
               disabled={busy || channelOff}
-              className="mt-3 w-full py-2.5 rounded-xl bg-[#2f6df6] hover:bg-[#1f4fd1] disabled:opacity-50 text-white text-sm font-extrabold transition"
+              className="mt-3 w-full py-2.5 rounded-xl bg-o-blue hover:bg-o-blue-d disabled:opacity-50 text-white text-sm font-extrabold transition"
             >
               {busy ? 'Sending…' : 'Send'}
             </button>

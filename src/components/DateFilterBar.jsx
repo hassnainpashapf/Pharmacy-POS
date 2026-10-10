@@ -180,7 +180,7 @@ export default function DateFilterBar({
       <div className={`flex flex-wrap items-center gap-1.5 ${className}`}>
         {/* Dropdown Menu */}
         <div className={`flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0 ${dropdownClassName}`}>
-          <Calendar className="w-3.5 h-3.5 text-[#714B67] shrink-0" />
+          <Calendar className="w-3.5 h-3.5 text-o-link shrink-0" />
           <select
             value={type}
             onChange={(e) => handleTypeChange(e.target.value)}
@@ -223,7 +223,7 @@ export default function DateFilterBar({
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
             {formattedSingleDate && (
-              <span className="text-[11px] font-semibold text-[#714B67] pl-1 border-l border-slate-200 hidden md:inline">
+              <span className="text-[11px] font-semibold text-o-link pl-1 border-l border-slate-200 hidden md:inline">
                 {formattedSingleDate}
               </span>
             )}
@@ -275,7 +275,7 @@ export default function DateFilterBar({
               onClick={() => handleTypeChange(id)}
               className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 active
-                  ? 'bg-[#e9f5f2] text-[#006d69] font-bold border border-[#a2ded5] shadow-xs'
+                  ? 'bg-o-teal-tint text-o-teal font-bold border border-o-line shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent'
               }`}
             >
@@ -300,9 +300,9 @@ export default function DateFilterBar({
 
       {/* ── Sub-bar: Single Day Picker ── */}
       {type === 'single' && (
-        <div className="flex flex-wrap items-center gap-2 bg-[#f5eef4]/60 border border-[#714B67]/20 p-2 rounded-xl text-xs">
-          <span className="font-bold text-[#714B67] flex items-center gap-1">
-            <Calendar className="w-3.5 h-3.5 text-[#714B67]" />
+        <div className="flex flex-wrap items-center gap-2 bg-o-tint/60 border border-o-blue/20 p-2 rounded-xl text-xs">
+          <span className="font-bold text-o-link flex items-center gap-1">
+            <Calendar className="w-3.5 h-3.5 text-o-link" />
             <span>Select Day:</span>
           </span>
 
@@ -344,7 +344,7 @@ export default function DateFilterBar({
           )}
 
           {formattedSingleDate && (
-            <span className="ml-auto font-medium text-[#714B67] bg-white px-2.5 py-1 rounded-lg border border-[#714B67]/15">
+            <span className="ml-auto font-medium text-o-link bg-white px-2.5 py-1 rounded-lg border border-o-blue/15">
               📅 {formattedSingleDate}
             </span>
           )}
@@ -353,9 +353,9 @@ export default function DateFilterBar({
 
       {/* ── Sub-bar: Date Range Picker ── */}
       {type === 'range' && (
-        <div className="flex flex-wrap items-center gap-2 bg-[#f5eef4]/60 border border-[#714B67]/20 p-2 rounded-xl text-xs">
-          <span className="font-bold text-[#714B67] flex items-center gap-1">
-            <CalendarDays className="w-3.5 h-3.5 text-[#714B67]" />
+        <div className="flex flex-wrap items-center gap-2 bg-o-tint/60 border border-o-blue/20 p-2 rounded-xl text-xs">
+          <span className="font-bold text-o-link flex items-center gap-1">
+            <CalendarDays className="w-3.5 h-3.5 text-o-link" />
             <span>Custom Date Range:</span>
           </span>
 
@@ -365,7 +365,7 @@ export default function DateFilterBar({
               type="date"
               value={fromDate || ''}
               onChange={(e) => handleRangeFromChange(e.target.value)}
-              className="bg-white border border-slate-200 rounded-lg px-2 py-1 font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#714B67] cursor-pointer"
+              className="bg-white border border-slate-200 rounded-lg px-2 py-1 font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-o-blue cursor-pointer"
             />
           </div>
 
@@ -375,12 +375,12 @@ export default function DateFilterBar({
               type="date"
               value={toDate || ''}
               onChange={(e) => handleRangeToChange(e.target.value)}
-              className="bg-white border border-slate-200 rounded-lg px-2 py-1 font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-[#714B67] cursor-pointer"
+              className="bg-white border border-slate-200 rounded-lg px-2 py-1 font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-o-blue cursor-pointer"
             />
           </div>
 
           {fromDate && toDate && (
-            <span className="ml-auto text-[11px] font-semibold text-[#714B67] bg-white px-2 py-1 rounded-lg border border-[#714B67]/15">
+            <span className="ml-auto text-[11px] font-semibold text-o-link bg-white px-2 py-1 rounded-lg border border-o-blue/15">
               Range: {fromDate} → {toDate}
             </span>
           )}

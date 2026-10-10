@@ -157,7 +157,7 @@ export function Suppliers() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-o-blue text-white flex items-center justify-center font-black shadow-sm border border-o-blue-d shrink-0">
               <Truck className="w-5 h-5" />
             </div>
             <div>
@@ -185,7 +185,7 @@ export function Suppliers() {
           <button
             type="button"
             onClick={() => setModalSupplier({})}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-all"
+            className="bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>+ New Supplier</span>
@@ -199,7 +199,7 @@ export function Suppliers() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Suppliers</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Truck className="w-4 h-4" />
             </div>
           </div>
@@ -213,7 +213,7 @@ export function Suppliers() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Inward Bills</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Receipt className="w-4 h-4" />
             </div>
           </div>
@@ -227,7 +227,7 @@ export function Suppliers() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Total Procured</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <ShoppingBag className="w-4 h-4" />
             </div>
           </div>
@@ -277,7 +277,7 @@ export function Suppliers() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search supplier name, company, phone, email, or address..."
-              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
             />
             {search && (
               <button
@@ -327,7 +327,7 @@ export function Suppliers() {
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-3 border-b border-slate-200 flex justify-between items-center bg-slate-50">
           <span className="text-xs font-bold text-slate-700 uppercase tracking-wide flex items-center gap-1.5">
-            <Building2 className="w-4 h-4 text-[#714B67]" />
+            <Building2 className="w-4 h-4 text-o-link" />
             Suppliers & Distributors Directory ({filteredSuppliers.length})
           </span>
           <div className="text-xs text-slate-600 font-semibold">
@@ -358,7 +358,7 @@ export function Suppliers() {
                     {/* Supplier Name & Company */}
                     <td className="p-3">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd] flex items-center justify-center font-bold text-xs shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-o-tint text-o-link border border-o-line flex items-center justify-center font-bold text-xs shrink-0">
                           {initials}
                         </div>
                         <div>
@@ -470,7 +470,7 @@ export function Suppliers() {
                       <button
                         type="button"
                         onClick={() => setModalSupplier({})}
-                        className="px-3.5 py-1.5 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] rounded-lg shadow-sm cursor-pointer"
+                        className="px-3.5 py-1.5 text-xs font-bold text-white bg-o-blue hover:bg-o-blue-d rounded-lg shadow-sm cursor-pointer"
                       >
                         + Register New Supplier
                       </button>
@@ -545,7 +545,7 @@ function SupplierFormModal({ supplier, distinctCompanies, onSave, onClose }) {
       <div className="bg-white rounded-2xl p-5 w-full max-w-lg shadow-2xl border border-slate-200 space-y-4 text-xs font-sans">
         <div className="flex justify-between items-center border-b border-slate-100 pb-3">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center font-bold">
               <Truck className="w-4 h-4" />
             </div>
             <div>
@@ -577,7 +577,7 @@ function SupplierFormModal({ supplier, distinctCompanies, onSave, onClose }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Tariq Traders, Shahzeb Khan..."
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none"
             />
           </div>
 
@@ -591,7 +591,7 @@ function SupplierFormModal({ supplier, distinctCompanies, onSave, onClose }) {
               onChange={(e) => setCompany(e.target.value)}
               placeholder="e.g. GSK Pakistan, Getz Pharma, Abbott..."
               list="company-options"
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none"
             />
             <datalist id="company-options">
               {distinctCompanies.map((c) => (
@@ -610,7 +610,7 @@ function SupplierFormModal({ supplier, distinctCompanies, onSave, onClose }) {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="0300-1234567"
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-mono focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-mono focus:ring-2 focus:ring-o-blue focus:outline-none"
               />
             </div>
 
@@ -623,7 +623,7 @@ function SupplierFormModal({ supplier, distinctCompanies, onSave, onClose }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="supplier@pharma.com"
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none"
               />
             </div>
           </div>
@@ -638,7 +638,7 @@ function SupplierFormModal({ supplier, distinctCompanies, onSave, onClose }) {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="e.g. Circular Road, Lahore"
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none"
               />
             </div>
 
@@ -653,7 +653,7 @@ function SupplierFormModal({ supplier, distinctCompanies, onSave, onClose }) {
                 value={balance}
                 onChange={(e) => setBalance(e.target.value)}
                 placeholder="0"
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:ring-2 focus:ring-o-blue focus:outline-none"
               />
             </div>
           </div>
@@ -668,7 +668,7 @@ function SupplierFormModal({ supplier, distinctCompanies, onSave, onClose }) {
             </button>
             <button
               type="submit"
-              className="px-5 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold shadow-sm transition-all cursor-pointer"
+              className="px-5 py-1.5 rounded-xl bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white font-bold shadow-sm transition-all cursor-pointer"
             >
               {isEdit ? 'Save Changes' : 'Register Supplier'}
             </button>
@@ -752,7 +752,7 @@ function SupplierPayModal({ supplier, onConfirm, onClose }) {
               required
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-mono font-bold focus:ring-2 focus:ring-o-blue focus:outline-none"
             />
           </div>
 
@@ -763,7 +763,7 @@ function SupplierPayModal({ supplier, onConfirm, onClose }) {
             <select
               value={payMethod}
               onChange={(e) => setPayMethod(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-o-blue focus:outline-none"
             >
               <option value="CASH">💵 Cash Drawer</option>
               <option value="BANK">🏛️ Bank Transfer / Online</option>

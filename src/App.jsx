@@ -255,7 +255,7 @@ function Shell({ children }) {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [soundEnabled, setSoundEnabled] = useState(true)
   const [cmdOpen, setCmdOpen] = useState(false)
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => typeof window !== 'undefined' && window.innerWidth < 768)
   const [branchMenuOpen, setBranchMenuOpen] = useState(false)
   const [installPrompt, setInstallPrompt] = useState(null)
   const [installMessage, setInstallMessage] = useState('')
@@ -317,7 +317,7 @@ function Shell({ children }) {
   const totalAlertCount = (stats.expired || 0) + (stats.lowStock || 0)
 
   return (
-    <div className="app-shell fixed inset-0 flex h-full w-full bg-[#f8fafc] text-slate-800 font-sans overflow-hidden">
+    <div className="app-shell fixed inset-0 flex h-full w-full bg-o-bg text-slate-800 font-sans overflow-hidden">
       <OfflineIndicator />
       <CommandPalette isOpen={cmdOpen} onClose={setCmdOpen} />
       <AlertEngine isOpen={alertOpen} onClose={() => setAlertOpen(false)} />
@@ -364,7 +364,7 @@ function Shell({ children }) {
                     >
                       {(
                         <>
-                          <Icon className={`w-4 h-4 shrink-0 ${isNavActive ? 'text-[#00A09D]' : 'text-slate-500'}`} />
+                          <Icon className={`w-4 h-4 shrink-0 ${isNavActive ? 'text-o-teal' : 'text-slate-500'}`} />
                           <span className="truncate flex-1">{n.label}</span>
                           {n.badge && (
                             <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded-md border shrink-0 ${n.badgeColor || 'bg-emerald-50 text-emerald-700 border-emerald-200'}`}>
@@ -437,9 +437,9 @@ function Shell({ children }) {
               </button>
               {branchMenuOpen && !isBranchLocked() && (
                 <div className="absolute right-0 top-full mt-2 z-50 min-w-48 rounded-xl border border-slate-100 bg-white p-1.5 shadow-lg">
-                  <button type="button" onClick={() => { setBranch('ALL'); setBranchMenuOpen(false) }} className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold ${activeBranch() === 'ALL' ? 'bg-[#e6f7f2] text-[#008f8b]' : 'text-slate-800 hover:bg-slate-50'}`}>All Branches</button>
+                  <button type="button" onClick={() => { setBranch('ALL'); setBranchMenuOpen(false) }} className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold ${activeBranch() === 'ALL' ? 'bg-o-teal-tint text-o-teal' : 'text-slate-800 hover:bg-slate-50'}`}>All Branches</button>
                   {(db.branches || []).map((branch) => (
-                    <button key={branch.id} type="button" onClick={() => { setBranch(branch.id); setBranchMenuOpen(false) }} className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold ${activeBranch() === branch.id ? 'bg-[#e6f7f2] text-[#008f8b]' : 'text-slate-800 hover:bg-slate-50'}`}>
+                    <button key={branch.id} type="button" onClick={() => { setBranch(branch.id); setBranchMenuOpen(false) }} className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold ${activeBranch() === branch.id ? 'bg-o-teal-tint text-o-teal' : 'text-slate-800 hover:bg-slate-50'}`}>
                       {branch.name}
                     </button>
                   ))}
@@ -487,7 +487,7 @@ function Shell({ children }) {
                   onClick={() => setDownloadMenuOpen(!downloadMenuOpen)}
                   title="Download POS Apps"
                   aria-label="Download POS Apps"
-                  className="relative inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg transition-all shadow-sm cursor-pointer"
+                  className="relative inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d rounded-lg transition-all shadow-sm cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5 text-white" />
                   <span className="hidden lg:inline">Download App</span>
@@ -583,7 +583,7 @@ function Shell({ children }) {
                 )}
               </div>
             )}
-            {installMessage && <span role="status" className="text-[11px] text-[#714b67] font-semibold">{installMessage}</span>}
+            {installMessage && <span role="status" className="text-[11px] text-o-link font-semibold">{installMessage}</span>}
 
             {/* User Avatar Circle & Profile Dropdown */}
             <div className="relative">
@@ -652,12 +652,12 @@ function Shell({ children }) {
                           }}
                           className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
                             me?.role === r.key
-                              ? 'bg-[#e6f7f2] text-[#00A09D] font-bold'
+                              ? 'bg-o-teal-tint text-o-teal font-bold'
                               : 'text-slate-700 hover:bg-slate-50'
                           }`}
                         >
                           <span>{r.label}</span>
-                          {me?.role === r.key && <span className="text-[10px] font-bold text-[#00A09D]">● Active</span>}
+                          {me?.role === r.key && <span className="text-[10px] font-bold text-o-teal">● Active</span>}
                         </button>
                       ))}
                     </div>
@@ -673,9 +673,9 @@ function Shell({ children }) {
                           setUserMenuOpen(false)
                           navigate('/users')
                         }}
-                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-[#714B67] hover:bg-[#f5eef4] flex items-center gap-2 transition-colors cursor-pointer"
+                        className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-o-link hover:bg-o-tint flex items-center gap-2 transition-colors cursor-pointer"
                       >
-                        <UserCog className="w-4 h-4 text-[#714B67]" />
+                        <UserCog className="w-4 h-4 text-o-link" />
                         <span>Manage Staff & Assign Roles →</span>
                       </button>
 
@@ -719,7 +719,7 @@ function Shell({ children }) {
         <main
           className={`desktop-content flex-1 min-h-0 w-full h-full ${
             loc.pathname === '/pos' ? 'overflow-y-auto md:overflow-hidden p-2 sm:p-2.5' : 'overflow-y-auto overflow-x-hidden p-4 md:p-6'
-          } bg-[#f8fafc] custom-scroll`}
+          } bg-o-bg custom-scroll`}
         >
           {canAccess(loc.pathname) ? (
             children
@@ -748,7 +748,7 @@ function LegacyApp() {
     if (loc.pathname === '/' || loc.pathname === '/website' || loc.pathname === '/landing') {
       if (!isElectronShell()) {
         return (
-          <Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading Optix MedSync…</div>}>
+          <Suspense fallback={<div className="min-h-screen bg-o-bg flex items-center justify-center text-slate-500 font-medium">Loading Optix MedSync…</div>}>
             <LandingPage />
           </Suspense>
         )
@@ -827,7 +827,7 @@ function CentralSuperadmin() {
   return (
     <main className="min-h-screen flex items-center justify-center p-6 text-slate-600" role="status">
       Opening the Optix platform console…{' '}
-      <a className="ml-2 font-bold text-[#2f6df6] underline" href={SUPERADMIN_URL}>
+      <a className="ml-2 font-bold text-o-link underline" href={SUPERADMIN_URL}>
         Open it here
       </a>
     </main>
@@ -845,8 +845,8 @@ export default function App() {
       <ErrorBoundary>
         <Routes>
           {/* The shared module has its own server session and permissions. */}
-          <Route path="/website/*" element={<Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading Optix MedSync…</div>}><LandingPage /></Suspense>} />
-          <Route path="/landing/*" element={<Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading Optix MedSync…</div>}><LandingPage /></Suspense>} />
+          <Route path="/website/*" element={<Suspense fallback={<div className="min-h-screen bg-o-bg flex items-center justify-center text-slate-500 font-medium">Loading Optix MedSync…</div>}><LandingPage /></Suspense>} />
+          <Route path="/landing/*" element={<Suspense fallback={<div className="min-h-screen bg-o-bg flex items-center justify-center text-slate-500 font-medium">Loading Optix MedSync…</div>}><LandingPage /></Suspense>} />
           <Route path="/mobile/*" element={<MobileRoute />} />
           <Route path="/admin/*" element={<AdminRoute />} />
           <Route path="/sso" element={<Sso />} />

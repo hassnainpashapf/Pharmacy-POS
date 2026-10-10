@@ -27,7 +27,7 @@ import {
 
 function KpiCard({ label, value, sub, icon: Icon, tone = 'default' }) {
   const tones = {
-    default: { icon: 'bg-[#f5eef4] text-[#714B67]', val: 'text-slate-900', sub: 'text-slate-500' },
+    default: { icon: 'bg-o-tint text-o-link', val: 'text-slate-900', sub: 'text-slate-500' },
     blue: { icon: 'bg-blue-50 text-blue-700', val: 'text-blue-700', sub: 'text-blue-600/70' },
     green: { icon: 'bg-emerald-50 text-emerald-700', val: 'text-emerald-700', sub: 'text-emerald-600/70' },
     purple: { icon: 'bg-purple-50 text-purple-700', val: 'text-purple-700', sub: 'text-purple-600/70' },
@@ -110,7 +110,7 @@ export default function Branches() {
       {/* ── Top Header (Merged into Page) ── */}
       <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-o-blue flex items-center justify-center text-white shadow-sm shrink-0">
             <Building2 className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -136,7 +136,7 @@ export default function Branches() {
           )}
           <button
             onClick={() => setAdding(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-o-blue hover:bg-o-blue-d text-white text-xs font-bold shadow-sm transition cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>New Branch Hub</span>
@@ -196,7 +196,7 @@ export default function Branches() {
               placeholder="Search branch name, city, address or region..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#714B67] transition-all"
+              className="w-full pl-9 pr-8 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-o-blue transition-all"
             />
             {search && (
               <button
@@ -211,7 +211,7 @@ export default function Branches() {
           <select
             value={regionFilter}
             onChange={(e) => setRegionFilter(e.target.value)}
-            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-[#714B67] focus:outline-none cursor-pointer"
+            className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:bg-white focus:ring-2 focus:ring-o-blue focus:outline-none cursor-pointer"
           >
             <option value="ALL">🌐 All Regions ({distinctRegions.length})</option>
             {distinctRegions.map((r) => (
@@ -262,7 +262,7 @@ export default function Branches() {
                         <div className="flex items-center gap-2.5">
                           <div
                             className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
-                              isActive ? 'bg-emerald-600 text-white' : 'bg-[#f5eef4] text-[#714B67]'
+                              isActive ? 'bg-emerald-600 text-white' : 'bg-o-tint text-o-link'
                             }`}
                           >
                             <Building2 className="w-4 h-4" />
@@ -307,7 +307,7 @@ export default function Branches() {
                         ) : (
                           <button
                             onClick={() => setBranch(b.id)}
-                            className="text-[11px] font-bold px-2 py-1 rounded-lg bg-slate-100 hover:bg-[#3b1734] hover:text-white text-slate-700 transition cursor-pointer"
+                            className="text-[11px] font-bold px-2 py-1 rounded-lg bg-slate-100 hover:bg-o-blue hover:text-white text-slate-700 transition cursor-pointer"
                           >
                             Switch
                           </button>
@@ -317,7 +317,7 @@ export default function Branches() {
                         <div className="flex items-center justify-center gap-1.5">
                           <button
                             onClick={() => setEditingBranch(b)}
-                            className="p-1 rounded-lg text-slate-500 hover:text-[#714B67] hover:bg-[#f5eef4] transition cursor-pointer"
+                            className="p-1 rounded-lg text-slate-500 hover:text-o-link hover:bg-o-tint transition cursor-pointer"
                             title="Edit Branch"
                           >
                             <Edit2 className="w-3.5 h-3.5" />
@@ -345,7 +345,7 @@ export default function Branches() {
               <strong className="text-slate-800">{ho.length}</strong> total operational branches
             </span>
             <span>
-              Active Hub: <strong className="text-[#714B67] font-bold">{branchById(currentActive)?.name || 'Head Office (Consolidated)'}</strong>
+              Active Hub: <strong className="text-o-link font-bold">{branchById(currentActive)?.name || 'Head Office (Consolidated)'}</strong>
             </span>
           </div>
         </div>
@@ -403,7 +403,7 @@ function BranchModal({ branch, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100">
-        <div className="p-4 bg-gradient-to-r from-[#3b1734] to-[#714B67] text-white flex items-center justify-between">
+        <div className="p-4 bg-gradient-to-r from-o-blue to-o-blue text-white flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Building2 className="w-4 h-4" />
             <h3 className="font-bold text-sm">{branch ? 'Edit Branch Hub' : 'Add New Regional Branch Hub'}</h3>
@@ -422,7 +422,7 @@ function BranchModal({ branch, onClose }) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Faisalabad Main Hub"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none"
             />
           </div>
 
@@ -435,7 +435,7 @@ function BranchModal({ branch, onClose }) {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="e.g. Faisalabad"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none"
               />
             </div>
             <div>
@@ -444,7 +444,7 @@ function BranchModal({ branch, onClose }) {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="0300-1234567"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none"
               />
             </div>
           </div>
@@ -454,7 +454,7 @@ function BranchModal({ branch, onClose }) {
             <select
               value={region}
               onChange={(e) => setRegion(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-[#714B67] focus:outline-none cursor-pointer"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:ring-2 focus:ring-o-blue focus:outline-none cursor-pointer"
             >
               <option value="North Region (Islamabad/KPK)">North Region (Islamabad / Rawalpindi / KPK)</option>
               <option value="Central Region (Punjab)">Central Region (Punjab / Lahore / Faisalabad / Multan)</option>
@@ -470,7 +470,7 @@ function BranchModal({ branch, onClose }) {
               onChange={(e) => setAddress(e.target.value)}
               rows={2}
               placeholder="e.g. Shop 12, Commercial Market, Jail Road"
-              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-[#714B67] focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-o-blue focus:outline-none"
             />
           </div>
 
@@ -486,7 +486,7 @@ function BranchModal({ branch, onClose }) {
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white font-bold shadow-sm transition cursor-pointer"
+              className="px-5 py-2 rounded-xl bg-o-blue hover:bg-o-blue-d text-white font-bold shadow-sm transition cursor-pointer"
             >
               {branch ? 'Save Changes' : 'Create Branch Hub'}
             </button>

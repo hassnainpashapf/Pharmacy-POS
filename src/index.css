@@ -1,23 +1,31 @@
+@import './optix-tokens.css';
+@import './palette.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ==========================================================================
+   Optix look for the whole app. Tokens (colours, radius, shadows, font) come from the shared Optix theme
+   (optix-tokens.css, synced from optix-suite-sdk/theme) and the Tailwind palette variables (palette.css).
+   The Optix suite is light only (color-scheme: light), so a dark-mode browser or OS never darkens the app.
+   ========================================================================== */
 :root {
-  --ui-canvas: #eef0f3;
-  --ui-surface: #fff;
-  --ui-border: #d4d9e1;
-  --ui-ink: #111827;
-  --ui-accent: #714b67;
-  --ui-teal: #007f7b;
-  --ui-radius: 12px;
-  --ui-shadow: 0 1px 3px rgb(24 34 48 / 4%);
+  --ui-canvas: var(--bg);
+  --ui-surface: var(--surface);
+  --ui-border: var(--line);
+  --ui-ink: var(--ink);
+  --ui-accent: var(--blue);
+  --ui-teal: #0e8f80;
+  --ui-radius: var(--r-sm);
+  --ui-shadow: var(--shadow-1), 0 1px 3px rgb(20 33 61 / 5%);
 }
 
 html {
+  color-scheme: light;
   height: 100%;
   min-height: 100%;
   width: 100%;
-  background-color: #f8fafc;
+  background-color: var(--bg);
   overflow: hidden;
 }
 
@@ -27,23 +35,23 @@ body, #root {
   width: 100%;
   margin: 0;
   padding: 0;
-  background-color: #f8fafc;
-  color: #111827;
+  background-color: var(--bg);
+  color: var(--ink);
   overflow: hidden;
 }
 
-/* Keep the existing layout and palette, but make readable text consistently
-   dark across every screen. Explicit white text on buttons/badges is preserved. */
+/* Readable text everywhere. Explicit white text on buttons/badges is preserved. */
 body, #root, input, select, textarea, button {
-  color: #111827;
+  color: var(--ink);
 }
-input::placeholder, textarea::placeholder { color: #4b5563; opacity: 1; }
-.text-slate-400, .text-slate-500, .text-slate-600, .text-slate-700,
-.text-slate-800, .text-slate-900, .text-gray-400, .text-gray-500,
-.text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900 {
-  color: #111827 !important;
-}
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
 .text-white, .text-white * { color: #fff !important; }
+::selection { background: rgb(47 109 246 / 25%); }
+input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']):not([type='file']),
+select, textarea {
+  background-color: rgb(var(--o-surface));
+}
+/* the browser's own controls (date pickers, scrollbars, autofill) follow the theme through color-scheme in the tokens */
 
 /* Panel surfaces only. Buttons, inputs, icons and table rows retain their own
    geometry; earlier broad bg-white overrides rounded all of them like cards. */
@@ -64,37 +72,21 @@ input::placeholder, textarea::placeholder { color: #4b5563; opacity: 1; }
   border-color: var(--ui-border);
   box-shadow: var(--ui-shadow);
 }
-.bg-slate-50 { background-color: #f1f3f6 !important; }
 /* Legacy pages used square `rounded-sm` controls. Use the Dashboard's
    compact rounded language everywhere so every module feels like one app. */
 .app-shell :is(button, input, select, textarea).rounded-sm { border-radius: 8px; }
-
-/* Application-wide dashboard theme tokens. Older screens used emerald/indigo
-   as their primary action colours; map those utility classes to the same
-   purple + teal palette used by Dashboard without changing page behaviour. */
-.bg-emerald-600 { background-color: #714b67 !important; }
-.bg-emerald-500 { background-color: #806078 !important; }
-.bg-emerald-700 { background-color: #5c3c54 !important; }
-.hover\:bg-emerald-700:hover { background-color: #5c3c54 !important; }
-.hover\:bg-emerald-600:hover { background-color: #714b67 !important; }
-.text-emerald-600, .text-emerald-700, .text-emerald-800 { color: #008f8b !important; }
-.bg-emerald-50, .bg-emerald-50\/50 { background-color: #e6f7f2 !important; }
-.border-emerald-200, .border-emerald-300 { border-color: #b7e5dc !important; }
-.bg-indigo-50, .bg-indigo-100 { background-color: #f5eef4 !important; }
-.text-indigo-600, .text-indigo-700 { color: #714b67 !important; }
-.border-indigo-200 { border-color: #decddd !important; }
-.bg-blue-50, .bg-blue-100 { background-color: #e0f2fe !important; }
-.text-blue-600, .text-blue-700, .text-blue-800 { color: #087ea4 !important; }
 
 @media print {
   html, body, #root {
     zoom: 100% !important;
     height: auto !important;
     overflow: visible !important;
+    background: #fff !important;
+    color: #000 !important;
   }
   body * { visibility: hidden; }
-  #print-section, #print-section * { visibility: visible; }
-  #print-section { position: absolute; left: 0; top: 0; width: 80mm; }
+  #print-section, #print-section * { visibility: visible; color: #000; }
+  #print-section { position: absolute; left: 0; top: 0; width: 80mm; background: #fff; }
 }
 
 /* Custom sleek scrollbars */
@@ -106,11 +98,11 @@ input::placeholder, textarea::placeholder { color: #4b5563; opacity: 1; }
   background: transparent;
 }
 .custom-scroll::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.3);
+  background: rgb(var(--o-muted) / 35%);
   border-radius: 9999px;
 }
 .custom-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.5);
+  background: rgb(var(--o-muted) / 60%);
 }
 
 /* Premium UI Enhancements */
@@ -120,20 +112,20 @@ input::placeholder, textarea::placeholder { color: #4b5563; opacity: 1; }
 }
 
 .premium-card {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 2px;
-  box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  box-shadow: var(--ui-shadow);
   transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .premium-card:hover {
-  border-color: #94a3b8;
-  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
+  border-color: rgb(var(--o-blue) / 45%);
+  box-shadow: var(--shadow-2);
 }
 
 .emerald-glow {
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.25), 0 8px 10px -6px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 10px 25px -5px rgb(47 109 246 / 28%), 0 8px 10px -6px rgb(47 109 246 / 20%);
 }
 
 .receipt-jagged {
@@ -146,12 +138,11 @@ input::placeholder, textarea::placeholder { color: #4b5563; opacity: 1; }
 .desktop-content {
   background: var(--ui-canvas);
 }
-.app-shell { color: #0f172a; }
-.app-sidebar { background: #fbfbfc !important; border-right-color: #cfd5de !important; }
-.app-toolbar { background: #fbfbfc !important; border-bottom-color: #cfd5de !important; }
-.desktop-content :is(.border-slate-200, .border-slate-300) { border-color: #d0d6df !important; }
-.desktop-content :is(.text-slate-500, .text-slate-600, .text-slate-700) { color: #273244 !important; }
-.desktop-content .bg-white { border-color: #d7dce4; }
+.app-shell { color: var(--ink); }
+.app-sidebar { background: var(--surface) !important; border-right-color: var(--line) !important; }
+.app-toolbar { background: var(--nav-bg) !important; border-bottom-color: var(--line) !important; backdrop-filter: blur(14px) saturate(1.4); }
+.desktop-content :is(.border-slate-200, .border-slate-300) { border-color: var(--line) !important; }
+.desktop-content .bg-white { border-color: var(--line); }
 .dashboard-heading {
   padding: 4px 0;
   border: 0;
@@ -190,25 +181,25 @@ input::placeholder, textarea::placeholder { color: #4b5563; opacity: 1; }
   width: 34px;
   height: 34px;
   border-radius: 11px;
-  color: #714b67;
-  background: #f0e5ef;
+  color: rgb(var(--o-link));
+  background: var(--tint);
 }
-.metric-icon-teal { color: #007d78; background: #def2ec; }
+.metric-icon-teal { color: var(--ui-teal); background: rgb(var(--o-teal-tint)); }
 .metric-value { letter-spacing: -0.025em; }
-.metric-note summary { color: #514252; font-weight: 600; min-height: 24px; }
-.metric-note[open] { border-top: 1px solid #e6e0e8; padding-top: 6px; }
+.metric-note summary { color: var(--text-2); font-weight: 600; min-height: 24px; }
+.metric-note[open] { border-top: 1px solid var(--line); padding-top: 6px; }
 .desktop-content table { border-collapse: collapse; }
-.desktop-content table thead { background: #f0f2f5; }
+.desktop-content table thead { background: var(--chip); }
 .desktop-content table thead th { padding-top: 12px; padding-bottom: 12px; font-weight: 700; }
-.desktop-content table tbody tr { border-bottom: 1px solid #e9edf2; }
-.desktop-content table tbody tr:hover { background-color: #f4f9f8; }
+.desktop-content table tbody tr { border-bottom: 1px solid var(--line); }
+.desktop-content table tbody tr:hover { background-color: var(--surface-2); }
 .desktop-content :is(button, a, summary):focus-visible {
-  outline: 2px solid #714b67;
+  outline: 2px solid var(--blue-2);
   outline-offset: 3px;
 }
 .desktop-content input:not([type="checkbox"]):not([type="radio"]):focus-visible,
 .desktop-content select:focus-visible,
-.desktop-content textarea:focus-visible { outline: 2px solid #714b67; outline-offset: 1px; }
+.desktop-content textarea:focus-visible { outline: 2px solid var(--blue-2); outline-offset: 1px; }
 
 .app-sidebar { box-shadow: none; border-color: var(--ui-border); }
 .brand-header { min-height: 80px; }
@@ -219,17 +210,17 @@ input::placeholder, textarea::placeholder { color: #4b5563; opacity: 1; }
   width: 38px;
   height: 38px;
   flex-shrink: 0;
-  border: 1px solid #e9dce6;
+  border: 1px solid var(--line);
   border-radius: 11px;
-  background: #f6eff4;
+  background: var(--tint);
   color: var(--ui-accent);
 }
 .brand-name { font-size: 19px; font-weight: 750; letter-spacing: -0.035em; color: var(--ui-ink); white-space: nowrap; }
-.app-sidebar .nav-section-label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; padding-top: 8px; padding-bottom: 4px; color: #0f172a; }
+.app-sidebar .nav-section-label { font-size: 10.5px; font-weight: 800; letter-spacing: 0.08em; padding-top: 8px; padding-bottom: 4px; color: var(--muted); }
 .sidebar-link { min-height: 35px; border: 1px solid transparent; color: var(--ui-ink); }
-.sidebar-link:hover { background: #f5f6f8; }
-.sidebar-link-active, .sidebar-link-active:hover { color: #006d69; background: #e9f5f2; border-color: #d5eae4; }
-.app-shell .sidebar-link:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 2px; }
+.sidebar-link:hover { background: var(--chip); }
+.sidebar-link-active, .sidebar-link-active:hover { color: rgb(var(--o-link)); background: var(--tint); border-color: rgb(var(--o-blue) / 25%); }
+.app-shell .sidebar-link:focus-visible { outline: 2px solid var(--blue-2); outline-offset: 2px; }
 .app-toolbar { box-shadow: none; border-color: var(--ui-border); }
 .app-toolbar > :first-child { min-width: 0; }
 .app-toolbar input { max-width: 100%; }
@@ -238,11 +229,12 @@ input::placeholder, textarea::placeholder { color: #4b5563; opacity: 1; }
   border: 1px solid var(--ui-border);
   border-radius: var(--ui-radius);
   box-shadow: none;
-  transition: border-color 150ms, background-color 150ms;
+  transition: border-color 150ms, background-color 150ms, transform 150ms;
 }
-.dashboard-view .quick-actions > :is(div, button):hover { border-color: #bca7b6; background: #fdfbfc; box-shadow: none; }
+.dashboard-view .quick-actions > :is(div, button):hover { border-color: rgb(var(--o-blue) / 45%); background: var(--surface-2); box-shadow: none; transform: translateY(-1px); }
 .desktop-content :is(td, th) { vertical-align: middle; }
 .desktop-content .metric-note { font-weight: 400; }
+
 @media (prefers-reduced-motion: reduce) {
   .app-shell *, .app-shell *::before, .app-shell *::after { transition-duration: 0s !important; animation-duration: 0s !important; }
 }

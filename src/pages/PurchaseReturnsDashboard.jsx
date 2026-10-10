@@ -223,7 +223,7 @@ export default function PurchaseReturnsDashboard() {
       {/* 1. Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23]">
+          <div className="w-10 h-10 rounded-xl bg-o-blue text-white flex items-center justify-center font-black shadow-sm border border-o-blue-d">
             <RotateCcw className="w-5 h-5" />
           </div>
           <div>
@@ -253,7 +253,7 @@ export default function PurchaseReturnsDashboard() {
               setReturnItems([])
               setShowNewModal(true)
             }}
-            className="px-3.5 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>+ New Return</span>
@@ -275,7 +275,7 @@ export default function PurchaseReturnsDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Total Returns</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center font-bold">
               <RotateCcw className="w-4 h-4" />
             </div>
           </div>
@@ -289,12 +289,12 @@ export default function PurchaseReturnsDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Debit Claims</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center font-bold">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-[#714B67]">{fmt(stats.totalAmount)}</div>
+            <div className="text-2xl font-black text-o-link">{fmt(stats.totalAmount)}</div>
             <div className="text-[11px] text-slate-400 mt-0.5">Total claims</div>
           </div>
         </div>
@@ -303,7 +303,7 @@ export default function PurchaseReturnsDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Credit Notes</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center font-bold">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
@@ -317,12 +317,12 @@ export default function PurchaseReturnsDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Cash Refunds</span>
-            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-o-teal-tint text-o-teal flex items-center justify-center font-bold">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-[#008f8b]">{fmt(stats.cashRefunds)}</div>
+            <div className="text-2xl font-black text-o-teal">{fmt(stats.cashRefunds)}</div>
             <div className="text-[11px] text-slate-400 mt-0.5">Direct cash</div>
           </div>
         </div>
@@ -339,7 +339,7 @@ export default function PurchaseReturnsDashboard() {
               placeholder="Search return note #, supplier, or medicine..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
             />
             {searchQuery && (
               <button
@@ -354,7 +354,7 @@ export default function PurchaseReturnsDashboard() {
 
           {/* Supplier Filter Dropdown */}
           <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
-            <Building2 className="w-3.5 h-3.5 text-[#714B67]" />
+            <Building2 className="w-3.5 h-3.5 text-o-link" />
             <select
               value={supplierFilter}
               onChange={(e) => setSupplierFilter(e.target.value)}
@@ -426,7 +426,7 @@ export default function PurchaseReturnsDashboard() {
               {filteredReturns.map((r) => (
                 <tr key={r.id} className="hover:bg-slate-50/70 transition-colors">
                   <td className="py-3 px-4">
-                    <span className="font-mono font-bold text-[#714B67] bg-[#f5eef4] px-2 py-0.5 rounded border border-[#decddd]">
+                    <span className="font-mono font-bold text-o-link bg-o-tint px-2 py-0.5 rounded border border-o-line">
                       {r.returnNo}
                     </span>
                   </td>
@@ -461,8 +461,8 @@ export default function PurchaseReturnsDashboard() {
                     <span
                       className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                         r.settlementType === 'CREDIT_NOTE'
-                          ? 'bg-[#f5eef4] text-[#714B67] border border-[#decddd]'
-                          : 'bg-teal-50 text-[#008f8b] border border-[#b7e5dc]'
+                          ? 'bg-o-tint text-o-link border border-o-line'
+                          : 'bg-teal-50 text-o-teal border border-o-line'
                       }`}
                     >
                       {r.settlementType === 'CREDIT_NOTE' ? 'Credit Note' : 'Cash Refund'}
@@ -505,7 +505,7 @@ export default function PurchaseReturnsDashboard() {
             {/* Header */}
             <div className="p-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-xl bg-o-tint text-o-link flex items-center justify-center font-bold">
                   <RotateCcw className="w-4 h-4" />
                 </div>
                 <div>
@@ -535,7 +535,7 @@ export default function PurchaseReturnsDashboard() {
                       setSelectedSupplierId(e.target.value)
                       setReturnItems([])
                     }}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
+                    className="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-o-blue/20 focus:border-o-blue"
                   >
                     <option value="">-- Select Supplier --</option>
                     {suppliers.map((s) => (
@@ -565,7 +565,7 @@ export default function PurchaseReturnsDashboard() {
                 <div className="space-y-2 border border-slate-200 rounded-2xl p-3 bg-slate-50/60">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-slate-800 text-[11px] flex items-center gap-1.5">
-                      <Package className="w-3.5 h-3.5 text-[#714B67]" />
+                      <Package className="w-3.5 h-3.5 text-o-link" />
                       <span>Select available batches from this supplier:</span>
                     </span>
                     <span className="text-[10px] text-slate-400">Click to add to return list</span>
@@ -597,7 +597,7 @@ export default function PurchaseReturnsDashboard() {
                             className={`px-3 py-1 rounded-lg font-bold text-[11px] transition-all ${
                               isAdded
                                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                : 'bg-[#f5eef4] text-[#714B67] hover:bg-[#f5eef4]/80 border border-[#decddd]'
+                                : 'bg-o-tint text-o-link hover:bg-o-tint/80 border border-o-line'
                             }`}
                           >
                             {isAdded ? '✓ Added' : '+ Add to Return'}
@@ -639,7 +639,7 @@ export default function PurchaseReturnsDashboard() {
                             max={it.maxQty}
                             value={it.qty}
                             onChange={(e) => updateItemQty(it.batchId, e.target.value)}
-                            className="w-16 px-2 py-1 border border-slate-300 rounded-lg text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
+                            className="w-16 px-2 py-1 border border-slate-300 rounded-lg text-center font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-o-blue/20 focus:border-o-blue"
                           />
                         </div>
 
@@ -656,7 +656,7 @@ export default function PurchaseReturnsDashboard() {
                         </select>
 
                         {/* Total Cost */}
-                        <div className="font-mono font-bold text-[#714B67] text-right w-20">
+                        <div className="font-mono font-bold text-o-link text-right w-20">
                           {fmt(it.total)}
                         </div>
 
@@ -676,12 +676,12 @@ export default function PurchaseReturnsDashboard() {
 
               {/* Total Calculation Banner */}
               {returnItems.length > 0 && (
-                <div className="p-4 bg-[#f5eef4]/60 border border-[#decddd] rounded-2xl flex items-center justify-between">
+                <div className="p-4 bg-o-tint/60 border border-o-line rounded-2xl flex items-center justify-between">
                   <div>
-                    <div className="text-[11px] text-[#714B67] font-bold uppercase tracking-wider">Total Debit Note Amount</div>
+                    <div className="text-[11px] text-o-link font-bold uppercase tracking-wider">Total Debit Note Amount</div>
                     <div className="text-xs text-slate-500">{returnItems.length} batches selected for return</div>
                   </div>
-                  <div className="text-2xl font-black text-[#714B67] font-mono">
+                  <div className="text-2xl font-black text-o-link font-mono">
                     {fmt(currentTotal)}
                   </div>
                 </div>
@@ -695,7 +695,7 @@ export default function PurchaseReturnsDashboard() {
                   value={returnNote}
                   onChange={(e) => setReturnNote(e.target.value)}
                   placeholder="Reference invoice number, reason, etc..."
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#714B67]/20 focus:border-[#714B67]"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-o-blue/20 focus:border-o-blue"
                 />
               </div>
 
@@ -711,7 +711,7 @@ export default function PurchaseReturnsDashboard() {
                 <button
                   type="submit"
                   disabled={!returnItems.length}
-                  className="px-6 py-2 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] disabled:opacity-50 text-white font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
+                  className="px-6 py-2 rounded-xl bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d disabled:opacity-50 text-white font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
                 >
                   Generate Debit Note
                 </button>
@@ -741,7 +741,7 @@ export default function PurchaseReturnsDashboard() {
               <div className="text-center pb-3 border-b border-slate-200">
                 <h2 className="text-lg font-black text-slate-900">{db.settings.pharmacyName || 'Optix MedSync'}</h2>
                 <p className="text-[11px] text-slate-500">{db.settings.address || 'Medical Store'}</p>
-                <div className="inline-block mt-2 px-3 py-1 rounded-full bg-[#f5eef4] text-[#714B67] border border-[#decddd] font-black text-xs uppercase tracking-wider">
+                <div className="inline-block mt-2 px-3 py-1 rounded-full bg-o-tint text-o-link border border-o-line font-black text-xs uppercase tracking-wider">
                   PURCHASE RETURN DEBIT NOTE
                 </div>
               </div>
@@ -749,7 +749,7 @@ export default function PurchaseReturnsDashboard() {
               <div className="grid grid-cols-2 gap-2 text-[11px] border-b border-slate-100 pb-3">
                 <div>
                   <span className="text-slate-400">Voucher No:</span>{' '}
-                  <strong className="font-mono text-[#714B67]">{viewingVoucher.returnNo}</strong>
+                  <strong className="font-mono text-o-link">{viewingVoucher.returnNo}</strong>
                 </div>
                 <div className="text-right">
                   <span className="text-slate-400">Date:</span>{' '}
@@ -780,7 +780,7 @@ export default function PurchaseReturnsDashboard() {
 
               <div className="flex justify-between items-center text-sm font-black pt-1">
                 <span>Total Refund Amount:</span>
-                <span className="text-[#714B67] font-mono">{fmt(viewingVoucher.totalAmount)}</span>
+                <span className="text-o-link font-mono">{fmt(viewingVoucher.totalAmount)}</span>
               </div>
 
               <div className="pt-6 border-t border-slate-200 flex justify-between text-[10px] text-slate-400">

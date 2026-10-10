@@ -263,7 +263,7 @@ export default function StockAuditDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-o-blue text-white flex items-center justify-center font-black shadow-sm border border-o-blue-d shrink-0">
               <ClipboardCheck className="w-5 h-5" />
             </div>
             <div>
@@ -284,7 +284,7 @@ export default function StockAuditDashboard() {
                   >
                     <span>Worksheet</span>
                     <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                      subTab === 'worksheet' ? 'bg-[#3b1734] text-white' : 'bg-slate-200 text-slate-600'
+                      subTab === 'worksheet' ? 'bg-o-blue text-white' : 'bg-slate-200 text-slate-600'
                     }`}>
                       {auditData.length}
                     </span>
@@ -300,7 +300,7 @@ export default function StockAuditDashboard() {
                   >
                     <span>History</span>
                     <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                      subTab === 'history' ? 'bg-[#3b1734] text-white' : 'bg-slate-200 text-slate-600'
+                      subTab === 'history' ? 'bg-o-blue text-white' : 'bg-slate-200 text-slate-600'
                     }`}>
                       {pastAudits.length}
                     </span>
@@ -377,12 +377,12 @@ export default function StockAuditDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Surplus (Zyada)</span>
-            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-teal-tint text-o-teal flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-[#008f8b]">{zyadaItems.length}</div>
+            <div className="text-2xl font-black text-o-teal">{zyadaItems.length}</div>
             <div className="text-[11px] text-slate-400 mt-0.5">+{totalZyadaUnits} units ({fmt(totalZyadaSurplus)})</div>
           </div>
         </div>
@@ -391,7 +391,7 @@ export default function StockAuditDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Matched Stock</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Check className="w-4 h-4" />
             </div>
           </div>
@@ -405,7 +405,7 @@ export default function StockAuditDashboard() {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Net Valuation</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
@@ -430,7 +430,7 @@ export default function StockAuditDashboard() {
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                   placeholder="Search medicine, generic, barcode, company..."
-                  className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                  className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
                 />
                 {q && (
                   <button
@@ -445,7 +445,7 @@ export default function StockAuditDashboard() {
 
               {/* View Mode Dropdown */}
               <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
-                <ClipboardCheck className="w-3.5 h-3.5 text-[#3b1734] shrink-0" />
+                <ClipboardCheck className="w-3.5 h-3.5 text-o-link shrink-0" />
                 <select
                   value={subTab}
                   onChange={(e) => setSubTab(e.target.value)}
@@ -536,7 +536,7 @@ export default function StockAuditDashboard() {
                           type="checkbox"
                           checked={isSelectedForPO}
                           onChange={() => togglePOSelect(m.id)}
-                          className="w-4 h-4 rounded text-[#3b1734] focus:ring-[#3b1734] cursor-pointer"
+                          className="w-4 h-4 rounded text-o-link focus:ring-o-blue cursor-pointer"
                           title="Select for Purchase Order drafting"
                         />
                       </td>
@@ -672,7 +672,7 @@ export default function StockAuditDashboard() {
                   placeholder="Search audit #, title, or auditor name..."
                   value={auditSearch}
                   onChange={(e) => setAuditSearch(e.target.value)}
-                  className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                  className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
                 />
                 {auditSearch && (
                   <button
@@ -687,7 +687,7 @@ export default function StockAuditDashboard() {
 
               {/* View Mode Dropdown */}
               <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
-                <ClipboardCheck className="w-3.5 h-3.5 text-[#3b1734] shrink-0" />
+                <ClipboardCheck className="w-3.5 h-3.5 text-o-link shrink-0" />
                 <select
                   value={subTab}
                   onChange={(e) => setSubTab(e.target.value)}
@@ -706,7 +706,7 @@ export default function StockAuditDashboard() {
           <div className="bg-white border border-slate-200 rounded-xl shadow-xs p-4 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-100 pb-3 gap-2">
               <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Calendar className="w-4 h-4 text-[#3b1734]" />
+                <Calendar className="w-4 h-4 text-o-link" />
                 <span>Past Audit History Sessions</span>
               </h2>
               <span className="text-xs text-slate-400">{filteredAudits.length} recorded sessions</span>
@@ -1015,7 +1015,7 @@ function AuditPOModal({ kamItems = [], selectedIds = new Set(), onToggleId, supp
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => onToggleId(it.medicine.id)}
-                          className="w-4 h-4 rounded text-[#3b1734]"
+                          className="w-4 h-4 rounded text-o-link"
                         />
                         <span className="font-bold text-slate-900">{it.medicine.name}</span>
                       </label>
@@ -1054,7 +1054,7 @@ function AuditPOModal({ kamItems = [], selectedIds = new Set(), onToggleId, supp
               Selected <b>{selectedItems.length} of {kamItems.length}</b> deficit products
             </span>
             <div className="text-base font-black text-slate-900 font-mono mt-0.5">
-              Est. Total Demand: <span className="text-[#3b1734]">{fmt(totalCost)}</span>
+              Est. Total Demand: <span className="text-o-link">{fmt(totalCost)}</span>
             </div>
           </div>
 
@@ -1069,7 +1069,7 @@ function AuditPOModal({ kamItems = [], selectedIds = new Set(), onToggleId, supp
             <button
               type="button"
               onClick={handleCreate}
-              className="px-5 py-2 rounded-lg bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold shadow-sm transition-all cursor-pointer"
+              className="px-5 py-2 rounded-lg bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white font-bold shadow-sm transition-all cursor-pointer"
             >
               ✓ Create Purchase Order
             </button>

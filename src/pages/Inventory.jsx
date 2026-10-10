@@ -190,7 +190,7 @@ export default function Inventory({ forcedTab }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-o-blue text-white flex items-center justify-center font-black shadow-sm border border-o-blue-d shrink-0">
               {tab === 'COMPANIES' ? (
                 <Building2 className="w-5 h-5" />
               ) : tab === 'audit' ? (
@@ -238,7 +238,7 @@ export default function Inventory({ forcedTab }) {
           <button
             type="button"
             onClick={() => setCompanyStockInOpen(true)}
-            className="px-3.5 py-1.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white text-xs font-bold shadow-sm flex items-center gap-1.5 transition-all cursor-pointer"
             title="Stock in batches grouped by pharma manufacturer delivery invoice"
           >
             <Building2 className="w-4 h-4" />
@@ -253,7 +253,7 @@ export default function Inventory({ forcedTab }) {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Manufacturers</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Building2 className="w-4 h-4" />
             </div>
           </div>
@@ -267,7 +267,7 @@ export default function Inventory({ forcedTab }) {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Stock Units</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Package className="w-4 h-4" />
             </div>
           </div>
@@ -281,7 +281,7 @@ export default function Inventory({ forcedTab }) {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Purchase Value</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
@@ -295,12 +295,12 @@ export default function Inventory({ forcedTab }) {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Retail Value</span>
-            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-teal-tint text-o-teal flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-[#008f8b]">{fmt(overall.totalSale)}</div>
+            <div className="text-2xl font-black text-o-teal">{fmt(overall.totalSale)}</div>
             <div className="text-[11px] text-slate-400 mt-0.5">Margin: {overall.marginPct}%</div>
           </div>
         </div>
@@ -309,7 +309,7 @@ export default function Inventory({ forcedTab }) {
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Top Brand</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
           </div>
@@ -333,7 +333,7 @@ export default function Inventory({ forcedTab }) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search batch #, medicine name, generic chemical, brand, or barcode..."
-              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
             />
             {search && (
               <button
@@ -443,7 +443,7 @@ export default function Inventory({ forcedTab }) {
             <button
               type="button"
               onClick={() => setCompanyStockInOpen(true)}
-              className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
+              className="bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm inline-flex items-center gap-1.5 cursor-pointer"
             >
               <Building2 className="w-3.5 h-3.5" /> Stock In by Company
             </button>
@@ -628,7 +628,7 @@ export function InventoryBatchRow({ batch, medicine, now = new Date(), onReclass
   const expired = knownExpiry && expiryTime < now.getTime()
   const daysLeft = knownExpiry ? Math.ceil((expiryTime - now.getTime()) / 86400000) : null
   const status = expired ? 'EXPIRED' : String(batch.status || 'AVAILABLE').toUpperCase()
-  const statusClass = status === 'AVAILABLE' || status === 'ACTIVE' ? 'bg-[#e6f7f2] text-[#008784] border-teal-200' : status === 'EXPIRED' || status === 'DAMAGED' ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-[#f5eef4] text-[#714B67] border-purple-200'
+  const statusClass = status === 'AVAILABLE' || status === 'ACTIVE' ? 'bg-o-teal-tint text-o-teal border-teal-200' : status === 'EXPIRED' || status === 'DAMAGED' ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-o-tint text-o-link border-purple-200'
   return <tr className="hover:bg-slate-50 transition-colors">
     <th scope="row" className="p-3 min-w-48 font-bold text-slate-900">{medicine?.name || 'Unknown medicine'} <span className="font-medium text-slate-500">{medicine?.strength}</span></th>
     <td className="p-3">{dosageFormValue(medicine) || 'Dosage form not specified'}</td>
@@ -651,7 +651,7 @@ export function InventoryBatchRow({ batch, medicine, now = new Date(), onReclass
     <td className="p-3 text-right font-bold tabular-nums">{batch.qty}</td>
     <td className="p-3 text-right tabular-nums whitespace-nowrap">{fmt(batch.purchasePrice)}</td>
     <td className="p-3 text-right font-semibold tabular-nums whitespace-nowrap">{fmt(batch.salePrice)}</td>
-    <td className="p-3"><button type="button" onClick={onReclassify} aria-label={`Reclassify ${medicine?.name || 'medicine'}, batch ${batch.batchNo || 'not recorded'}`} className="rounded-lg bg-[#f5eef4] border border-[#3b1734]/20 text-[#3b1734] hover:bg-[#3b1734] hover:text-white px-3 py-2 text-xs font-bold transition-colors cursor-pointer">Reclassify</button></td>
+    <td className="p-3"><button type="button" onClick={onReclassify} aria-label={`Reclassify ${medicine?.name || 'medicine'}, batch ${batch.batchNo || 'not recorded'}`} className="rounded-lg bg-o-tint border border-o-blue/20 text-o-link hover:bg-o-blue hover:text-white px-3 py-2 text-xs font-bold transition-colors cursor-pointer">Reclassify</button></td>
   </tr>
 }
 
@@ -740,7 +740,7 @@ function ReclassifyModal({ batch, onClose }) {
           </button>
           <button
             onClick={handleSubmit}
-            className="flex-1 py-2 rounded-sm bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold text-xs shadow-sm cursor-pointer"
+            className="flex-1 py-2 rounded-sm bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white font-bold text-xs shadow-sm cursor-pointer"
           >
             Confirm Reclassification
           </button>
@@ -1148,7 +1148,7 @@ export function CompanyStockInModal({ distinctCompanies = [], onClose, initialCo
           <button
             type="button"
             onClick={() => handleStockIn(true)}
-            className="flex-1 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold text-xs transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white py-2.5 rounded-xl font-bold text-xs transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" /> Stock In & Add Another from {activeCompany.split(' ')[0] || 'Company'}
           </button>
@@ -1358,7 +1358,7 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-o-blue text-white flex items-center justify-center font-black shadow-sm border border-o-blue-d shrink-0">
               <ClipboardCheck className="w-5 h-5" />
             </div>
             <div>
@@ -1464,12 +1464,12 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Surplus (Zyada)</span>
-            <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-teal-tint text-o-teal flex items-center justify-center">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-black text-[#008f8b]">{zyadaItems.length}</div>
+            <div className="text-2xl font-black text-o-teal">{zyadaItems.length}</div>
             <div className="text-[11px] text-slate-400 mt-0.5">+{totalZyadaUnits} units ({fmt(totalZyadaSurplus)})</div>
           </div>
         </div>
@@ -1478,7 +1478,7 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Matched Stock</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <Check className="w-4 h-4" />
             </div>
           </div>
@@ -1492,7 +1492,7 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
           <div className="flex items-center justify-between text-slate-500">
             <span className="text-xs font-semibold text-slate-600">Net Valuation</span>
-            <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
               <DollarSign className="w-4 h-4" />
             </div>
           </div>
@@ -1554,7 +1554,7 @@ export function StockAuditView({ db, companyFilter = 'all', onCompanyChange, dis
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search audit lines..."
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-8 py-1.5 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-o-blue"
               />
               {q && (
                 <button
@@ -2053,7 +2053,7 @@ function AuditPOModal({ kamItems = [], selectedIds = new Set(), onToggleId, supp
           <button
             type="button"
             onClick={handleCreate}
-            className="flex-1 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer"
+            className="flex-1 bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white py-2.5 rounded-xl font-bold transition-colors shadow-sm inline-flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <ShoppingBag className="w-4 h-4" /> Generate Official Purchase Order ({selectedItems.length} Items)
           </button>

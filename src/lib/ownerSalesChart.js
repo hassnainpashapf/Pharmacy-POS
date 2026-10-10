@@ -1,7 +1,7 @@
 // Same Jan–Dec groups as the original owner chart, using stored records only.
 export function ownerSalesComparison(db, now = new Date()) {
   const years = [now.getFullYear() - 2, now.getFullYear() - 1, now.getFullYear()]
-  const colors = ['#714B67', '#d97706', '#00A09D']
+  const colors = ['#2f6df6', '#d97706', '#00A09D']
   const months = Array.from({ length: 12 }, (_, month) => ({
     label: new Date(2000, month, 1).toLocaleDateString('en-GB', { month: 'short' }),
     values: years.map((year, index) => ({ year, color: colors[index], total: 0, count: 0, future: year === now.getFullYear() && month > now.getMonth() })),

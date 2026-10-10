@@ -357,7 +357,7 @@ export default function ShiftModal({ isOpen, onClose }) {
 
               <button
                 onClick={handleStartShift}
-                className="w-full bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white py-2.5 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>⚡ Open Shift & Unlock POS</span>
                 <ArrowRight className="w-4 h-4" />
@@ -598,7 +598,7 @@ export default function ShiftModal({ isOpen, onClose }) {
                     placeholder="Search shift #, counter, or cashier name..."
                     value={shiftSearch}
                     onChange={(e) => setShiftSearch(e.target.value)}
-                    className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                    className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
                   />
                 </div>
               </div>

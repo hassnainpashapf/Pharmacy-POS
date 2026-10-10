@@ -255,7 +255,7 @@ export default function POS() {
             onClick={() => setActiveTab('counter')}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeTab === 'counter'
-                ? 'bg-[#3b1734] text-white border border-[#280c23] shadow-xs'
+                ? 'bg-o-blue text-white border border-o-blue-d shadow-xs'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
@@ -947,7 +947,7 @@ export function Receipt({ sale, onClose }) {
           </div>
           <button
             onClick={() => setMessageOpen(true)}
-            className="w-full py-2 bg-[#2f6df6] hover:bg-[#1f4fd1] text-white rounded-sm text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+            className="w-full py-2 bg-o-blue hover:bg-o-blue-d text-white rounded-sm text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
           >
             <Send className="w-3.5 h-3.5" /> Send to customer (WhatsApp / SMS / Email)
           </button>

@@ -217,7 +217,7 @@ export default function HardwareStation() {
               <div className="pt-2 flex gap-2">
                 <button
                   onClick={handleSaveHw}
-                  className="flex-1 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold transition-all shadow-sm cursor-pointer"
+                  className="flex-1 bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white py-2.5 rounded-xl font-bold transition-all shadow-sm cursor-pointer"
                 >
                   Save Hardware Parameters
                 </button>
@@ -346,7 +346,7 @@ export default function HardwareStation() {
 
               <button
                 onClick={() => window.print()}
-                className="w-full mt-2 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full mt-2 bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white py-2.5 rounded-xl font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Printer className="w-4 h-4" />
                 <span>Print {labelQty} Barcode Stickers</span>
@@ -527,7 +527,7 @@ export default function HardwareStation() {
             <button
               onClick={handleRestore}
               disabled={!restoreJson.trim()}
-              className="w-full bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold text-xs transition-all shadow-sm disabled:opacity-40 cursor-pointer"
+              className="w-full bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white py-2.5 rounded-xl font-bold text-xs transition-all shadow-sm disabled:opacity-40 cursor-pointer"
             >
               Restore Database from File
             </button>

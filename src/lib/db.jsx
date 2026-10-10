@@ -1867,7 +1867,7 @@ export const ROLES = {
     name: 'Administrator',
     badge: 'Owner / Admin',
     desc: 'Full system access (Configuration, Users, Branches, Financials, All Operations)',
-    color: '#714B67',
+    color: '#2f6df6',
   },
   MANAGER: {
     key: 'MANAGER',
@@ -3164,7 +3164,7 @@ export function enterpriseDashboardData() {
   const payables = scope === 'ALL' ? sum(suppliersDue, 'balance') : null
   const pendingOrders = [...rows(db.purchaseOrders), ...rows(db.wholesaleOrders)]
     .filter(scoped).filter((o) => ['DRAFT', 'PENDING', 'SENT', 'CONFIRMED', 'PROCESSING'].includes(o.status))
-  const colors = ['#00A09D', '#714B67', '#d97706', '#9333ea', '#f59e0b', '#0284c7']
+  const colors = ['#00A09D', '#2f6df6', '#d97706', '#9333ea', '#f59e0b', '#0284c7']
   const branchTotals = new Map(branches.filter(scopedBranch => scope === 'ALL' || scopedBranch.id === scope).map((b) => [b.id, { id: b.id, name: b.name, total: 0, count: 0 }]))
   for (const sale of monthSales) {
     const id = sale.branchId || null

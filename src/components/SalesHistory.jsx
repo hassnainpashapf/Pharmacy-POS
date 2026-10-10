@@ -192,7 +192,7 @@ export default function SalesHistory({ onReprint }) {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by invoice #, medicine, batch, customer, or cashier..."
-              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+              className="w-full pl-9 pr-8 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
             />
             {search && (
               <button
@@ -757,7 +757,7 @@ function EditSaleModal({ sale, onClose, onSave }) {
           <button
             type="button"
             onClick={handleSave}
-            className="px-5 py-2 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-5 py-2 bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer"
           >
             <Check className="w-3.5 h-3.5" /> Save Changes & Update Stock
           </button>

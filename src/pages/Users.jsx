@@ -83,7 +83,7 @@ export function UsersPanel({ hideHeader = false, addingProp, setAddingProp }) {
       {!hideHeader && (
         <div className="flex flex-wrap justify-between items-center gap-4 px-1 py-1">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-[#3b1734] flex items-center justify-center text-white shadow-sm shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-o-blue flex items-center justify-center text-white shadow-sm shrink-0">
               <UsersIcon className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -97,7 +97,7 @@ export function UsersPanel({ hideHeader = false, addingProp, setAddingProp }) {
           </div>
           <button
             onClick={() => setAdding(true)}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#3b1734] hover:bg-[#522249] text-white text-xs font-bold shadow-sm transition cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-o-blue hover:bg-o-blue-d text-white text-xs font-bold shadow-sm transition cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Add New Staff</span>
@@ -299,7 +299,7 @@ export function UsersPanel({ hideHeader = false, addingProp, setAddingProp }) {
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-[#714B67]" />
+            <ShieldCheck className="w-4 h-4 text-o-link" />
             <h3 className="text-sm font-bold text-slate-900">Permissions Matrix</h3>
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
               live from the permission catalog
@@ -311,7 +311,7 @@ export function UsersPanel({ hideHeader = false, addingProp, setAddingProp }) {
               id="matrix-user"
               value={matrixUser}
               onChange={(e) => setMatrixUser(e.target.value)}
-              className="border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-[#714B67]/30"
+              className="border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-o-blue/30"
             >
               <option value="">— Role defaults —</option>
               {db.users.map(u => (
@@ -499,7 +499,7 @@ function AddUserModal({ db, onClose, onAdd }) {
           <select
             value={f.role}
             onChange={e => setF({ ...f, role: e.target.value })}
-            className="border border-slate-200 rounded-xl w-full px-3 py-2 text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-[#714B67]/30"
+            className="border border-slate-200 rounded-xl w-full px-3 py-2 text-xs font-semibold bg-white focus:outline-none focus:ring-2 focus:ring-o-blue/30"
           >
             {ROLE_OPTIONS.map(r => (
               <option key={r.value} value={r.value}>{r.label} — {r.desc}</option>
@@ -523,7 +523,7 @@ function AddUserModal({ db, onClose, onAdd }) {
       </div>
       <button
         onClick={() => onAdd({ ...f, password: f.pw })}
-        className="mt-5 w-full bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
+        className="mt-5 w-full bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white py-2.5 rounded-xl font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
       >
         Create Staff Account
       </button>
@@ -542,7 +542,7 @@ function EditUserModal({ user, onClose, onSave }) {
       </div>
       <button
         onClick={() => onSave(f)}
-        className="mt-5 w-full bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white py-2.5 rounded-xl font-bold text-xs transition-all active:scale-95 cursor-pointer"
+        className="mt-5 w-full bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white py-2.5 rounded-xl font-bold text-xs transition-all active:scale-95 cursor-pointer"
       >
         Save Changes
       </button>
@@ -700,7 +700,7 @@ function PermissionModal({ user, onClose, onSave }) {
             <button
               type="button"
               onClick={save}
-              className="px-4 py-2.5 rounded-xl bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white text-xs font-bold transition-all active:scale-95 cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white text-xs font-bold transition-all active:scale-95 cursor-pointer"
             >
               Save Permissions
             </button>

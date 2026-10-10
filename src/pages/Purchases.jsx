@@ -230,7 +230,7 @@ export default function Purchases({ forcedTab }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#3b1734] text-white flex items-center justify-center font-black shadow-sm border border-[#280c23] shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-o-blue text-white flex items-center justify-center font-black shadow-sm border border-o-blue-d shrink-0">
               <ShoppingBag className="w-5 h-5" />
             </div>
             <div>
@@ -251,7 +251,7 @@ export default function Purchases({ forcedTab }) {
                   >
                     <span>Purchase Orders</span>
                     <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                      tab === 'orders' ? 'bg-[#3b1734] text-white' : 'bg-slate-200 text-slate-600'
+                      tab === 'orders' ? 'bg-o-blue text-white' : 'bg-slate-200 text-slate-600'
                     }`}>
                       {allPOs.length}
                     </span>
@@ -267,7 +267,7 @@ export default function Purchases({ forcedTab }) {
                   >
                     <span>Bills & GRN</span>
                     <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                      tab === 'invoices' ? 'bg-[#3b1734] text-white' : 'bg-slate-200 text-slate-600'
+                      tab === 'invoices' ? 'bg-o-blue text-white' : 'bg-slate-200 text-slate-600'
                     }`}>
                       {(db.purchases || []).length}
                     </span>
@@ -295,7 +295,7 @@ export default function Purchases({ forcedTab }) {
           <button
             type="button"
             onClick={() => setShowNewPO(true)}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-all"
+            className="bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>+ New PO</span>
@@ -307,7 +307,7 @@ export default function Purchases({ forcedTab }) {
               setReceivingPO(null)
               setShowNewPurchase(true)
             }}
-            className="bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-all"
+            className="bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-sm inline-flex items-center gap-1.5 shrink-0 cursor-pointer transition-all"
           >
             <Plus className="w-4 h-4" />
             <span>+ New GRN</span>
@@ -326,7 +326,7 @@ export default function Purchases({ forcedTab }) {
             <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
               <div className="flex items-center justify-between text-slate-500">
                 <span className="text-xs font-semibold text-slate-600">Total POs</span>
-                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
                   <ShoppingBag className="w-4 h-4" />
                 </div>
               </div>
@@ -382,12 +382,12 @@ export default function Purchases({ forcedTab }) {
             <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between col-span-2 sm:col-span-1">
               <div className="flex items-center justify-between text-slate-500">
                 <span className="text-xs font-semibold text-slate-600">Demand Value</span>
-                <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-o-teal-tint text-o-teal flex items-center justify-center">
                   <DollarSign className="w-4 h-4" />
                 </div>
               </div>
               <div className="mt-3">
-                <div className="text-2xl font-black text-[#008f8b]">{fmt(poStats.totalValue)}</div>
+                <div className="text-2xl font-black text-o-teal">{fmt(poStats.totalValue)}</div>
                 <div className="text-[11px] text-slate-400 mt-0.5">Total demand cost</div>
               </div>
             </div>
@@ -403,13 +403,13 @@ export default function Purchases({ forcedTab }) {
                   placeholder="Search PO #, supplier name, company, or medicine..."
                   value={poSearch}
                   onChange={(e) => setPoSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
                 />
               </div>
 
               {/* View Mode Dropdown */}
               <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
-                <ShoppingBag className="w-3.5 h-3.5 text-[#3b1734] shrink-0" />
+                <ShoppingBag className="w-3.5 h-3.5 text-o-link shrink-0" />
                 <select
                   value={tab}
                   onChange={(e) => setTabAndUrl(e.target.value)}
@@ -592,7 +592,7 @@ export default function Purchases({ forcedTab }) {
                         <div className="mt-4 flex items-center justify-center gap-2">
                           <button
                             onClick={() => setShowNewPO(true)}
-                            className="px-3 py-1.5 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg shadow-sm cursor-pointer"
+                            className="px-3 py-1.5 text-xs font-bold text-white bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d rounded-lg shadow-sm cursor-pointer"
                           >
                             + Create Manual PO
                           </button>
@@ -624,7 +624,7 @@ export default function Purchases({ forcedTab }) {
             <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
               <div className="flex items-center justify-between text-slate-500">
                 <span className="text-xs font-semibold text-slate-600">Total Invoices</span>
-                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
                   <Receipt className="w-4 h-4" />
                 </div>
               </div>
@@ -638,7 +638,7 @@ export default function Purchases({ forcedTab }) {
             <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
               <div className="flex items-center justify-between text-slate-500">
                 <span className="text-xs font-semibold text-slate-600">Suppliers</span>
-                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
                   <Phone className="w-4 h-4" />
                 </div>
               </div>
@@ -652,7 +652,7 @@ export default function Purchases({ forcedTab }) {
             <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
               <div className="flex items-center justify-between text-slate-500">
                 <span className="text-xs font-semibold text-slate-600">Total Purchases</span>
-                <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-o-tint text-o-link flex items-center justify-center">
                   <ShoppingBag className="w-4 h-4" />
                 </div>
               </div>
@@ -701,13 +701,13 @@ export default function Purchases({ forcedTab }) {
                   placeholder={grnView === 'invoices' ? "Search GRN #, invoice #, supplier, or medicine..." : "Search supplier name, company, or phone..."}
                   value={grnSearch}
                   onChange={(e) => setGrnSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
                 />
               </div>
 
               {/* View Mode Dropdown */}
               <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 shrink-0">
-                <ShoppingBag className="w-3.5 h-3.5 text-[#3b1734] shrink-0" />
+                <ShoppingBag className="w-3.5 h-3.5 text-o-link shrink-0" />
                 <select
                   value={tab}
                   onChange={(e) => setTabAndUrl(e.target.value)}
@@ -785,7 +785,7 @@ export default function Purchases({ forcedTab }) {
                     setReceivingPO(null)
                     setShowNewPurchase(true)
                   }}
-                  className="px-3 py-1.5 bg-[#3b1734] hover:bg-[#280c23] text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1 cursor-pointer transition-all"
+                  className="px-3 py-1.5 bg-o-blue hover:bg-o-blue-d text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1 cursor-pointer transition-all"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   + Add GRN / Inward Stock
@@ -892,7 +892,7 @@ export default function Purchases({ forcedTab }) {
                                 setReceivingPO(null)
                                 setShowNewPurchase(true)
                               }}
-                              className="px-3.5 py-1.5 text-xs font-bold text-white bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] rounded-lg shadow-sm cursor-pointer"
+                              className="px-3.5 py-1.5 text-xs font-bold text-white bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d rounded-lg shadow-sm cursor-pointer"
                             >
                               + Add GRN / Inward Stock
                             </button>
@@ -994,12 +994,12 @@ export default function Purchases({ forcedTab }) {
             <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col justify-between">
               <div className="flex items-center justify-between text-slate-500">
                 <span className="text-xs font-semibold text-slate-600">Claimed Value</span>
-                <div className="w-8 h-8 rounded-lg bg-[#e6f7f2] text-[#008f8b] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-o-teal-tint text-o-teal flex items-center justify-center">
                   <DollarSign className="w-4 h-4" />
                 </div>
               </div>
               <div className="mt-3">
-                <div className="text-2xl font-black text-[#008f8b]">{fmt(returnStats.totalValue)}</div>
+                <div className="text-2xl font-black text-o-teal">{fmt(returnStats.totalValue)}</div>
                 <div className="text-[11px] text-slate-400 mt-0.5">Financial recovery</div>
               </div>
             </div>
@@ -1043,7 +1043,7 @@ export default function Purchases({ forcedTab }) {
                   placeholder="Search PR #, supplier, company, medicine, or batch..."
                   value={returnSearch}
                   onChange={(e) => setReturnSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#714B67]"
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-o-blue"
                 />
               </div>
 
@@ -2321,7 +2321,7 @@ function NewPOModal({ onClose, onCreated }) {
             />
             <button
               onClick={addItem}
-              className="px-4 py-1.5 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold rounded-lg transition-all cursor-pointer"
+              className="px-4 py-1.5 bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white font-bold rounded-lg transition-all cursor-pointer"
             >
               + Add Line
             </button>
@@ -2419,7 +2419,7 @@ function NewPOModal({ onClose, onCreated }) {
 
         <button
           onClick={handleSave}
-          className="w-full py-2.5 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 text-xs cursor-pointer"
+          className="w-full py-2.5 bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white font-bold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 text-xs cursor-pointer"
         >
           <ShoppingBag className="w-4 h-4" />
           Create & Save Purchase Order (PO)
@@ -2589,7 +2589,7 @@ function PODetailModal({ po, onClose, onReceive }) {
             {po.status !== 'RECEIVED' && (
               <button
                 onClick={() => onReceive(po)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-[#3b1734] hover:bg-[#280c23] active:bg-[#1a0616] border border-[#280c23] text-white font-bold rounded-lg shadow-sm transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2 bg-o-blue hover:bg-o-blue-d active:bg-o-blue-d border border-o-blue-d text-white font-bold rounded-lg shadow-sm transition-all cursor-pointer"
               >
                 <Package className="w-4 h-4" />
                 🚚 Receive Stock as GRN
