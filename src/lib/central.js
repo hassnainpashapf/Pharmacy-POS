@@ -95,17 +95,26 @@ export function exchangeTicket(ticket) {
   return centralCall('/api/sso/exchange', { method: 'POST', body: { ticket } })
 }
 
-// Open the other app (the Lab site) already signed in
-export async function openLabApp(central = getCentral()) {
-  if (!central?.token) throw new Error('Sign in again to open the lab app.')
-  const { url } = await centralCall('/api/sso/ticket', { method: 'POST', body: { app: 'lab' }, token: central.token })
+// This site is the 'pharmacy' product of the suite (the product list lives in the hub's registry).
+export const THIS_APP = 'pharmacy'
+
+// Open another product of the suite already signed in (one-time ticket from the hub)
+export async function openApp(appId, central = getCentral()) {
+  if (!central?.token) throw new Error('Sign in again to open the other app.')
+  const { url } = await centralCall('/api/sso/ticket', { method: 'POST', body: { app: appId }, token: central.token })
   window.location.href = url
 }
 
-// Pharmacy roles in this app: ADMIN, MANAGER, PHARMACIST, CASHIER. The admin can pick one per person in the lab's Users & Roles;
+// The other products this person may open (drawn from the registry the hub sent at sign-in)
+export function otherApps(central = getCentral()) {
+  return (central?.catalog || []).filter((app) => app.id !== THIS_APP && (central?.apps || []).includes(app.id))
+}
+
+// Pharmacy roles in this app: ADMIN, MANAGER, PHARMACIST, CASHIER. The admin picks one per person in the hub (Users & Roles);
 // otherwise it follows the lab role.
 export function pharmacyRoleOf(user) {
-  if (user?.pharmacyRole) return user.pharmacyRole
+  const picked = user?.appRoles?.[THIS_APP] || user?.pharmacyRole
+  if (picked) return picked
   if (user?.role === 'admin') return 'ADMIN'
   return 'CASHIER'
 }
@@ -142,6 +151,7 @@ export function rememberCentral(result) {
   setCentral({
     token: result.token,
     apps: result.apps || [],
+    catalog: result.catalog || [],
     user: { id: result.user.id, name: result.user.name, role: result.user.role },
     lab: { id: result.lab?.id, slug: result.lab?.slug, name: result.lab?.name },
     at: Date.now(),

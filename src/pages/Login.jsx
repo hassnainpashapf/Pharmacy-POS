@@ -9,7 +9,8 @@ import {
   clearCentral,
   lastBusinessId,
   localPasswordFor,
-  openLabApp,
+  openApp,
+  THIS_APP,
   rememberBusinessId,
   rememberCentral,
   toLocalUser,
@@ -40,8 +41,8 @@ export default function Login() {
     setErr('')
     setLoading(true)
     try {
-      if (app === 'lab') await openLabApp()
-      else enterPharmacy(choice.result, choice.password)
+      if (app === THIS_APP) enterPharmacy(choice.result, choice.password)
+      else await openApp(app)
     } catch (e) {
       setErr(e.message || 'Could not open the app.')
       setLoading(false)
@@ -72,12 +73,12 @@ export default function Login() {
         rememberBusinessId(business.trim().toLowerCase())
         rememberCentral(result)
         const apps = result.apps || []
-        if (apps.includes('pharmacy') && apps.includes('lab')) {
+        if (apps.length > 1) {
           setChoice({ result, password })
-        } else if (apps.includes('pharmacy')) {
+        } else if (apps.includes(THIS_APP)) {
           enterPharmacy(result, password)
-        } else if (apps.includes('lab')) {
-          await openLabApp()
+        } else if (apps.length === 1) {
+          await openApp(apps[0]) // the only app this person has lives on another site
           return
         } else {
           setErr('This account has no app yet. Ask your administrator to give you access.')
@@ -133,7 +134,7 @@ export default function Login() {
       <div className="bg-white rounded-[28px] shadow-[0_30px_80px_-25px_rgba(27,42,74,0.18)] p-8 sm:p-10 w-full max-w-md border border-[#e2e8f1] relative z-10 transition-all">
         {choice ? (
           <AppChooser
-            apps={choice.result.apps || []}
+            apps={(choice.result.catalog || []).filter((app) => (choice.result.apps || []).includes(app.id))}
             name={choice.result.user?.name}
             business={choice.result.lab?.name}
             busy={loading}

@@ -42,7 +42,7 @@ import { isElectronShell, isNativeApp } from './lib/platformConfig'
 import Users from './pages/Users'
 import Login from './pages/Login'
 import Sso from './pages/Sso'
-import { clearCentral, getCentral, openLabApp, SUPERADMIN_URL } from './lib/central'
+import { clearCentral, openApp, otherApps, SUPERADMIN_URL } from './lib/central'
 import CommandPalette from './components/CommandPalette'
 import BrandLogo from './components/BrandLogo'
 
@@ -679,19 +679,21 @@ function Shell({ children }) {
                         <span>Manage Staff & Assign Roles →</span>
                       </button>
 
-                      {(getCentral()?.apps || []).includes('lab') && (
+                      {otherApps().map((app) => (
                         <button
+                          key={app.id}
                           type="button"
                           onClick={() => {
                             setUserMenuOpen(false)
-                            openLabApp().catch((e) => window.alert(e.message))
+                            openApp(app.id).catch((e) => window.alert(e.message))
                           }}
-                          className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-[#0f766e] hover:bg-teal-50 flex items-center gap-2 transition-colors cursor-pointer"
+                          className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold hover:bg-slate-50 flex items-center gap-2 transition-colors cursor-pointer"
+                          style={{ color: app.color || '#0f766e' }}
                         >
-                          <span aria-hidden>🧪</span>
-                          <span>Switch to Blood Test Lab →</span>
+                          <span aria-hidden>↗</span>
+                          <span>Switch to {app.name} →</span>
                         </button>
-                      )}
+                      ))}
 
                       <button
                         type="button"
