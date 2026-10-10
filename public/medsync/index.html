@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Optix MedSync — Pharmacy POS and prescription companion</title>
-<meta name="description" content="Optix MedSync: pharmacy POS, stock and expiry control, and an AI prescription companion. One account across the Optix suite (Lab, Pharmacy, Hospital).">
+<title>Optix MedSync — Pharmacy POS: billing, stock and expiry control</title>
+<meta name="description" content="Optix MedSync is a point of sale for pharmacies: barcode billing, batch and expiry control, purchases and suppliers, returns, customer credit and loyalty, shifts and reports. Offline-first. Part of the Optix suite.">
 <meta name="theme-color" content="#101a3d">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23131845'/%3E%3Cpath d='M9 22V10l8 8V9M15 22l8-7V9' fill='none' stroke='white' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="optix-theme.css">
@@ -33,10 +33,10 @@
   <div class="wrap hero-in">
     <div>
       <span class="h-eyebrow">Optix MedSync &middot; Pharmacy POS</span>
-      <h1>Your AI-Powered <em>Prescription Companion</em></h1>
-      <p class="lead">MedSync AI ensures you take the right dose, at the right time, in the right way&mdash;personalized to your health needs. Counter POS, stock and expiry control in one app.</p>
+      <h1>Your pharmacy counter, <em>stock and expiry</em></h1>
+      <p class="lead">Barcode billing, batch and expiry control, purchases and suppliers, returns, customer credit and loyalty, shifts and reports. Runs offline-first on the counter.</p>
       <div class="pact"><a class="btn lg light" href="#/login">Sign in to POS</a><a class="btn lg ghost light" href="#/pos">Launch Counter POS</a></div>
-      <p class="plat">Windows &middot; Android &middot; iPhone &middot; any browser</p>
+      <p class="plat">Windows desktop app &middot; any browser</p>
     </div>
     <div class="hero-vis">
       <div class="hpanel">
@@ -44,184 +44,145 @@
         <a class="hrow" style="--c:#2f6df6" href="#/login"><span class="pic sm"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 7H6"/></svg></span><span class="hrt"><b>Counter POS</b><small>Fast checkout, barcode, receipts</small></span><span class="hgo"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
         <a class="hrow" style="--c:#0ea5a4" href="#/login"><span class="pic sm"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span><span class="hrt"><b>Stock &amp; expiry</b><small>Batches, FEFO and expiry alerts</small></span><span class="hgo"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
         <a class="hrow" style="--c:#0f766e" href="#/login"><span class="pic sm"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.5 20.5 3.5 13.5a4.95 4.95 0 0 1 7-7l7 7a4.95 4.95 0 0 1-7 7z"/><path d="m8.5 8.5 7 7"/></svg></span><span class="hrt"><b>Prescriptions</b><small>Rx notes and dispensing queue</small></span><span class="hgo"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
-        <div class="hpf">86% of users improved adherence</div>
+        <div class="hpf">Offline-first &middot; one Optix account for the suite</div>
       </div>
-      <div class="float f1"><i>&#10003;</i><span>Sale completed<small>Rs. 1,150 &middot; cash</small></span></div>
-      <div class="float f2"><i>!</i><span>Expiry in 30 days<small>3 batches need action</small></span></div>
-      <div class="float f3"><i>&#9650;</i><span>Low stock<small>Reorder suggested</small></span></div>
+      <div class="float f1"><i>&#10003;</i><span>Sale completed<small>Receipt ready to print</small></span></div>
+      <div class="float f2"><i>!</i><span>Near-expiry alert<small>Batches flagged for action</small></span></div>
+      <div class="float f3"><i>&#9650;</i><span>Low stock<small>Reorder level reached</small></span></div>
     </div>
   </div>
 </section>
 
-<section class="stats" aria-label="Optix MedSync in numbers"><div class="wrap stats-in">
-  <div class="stat rv"><b data-count="3">3</b><span>Platforms: Windows, Android, iOS</span></div>
-  <div class="stat rv"><b data-count="1">1</b><span>Login for Lab, Pharmacy and Hospital</span></div>
-  <div class="stat rv"><b data-count="30">30</b><span>Screens: POS, stock, expiry, accounts and more</span></div>
+<section class="stats" aria-label="Optix MedSync at a glance"><div class="wrap stats-in">
+  <div class="stat rv"><b data-count="5">5</b><span>User roles: owner, manager, pharmacist, cashier, receptionist</span></div>
+  <div class="stat rv"><b>FEFO</b><span>Earliest-expiry batch is picked first at billing</span></div>
+  <div class="stat rv"><b>Offline</b><span>First: the counter keeps working without internet</span></div>
   <div class="stat rv"><b data-count="0">0</b><span>Ads inside the app or at the counter</span></div>
 </div></section>
 <section class="marq" aria-label="What Optix MedSync can do"><div class="marq-t">
-  <div class="marq-r"><span>Counter POS</span><span>Batch &amp; expiry tracking</span><span>Stock audit</span><span>Purchases &amp; suppliers</span><span>Returns &amp; refunds</span><span>Prescriptions</span><span>Customer loyalty</span><span>Multi-branch</span><span>Barcode scanning</span><span>Receipts &amp; labels</span><span>Roles &amp; audit log</span><span>Works offline</span></div>
-  <div class="marq-r" aria-hidden="true"><span>Counter POS</span><span>Batch &amp; expiry tracking</span><span>Stock audit</span><span>Purchases &amp; suppliers</span><span>Returns &amp; refunds</span><span>Prescriptions</span><span>Customer loyalty</span><span>Multi-branch</span><span>Barcode scanning</span><span>Receipts &amp; labels</span><span>Roles &amp; audit log</span><span>Works offline</span></div>
+  <div class="marq-r"><span>Counter POS</span><span>Barcode billing</span><span>Batch &amp; expiry tracking</span><span>Stock audit</span><span>Purchases &amp; suppliers</span><span>Returns &amp; refunds</span><span>Prescription notes</span><span>Customer credit &amp; loyalty</span><span>Multi-branch</span><span>Shifts &amp; reports</span><span>Roles &amp; audit log</span><span>Works offline</span></div>
+  <div class="marq-r" aria-hidden="true"><span>Counter POS</span><span>Barcode billing</span><span>Batch &amp; expiry tracking</span><span>Stock audit</span><span>Purchases &amp; suppliers</span><span>Returns &amp; refunds</span><span>Prescription notes</span><span>Customer credit &amp; loyalty</span><span>Multi-branch</span><span>Shifts &amp; reports</span><span>Roles &amp; audit log</span><span>Works offline</span></div>
 </div></section>
-
 <!-- ===== statement ===== -->
-<section class="st-section" aria-label="MedSync statement">
+<section class="st-section" aria-label="What Optix MedSync does">
   <div class="st-inner">
-    <p class="st-text" aria-label="Our solution effectively empowers the home-based healthcare industry by enhancing patient outcomes">
-      <span class="st-tok st-w" data-c="n">Our</span>
-      <span class="st-tok st-w" data-c="n">solution</span>
-      <span class="st-tok st-pill st-pill--mint" aria-hidden="true"><span class="st-emoji">🔒</span></span>
-      <span class="st-tok st-w" data-c="n">effectively</span>
-      <span class="st-tok st-w" data-c="g">empowers</span>
+    <p class="st-text" aria-label="Optix MedSync keeps the counter fast, the shelves accurate and every batch accounted for">
+      <span class="st-tok st-w" data-c="n">Optix</span>
+      <span class="st-tok st-w" data-c="n">MedSync</span>
+      <span class="st-tok st-pill st-pill--mint" aria-hidden="true"><span class="st-emoji">🧾</span></span>
+      <span class="st-tok st-w" data-c="n">keeps</span>
+      <span class="st-tok st-w" data-c="n">the</span>
+      <span class="st-tok st-w" data-c="n">counter</span>
+      <span class="st-tok st-w" data-c="g">fast,</span>
       <span class="st-tok st-w" data-c="g">the</span>
-      <span class="st-tok st-w" data-c="g">home-based</span>
-      <span class="st-tok st-w" data-c="g">healthcare</span>
-      <span class="st-tok st-pill st-pill--lav" aria-hidden="true"><span class="st-emoji">💊</span></span>
-      <span class="st-tok st-w" data-c="n">industry</span>
-      <span class="st-tok st-w" data-c="n">by</span>
-      <span class="st-tok st-w" data-c="n">enhancing</span>
-      <span class="st-tok st-w" data-c="n">(</span>
-      <span class="st-tok st-pill st-pill--avatars" aria-hidden="true"><img src="assets/avatars/a12.jpg" alt="" loading="lazy"><img src="assets/avatars/a47.jpg" alt="" loading="lazy"><img src="assets/avatars/a33.jpg" alt="" loading="lazy"></span>
-      <span class="st-tok st-w" data-c="n">)</span>
-      <span class="st-tok st-w" data-c="g">patient</span>
-      <span class="st-tok st-w" data-c="g">outcomes</span>
+      <span class="st-tok st-w" data-c="g">shelves</span>
+      <span class="st-tok st-w" data-c="g">accurate</span>
+      <span class="st-tok st-pill st-pill--lav" aria-hidden="true"><span class="st-emoji">📦</span></span>
+      <span class="st-tok st-w" data-c="n">and</span>
+      <span class="st-tok st-w" data-c="n">every</span>
+      <span class="st-tok st-w" data-c="n">batch</span>
+      <span class="st-tok st-w" data-c="g">accounted</span>
+      <span class="st-tok st-w" data-c="g">for</span>
     </p>
   </div>
 </section>
 
 <!-- ===== benefits ===== -->
-<section class="bn-section" aria-label="Benefits">
-  
-
+<section class="bn-section" aria-label="Key features" id="how-it-works">
   <div class="bn-wrap">
     <header class="bn-head">
       <div class="bn-rise">
         <p class="bn-eyebrow">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>
-          Our Benefits
+          Key features
         </p>
-        <h2 class="bn-title">The Smart Way To Manage<br>Your Prescriptions</h2>
+        <h2 class="bn-title">Everything the pharmacy<br>counter needs</h2>
       </div>
-      <a class="bn-pill bn-rise" href="#how-it-works">See How It Works <span class="bn-arrow">→</span></a>
+      <a class="bn-pill bn-rise" href="#rx-why">See how it works <span class="bn-arrow">→</span></a>
     </header>
-
     <div class="bn-grid-wrap">
       <div class="bn-logo" aria-hidden="true">
-        <svg viewBox="0 0 48 48" width="42" height="42" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round">
-          <path d="M24 8c7 0 12.5 4.5 14 11"/>
-          <path d="M40 24c0 7-4.5 12.5-11 14"/>
-          <path d="M24 40c-7 0-12.5-4.5-14-11"/>
-          <path d="M8 24c0-7 4.5-12.5 11-14"/>
-          <circle cx="24" cy="24" r="3.4" fill="#fff" stroke="none"/>
-        </svg>
+        <svg viewBox="0 0 48 48" width="42" height="42" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M24 8c7 0 12.5 4.5 14 11"/><path d="M40 24c0 7-4.5 12.5-11 14"/><path d="M24 40c-7 0-12.5-4.5-14-11"/><path d="M8 24c0-7 4.5-12.5 11-14"/><circle cx="24" cy="24" r="3.4" fill="#fff" stroke="none"/></svg>
       </div>
-
       <div class="bn-grid">
-        <!-- Card 1 -->
         <article class="bn-card bn-rise" data-tilt>
           <div class="bn-chead">
-            <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg></span>
-            <h3 class="bn-ctitle">Smart Medication Insights</h3>
+            <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1 1 0 0 0 1 .8h8.8a1 1 0 0 0 1-.8L20 7H6"/></svg></span>
+            <h3 class="bn-ctitle">Fast counter billing</h3>
           </div>
-          <p class="bn-csub">AI adjusts dosage &amp; timing based on personal data</p>
+          <p class="bn-csub">Barcode scan or type-ahead search, then settle</p>
           <div class="bn-mockwrap">
             <div class="bn-patient">
               <div class="bn-prow">
-                <img class="bn-avatar" src="assets/avatars/a12.jpg" alt="Patient Gustavo Kenter">
-                <div class="bn-pmeta"><span class="bn-plabel">Patient</span><b class="bn-pname">Gustavo Kenter</b></div>
-                <span class="bn-add">+ Add</span>
+                <span class="bn-avatar" style="display:grid;place-items:center;background:var(--blue);color:#fff;font-weight:800;font-size:13px">POS</span>
+                <div class="bn-pmeta"><span class="bn-plabel">Counter</span><b class="bn-pname">New sale</b></div>
+                <span class="bn-add">Hold (F8)</span>
               </div>
-              <div class="bn-week"><span>21</span><span>22</span><span class="bn-on">23</span><span>24</span><span>25</span><span>26</span></div>
-              <div class="bn-srow"><span class="bn-stime">08:00 – 08:30 AM</span><b>Metformin / 500mg</b></div>
-              <div class="bn-srow"><span class="bn-stime">10:00 – 11:00 AM</span><b>Co-Amoxiclav / 100mg</b></div>
+              <div class="bn-week"><span>F1</span><span class="bn-on">F2</span><span>F4</span><span>F8</span></div>
+              <div class="bn-srow"><span class="bn-stime">Barcode scanned</span><b>Panadol 500mg × 2</b></div>
+              <div class="bn-srow"><span class="bn-stime">Batch picked by earliest expiry</span><b>Augmentin 625mg × 1</b></div>
             </div>
-            <span class="bn-tag bn-tag-a"><span class="bn-tdot" style="background:#f5a623">☺</span>Easily add<br>new ones</span>
-            <span class="bn-tag bn-tag-b"><span class="bn-tdot" style="background:#38a89d">✓</span>Effective<br>monitoring</span>
+            <span class="bn-tag bn-tag-a"><span class="bn-tdot" style="background:#f5a623">★</span>Barcode<br>checkout</span>
+            <span class="bn-tag bn-tag-b"><span class="bn-tdot" style="background:#38a89d">✓</span>FEFO batch<br>allocation</span>
           </div>
         </article>
-
-        <!-- Card 2 -->
         <article class="bn-card bn-rise" data-tilt>
           <div class="bn-chead">
-            <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9.5 12l2 2 3.5-4"/></svg></span>
-            <h3 class="bn-ctitle">Drug Interaction Alerts</h3>
+            <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <h3 class="bn-ctitle">Batch and expiry control</h3>
           </div>
-          <p class="bn-csub">AI detects harmful combinations</p>
+          <p class="bn-csub">Know what is on the shelf and what needs action</p>
           <div class="bn-orbit">
-            <svg class="bn-ring" viewBox="0 0 250 250" fill="none">
-              <circle cx="125" cy="125" r="104" stroke="#7fd1c0" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round" opacity=".8"/>
-            </svg>
-            <span class="bn-orb" style="--a:0deg">💊</span>
-            <span class="bn-orb" style="--a:45deg">🌿</span>
-            <span class="bn-orb" style="--a:90deg">💧</span>
-            <span class="bn-orb" style="--a:135deg">🧪</span>
-            <span class="bn-orb" style="--a:180deg">💉</span>
-            <span class="bn-orb" style="--a:225deg">🩹</span>
-            <span class="bn-orb" style="--a:270deg">⚗️</span>
-            <span class="bn-orb" style="--a:315deg">🍃</span>
+            <svg class="bn-ring" viewBox="0 0 250 250" fill="none"><circle cx="125" cy="125" r="104" stroke="#7fd1c0" stroke-width="2" stroke-dasharray="2 8" stroke-linecap="round" opacity=".8"/></svg>
+            <span class="bn-orb" style="--a:0deg">💊</span><span class="bn-orb" style="--a:45deg">📦</span><span class="bn-orb" style="--a:90deg">🏷️</span><span class="bn-orb" style="--a:135deg">🧪</span>
+            <span class="bn-orb" style="--a:180deg">💉</span><span class="bn-orb" style="--a:225deg">🩹</span><span class="bn-orb" style="--a:270deg">⚗️</span><span class="bn-orb" style="--a:315deg">🧴</span>
             <div class="bn-warn">
-              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Drug-herb interaction</div>
-              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Drug-disease interaction</div>
-              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Drug-drug interaction</div>
-              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Drug-allergy interaction</div>
+              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Near-expiry batches</div>
+              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Expired batches</div>
+              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Low stock</div>
+              <div class="bn-wrow"><svg viewBox="0 0 24 24" fill="#e5484d"><path d="M12 3L1.8 20.2h20.4z"/><rect x="11" y="9" width="2" height="6" fill="#fff"/><circle cx="12" cy="17.4" r="1.2" fill="#fff"/></svg>Out of stock</div>
             </div>
           </div>
         </article>
-
-        <!-- Card 3 -->
         <article class="bn-card bn-rise" data-tilt>
           <div class="bn-chain">
-            <span class="bn-node"><img src="assets/avatars/a59.jpg" alt="Doctor"></span>
+            <span class="bn-node" style="display:grid;place-items:center;font-size:26px">🚚</span>
             <span class="bn-link"></span>
-            <span class="bn-node"><img src="assets/avatars/a47.jpg" alt="Patient"></span>
+            <span class="bn-node" style="display:grid;place-items:center;font-size:26px">🧾</span>
             <span class="bn-link"></span>
-            <span class="bn-node bn-brand">AMGEN</span>
+            <span class="bn-node bn-brand">STOCK</span>
           </div>
           <div class="bn-chead">
-            <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a5 5 0 007.1 0l2-2a5 5 0 00-7.1-7.1l-1.2 1.2"/><path d="M14 10a5 5 0 00-7.1 0l-2 2a5 5 0 007.1 7.1l1.2-1.2"/></svg></span>
-            <h3 class="bn-ctitle">Seamless Pharmacy Integrations From Doctors</h3>
+            <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></span>
+            <h3 class="bn-ctitle">Purchases, suppliers and returns</h3>
           </div>
-          <p class="bn-csub" style="margin-bottom:0">Users connect directly with healthcare providers and pharmacies</p>
+          <p class="bn-csub" style="margin-bottom:0">Purchase orders, supplier bills (GRN), balances, purchase returns and physical stock audit</p>
         </article>
-
-        <!-- Card 4 -->
         <article class="bn-card bn-rise" data-tilt>
           <div class="bn-notifs">
-            <div class="bn-notif">
-              <span class="bn-nicon" style="background:#ffe9d2">🎉</span>
-              <div><b>Great job</b><span>You've taken 90% of your doses this month</span></div>
-            </div>
-            <div class="bn-notif">
-              <span class="bn-nicon" style="background:#efe4ff">💜</span>
-              <div><b>Missed Dose</b><span>You missed your 8 AM dose of Sertraline</span></div>
-            </div>
-            <div class="bn-notif">
-              <span class="bn-nicon" style="background:#dff5ef">💊</span>
-              <div><b>Time for your medication</b><span>Take 1 tablet of Lisinopril now</span></div>
-            </div>
+            <div class="bn-notif"><span class="bn-nicon" style="background:#ffe9d2">⏱</span><div><b>Expiry action</b><span>Batches close to their expiry date are listed</span></div></div>
+            <div class="bn-notif"><span class="bn-nicon" style="background:#efe4ff">📉</span><div><b>Low stock</b><span>Medicines at or below their reorder level</span></div></div>
+            <div class="bn-notif"><span class="bn-nicon" style="background:#dff5ef">🧮</span><div><b>Shift closing</b><span>Day-end summary of sales and cash</span></div></div>
           </div>
           <div class="bn-chead">
             <span class="bn-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.3 21a2 2 0 003.4 0"/></svg></span>
-            <h3 class="bn-ctitle">Personalized Reminders</h3>
+            <h3 class="bn-ctitle">Alerts, shifts and reports</h3>
           </div>
-          <p class="bn-csub" style="margin-bottom:0">Context-aware notifications instead of rigid alarms</p>
+          <p class="bn-csub" style="margin-bottom:0">Dashboard alerts, shift closing, accounting and sales reports</p>
         </article>
       </div>
     </div>
   </div>
-
-  
 </section>
 
 <!-- ===== rest ===== -->
 <div class="rx-root">
-
-<!-- ================= WHY CHOOSE MEDSYNC AI ================= -->
+<!-- ================= WHY ================= -->
 <section class="rx-sec rx-why" id="rx-why">
   <div class="rx-wrap">
     <div class="rx-center rx-tilt">
-      <h2 class="rx-h2" data-rx-words>Why Choose <span class="rx-navy">MedSync Ai?</span></h2>
-      <p class="rx-sub rx-why-sub">With AI-powered reminders, smart pharmacy integrations, and personalized health insights, it ensures you never miss a dose</p>
+      <h2 class="rx-h2" data-rx-words>Why Choose <span class="rx-navy">Optix MedSync?</span></h2>
+      <p class="rx-sub rx-why-sub">A counter that stays fast, stock you can trust, and books that are clear at the end of the day.</p>
     </div>
     <div class="rx-why-grid" id="rxWhyGrid">
       <div class="rx-rail rx-tilt" style="--rx-d:.1s" role="tablist" aria-label="Why choose steps">
@@ -230,152 +191,87 @@
         <button class="rx-stepbtn" data-rx-stepbtn="2" role="tab" aria-label="Step 2">2</button>
         <button class="rx-stepbtn" data-rx-stepbtn="3" role="tab" aria-label="Step 3">3</button>
       </div>
-      <div class="rx-photo-card rx-s1 rx-tilt" style="--rx-d:.18s" id="rxPhotoCard">
-        <img class="rx-ph rx-on" data-rx-ph="1" src="assets/step1.jpg" alt="Man checking his medication schedule on a phone">
-        <img class="rx-ph" data-rx-ph="2" src="assets/step2.jpg" alt="Two women reviewing medication on a phone">
-        <img class="rx-ph" data-rx-ph="3" src="assets/step3.jpg" alt="Smiling man holding phone and pill bottle">
+      <div class="rx-photo-card rx-art-card rx-s1 rx-tilt" style="--rx-d:.18s" id="rxPhotoCard">
+        <svg class="rx-art" viewBox="0 0 48 48" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M24 8c7 0 12.5 4.5 14 11"/><path d="M40 24c0 7-4.5 12.5-11 14"/><path d="M24 40c-7 0-12.5-4.5-14-11"/><path d="M8 24c0-7 4.5-12.5 11-14"/><circle cx="24" cy="24" r="3.4" fill="#fff" stroke="none"/></svg>
         <div class="rx-floats rx-on" data-rx-fl="1">
-          <div class="rx-float-card rx-fc-top"><span class="rx-fc-ic" style="background:var(--green)">✓</span><b>Easily integrate<br>with smart devices</b></div>
+          <div class="rx-float-card rx-fc-top"><span class="rx-fc-ic" style="background:var(--green)">✓</span><b>Barcode billing<br>with FEFO batches</b></div>
           <div class="rx-float-card rx-fc-bottom">
-            <div class="rx-sched-row"><span class="rx-dot" style="background:var(--green)"></span><span><b>Metformin 500mg</b><span>1 tablet · with breakfast</span></span><span class="rx-tm">8:00 AM</span></div>
-            <div class="rx-sched-row"><span class="rx-dot" style="background:var(--blue)"></span><span><b>Co-Amoxiclav 625mg</b><span>1 tablet · with lunch</span></span><span class="rx-tm">1:00 PM</span></div>
+            <div class="rx-sched-row"><span class="rx-dot" style="background:var(--green)"></span><span><b>Panadol 500mg</b><span>Batch picked by earliest expiry</span></span><span class="rx-tm">FEFO</span></div>
+            <div class="rx-sched-row"><span class="rx-dot" style="background:var(--blue)"></span><span><b>Augmentin 625mg</b><span>Added by barcode scan</span></span><span class="rx-tm">Scan</span></div>
           </div>
         </div>
         <div class="rx-floats" data-rx-fl="2">
-          <div class="rx-float-card rx-fc-top"><span class="rx-fc-ic" style="background:var(--purple)">🛡</span><b>Effective Dosing<br>Safety Check</b></div>
+          <div class="rx-float-card rx-fc-top"><span class="rx-fc-ic" style="background:var(--purple)">⏱</span><b>Expiry and<br>low-stock alerts</b></div>
           <div class="rx-float-card rx-fc-bottom">
-            <b style="font-size:12.5px">Today's dosage analysis</b>
+            <b style="font-size:12.5px">Stock by expiry (sample view)</b>
             <div class="rx-bars">
-              <div class="rx-bar" style="height:45%;background:#bbf7d0"></div>
-              <div class="rx-bar" style="height:70%;background:#4ade80"></div>
-              <div class="rx-bar" style="height:55%;background:#bbf7d0"></div>
-              <div class="rx-bar" style="height:88%;background:#fca5a5"></div>
-              <div class="rx-bar" style="height:60%;background:#bbf7d0"></div>
-              <div class="rx-bar" style="height:76%;background:#4ade80"></div>
-              <div class="rx-bar" style="height:50%;background:#bbf7d0"></div>
+              <div class="rx-bar" style="height:45%;background:#bbf7d0"></div><div class="rx-bar" style="height:70%;background:#4ade80"></div><div class="rx-bar" style="height:55%;background:#bbf7d0"></div><div class="rx-bar" style="height:88%;background:#fca5a5"></div><div class="rx-bar" style="height:60%;background:#bbf7d0"></div><div class="rx-bar" style="height:76%;background:#4ade80"></div><div class="rx-bar" style="height:50%;background:#bbf7d0"></div>
             </div>
-            <div class="rx-bar-legend"><span><i style="background:#4ade80"></i>Safe dose</span><span><i style="background:#f87171"></i>Toxic dose</span></div>
+            <div class="rx-bar-legend"><span><i style="background:#4ade80"></i>In date</span><span><i style="background:#f87171"></i>Near expiry</span></div>
           </div>
         </div>
         <div class="rx-floats" data-rx-fl="3">
-          <div class="rx-float-card rx-fc-top"><span class="rx-fc-ic" style="background:var(--orange)">📈</span><b>Effective progress<br>monitoring</b></div>
+          <div class="rx-float-card rx-fc-top"><span class="rx-fc-ic" style="background:var(--orange)">📈</span><b>Shift closing<br>and reports</b></div>
           <div class="rx-float-card rx-fc-bottom">
-            <div class="rx-prog-row"><div class="rx-pl"><span>Omeprazol</span><span>85%</span></div><div class="rx-prog-track"><div class="rx-prog-fill" style="--rx-p:85%;background:var(--blue)"></div></div></div>
-            <div class="rx-prog-row"><div class="rx-pl"><span>Zoledronic acid</span><span>40%</span></div><div class="rx-prog-track"><div class="rx-prog-fill" style="--rx-p:40%;background:var(--purple)"></div></div></div>
-            <div class="rx-prog-row"><div class="rx-pl"><span>Vitamin D3</span><span>70%</span></div><div class="rx-prog-track"><div class="rx-prog-fill" style="--rx-p:70%;background:var(--teal)"></div></div></div>
+            <div class="rx-prog-row"><div class="rx-pl"><span>Daily sales summary</span><span>Report</span></div><div class="rx-prog-track"><div class="rx-prog-fill" style="--rx-p:85%;background:var(--blue)"></div></div></div>
+            <div class="rx-prog-row"><div class="rx-pl"><span>Purchases and payables</span><span>Report</span></div><div class="rx-prog-track"><div class="rx-prog-fill" style="--rx-p:55%;background:var(--purple)"></div></div></div>
+            <div class="rx-prog-row"><div class="rx-pl"><span>Profit and loss</span><span>Report</span></div><div class="rx-prog-track"><div class="rx-prog-fill" style="--rx-p:70%;background:var(--teal)"></div></div></div>
           </div>
         </div>
       </div>
       <div class="rx-why-panels rx-tilt" style="--rx-d:.26s">
         <div class="rx-why-panel rx-on" data-s="1" data-rx-panel="1">
-          <h3>Fewer Missed Doses</h3>
-          <p>Through intelligent reminders, personalized scheduling, and adaptive tracking, the app minimizes missed doses by:</p>
-          <ul class="rx-check-list">
-            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Smart Notifications</li>
-            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Adaptive Alerts</li>
-            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Integration with Smart Devices</li>
-          </ul>
-          <a class="rx-btn-light" href="#rx-solutions">See How It Works <span class="rx-arrow-c"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+          <h3>Fast, accurate billing</h3>
+          <p>Barcode checkout, keyboard shortcuts and automatic batch picking keep the queue moving:</p>
+          <ul class="rx-check-list"><li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Barcode and name search</li><li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>FEFO batch allocation</li><li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#22c55e" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Cash, card and bank payments with printed receipts</li></ul>
+          <a class="rx-btn-light" href="#rx-solutions">See who uses what <span class="rx-arrow-c"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
         </div>
         <div class="rx-why-panel" data-s="2" data-rx-panel="2">
-          <h3>Safer Medications</h3>
-          <p>By leveraging AI-driven insights and real-time data, this feature ensures users take the right medications safely and effectively.</p>
-          <ul class="rx-check-list">
-            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#8b5cf6" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Drug Interaction Alerts</li>
-            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#8b5cf6" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Dosage Safety Checks</li>
-            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#8b5cf6" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>AI-Powered Warnings</li>
-          </ul>
-          <a class="rx-btn-light" href="#rx-solutions">See How It Works <span class="rx-arrow-c"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+          <h3>Stock you can trust</h3>
+          <p>Every medicine is tracked by batch and expiry, so you know what is on the shelf and what needs action:</p>
+          <ul class="rx-check-list"><li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#8b5cf6" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Batch and expiry tracking</li><li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#8b5cf6" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Low-stock and near-expiry alerts</li><li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#8b5cf6" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Physical stock audit and purchase returns</li></ul>
+          <a class="rx-btn-light" href="#rx-solutions">See who uses what <span class="rx-arrow-c"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
         </div>
         <div class="rx-why-panel" data-s="3" data-rx-panel="3">
-          <h3>Better Health Outcomes</h3>
-          <p>Our app designed to improve overall wellness by ensuring medication adherence, optimizing treatment plans, and providing actionable health insights.</p>
-          <ul class="rx-check-list">
-            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#f59e0b" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Personalized Treatment Insights</li>
-            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#f59e0b" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Data-Driven Progress Reports</li>
-            <li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#f59e0b" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Real-Time Health Monitoring</li>
-          </ul>
-          <a class="rx-btn-light" href="#rx-solutions">See How It Works <span class="rx-arrow-c"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+          <h3>Clear books and control</h3>
+          <p>Know what you sold, bought and owe, and who did what:</p>
+          <ul class="rx-check-list"><li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#f59e0b" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Purchases, suppliers and customer ledger (udhar)</li><li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#f59e0b" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Shift closing, accounting and reports</li><li><span class="rx-check-dot"><svg viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#f59e0b" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Roles, branches and an audit log</li></ul>
+          <a class="rx-btn-light" href="#rx-solutions">See who uses what <span class="rx-arrow-c"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
         </div>
       </div>
     </div>
   </div>
 </section>
-
 <!-- ================= SOLUTIONS ================= -->
 <section class="rx-sec rx-solutions" id="rx-solutions">
   <div class="rx-wrap">
     <div class="rx-center rx-tilt">
-      <span class="rx-eyebrow">◎ Solutions</span>
-      <h2 class="rx-h2" data-rx-words>Built for <span class="rx-navy">everyone in the medication journey</span></h2>
-      <p class="rx-sub">Whether you take the pills, care for someone who does, or prescribe them — MedSync adapts to your role.</p>
+      <span class="rx-eyebrow">◎ Roles</span>
+      <h2 class="rx-h2" data-rx-words>Built for <span class="rx-navy">everyone at the pharmacy</span></h2>
+      <p class="rx-sub">Each person signs in with their own role and sees only what they need.</p>
     </div>
     <div class="rx-tabs rx-tilt" style="--rx-d:.1s" role="tablist">
-      <button class="rx-tabbtn rx-on" data-rx-tabbtn="1" role="tab">For Patients</button>
-      <button class="rx-tabbtn" data-rx-tabbtn="2" role="tab">For Caregivers</button>
-      <button class="rx-tabbtn" data-rx-tabbtn="3" role="tab">For Clinicians</button>
-      <button class="rx-tabbtn" data-rx-tabbtn="4" role="tab">For Pharmacies</button>
+      <button class="rx-tabbtn rx-on" data-rx-tabbtn="1" role="tab">Owners</button>
+      <button class="rx-tabbtn" data-rx-tabbtn="2" role="tab">Managers</button>
+      <button class="rx-tabbtn" data-rx-tabbtn="3" role="tab">Pharmacists</button>
+      <button class="rx-tabbtn" data-rx-tabbtn="4" role="tab">Cashiers</button>
     </div>
     <div class="rx-tabpanels rx-tilt" style="--rx-d:.18s">
       <div class="rx-tabpanel rx-on" data-rx-tabpanel="1">
-        <div>
-          <h3>Your personal medication coach</h3>
-          <ul>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Reminders that adapt to your sleep, meals and travel schedule</li>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Plain-language explanations of what each pill does and why</li>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>One-tap refill requests sent straight to your pharmacy</li>
-          </ul>
-        </div>
-        <div class="rx-sol-visual">
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">☀️</span><span><b>Morning stack · 3 meds</b><span>All taken by 8:12 AM</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Done</span></div>
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fbbf24,#d97706)">🌙</span><span><b>Evening stack · 2 meds</b><span>Reminder at 9:30 PM</span></span><span class="rx-tag" style="background:rgba(245,158,11,.14);color:#d97706">Upcoming</span></div>
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)">💊</span><span><b>Vitamin D3</b><span>Refill arriving Thursday</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">Auto</span></div>
-        </div>
+        <div><h3>Full control of the business</h3><ul><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Branches, users and permissions in one place</li><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Accounting, profit and loss, and payables</li><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>An audit log of who changed what</li></ul></div>
+        <div class="rx-sol-visual"><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">📊</span><span><b>Reports</b><span>Sales, margin and day-end summaries</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">Reports</span></div><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fbbf24,#d97706)">🏢</span><span><b>Branches</b><span>Stock and sales per branch</span></span><span class="rx-tag" style="background:rgba(245,158,11,.14);color:#d97706">Multi-branch</span></div><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)">🔐</span><span><b>Audit trail</b><span>Who did what, and when</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Audit</span></div></div>
       </div>
       <div class="rx-tabpanel" data-rx-tabpanel="2">
-        <div>
-          <h3>Peace of mind, from anywhere</h3>
-          <ul>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>See at a glance whether Mom took her morning doses</li>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Smart alerts only for missed critical medications</li>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Shared notes and refill coordination with siblings</li>
-          </ul>
-        </div>
-        <div class="rx-sol-visual">
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#f472b6,#be185d)">M</span><span><b>Mom · adherence 96%</b><span>7-day streak going strong</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Healthy</span></div>
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#a78bfa,#6d28d9)">D</span><span><b>Dad · missed 1 dose</b><span>Evening BP med · yesterday</span></span><span class="rx-tag" style="background:rgba(245,158,11,.14);color:#d97706">Nudge sent</span></div>
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)">≡</span><span><b>Family notes</b><span>"Refilled Dad's prescription ✓"</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">2 new</span></div>
-        </div>
+        <div><h3>Stock, purchases and suppliers</h3><ul><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Purchase orders and supplier bills (GRN)</li><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Physical stock audit and stock transfers</li><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Customer credit and supplier balances</li></ul></div>
+        <div class="rx-sol-visual"><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">📦</span><span><b>Purchases</b><span>Orders and inward stock bills</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">Stock in</span></div><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fbbf24,#d97706)">⏱</span><span><b>Expiry action</b><span>Near-expiry and expired batches</span></span><span class="rx-tag" style="background:rgba(245,158,11,.14);color:#d97706">Action</span></div><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)">🚚</span><span><b>Suppliers</b><span>Balances and purchase returns</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Payables</span></div></div>
       </div>
       <div class="rx-tabpanel" data-rx-tabpanel="3">
-        <div>
-          <h3>Adherence data you can act on</h3>
-          <ul>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Real adherence timelines inside your EHR workflow</li>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>AI flags patients drifting before it becomes a crisis</li>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Symptom journals correlated with dose timing</li>
-          </ul>
-        </div>
-        <div class="rx-sol-visual">
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">📈</span><span><b>Panel adherence 94%</b><span>Up 6 pts this quarter</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Trending ↑</span></div>
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fb7185,#be123c)">⚠</span><span><b>3 patients flagged</b><span>Adherence dropped &gt;20%</span></span><span class="rx-tag" style="background:rgba(244,63,94,.12);color:#e11d48">Review</span></div>
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)">🗂</span><span><b>EHR sync active</b><span>Epic · Cerner · Athena</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">Live</span></div>
-        </div>
+        <div><h3>Dispensing and medicines</h3><ul><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Prescription notes and a dispensing queue at the counter</li><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>A medicine catalogue with generic, brand, company and form</li><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Batch and expiry visible for every medicine</li></ul></div>
+        <div class="rx-sol-visual"><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">📝</span><span><b>Rx note</b><span>Attach a prescription note to the sale</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">Rx</span></div><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#a78bfa,#6d28d9)">💊</span><span><b>Catalogue</b><span>Generic, brand, company and form</span></span><span class="rx-tag" style="background:rgba(139,92,246,.12);color:#7c3aed">Medicines</span></div><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fbbf24,#d97706)">⏱</span><span><b>Batches</b><span>Earliest expiry is sold first</span></span><span class="rx-tag" style="background:rgba(245,158,11,.14);color:#d97706">FEFO</span></div></div>
       </div>
       <div class="rx-tabpanel" data-rx-tabpanel="4">
-        <div>
-          <h3>Keep every patient on therapy</h3>
-          <ul>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Automated refill outreach lifts PDC scores measurably</li>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Med-sync programs align all fills to one pickup day</li>
-            <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Star-rating dashboards for every location</li>
-          </ul>
-        </div>
-        <div class="rx-sol-visual">
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">📦</span><span><b>Refills due this week</b><span>214 patients · auto-messaged</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">Auto</span></div>
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fbbf24,#d97706)">⭐</span><span><b>Star rating 4.6 → 4.9</b><span>Adherence measures improved</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">+0.3</span></div>
-          <div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#a78bfa,#6d28d9)">🔁</span><span><b>Med-sync enrollments</b><span>86% of eligible patients</span></span><span class="rx-tag" style="background:rgba(139,92,246,.12);color:#7c3aed">Growing</span></div>
-        </div>
+        <div><h3>Fast billing at the counter</h3><ul><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Barcode scan or type-ahead search</li><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Hold a sale and resume it</li><li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Shift opening and closing with a day-end summary</li></ul></div>
+        <div class="rx-sol-visual"><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#5b8cf7,#2f6df6)">🛒</span><span><b>New sale</b><span>Scan or search, then settle</span></span><span class="rx-tag" style="background:rgba(47,109,246,.12);color:#2f6df6">F2 / F4</span></div><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#fbbf24,#d97706)">⏸</span><span><b>Hold a sale</b><span>Park it for the next customer</span></span><span class="rx-tag" style="background:rgba(245,158,11,.14);color:#d97706">F8</span></div><div class="rx-sol-row"><span class="rx-av" style="background:linear-gradient(135deg,#2dd4bf,#0d9488)">🧾</span><span><b>Receipt</b><span>Print it or send it to the customer</span></span><span class="rx-tag" style="background:rgba(34,197,94,.14);color:#16a34a">Receipt</span></div></div>
       </div>
     </div>
   </div>
@@ -385,47 +281,18 @@
   <div class="wrap">
     <div class="show-grid">
       <div class="rv">
-        <span class="eyebrow">The App</span>
-        <h2 class="title">One tap to confirm.<br>Zero doses missed.</h2>
-        <p class="lead">A calm, senior-friendly interface designed with real patients. Big touch targets, plain language, and nothing you don't need.</p>
+        <span class="eyebrow">The counter</span>
+        <h2 class="title">Fast at the counter.<br>Clear at the shelf.</h2>
+        <p class="lead">Large buttons, keyboard shortcuts (F2 search, F4 settle, F8 hold) and barcode scanning keep the queue moving.</p>
         <ul class="check-list">
-          <li><span class="check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#2E6BF0" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Works offline — reminders never depend on signal</li>
-          <li><span class="check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#2E6BF0" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Voice confirmations for low-vision users</li>
-          <li><span class="check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#2E6BF0" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>14 languages, including Urdu, Spanish &amp; Mandarin</li>
+          <li><span class="check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#2E6BF0" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Offline-first: the counter keeps selling without internet</li>
+          <li><span class="check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#2E6BF0" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Receipts on 58mm and 80mm thermal printers, with cash drawer support</li>
+          <li><span class="check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#2E6BF0" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Roles for owner, manager, pharmacist, cashier and receptionist</li>
         </ul>
-        <p style="margin-top:26px;color:var(--muted);font-size:14px;font-weight:600">📱 MedSync app — beautifully simple on any iPhone</p>
+        <p style="margin-top:26px;color:var(--muted);font-size:14px;font-weight:600">💻 Windows desktop app, or open it in any browser</p>
       </div>
       <div class="rv">
-       <img class="showcase-iphone" src="assets/iphone18promax.jpg" alt="iPhone 18 Pro Max showing the MedSync medication reminder app">
-      </div>
-    </div>
-  </div>
-</section>
-<!-- ================= TESTIMONIALS ================= -->
-<section class="rx-sec rx-testimonials" id="rx-testimonials">
-  <div class="rx-wrap">
-    <div class="rx-center rx-tilt">
-      <span class="rx-eyebrow">◎ Testimonials</span>
-      <h2 class="rx-h2" data-rx-words>Patients Love Working<br>With <span class="rx-navy">MedSync Ai</span></h2>
-      <p class="rx-sub">Patients appreciate the ease, reliability, and human-like responsiveness of MedSync AI, making it an essential tool in modern healthcare</p>
-    </div>
-    <div class="rx-t-grid rx-tilt" style="--rx-d:.12s" id="rxTGrid">
-      <div>
-        <div class="rx-t-photo"><img id="rxTPhoto" src="assets/p1.jpg" alt="Patient photo"></div>
-        <div class="rx-t-pager">
-          <button class="rx-tpg-btn" id="rxTPrev" aria-label="Previous testimonial"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M12.5 4 7 10l5.5 6" stroke="#1b2a4a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          <span class="rx-t-count" id="rxTCount">1/8</span>
-          <button class="rx-tpg-btn" id="rxTNext" aria-label="Next testimonial"><svg width="18" height="18" viewBox="0 0 20 20"><path d="M7.5 4 13 10l-5.5 6" stroke="#1b2a4a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        </div>
-      </div>
-      <div class="rx-t-quote" id="rxTQuote">
-        <div class="rx-t-stars">★★★★★</div>
-        <p class="rx-t-text" id="rxTText"></p>
-        <div class="rx-t-who">
-          <img class="rx-t-av" id="rxTAv" src="assets/p1.jpg" alt="Avatar">
-          <span><b id="rxTName"></b><span id="rxTRole"></span></span>
-        </div>
-        <div class="rx-t-mark">”</div>
+        <img class="showcase-shot" src="assets/pos-screen.jpg" width="1280" height="760" loading="lazy" alt="The Optix MedSync counter screen with two medicines in the cart, FEFO batch allocation and payment buttons">
       </div>
     </div>
   </div>
@@ -436,74 +303,41 @@
   <div class="rx-wrap">
     <div class="rx-center rx-tilt">
       <span class="rx-eyebrow">◎ Pricing</span>
-      <h2 class="rx-h2" data-rx-words>Simple pricing, <span class="rx-navy">serious peace of mind</span></h2>
-      <p class="rx-sub">Start free. Upgrade when you're ready. Every plan includes bank-grade encryption and HIPAA-grade privacy.</p>
-      <div class="rx-billing">
-        <button class="rx-bill-btn rx-on" data-rx-bill="monthly">Monthly</button>
-        <button class="rx-bill-btn" data-rx-bill="yearly">Yearly <span class="rx-save">−25%</span></button>
-      </div>
+      <h2 class="rx-h2" data-rx-words>Pricing <span class="rx-navy">on request</span></h2>
+      <p class="rx-sub">Plans depend on the number of branches and counters. Tell us about your pharmacy and we will reply with a quote.</p>
     </div>
-    <div class="rx-price-grid">
-      <div class="rx-price-card rx-tilt" style="--rx-d:0s">
-        <h3>Starter</h3><p class="rx-p-sub">For trying MedSync with one medication list</p>
-        <div class="rx-amount"><b>$<span data-rx-price data-m="0" data-y="0">0</span></b><span>/ forever</span></div>
-        <ul class="rx-plan-list">
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Up to 5 medications</li>
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Smart dose reminders</li>
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Basic interaction checker</li>
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>1 device</li>
-        </ul>
-        <button class="rx-btn-plan" data-rx-open-demo data-plan="Starter">Start free</button>
-      </div>
-      <div class="rx-price-card rx-hot rx-tilt" style="--rx-d:.1s">
-        <span class="rx-pop-tag">Most popular</span>
-        <h3>Plus</h3><p class="rx-p-sub">For individuals &amp; families who want it all</p>
-        <div class="rx-amount"><b>$<span data-rx-price data-m="12" data-y="9">12</span></b><span>/ month</span></div>
-        <ul class="rx-plan-list">
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#5eead4" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Unlimited medications</li>
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#5eead4" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>AI interaction checker + symptom journal</li>
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#5eead4" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Refill autopilot with 120+ pharmacies</li>
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#5eead4" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Caregiver dashboard (3 members)</li>
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#5eead4" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Unlimited devices + priority support</li>
-        </ul>
-        <button class="rx-btn-plan" data-rx-open-demo data-plan="Plus">Book a Demo</button>
-      </div>
-      <div class="rx-price-card rx-tilt" style="--rx-d:.2s">
-        <h3>Care Teams</h3><p class="rx-p-sub">For clinics, pharmacies &amp; health plans</p>
-        <div class="rx-amount"><b>$<span data-rx-price data-m="29" data-y="22">29</span></b><span>/ provider / mo</span></div>
-        <ul class="rx-plan-list">
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Everything in Plus</li>
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>EHR integration (Epic, Cerner, Athena)</li>
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>Population adherence analytics</li>
-          <li><span class="rx-check"><svg width="12" height="12" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg></span>SSO, audit logs &amp; dedicated CSM</li>
-        </ul>
-        <button class="rx-btn-plan" data-rx-open-demo data-plan="Care Teams">Talk to sales</button>
-      </div>
+    <div class="rx-quote rx-tilt" style="--rx-d:.12s">
+      <h3>Get a quote</h3>
+      <p>Write to us and include:</p>
+      <ul class="rx-plan-list">
+        <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>Your pharmacy or business name</li>
+        <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>How many branches and counters you run</li>
+        <li><span class="rx-check"><svg width="13" height="13" viewBox="0 0 14 14"><path d="M2.5 7.5 6 11l5.5-7" stroke="#38a89d" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg></span>The features you need, for example purchases, multi-branch or messaging</li>
+      </ul>
+      <a class="btn lg" href="mailto:systems.optix@gmail.com?subject=Optix%20MedSync%20pricing">Email systems.optix@gmail.com</a>
     </div>
   </div>
 </section>
 
-<!-- ================= INTEGRATION ================= -->
-<section class="rx-sec rx-integration" id="rx-integration">
+<!-- ================= HARDWARE ================= -->
+<section class="rx-sec rx-integration" id="rx-hardware">
   <div class="rx-wrap">
     <div class="rx-center rx-tilt">
-      <span class="rx-eyebrow">◎ Integration</span>
-      <h2 class="rx-h2" data-rx-words>Seamlessly Integrate With All<br><span class="rx-navy">Your Healthcare Apps</span></h2>
-      <p class="rx-sub">Our prescription app integrates effortlessly with your favorite healthcare tools, ensuring a smooth and connected experience.</p>
-      <div><a class="rx-btn-blue" href="#rx-contact">Learn More <span class="rx-arrow-c"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#2f6df6" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></div>
+      <span class="rx-eyebrow">◎ Counter hardware</span>
+      <h2 class="rx-h2" data-rx-words>Works with <span class="rx-navy">the counter you already have</span></h2>
+      <p class="rx-sub">Connect the usual shop hardware and message your customers. Settings live in the Hardware Station screen.</p>
     </div>
-    <div class="rx-net rx-tilt" style="--rx-d:.12s" id="rxNet">
-      <svg class="rx-net-svg" id="rxNetSvg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
-      <div class="rx-hub rx-pop" style="--rx-d:0s">
-        <svg width="46" height="46" viewBox="0 0 40 40" fill="none"><path d="M20 6a14 14 0 1 0 14 14" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/><path d="M20 13a7 7 0 1 1-7 7" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity=".85"/><circle cx="20" cy="20" r="2.6" fill="#fff"/></svg>
-      </div>
-      <div class="rx-chip-layer" id="rxChipLayer"></div>
-      <div class="rx-baxter"><span class="rx-bx">✚</span> Baxter Medical <span style="color:var(--blue)">→</span></div>
+    <div class="cap-grid rx-tilt" style="--rx-d:.12s">
+      <div class="cap"><span class="cap-i">🖨</span><b>Thermal receipt printers</b><span>58mm and 80mm paper rolls</span></div>
+      <div class="cap"><span class="cap-i">🗄</span><b>Cash drawer</b><span>Opens automatically on cash sales</span></div>
+      <div class="cap"><span class="cap-i">🏷</span><b>Barcode labels</b><span>Xprinter, TSC, Zebra and standard thermal label printers</span></div>
+      <div class="cap"><span class="cap-i">📷</span><b>Barcode scanning</b><span>Reader or camera, at billing and in stock screens</span></div>
+      <div class="cap"><span class="cap-i">🖥</span><b>Customer display</b><span>Shows the cart and total to the customer</span></div>
+      <div class="cap"><span class="cap-i">💬</span><b>Customer messages</b><span>Send receipts and reminders by WhatsApp, SMS or Email</span></div>
     </div>
   </div>
 </section>
 
-<aside class="adslot" data-ad="home-mid" aria-label="Advertisement" hidden></aside>
 <!-- ================= FAQ ================= -->
 <section class="rx-sec rx-faq" id="rx-faq">
   <div class="rx-wrap">
@@ -511,84 +345,52 @@
       <div class="rx-faq-left rx-tilt">
         <span class="rx-eyebrow">◎ F.A.Q</span>
         <h2 class="rx-h2" data-rx-words>Got Questions?<br><span class="rx-navy">We've Got Answers!</span></h2>
-        <div><a class="rx-btn-sky" href="#rx-contact">Learn More <span class="rx-arrow-c"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></div>
+        <div><a class="rx-btn-sky" href="mailto:systems.optix@gmail.com">Email us <span class="rx-arrow-c"><svg viewBox="0 0 16 16"><path d="M3 8h9M8.5 4.5 12 8l-3.5 3.5" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></div>
       </div>
       <div class="rx-tilt" style="--rx-d:.12s" id="rxFaqList">
-        <div class="rx-faq-item">
-          <button class="rx-faq-q">What is MedSync AI? <span class="rx-faq-toggle">+</span></button>
-          <div class="rx-faq-a"><p>MedSync AI is your intelligent prescription companion. It combines smart reminders, AI-powered safety checks, and pharmacy integrations in one calm app, so you always take the right dose at the right time. Think of it as a personal pharmacist that lives in your pocket.</p></div>
-        </div>
         <div class="rx-faq-item rx-open">
-          <button class="rx-faq-q">Can I track multiple medications? <span class="rx-faq-toggle">+</span></button>
-          <div class="rx-faq-a"><p>Absolutely. MedSync AI lets you manage all your prescriptions in one place — set personalized reminders for each medication, track your adherence, and get a clear overview of your daily routine. Whether you're managing your own medications or helping a family member, everything stays organized and hassle-free.</p></div>
+          <button class="rx-faq-q">What is Optix MedSync? <span class="rx-faq-toggle">+</span></button>
+          <div class="rx-faq-a"><p>Optix MedSync is a point of sale and stock system for pharmacies: barcode billing, batch and expiry control, purchases and suppliers, returns, customer credit and loyalty, shifts and reports.</p></div>
         </div>
         <div class="rx-faq-item">
-          <button class="rx-faq-q">Does MedSync AI notify me when I need a refill? <span class="rx-faq-toggle">+</span></button>
-          <div class="rx-faq-a"><p>Yes. MedSync AI monitors your supply and sends refill reminders before you run out. With Refill Autopilot, it can even coordinate directly with your pharmacy so your medications arrive on time, every time.</p></div>
+          <button class="rx-faq-q">Does it work without internet? <span class="rx-faq-toggle">+</span></button>
+          <div class="rx-faq-a"><p>Yes. The counter station is offline-first: it keeps working on the device and syncs to your cloud space when a connection is available and sync is turned on.</p></div>
         </div>
         <div class="rx-faq-item">
-          <button class="rx-faq-q">How does MedSync AI remind me to take my medication? <span class="rx-faq-toggle">+</span></button>
-          <div class="rx-faq-a"><p>Through intelligent, context-aware notifications that adapt to your routine — your wake time, meals, and even travel across time zones. You can confirm doses with one tap, by voice, or on your smartwatch, and gentle follow-ups make sure nothing slips through the cracks.</p></div>
+          <button class="rx-faq-q">How does batch and expiry control work? <span class="rx-faq-toggle">+</span></button>
+          <div class="rx-faq-a"><p>Stock is kept per batch with its expiry date. When you sell, the batch that expires first is picked first (FEFO), and the dashboard flags low stock, near-expiry and expired batches.</p></div>
         </div>
         <div class="rx-faq-item">
-          <button class="rx-faq-q">Can I sync MedSync AI with my pharmacy? <span class="rx-faq-toggle">+</span></button>
-          <div class="rx-faq-a"><p>Yes. MedSync AI integrates with 120+ pharmacy chains and most independents, syncing your prescriptions and refills automatically. If your pharmacy isn't connected yet, you can still send refill requests by secure message.</p></div>
+          <button class="rx-faq-q">Can I use several branches and staff accounts? <span class="rx-faq-toggle">+</span></button>
+          <div class="rx-faq-a"><p>Yes. The owner can add branches and staff. Each role (owner, manager, pharmacist, cashier, receptionist) sees only what it needs, and an audit log records changes.</p></div>
         </div>
         <div class="rx-faq-item">
-          <button class="rx-faq-q">Is my personal data safe? <span class="rx-faq-toggle">+</span></button>
-          <div class="rx-faq-a"><p>Completely. Your health data is encrypted in transit and at rest, and MedSync AI is HIPAA and GDPR compliant. We never sell your information or share it with advertisers, and you can export or permanently delete your data at any time.</p></div>
+          <button class="rx-faq-q">How do I get an account and pricing? <span class="rx-faq-toggle">+</span></button>
+          <div class="rx-faq-a"><p>Accounts are created by your business administrator. For a new business account or a quote, email systems.optix@gmail.com.</p></div>
+        </div>
+        <div class="rx-faq-item">
+          <button class="rx-faq-q">Does the app show ads? <span class="rx-faq-toggle">+</span></button>
+          <div class="rx-faq-a"><p>No. Ads, if any, appear only on the public website pages. They are never shown in the signed-in app, at the counter, on receipts or in reports.</p></div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-
 <section class="suite-sec" id="suite"><div class="wrap">
   <span class="suite-eyebrow">Optix Suite</span>
   <h2>One account. Every Optix app.</h2>
-  <p class="sub">Pharmacy, Lab and Hospital software share the same look, the same sign-in and the same WhatsApp, SMS and Email messaging.</p>
+  <p class="sub">Pharmacy, Lab and Hospital software from Optix share the same look and an Optix account across the suite.</p>
   <div class="suite-grid">
-    <a class="scard spot rv here" style="--c:#2f6df6" href="#/login"><span class="you">This app</span><h3>Pharmacy POS</h3><p class="psub">Sales, stock and expiry</p><p class="pdesc">Counter POS, batches and expiry, purchases, returns, loyalty and multi-branch control. Works offline.</p><span class="go">Sign in &rarr;</span></a>
-    <a class="scard spot rv" style="--c:#0ea5a4" href="https://optix-suite.ellahabad.workers.dev/products/lab" target="_top" rel="noopener"><h3>Blood Test Lab</h3><p class="psub">Patients, tests and reports</p><p class="pdesc">Patient registration, a ready test catalog, QR-verified reports, billing and dues.</p><span class="go">Learn more &rarr;</span></a>
-    <a class="scard spot rv" style="--c:#0f766e" href="https://optix-suite.ellahabad.workers.dev/products/hospital" target="_top" rel="noopener"><h3>Hospital Management</h3><p class="psub">Patients, staff and billing</p><p class="pdesc">Appointments, wards, billing and records for hospitals and clinics.</p><span class="go">Learn more &rarr;</span></a>
+    <a class="scard spot rv here" style="--c:#2f6df6" href="#/login"><span class="you">This app</span><h3>Pharmacy POS</h3><p class="psub">Medicines, stock and billing counter</p><p class="pdesc">Barcode checkout, batch and expiry control, purchases and suppliers, returns, customer credit and loyalty, shifts and reports. Offline-first.</p><span class="go">Sign in &rarr;</span></a>
+    <a class="scard spot rv" style="--c:#0ea5a4" href="https://optix-suite.ellahabad.workers.dev/products/lab" target="_top" rel="noopener"><h3>Blood Test Lab</h3><p class="psub">Patients, tests and reports</p><p class="pdesc">Patient registration, a ready test catalog, result entry, QR-verified reports, billing and dues.</p><span class="go">Learn more &rarr;</span></a>
+    <a class="scard spot rv" style="--c:#0f766e" href="https://optix-suite.ellahabad.workers.dev/products/hospital" target="_top" rel="noopener"><h3>Hospital Management</h3><p class="psub">Appointments, records and billing</p><p class="pdesc">Appointments and doctor calendars, patient records, billing, suppliers and stock, staff roles and an audit trail.</p><span class="go">Learn more &rarr;</span></a>
   </div>
   <div class="suite-links"><a class="btn" href="https://optix-suite.ellahabad.workers.dev" target="_top" rel="noopener">All Optix apps</a><a class="btn ghost" href="https://optix-suite.ellahabad.workers.dev/guides" target="_top" rel="noopener">Read the guides</a></div>
 </div></section>
 
 <!-- ================= CTA ================= -->
-<section class="cta"><div class="wrap cta-in"><div><h2>Take control of your pharmacy with AI-powered medication management</h2><p>Sign in to your station or book a walkthrough.</p></div><div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn lg light" href="#/login">Sign in</a><button class="btn lg ghost light" data-rx-open-demo type="button">Book a demo</button></div></div></section>
-
-<!-- ================= DEMO MODAL ================= -->
-<div class="rx-modal" id="rxDemoModal" role="dialog" aria-modal="true" aria-labelledby="rxDemoTitle">
-  <div class="rx-modal-card">
-    <button class="rx-modal-close" id="rxDemoClose" aria-label="Close">×</button>
-    <div id="rxDemoFormWrap">
-      <h3 id="rxDemoTitle">Book a Demo</h3>
-      <p>See MedSync in action with a 20-minute walkthrough tailored to <b id="rxDemoPlan" style="color:var(--navy)">your needs</b>. No commitment.</p>
-      <form id="rxDemoForm" novalidate>
-        <div class="rx-f-row">
-          <div class="rx-field"><label for="rxDName">Full name</label><input id="rxDName" type="text" placeholder="Jane Cooper" autocomplete="name"><span class="rx-err">Please enter your name</span></div>
-          <div class="rx-field"><label for="rxDEmail">Work email</label><input id="rxDEmail" type="email" placeholder="jane@company.com" autocomplete="email"><span class="rx-err">Enter a valid email address</span></div>
-        </div>
-        <div class="rx-f-row">
-          <div class="rx-field"><label for="rxDOrg">Organization</label><input id="rxDOrg" type="text" placeholder="CareWell Health (optional)" autocomplete="organization"></div>
-          <div class="rx-field"><label for="rxDRole">I am a…</label><select id="rxDRole"><option>Patient</option><option>Caregiver</option><option>Clinician</option><option>Pharmacist</option><option>Health plan / Employer</option></select></div>
-        </div>
-        <div class="rx-field"><label for="rxDDate">Preferred date</label><input id="rxDDate" type="date"><span class="rx-err">Pick a date in the future</span></div>
-        <div class="rx-field"><label for="rxDMsg">Anything we should prepare? <span style="color:var(--muted);font-weight:600">(optional)</span></label><textarea id="rxDMsg" rows="3" placeholder="Tell us about your medication routine…"></textarea></div>
-        <button class="rx-btn-submit" type="submit">Request my demo →</button>
-      </form>
-    </div>
-    <div class="rx-demo-success" id="rxDemoSuccess">
-      <div class="rx-big"><svg width="38" height="38" viewBox="0 0 24 24" fill="none"><path d="M4 12.5 10 18.5 20 6" stroke="#38a89d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <h3>You're booked in! 🎉</h3>
-      <p id="rxDemoSuccessText">We'll send a calendar invite shortly. A medication specialist will walk you through MedSync live.</p>
-    </div>
-  </div>
-</div>
-
-
+<section class="cta"><div class="wrap cta-in"><div><h2>Run your pharmacy counter with Optix MedSync</h2><p>Sign in to your station, or write to us for an account and pricing.</p></div><div style="display:flex;gap:12px;flex-wrap:wrap"><a class="btn lg light" href="#/login">Sign in</a><a class="btn lg ghost light" href="mailto:systems.optix@gmail.com">Contact us</a></div></div></section>
 
 </div><!-- /rx-root -->
 <aside class="adslot" data-ad="home-end" aria-label="Advertisement" hidden></aside>
@@ -596,10 +398,10 @@
 <footer class="foot" id="rx-contact">
   <div class="wrap foot-grid">
     <div><a class="brand" href="#" aria-label="Optix MedSync home"><span class="mark"><svg viewBox="0 0 32 32" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M9 24V10l9 9V8M15 24l9-8V8"/></svg></span><b>Optix</b><span class="suite">MedSync</span></a>
-      <p class="muted">Pharmacy POS with stock, expiry and an AI prescription companion. Part of the Optix suite: one account for Lab, Pharmacy and Hospital.</p></div>
+      <p class="muted">Pharmacy POS: barcode billing, batch and expiry control, purchases and reports. Part of the Optix suite for Lab, Pharmacy and Hospital.</p></div>
     <div><h5>Product</h5><div class="flinks"><a href="#/login">Sign in (staff portal)</a><a href="#/pos">Counter POS</a><a href="https://github.com/hassnainpashapf/Pharmacy-POS/releases/download/v2.0.0/Optix-MedSync-Setup-2.0.0.exe" download>Windows app (.exe)</a><a href="#rx-pricing">Pricing</a></div></div>
     <div><h5>Optix suite</h5><div class="flinks"><a href="https://optix-suite.ellahabad.workers.dev" target="_top" rel="noopener">All Optix apps</a><a href="https://optix-suite.ellahabad.workers.dev/products/lab" target="_top" rel="noopener">Blood Test Lab</a><a href="https://optix-suite.ellahabad.workers.dev/products/hospital" target="_top" rel="noopener">Hospital Management</a><a href="https://optix-suite.ellahabad.workers.dev/guides" target="_top" rel="noopener">Guides</a></div></div>
-    <div><h5>Help &amp; legal</h5><div class="flinks"><a href="#rx-faq">FAQ</a><a href="https://optix-suite.ellahabad.workers.dev/contact" target="_top" rel="noopener">Contact</a><a href="/privacy" target="_top">Privacy Policy</a><a href="/terms" target="_top">Terms of Use</a><a href="#" data-ad-choices hidden>Ad choices</a></div></div>
+    <div><h5>Help &amp; legal</h5><div class="flinks"><a href="#rx-faq">FAQ</a><a href="mailto:systems.optix@gmail.com">Email us</a><a href="https://optix-suite.ellahabad.workers.dev/contact" target="_top" rel="noopener">Contact</a><a href="/privacy" target="_top">Privacy Policy</a><a href="/terms" target="_top">Terms of Use</a><a href="#" data-ad-choices hidden>Ad choices</a></div></div>
   </div>
   <div class="wrap foot-base"><span>&copy; <span id="yr">2026</span> Optix. All rights reserved.</span><span><a href="/privacy" target="_top">Privacy</a> &middot; <a href="/terms" target="_top">Terms</a> &middot; <a href="https://optix-suite.ellahabad.workers.dev/contact" target="_top" rel="noopener">Contact</a></span></div>
 </footer>
@@ -745,57 +547,6 @@ function rxSelectTab(i){
 tabBtns.forEach(function(b){b.addEventListener('click',function(){rxSelectTab(b.dataset.rxTabbtn)})});
 window.rxSelectTab=rxSelectTab;
 
-/* ---------- Testimonials carousel ---------- */
-var T=[
- {img:'assets/p1.jpg',text:'MedSync AI has completely transformed how I manage my medications. The smart reminders and automatic refills make it so easy to stay on track. I no longer miss doses, and my health has improved significantly. The adaptive reminders and health insights are incredibly useful — it\u2019s like having a personal health assistant!',name:'Jessica Hicks',role:'Director of Clinical Services'},
- {img:'assets/p2.jpg',text:'My mom takes 7 medications and I used to worry constantly. Now I just glance at MedSync over coffee. It\u2019s given our whole family peace of mind.',name:'James Rodriguez',role:'Caregiver · Texas'},
- {img:'assets/p3.jpg',text:'The interaction checker caught a conflict between my new prescription and an OTC supplement. My pharmacist said it could have been serious. Incredible.',name:'Amara Patel',role:'Patient · London'},
- {img:'assets/p2.jpg',text:'We rolled MedSync out to 2,000 high-risk patients. Adherence rose 23% in one quarter and our Star ratings followed. The ROI conversation was easy.',name:'Dr. David Kim',role:'CMO · NovaHealth'},
- {img:'assets/p1.jpg',text:'Refill autopilot alone is worth it. My adherence PDC went from 71% to 96% and I haven\u2019t thought about calling the pharmacy in months.',name:'Sarah Miller',role:'Patient · Toronto'},
- {img:'assets/p3.jpg',text:'Finally, adherence data I can actually use in clinic. The EHR integration took an afternoon and now every visit starts with real data, not guesswork.',name:'Dr. Lisa Nguyen',role:'Family physician · Sydney'},
- {img:'assets/p2.jpg',text:'Our med-sync program enrollment tripled after we started offering MedSync at pickup. Patients stay on therapy longer — and they stay with us.',name:'Robert Taylor',role:'Pharmacy owner · Ohio'},
- {img:'assets/p1.jpg',text:'Managing diabetes and hypertension used to mean a drawer full of pill bottles and constant worry. MedSync keeps every dose on schedule and the safety checks give me total confidence.',name:'Maria Santos',role:'Patient · Madrid'}
-];
-var tIdx=0,tQuote=$('#rxTQuote'),tPhoto=$('#rxTPhoto'),tText=$('#rxTText'),
-    tName=$('#rxTName'),tRole=$('#rxTRole'),tAv=$('#rxTAv'),tCount=$('#rxTCount'),tTimer=null;
-function renderT(i){
-  var d=T[i];
-  tText.textContent='\u201C'+d.text+'\u201D';
-  tName.textContent=d.name;tRole.textContent=d.role;
-  tAv.src=d.img;tPhoto.src=d.img;
-  tCount.textContent=(i+1)+'/'+T.length;
-}
-function goT(i){
-  tIdx=(i+T.length)%T.length;
-  tQuote.classList.add('rx-fade');tPhoto.style.opacity=0;
-  setTimeout(function(){renderT(tIdx);tQuote.classList.remove('rx-fade');tPhoto.style.opacity=1},320);
-}
-function tAuto(){clearInterval(tTimer);tTimer=setInterval(function(){goT(tIdx+1)},6000)}
-$('#rxTPrev').addEventListener('click',function(){goT(tIdx-1);tAuto()});
-$('#rxTNext').addEventListener('click',function(){goT(tIdx+1);tAuto()});
-var tGrid=$('#rxTGrid');
-tGrid.addEventListener('mouseenter',function(){clearInterval(tTimer)});
-tGrid.addEventListener('mouseleave',tAuto);
-renderT(0);tAuto();
-
-/* ---------- Pricing toggle ---------- */
-var billBtns=$$('[data-rx-bill]');
-billBtns.forEach(function(b){b.addEventListener('click',function(){
-  billBtns.forEach(function(x){x.classList.remove('rx-on')});b.classList.add('rx-on');
-  var yearly=b.dataset.rxBill==='yearly';
-  $$('[data-rx-price]').forEach(function(p){
-    var v=yearly?p.dataset.y:p.dataset.m;
-    p.style.opacity=0;
-    setTimeout(function(){p.textContent=v;p.style.opacity=1},160);
-  });
-  $$('.rx-amount').forEach(function(a){
-    var s=null;
-    Array.prototype.forEach.call(a.children,function(c){if(c.tagName==='SPAN')s=c});
-    if(!s||/forever|provider/.test(s.textContent))return;
-    s.textContent=yearly?'/ month, billed yearly':'/ month';
-  });
-})});
-
 /* ---------- FAQ accordion ---------- */
 $$('.rx-faq-item').forEach(function(f){
   var btn=$('.rx-faq-q',f),ans=$('.rx-faq-a',f);
@@ -807,78 +558,10 @@ $$('.rx-faq-item').forEach(function(f){
   });
 });
 
-/* ---------- Integration network diagram ---------- */
-var chipData=[
- {x:5,y:15,g:'⚙️'},{x:15,y:15,g:'🔔'},{x:25,y:15,g:'◇'},{x:35,y:15,g:'📊'},
- {x:65,y:15,g:'📈'},{x:75,y:15,g:'🩺'},{x:85,y:15,g:'◉'},{x:95,y:15,g:'✚'},
- {x:5,y:50,g:'💬'},{x:15,y:50,g:'©'},{x:25,y:50,g:'📅'},{x:35,y:50,g:'🔬'},
- {x:65,y:50,g:'🧬'},{x:75,y:50,g:'💉'},{x:85,y:50,g:'🌡️'},{x:95,y:50,g:'🧪'},
- {x:15,y:85,g:'📋'},{x:25,y:85,g:'🫀'},{x:35,y:85,g:'🧠'},
- {x:65,y:85,g:'👁️'},{x:75,y:85,g:'🩹'},{x:85,y:85,g:'💪'},{x:95,y:85,g:'➕'}
-];
-var chipLayer=$('#rxChipLayer'),netSvg=$('#rxNetSvg'),svgNS='http://www.w3.org/2000/svg';
-chipData.forEach(function(c,i){
-  var line=document.createElementNS(svgNS,'line');
-  line.setAttribute('x1',50);line.setAttribute('y1',50);
-  line.setAttribute('x2',c.x);line.setAttribute('y2',c.y);
-  netSvg.appendChild(line);
-  var d=document.createElement('div');
-  d.className='rx-chip rx-pop';d.textContent=c.g;
-  d.style.left=c.x+'%';d.style.top=c.y+'%';
-  d.style.setProperty('--rx-d',(0.15+i*0.045)+'s');
-  chipLayer.appendChild(d);
-});
-
-/* ---------- Demo modal ---------- */
-var modal=$('#rxDemoModal');
-function openDemo(plan){
-  $('#rxDemoFormWrap').style.display='';$('#rxDemoSuccess').style.display='none';
-  if(plan)$('#rxDemoPlan').textContent='the '+plan+' plan';
-  modal.classList.add('rx-open');document.body.style.overflow='hidden';
-  var d=$('#rxDDate');var t=new Date();t.setDate(t.getDate()+1);d.min=t.toISOString().split('T')[0];
-}
-function closeDemo(){modal.classList.remove('rx-open');document.body.style.overflow=''}
-$$('[data-rx-open-demo]').forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();openDemo(b.dataset.plan)})});
-$('#rxDemoClose').addEventListener('click',closeDemo);
-modal.addEventListener('click',function(e){if(e.target===modal)closeDemo()});
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDemo()});
-$('#rxDemoForm').addEventListener('submit',function(e){
-  e.preventDefault();var ok=true;
-  function check(id,valid){var f=$('#'+id).closest('.rx-field');f.classList.toggle('rx-invalid',!valid);if(!valid)ok=false}
-  var name=$('#rxDName').value.trim(),email=$('#rxDEmail').value.trim(),date=$('#rxDDate').value;
-  check('rxDName',name.length>1);
-  check('rxDEmail',/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
-  check('rxDDate',!!date&&new Date(date)>new Date(new Date().toDateString()));
-  if(!ok)return;
-  $('#rxDemoSuccessText').textContent='Thanks '+name.split(' ')[0]+'! We\'ll send a calendar invite to '+email+' shortly. A medication specialist will walk you through MedSync live.';
-  $('#rxDemoFormWrap').style.display='none';$('#rxDemoSuccess').style.display='block';
-});
-
-})();
-</script>
-<script>
-/* phone showcase: reveal + adherence ring + dose toggles (restored) */
-(function(){
-  "use strict";
-  var scope=document.querySelector('.showcase');if(!scope)return;
-  document.documentElement.classList.add('ph-js');
-  function $all(s){return Array.prototype.slice.call(scope.querySelectorAll(s));}
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.12});
-  $all('.rv').forEach(function(el){io.observe(el);});
-  var ringFg=document.getElementById('ringFg'),CIRC=163.3;
-  function updateRing(){
-    var meds=$all('#medList .med');if(!meds.length)return;
-    var done=$all('#medList .med.done').length,pct=Math.round(done/meds.length*100);
-    if(ringFg){ringFg.style.strokeDashoffset=(CIRC*(1-pct/100)).toFixed(1);var t=ringFg.nextElementSibling;if(t)t.textContent=pct+'%';}
-    var label=scope.querySelector('.app-head span span');if(label)label.textContent=done+' of '+meds.length+' doses taken today';
-  }
-  $all('#medList .med').forEach(function(m){m.addEventListener('click',function(){m.classList.toggle('done');updateRing();});});
-  requestAnimationFrame(function(){requestAnimationFrame(updateRing);});
 })();
 </script>
 <script src="chrome.js"></script>
 <script type="module" src="ads-init.js"></script>
 <script src="assets/anim-scroll.js"></script>
-<script src="assets/anim-phone.js"></script>
 </body>
 </html>
