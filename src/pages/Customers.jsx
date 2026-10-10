@@ -12,6 +12,7 @@ import {
   loyaltyTiers,
 } from '../lib/db'
 import CustomerProfile from './CustomerProfile'
+import MessageDialog from '../components/MessageDialog'
 import {
   Users,
   CreditCard,
@@ -26,6 +27,7 @@ import {
   Trash2,
   X,
   MessageCircle,
+  Send,
   Star,
   Receipt,
   User,
@@ -73,6 +75,7 @@ export function Customers() {
 
   // Filter & Search states (Customers directory)
   const [search, setSearch] = useState('')
+  const [messageTo, setMessageTo] = useState(null) // { name, phone, email, text } while the send dialog is open
   const [balanceFilter, setBalanceFilter] = useState('ALL') // 'ALL' | 'DUE' | 'CLEARED'
   const [tierFilter, setTierFilter] = useState('ALL')
   const [sortBy, setSortBy] = useState('DUE_DESC') // 'DUE_DESC' | 'POINTS_DESC' | 'NAME_ASC' | 'SPEND_DESC'
@@ -402,7 +405,23 @@ export function Customers() {
 
                         {/* Phone */}
                         <td className="py-3.5 px-4 font-mono text-slate-700 font-medium">
-                          {c.phone || <span className="text-slate-400 italic">No phone</span>}
+                          {c.phone ? (
+                            <span className="inline-flex items-center gap-2">
+                              {c.phone}
+                              <button
+                                type="button"
+                                title="Send a message (WhatsApp / SIM SMS / Email) from your business account"
+                                onClick={() =>
+                                  setMessageTo({ name: c.name, phone: c.phone, email: c.email || '', text: `Assalam-o-Alaikum ${c.name},\n` })
+                                }
+                                className="p-1 rounded-md bg-sky-50 text-sky-600 hover:bg-sky-100 transition cursor-pointer"
+                              >
+                                <Send className="w-3.5 h-3.5" />
+                              </button>
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 italic">No phone</span>
+                          )}
                         </td>
 
                         {/* Reward Tier */}
@@ -766,6 +785,23 @@ export function Customers() {
                             {c.phone ? (
                               <div className="flex items-center gap-2">
                                 <span className="font-mono text-slate-700 font-medium">{c.phone}</span>
+                                <button
+                                  type="button"
+                                  title="Send a message (WhatsApp / SIM SMS / Email) from your business account"
+                                  onClick={() =>
+                                    setMessageTo({
+                                      name: c.name,
+                                      phone: c.phone,
+                                      email: c.email || '',
+                                      text: hasDue
+                                        ? `Assalam-o-Alaikum ${c.name},\nThis is a polite reminder that your pending balance at our pharmacy is ${fmt(bal)}.\nPlease clear your dues at your convenience.\nThank you!`
+                                        : `Assalam-o-Alaikum ${c.name},\n`,
+                                    })
+                                  }
+                                  className="p-1 rounded-md bg-sky-50 text-sky-600 hover:bg-sky-100 transition cursor-pointer"
+                                >
+                                  <Send className="w-3.5 h-3.5" />
+                                </button>
                                 {hasDue && waLink && (
                                   <a
                                     href={waLink}
@@ -988,6 +1024,15 @@ export function Customers() {
           }}
         />
       )}
+      <MessageDialog
+        open={Boolean(messageTo)}
+        onClose={() => setMessageTo(null)}
+        name={messageTo?.name || ''}
+        phone={messageTo?.phone || ''}
+        email={messageTo?.email || ''}
+        text={messageTo?.text || ''}
+        subject="Message from your pharmacy"
+      />
     </div>
   )
 }

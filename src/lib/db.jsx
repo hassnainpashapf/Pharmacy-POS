@@ -1840,6 +1840,8 @@ export function logout() {
 export function currentUser() { return db.session }
 
 export function switchRoleUser(roleKey) {
+  // An Optix account's role is set by the administrator (lab Users & Roles), not by whoever is at the keyboard
+  if (String(db.session?.tenantId || '').startsWith('central-')) return null
   const target = (db.users || []).find((u) => u.role === roleKey && u.active)
   if (target) {
     db.session = {

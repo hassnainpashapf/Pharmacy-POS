@@ -14,6 +14,7 @@ import {
 } from '../lib/db'
 import { playScanBeep, playSuccessChime, playWarningTone } from '../lib/audio'
 import SalesHistory from '../components/SalesHistory'
+import MessageDialog from '../components/MessageDialog'
 import {
   Search,
   ShoppingCart,
@@ -23,6 +24,7 @@ import {
   PauseCircle,
   PlayCircle,
   Share2,
+  Send,
   Printer,
   FileText,
   Zap,
@@ -817,8 +819,10 @@ export function Receipt({ sale, onClose }) {
   const db = useDB()
   const s = db.settings || {}
 
-  // WhatsApp Message Generator
-  const shareWhatsApp = () => {
+  const [messageOpen, setMessageOpen] = useState(false)
+
+  // The receipt as plain text (WhatsApp / SMS / Email)
+  const receiptText = () => {
     let msg = `🌿 *${s.pharmacyName || 'PHARMACY POS'}*\n`
     if (s.address) msg += `📍 ${s.address}\n`
     if (s.phone) msg += `📞 ${s.phone}\n`
@@ -838,8 +842,12 @@ export function Receipt({ sale, onClose }) {
     msg += `Payment: ${sale.payMethod}\n`
     msg += `--------------------------------\n`
     msg += `Thank you! Get well soon 🌿`
+    return msg
+  }
 
-    const url = `https://wa.me/?text=${encodeURIComponent(msg)}`
+  // WhatsApp Message Generator (opens WhatsApp itself, no cloud needed)
+  const shareWhatsApp = () => {
+    const url = `https://wa.me/?text=${encodeURIComponent(receiptText())}`
     window.open(url, '_blank')
   }
 
@@ -938,6 +946,12 @@ export function Receipt({ sale, onClose }) {
             </button>
           </div>
           <button
+            onClick={() => setMessageOpen(true)}
+            className="w-full py-2 bg-[#2f6df6] hover:bg-[#1f4fd1] text-white rounded-sm text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <Send className="w-3.5 h-3.5" /> Send to customer (WhatsApp / SMS / Email)
+          </button>
+          <button
             onClick={onClose}
             className="w-full py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-sm text-xs font-semibold transition-colors border border-slate-200"
           >
@@ -945,6 +959,13 @@ export function Receipt({ sale, onClose }) {
           </button>
         </div>
       </div>
+      <MessageDialog
+        open={messageOpen}
+        onClose={() => setMessageOpen(false)}
+        phone=""
+        text={messageOpen ? receiptText() : ''}
+        subject={`Your receipt ${sale.invoiceNo}`}
+      />
     </div>
   )
 }

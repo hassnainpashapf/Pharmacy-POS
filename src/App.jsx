@@ -41,6 +41,8 @@ import { initSyncEngine } from './lib/syncEngine'
 import { isElectronShell, isNativeApp } from './lib/platformConfig'
 import Users from './pages/Users'
 import Login from './pages/Login'
+import Sso from './pages/Sso'
+import { clearCentral, getCentral, openLabApp, SUPERADMIN_URL } from './lib/central'
 import CommandPalette from './components/CommandPalette'
 import BrandLogo from './components/BrandLogo'
 
@@ -100,7 +102,6 @@ import {
 } from 'lucide-react'
 
 const MobileInventory = lazy(() => import('./pages/MobileInventory'))
-const Superadmin = lazy(() => import('./pages/Superadmin'))
 const LandingPage = lazy(() => import('./pages/LandingPage'))
 
 // Sidebar visibility comes from the permission catalog: every item is filtered
@@ -628,7 +629,9 @@ function Shell({ children }) {
                       </div>
                     </div>
 
-                    {/* Quick Switch Role List */}
+                    {/* Quick Switch Role List — a demo helper for stand-alone stations. With an Optix account the role is set by the administrator. */}
+                    {!String(me?.tenantId || '').startsWith('central-') && (
+                      <>
                     <div className="px-2 py-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                       Switch Role
                     </div>
@@ -659,6 +662,9 @@ function Shell({ children }) {
                       ))}
                     </div>
 
+                      </>
+                    )}
+
                     {/* Actions: Manage Staff & Logout */}
                     <div className="pt-1.5 mt-1.5 border-t border-slate-100 space-y-0.5">
                       <button
@@ -673,10 +679,25 @@ function Shell({ children }) {
                         <span>Manage Staff & Assign Roles →</span>
                       </button>
 
+                      {(getCentral()?.apps || []).includes('lab') && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUserMenuOpen(false)
+                            openLabApp().catch((e) => window.alert(e.message))
+                          }}
+                          className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-[#0f766e] hover:bg-teal-50 flex items-center gap-2 transition-colors cursor-pointer"
+                        >
+                          <span aria-hidden>🧪</span>
+                          <span>Switch to Blood Test Lab →</span>
+                        </button>
+                      )}
+
                       <button
                         type="button"
                         onClick={() => {
                           setUserMenuOpen(false)
+                          clearCentral()
                           logout()
                         }}
                         className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-bold text-rose-600 hover:bg-rose-50 flex items-center gap-2 transition-colors cursor-pointer"
@@ -797,6 +818,20 @@ function AdminRoute() {
   )
 }
 
+function CentralSuperadmin() {
+  useEffect(() => {
+    window.location.replace(SUPERADMIN_URL)
+  }, [])
+  return (
+    <main className="min-h-screen flex items-center justify-center p-6 text-slate-600" role="status">
+      Opening the Optix platform console…{' '}
+      <a className="ml-2 font-bold text-[#2f6df6] underline" href={SUPERADMIN_URL}>
+        Open it here
+      </a>
+    </main>
+  )
+}
+
 export default function App() {
   useEffect(() => {
     const cleanup = initSyncEngine()
@@ -812,7 +847,9 @@ export default function App() {
           <Route path="/landing/*" element={<Suspense fallback={<div className="min-h-screen bg-[#f2f5f9] flex items-center justify-center text-slate-500 font-medium">Loading Optix MedSync…</div>}><LandingPage /></Suspense>} />
           <Route path="/mobile/*" element={<MobileRoute />} />
           <Route path="/admin/*" element={<AdminRoute />} />
-          <Route path="/superadmin/*" element={<div className="fixed inset-0 h-full w-full overflow-y-auto"><Suspense fallback={<main className="min-h-screen p-6" role="status">Loading platform console…</main>}><Superadmin /></Suspense></div>} />
+          <Route path="/sso" element={<Sso />} />
+          {/* One superadmin for the Lab and the Pharmacy: it lives in the Lab cloud console */}
+          <Route path="/superadmin/*" element={<CentralSuperadmin />} />
           <Route path="*" element={<LegacyApp />} />
         </Routes>
       </ErrorBoundary>

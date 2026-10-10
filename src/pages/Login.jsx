@@ -3,6 +3,17 @@ import { useDB, login, clearLock, syncCloudSession } from '../lib/db'
 import { mobileApi } from '../lib/mobileApi'
 import { syncNow } from '../lib/syncEngine'
 import { ArrowLeft, ArrowRight, Download, ShieldCheck } from 'lucide-react'
+import AppChooser from '../components/AppChooser'
+import {
+  centralLogin,
+  clearCentral,
+  lastBusinessId,
+  localPasswordFor,
+  openLabApp,
+  rememberBusinessId,
+  rememberCentral,
+  toLocalUser,
+} from '../lib/central'
 
 export default function Login() {
   const db = useDB()
@@ -16,6 +27,26 @@ export default function Login() {
   const [remember, setRemember] = useState(true)
   const [loading, setLoading] = useState(false)
   const [err, setErr] = useState('')
+  const [business, setBusiness] = useState(() => lastBusinessId())
+  const [choice, setChoice] = useState(null) // { result, password } while the person picks Pharmacy or Lab
+
+  // Turn the cloud sign-in into the local pharmacy session (the pharmacy data itself stays on this device)
+  function enterPharmacy(result, password) {
+    syncCloudSession(toLocalUser(result), localPasswordFor(password))
+    syncNow().catch((syncErr) => console.warn('Post-login sync info:', syncErr))
+  }
+
+  async function choose(app) {
+    setErr('')
+    setLoading(true)
+    try {
+      if (app === 'lab') await openLabApp()
+      else enterPharmacy(choice.result, choice.password)
+    } catch (e) {
+      setErr(e.message || 'Could not open the app.')
+      setLoading(false)
+    }
+  }
 
   async function submit(e) {
     if (e) e.preventDefault()
@@ -32,6 +63,35 @@ export default function Login() {
 
     setLoading(true)
     clearLock()
+
+    // 0. The Optix account: one login for the Pharmacy POS and the Lab app (and one superadmin).
+    //    "Not an Optix account" (401) or "no connection" falls through to this station's own accounts below, so offline stations keep working.
+    if (typeof navigator === 'undefined' || navigator.onLine !== false) {
+      try {
+        const result = await centralLogin(business, trimmed, password)
+        rememberBusinessId(business.trim().toLowerCase())
+        rememberCentral(result)
+        const apps = result.apps || []
+        if (apps.includes('pharmacy') && apps.includes('lab')) {
+          setChoice({ result, password })
+        } else if (apps.includes('pharmacy')) {
+          enterPharmacy(result, password)
+        } else if (apps.includes('lab')) {
+          await openLabApp()
+          return
+        } else {
+          setErr('This account has no app yet. Ask your administrator to give you access.')
+        }
+        setLoading(false)
+        return
+      } catch (centralErr) {
+        if (!centralErr.network && centralErr.status && centralErr.status !== 401) {
+          setErr(centralErr.message)
+          setLoading(false)
+          return
+        }
+      }
+    }
 
     // 1. Local Station First (0ms instant response, 100% offline)
     try {
@@ -71,6 +131,22 @@ export default function Login() {
 
       {/* Main Login Card - Styled exactly to MedSync Theme */}
       <div className="bg-white rounded-[28px] shadow-[0_30px_80px_-25px_rgba(27,42,74,0.18)] p-8 sm:p-10 w-full max-w-md border border-[#e2e8f1] relative z-10 transition-all">
+        {choice ? (
+          <AppChooser
+            apps={choice.result.apps || []}
+            name={choice.result.user?.name}
+            business={choice.result.lab?.name}
+            busy={loading}
+            error={err}
+            onChoose={choose}
+            onCancel={() => {
+              clearCentral()
+              setChoice(null)
+              setLoading(false)
+            }}
+          />
+        ) : (
+          <>
         {/* Header */}
         <div className="text-center mb-7">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1b2a4a] tracking-tight">
@@ -93,6 +169,20 @@ export default function Login() {
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 rounded-2xl border border-[#e2e8f1] bg-[#f8fafc] text-sm text-[#1b2a4a] placeholder-[#8b94a7] focus:bg-white focus:outline-none focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/15 transition-all shadow-sm"
               placeholder="e.g. admin or cashier"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-[#3c4761] mb-1.5">
+              Business ID <span className="font-medium text-[#8b94a7]">(only if your administrator gave you one)</span>
+            </label>
+            <input
+              value={business}
+              onChange={(e) => setBusiness(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+              className="w-full px-4 py-3 rounded-2xl border border-[#e2e8f1] bg-[#f8fafc] text-sm text-[#1b2a4a] placeholder-[#8b94a7] focus:bg-white focus:outline-none focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/10 transition-all font-medium"
+              placeholder="e.g. city-care"
+              autoCapitalize="none"
+              autoComplete="off"
             />
           </div>
 
@@ -163,6 +253,8 @@ export default function Login() {
             <span>Setup .exe</span>
           </a>
         </div>
+          </>
+        )}
       </div>
     </div>
   )
