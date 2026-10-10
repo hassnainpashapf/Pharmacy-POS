@@ -1,11 +1,10 @@
-// One Optix account for the Pharmacy POS and the Blood Test Lab app.
+// One Optix account for the Pharmacy POS and the other products of the suite.
 //
-// The Lab cloud (labpos-api) is the single place where people sign in and where the superadmin works.
-// A business can have the Lab, the Pharmacy, or both; each person is allowed into some of those (`apps`).
-// Signing in here asks the cloud; the result is turned into the local pharmacy session the rest of the app already uses
-// (db.jsx -> syncCloudSession), so the pharmacy data itself stays on this device exactly as before.
-//
-// Moving between the two sites uses a one-time ticket (see /api/sso/*), never a password.
+// The hub (today: the Lab cloud) is the single place where people sign in and where the superadmin works. Sign-in, the one-time
+// SSO ticket and the product switching come from the shared SDK (@optix/suite-sdk); what stays here is what is specific to the
+// pharmacy: turning a hub sign-in into the local pharmacy session (db.jsx -> syncCloudSession). The pharmacy data itself stays on
+// this device exactly as before.
+import { createHub } from '@optix/suite-sdk'
 
 const DEFAULT_API = 'https://labpos-api.150.230.52.29.sslip.io'
 const DEFAULT_LAB = 'https://optix-lab-medsync.pages.dev'
@@ -14,27 +13,23 @@ export const CENTRAL_API = String(import.meta.env?.VITE_CENTRAL_API || DEFAULT_A
 export const LAB_URL = String(import.meta.env?.VITE_LAB_URL || DEFAULT_LAB).replace(/\/+$/, '')
 export const SUPERADMIN_URL = `${LAB_URL}/superadmin/`
 
-const KEY = 'optix_central_session'
+// This site is the 'pharmacy' product of the suite (the product list lives in the hub's registry).
+export const THIS_APP = 'pharmacy'
+
 const BUSINESS_KEY = 'optix_business_id'
 
-export function getCentral() {
-  try {
-    return JSON.parse(localStorage.getItem(KEY) || 'null')
-  } catch {
-    return null
-  }
-}
-export function setCentral(value) {
-  try {
-    if (value) localStorage.setItem(KEY, JSON.stringify(value))
-    else localStorage.removeItem(KEY)
-  } catch {
-    /* private mode: the session just does not persist */
-  }
-}
-export function clearCentral() {
-  setCentral(null)
-}
+// the same session key as before, so people who are already signed in stay signed in
+export const hub = createHub({ api: CENTRAL_API, appId: THIS_APP, sessionKey: 'optix_central_session' })
+
+export const centralCall = hub.call
+export const getCentral = hub.getSession
+export const clearCentral = hub.clearSession
+export const rememberCentral = hub.rememberSession
+export const centralLogin = hub.login
+export const exchangeTicket = hub.exchangeTicket
+export const openApp = hub.openApp
+export const otherApps = hub.otherApps
+
 export function lastBusinessId() {
   try {
     return localStorage.getItem(BUSINESS_KEY) || ''
@@ -51,72 +46,10 @@ export function rememberBusinessId(value) {
   }
 }
 
-// Error shape: message for people, `status` (HTTP), `code` (server code), `network: true` when the cloud could not be reached at all
-export async function centralCall(path, { method = 'GET', body, token, timeout = 9000 } = {}) {
-  const ctl = typeof AbortController !== 'undefined' ? new AbortController() : null
-  const timer = ctl ? setTimeout(() => ctl.abort(), timeout) : null
-  let response
-  try {
-    response = await fetch(`${CENTRAL_API}${path}`, {
-      method,
-      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      body: body === undefined ? undefined : JSON.stringify(body),
-      signal: ctl ? ctl.signal : undefined,
-    })
-  } catch (cause) {
-    const error = new Error('Cannot reach the Optix cloud. Check your internet connection.')
-    error.network = true
-    error.cause = cause
-    throw error
-  } finally {
-    if (timer) clearTimeout(timer)
-  }
-  let json = {}
-  try {
-    json = await response.json()
-  } catch {
-    json = {}
-  }
-  if (!response.ok) {
-    const error = new Error(json.error || `Request failed (${response.status})`)
-    error.status = response.status
-    error.code = json.code
-    throw error
-  }
-  return json
-}
-
-// username + password (+ the business id, empty = the default business) -> { user, token, lab, apps }
-export function centralLogin(businessId, username, password) {
-  return centralCall('/api/auth/login', { method: 'POST', timeout: 6000, body: { username, password, lab: String(businessId || '').trim().toLowerCase() } })
-}
-
-export function exchangeTicket(ticket) {
-  return centralCall('/api/sso/exchange', { method: 'POST', body: { ticket } })
-}
-
-// This site is the 'pharmacy' product of the suite (the product list lives in the hub's registry).
-export const THIS_APP = 'pharmacy'
-
-// Open another product of the suite already signed in (one-time ticket from the hub)
-export async function openApp(appId, central = getCentral()) {
-  if (!central?.token) throw new Error('Sign in again to open the other app.')
-  const { url } = await centralCall('/api/sso/ticket', { method: 'POST', body: { app: appId }, token: central.token })
-  window.location.href = url
-}
-
-// The other products this person may open (drawn from the registry the hub sent at sign-in)
-export function otherApps(central = getCentral()) {
-  return (central?.catalog || []).filter((app) => app.id !== THIS_APP && (central?.apps || []).includes(app.id))
-}
-
 // Pharmacy roles in this app: ADMIN, MANAGER, PHARMACIST, CASHIER. The admin picks one per person in the hub (Users & Roles);
 // otherwise it follows the lab role.
 export function pharmacyRoleOf(user) {
-  const picked = user?.appRoles?.[THIS_APP] || user?.pharmacyRole
-  if (picked) return picked
-  if (user?.role === 'admin') return 'ADMIN'
-  return 'CASHIER'
+  return hub.roleOf(user, user?.role === 'admin' ? 'ADMIN' : 'CASHIER')
 }
 
 function randomSecret() {
@@ -145,15 +78,4 @@ export function toLocalUser(result) {
 // A ticket sign-in has no password, so the local account gets a random one nobody knows.
 export function localPasswordFor(password) {
   return password || randomSecret()
-}
-
-export function rememberCentral(result) {
-  setCentral({
-    token: result.token,
-    apps: result.apps || [],
-    catalog: result.catalog || [],
-    user: { id: result.user.id, name: result.user.name, role: result.user.role },
-    lab: { id: result.lab?.id, slug: result.lab?.slug, name: result.lab?.name },
-    at: Date.now(),
-  })
 }
