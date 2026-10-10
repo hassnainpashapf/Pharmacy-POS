@@ -11,6 +11,8 @@ const DEFAULT_LAB = 'https://optix-lab-medsync.pages.dev'
 
 export const CENTRAL_API = String(import.meta.env?.VITE_CENTRAL_API || DEFAULT_API).replace(/\/+$/, '')
 export const LAB_URL = String(import.meta.env?.VITE_LAB_URL || DEFAULT_LAB).replace(/\/+$/, '')
+// the main Optix website: every product of the suite, one sign-in, downloads
+export const SUITE_URL = String(import.meta.env?.VITE_SUITE_URL || 'https://optix-suite.ellahabad.workers.dev').replace(/\/+$/, '')
 export const SUPERADMIN_URL = `${LAB_URL}/superadmin/`
 
 // This site is the 'pharmacy' product of the suite (the product list lives in the hub's registry).

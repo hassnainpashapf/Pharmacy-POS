@@ -13,6 +13,7 @@ import {
   THIS_APP,
   rememberBusinessId,
   rememberCentral,
+  SUITE_URL,
   toLocalUser,
 } from '../lib/central'
 
@@ -243,6 +244,13 @@ export default function Login() {
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
             <span>Optix MedSync Website</span>
+          </a>
+
+          <a
+            href={SUITE_URL}
+            className="inline-flex items-center gap-1 font-bold text-[#3c4761] hover:text-[#2f6df6] transition-colors py-1"
+          >
+            <span>All Optix apps</span>
           </a>
 
           <a
