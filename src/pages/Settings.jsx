@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import AuditLogs from './AuditLogs'
 import Users from './Users'
-import { useDB, updateSettings, fmt, loyaltyTiers, LOYALTY_TIERS, can, getActiveTenantKey } from '../lib/db'
+import { useDB, updateSettings, fmt, loyaltyTiers, LOYALTY_TIERS, can, getActiveTenantKey, currentUser, demoDataStatus, loadDemoData, removeDemoData } from '../lib/db'
 import {
   Save,
   Download,
@@ -26,6 +26,7 @@ import {
   Trash2,
   ShieldCheck,
   RotateCcw,
+  GraduationCap,
 } from 'lucide-react'
 
 function SettingsInputField({ label, icon: Icon, required, ...props }) {
@@ -307,6 +308,100 @@ function BackupRestore() {
           </span>
         )}
       </div>
+    </div>
+  )
+}
+
+// Optional sample records for training. Owner / administrator only; everything it adds is flagged and can be removed again.
+function TrainingData() {
+  const db = useDB()
+  const [confirm, setConfirm] = useState(null) // 'load' | 'remove'
+  const [msg, setMsg] = useState(null) // { ok, text }
+  const st = demoDataStatus()
+  void db
+
+  function run() {
+    const action = confirm
+    setConfirm(null)
+    try {
+      if (action === 'load') {
+        const next = loadDemoData()
+        setMsg({ ok: true, text: `Demo data loaded: ${next.counts.medicines} medicines and ${next.counts.sales} sales.` })
+      } else {
+        removeDemoData()
+        setMsg({ ok: true, text: 'Demo data removed. Your own records were not touched.' })
+      }
+    } catch (ex) {
+      setMsg({ ok: false, text: ex.message })
+    }
+  }
+
+  const primary = 'inline-flex items-center gap-2 bg-[#3b1734] hover:bg-[#280c23] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-95'
+  const secondary = 'inline-flex items-center gap-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-xs font-bold cursor-pointer transition-all shadow-xs'
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-xs p-5 space-y-4" data-testid="training-data">
+      <div className="flex items-center justify-between gap-3 pb-3 border-b border-slate-100">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-lg bg-[#f5eef4] text-[#714B67] flex items-center justify-center font-bold">
+            <GraduationCap className="w-4 h-4" />
+          </div>
+          <div>
+            <h3 className="font-bold text-slate-900 text-sm">Training data</h3>
+            <p className="text-[11px] text-slate-400">Sample medicines, suppliers, customers and about a month of sales, for practice only</p>
+          </div>
+        </div>
+        <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-full whitespace-nowrap">
+          {st.loaded ? 'Demo data loaded' : 'Not loaded'}
+        </span>
+      </div>
+
+      {st.legacy ? (
+        <p className="text-xs text-slate-500">This station already holds the built-in demo records from an earlier version of the app. They are mixed with your own data, so they cannot be loaded or removed automatically.</p>
+      ) : st.loaded ? (
+        <p className="text-xs text-slate-500">
+          Demo records are marked and can be removed in one step. Removing them leaves your own medicines, sales and customers untouched
+          (it is refused if your own sales or purchases already use a demo medicine).
+        </p>
+      ) : st.realSales > 0 ? (
+        <p className="text-xs text-slate-500">This business already has real sales, so demo data cannot be loaded. Demo data is only for an empty business.</p>
+      ) : (
+        <p className="text-xs text-slate-500">Loading adds clearly marked sample records so staff can practise. Use it on an empty business only; it does not affect real sales.</p>
+      )}
+
+      <div className="flex flex-wrap gap-3 items-center">
+        {!st.legacy && !st.loaded && (
+          <button type="button" onClick={() => { setMsg(null); setConfirm('load') }} disabled={st.realSales > 0} className={`${primary} disabled:opacity-50 disabled:cursor-not-allowed`}>
+            <GraduationCap className="w-4 h-4" /> Load demo data
+          </button>
+        )}
+        {!st.legacy && st.loaded && (
+          <button type="button" onClick={() => { setMsg(null); setConfirm('remove') }} className={secondary}>
+            <Trash2 className="w-4 h-4 text-slate-500" /> Remove demo data
+          </button>
+        )}
+        {msg && (
+          <span role="status" className={`text-xs font-bold px-3 py-1.5 rounded-xl border ${msg.ok ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-rose-700 bg-rose-50 border-rose-200'}`}>
+            {msg.text}
+          </span>
+        )}
+      </div>
+
+      {confirm && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" onClick={() => setConfirm(null)}>
+          <div className="w-full max-w-sm bg-white rounded-2xl border border-slate-200 shadow-2xl p-5" onClick={(e) => e.stopPropagation()}>
+            <h4 className="font-bold text-slate-900 text-sm">{confirm === 'load' ? 'Load demo data?' : 'Remove demo data?'}</h4>
+            <p className="text-xs text-slate-500 mt-2">
+              {confirm === 'load'
+                ? 'This adds sample medicines, suppliers, customers and about a month of sales so you can practise. They are marked as demo and can be removed later.'
+                : 'This removes every record marked as demo (medicines, batches, suppliers, customers and sales). Your own records are not touched.'}
+            </p>
+            <div className="flex justify-end gap-2 mt-5">
+              <button type="button" onClick={() => setConfirm(null)} className={secondary}>Cancel</button>
+              <button type="button" onClick={run} className={primary} data-testid="training-confirm">{confirm === 'load' ? 'Load demo data' : 'Remove demo data'}</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -689,6 +784,13 @@ function Configuration() {
         <div className="lg:col-span-2">
           <BackupRestore />
         </div>
+
+        {/* Training data: owner / administrator only */}
+        {currentUser()?.role === 'ADMIN' && (
+          <div className="lg:col-span-2">
+            <TrainingData />
+          </div>
+        )}
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 // Offline localStorage database for Pharmacy POS (MVP)
 import { useEffect, useState } from 'react'
 import { needsFirstRun, validateOwnerForm, buildOwnerUser } from './firstRun'
+import { hash, isKnownDefaultPassword } from './passwordHash'
 
 const KEY = 'pharmacy_pos_db_v2'
 const ACTIVE_TENANT_KEY = 'pharmacy_pos_active_tenant'
@@ -250,8 +251,10 @@ function load(targetTenantId) {
         }
       }
 
-      // Automatic migration: ensure GSK supplier exists
       if (!Array.isArray(d.suppliers)) d.suppliers = []
+      // Automatic migration (older installs only): ensure the GSK supplier + catalogue and the demo history exist.
+      // A business that started clean (d.startedClean) keeps exactly what its owner put in.
+      if (!d.startedClean) {
       if (!d.suppliers.some((s) => s.id === 'sup_gsk' || /glaxosmithkline|gsk/i.test(s?.name || ''))) {
         d.suppliers.unshift({
           id: 'sup_gsk',
@@ -328,6 +331,7 @@ function load(targetTenantId) {
       if (realSaleCount < 15 && d.salesSeedVersion !== SALES_SEED_VERSION) {
         seedHistoricalSales(d)
       }
+      }
 
       const toSave = { ...d, session: null }
       localStorage.setItem(storageKey, JSON.stringify(toSave))
@@ -340,7 +344,7 @@ function load(targetTenantId) {
   return seed(empty())
 }
 
-export function seedHistoricalSales(d) {
+export function seedHistoricalSales(d, branchPool) {
   if (!d.medicines || d.medicines.length === 0) return
   const now = new Date()
   const sales = []
@@ -348,7 +352,7 @@ export function seedHistoricalSales(d) {
   // Pick active medicines
   const popularMeds = d.medicines.slice(0, 30)
   const payMethods = ['CASH', 'CASH', 'CASH', 'CARD', 'CARD', 'DIGITAL', 'CREDIT']
-  const branches = ['main', 'main', 'main', 'branch_khi', 'branch_isb']
+  const branches = branchPool || ['main', 'main', 'main', 'branch_khi', 'branch_isb']
   const cashiers = [
     { username: 'usr_cashier', name: 'Bilal Cashier' },
     { username: 'usr_pharmacist', name: 'Dr. Sara Khan' },
@@ -446,7 +450,9 @@ export function seedHistoricalSales(d) {
   d.salesSeedVersion = SALES_SEED_VERSION
 }
 
-function seed(d) {
+// Demo records for training. The container `d` is a scratch object ({medicines, batches, suppliers, customers, sales});
+// loadDemoData() merges it into the business and flags every record with demo: true so it can be removed again.
+function buildDemoData(d) {
   // Real Authorized Pharmaceutical Distributors
   const supGSK = { id: 'sup_gsk', name: 'GSK Pakistan (GlaxoSmithKline)', company: 'GlaxoSmithKline Healthcare Pakistan', phone: '021-111-475-725', balance: 0 }
   const supMP = { id: 'sup_mp', name: 'Muller & Phipps Pakistan (Pvt) Ltd', company: 'M&P Healthcare Distribution', phone: '042-35889901', balance: 0 }
@@ -669,11 +675,27 @@ function seed(d) {
   const m40 = mk('Betnesol Eye/Ear Drops', 'Betamethasone Sodium Phosphate', '0.1%', 'Drops', '8964000123325', 'GSK Pakistan', 15, 115, 'Betnesol', '5ml Dropper Bottle', 120, 100)
   b(m40, 'GSK-2281', '2027-04-05', 80, '2024-04-01', 'ACTIVE', supGSK.id)
 
-  // Walk-in customer default
-  d.customers = [{ id: 'walkin', name: 'Walk-in Customer', phone: '', creditLimit: 0, balance: 0, points: 0 }]
+  // Walk-in customer default plus a few named customers to practise credit sales with
+  d.customers = [
+    { id: 'walkin', name: 'Walk-in Customer', phone: '', creditLimit: 0, balance: 0, points: 0 },
+    { id: uid(), name: 'Ayesha Khan', phone: '0300-1111111', creditLimit: 5000, balance: 0, points: 0 },
+    { id: uid(), name: 'Imran Malik', phone: '0321-2222222', creditLimit: 10000, balance: 0, points: 0 },
+  ]
 
-  // Clean operational history with realistic baseline sales for analytics
-  seedHistoricalSales(d)
+  // About a month of realistic baseline sales for analytics (training only, one branch)
+  seedHistoricalSales(d, ['main'])
+  return d
+}
+
+// A brand-new business starts EMPTY: no medicines, customers, suppliers or sales. Only what the app needs to run:
+// the Main branch, the first billing counter, the plug-in list and the (empty) operational lists.
+function seed(d) {
+  d.startedClean = true
+  d.medicines = []
+  d.batches = []
+  d.suppliers = []
+  d.customers = []
+  d.sales = []
   d.expenses = []
   d.returns = []
   d.purchaseOrders = []
@@ -687,12 +709,9 @@ function seed(d) {
   // No default staff accounts: the first owner account is created on first run (see createOwnerAccount).
   d.users = []
 
-  // LAN Billing Counters
-  d.counters = [
-    { id: 'counter-1', name: 'Counter 01 (Main Billing)', ip: '192.168.1.101', active: true },
-    { id: 'counter-2', name: 'Counter 02 (Dispensing Express)', ip: '192.168.1.102', active: true },
-    { id: 'counter-3', name: 'Counter 03 (Emergency / OPD)', ip: '192.168.1.103', active: true },
-  ]
+  d.branches = [{ id: 'main', name: 'Main Branch (HQ)', city: '', address: '', region: '', active: true }]
+  d.plugins = DEFAULT_PLUGINS.map((p) => ({ ...p }))
+  d.counters = [{ id: 'counter-1', name: 'Counter 01 (Main Billing)', ip: '', active: true }]
 
   // A shift must be opened by the cashier; never pretend a shift is already live.
   d.shifts = []
@@ -702,11 +721,7 @@ function seed(d) {
 }
 
 // simple hash (demo-grade; real deployment should use server-side bcrypt)
-export function hash(str) {
-  let h = 5381
-  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) >>> 0
-  return 'h' + h.toString(36)
-}
+export { hash }
 
 function log(action, detail = '') {
   db.auditLogs.push({ id: uid(), at: new Date().toISOString(), user: db.session?.username || 'system', action, detail })
@@ -741,6 +756,90 @@ export function useDB() {
 
 export const getDB = () => db
 export function resetDB() { db = seed(empty()); save() }
+
+// ---------- training (demo) data ----------
+// Optional, owner/admin only, clearly separate from the real business. Every demo record carries demo: true,
+// so "Remove demo data" takes out exactly those records and nothing else.
+const isDemoSale = (s) => !!s && (s.demo === true || String(s.id || '').startsWith('sale_seed_'))
+
+export function demoDataStatus() {
+  const meds = db.medicines || []
+  const sales = db.sales || []
+  const flagged = meds.some((m) => m.demo) || (db.suppliers || []).some((x) => x.demo) || sales.some((x) => x.demo)
+  const demoSales = sales.filter(isDemoSale).length
+  const realSales = sales.length - demoSales
+  return {
+    loaded: flagged,
+    // demo records created by an older version of the app (not flagged, so they cannot be told apart safely)
+    legacy: !flagged && demoSales > 0,
+    realSales,
+    counts: {
+      medicines: meds.filter((m) => m.demo).length,
+      suppliers: (db.suppliers || []).filter((x) => x.demo).length,
+      customers: (db.customers || []).filter((x) => x.demo).length,
+      sales: sales.filter((x) => x.demo).length,
+    },
+  }
+}
+
+function requireOwnerRole() {
+  if (db.session?.role !== 'ADMIN') throw new Error('Only the owner / an administrator can change training data.')
+}
+
+export function loadDemoData() {
+  requireOwnerRole()
+  const st = demoDataStatus()
+  if (st.legacy) throw new Error('This station already contains demo records from an earlier version of the app.')
+  if (st.realSales > 0) throw new Error('This business already has real sales, so demo data cannot be loaded. Demo data is only for an empty business.')
+  if (st.loaded) throw new Error('Demo data is already loaded. Remove it first if you want a fresh copy.')
+
+  const scratch = { medicines: [], batches: [], suppliers: [], customers: [], sales: [] }
+  buildDemoData(scratch)
+  const has = (list, test) => (list || []).some(test)
+  // never duplicate a medicine/supplier/customer the business already has
+  const skipMed = new Set()
+  scratch.medicines.forEach((m) => {
+    if (has(db.medicines, (x) => String(x.name || '').toLowerCase() === m.name.toLowerCase() || (x.barcode && x.barcode === m.barcode))) skipMed.add(m.id)
+  })
+  const flag = (r) => ({ ...r, demo: true })
+  db.medicines = [...(db.medicines || []), ...scratch.medicines.filter((m) => !skipMed.has(m.id)).map(flag)]
+  db.batches = [...(db.batches || []), ...scratch.batches.filter((b2) => !skipMed.has(b2.medicineId)).map(flag)]
+  db.suppliers = [...(db.suppliers || []), ...scratch.suppliers.filter((x) => !has(db.suppliers, (y) => y.id === x.id)).map(flag)]
+  db.customers = [...(db.customers || []), ...scratch.customers.filter((x) => !has(db.customers, (y) => y.id === x.id)).map(flag)]
+  const demoSales = scratch.sales.filter((x) => !(x.items || []).some((it) => skipMed.has(it.medicineId))).map(flag)
+  db.sales = [...(db.sales || []), ...demoSales]
+  log('DEMO_DATA_LOADED', `${scratch.medicines.length - skipMed.size} medicines, ${demoSales.length} sales`)
+  save()
+  return demoDataStatus()
+}
+
+export function removeDemoData() {
+  requireOwnerRole()
+  const st = demoDataStatus()
+  if (!st.loaded) throw new Error('There is no demo data to remove.')
+  const demoIds = new Set()
+  ;(db.medicines || []).filter((m) => m.demo).forEach((m) => demoIds.add(m.id))
+  ;(db.batches || []).filter((b2) => b2.demo).forEach((b2) => demoIds.add(b2.id))
+  ;(db.suppliers || []).filter((x) => x.demo).forEach((x) => demoIds.add(x.id))
+  ;(db.customers || []).filter((x) => x.demo && x.id !== 'walkin').forEach((x) => demoIds.add(x.id))
+  // Anything the business created itself that points at a demo record stops the removal (it would be left dangling).
+  const pattern = new RegExp([...demoIds].map((id) => id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'))
+  const mine = [
+    (db.sales || []).filter((x) => !isDemoSale(x)), db.returns, db.purchases, db.purchaseReturns, db.stockAdjustments,
+    db.stockAudits, db.transfers, db.purchaseOrders, db.wholesaleOrders, db.deliveries,
+  ]
+  const used = demoIds.size > 0 && mine.some((list) => (list || []).some((rec) => pattern.test(JSON.stringify(rec))))
+  if (used) throw new Error('Some demo medicines, suppliers or customers are already used in your own sales, purchases or returns, so the demo data cannot be removed safely.')
+
+  db.medicines = db.medicines.filter((m) => !m.demo)
+  db.batches = (db.batches || []).filter((b2) => !b2.demo)
+  db.suppliers = (db.suppliers || []).filter((x) => !x.demo)
+  db.customers = (db.customers || []).filter((x) => !x.demo)
+  db.sales = (db.sales || []).filter((x) => !isDemoSale(x))
+  log('DEMO_DATA_REMOVED')
+  save()
+  return demoDataStatus()
+}
 
 // ---------- helpers ----------
 export const medicineById = (id) => db.medicines.find((m) => m.id === id)
@@ -2063,6 +2162,7 @@ export function setUserPermissions(id, { grants = [], revokes = [] }) {
 export function addUser({ username, password, name, role, branchId }) {
   if (db.users.some((u) => u.username.toLowerCase() === username.toLowerCase())) throw new Error('Username already exists')
   if (!username || !password || !name) throw new Error('All fields are required')
+  if (isKnownDefaultPassword(password)) throw new Error('That is a known default password. Choose a different one')
   const u = { id: uid(), username, passHash: hash(password), name, role: role || 'CASHIER', active: true, branchId: branchId || null, perms: { grants: [], revokes: [] } }
   db.users.push(u)
   log('USER_ADD', username)
@@ -2073,6 +2173,7 @@ export function addUser({ username, password, name, role, branchId }) {
 export function updateUser(id, patch) {
   const u = db.users.find((x) => x.id === id)
   if (!u) return
+  if (patch.password && isKnownDefaultPassword(patch.password)) throw new Error('That is a known default password. Choose a different one')
   if (patch.password) patch.passHash = hash(patch.password)
   delete patch.password
   // Allow username change — check uniqueness

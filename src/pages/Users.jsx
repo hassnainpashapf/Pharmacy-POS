@@ -12,6 +12,7 @@ import {
   setUserPermissions,
 } from '../lib/db'
 import { Modal, Input } from './Medicines'
+import { usersWithDefaultPassword, isKnownDefaultPassword } from '../lib/defaultPasswords'
 import { Plus, Pencil, Trash2, KeyRound, ShieldCheck, Users as UsersIcon, SlidersHorizontal } from 'lucide-react'
 
 const ROLE_OPTIONS = [
@@ -45,6 +46,7 @@ export function UsersPanel({ hideHeader = false, addingProp, setAddingProp }) {
   const [permUser, setPermUser] = useState(null)  // user whose permissions are being edited
   const [matrixUser, setMatrixUser] = useState('') // user highlighted in the permission matrix
   const [err, setErr] = useState('')
+  const defaultPwUsers = usersWithDefaultPassword(db.users)
 
   // ── Permission matrix data, derived from PERMISSION_CATALOG ──
   const defaultsByRole = Object.fromEntries(
@@ -108,6 +110,29 @@ export function UsersPanel({ hideHeader = false, addingProp, setAddingProp }) {
       {err && (
         <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl p-3 font-medium">
           ⚠️ {err}
+        </div>
+      )}
+
+      {/* Admin only: accounts that still use one of the well-known passwords older versions shipped */}
+      {me?.role === 'ADMIN' && defaultPwUsers.length > 0 && (
+        <div role="alert" className="bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl p-3 font-medium">
+          <div className="font-bold">
+            {defaultPwUsers.length} {defaultPwUsers.length === 1 ? 'user still uses' : 'users still use'} a default password:{' '}
+            {defaultPwUsers.map((u) => u.username).join(', ')}
+          </div>
+          <div className="mt-1 text-rose-600">Anyone who knows the old defaults can sign in as them. Set a new password for each.</div>
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {defaultPwUsers.map((u) => (
+              <button
+                key={u.id}
+                type="button"
+                onClick={() => setResetUser(u)}
+                className="px-2.5 py-1 rounded-lg bg-white border border-rose-200 hover:bg-rose-100 text-rose-700 text-[11px] font-bold transition-colors cursor-pointer"
+              >
+                Reset password: {u.username}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
@@ -716,15 +741,17 @@ function ResetPassModal({ user, onClose, onSave }) {
   const [pw, setPw]   = useState('')
   const [pw2, setPw2] = useState('')
   const mismatch = pw && pw2 && pw !== pw2
+  const known = pw && isKnownDefaultPassword(pw)
   return (
     <Modal title={`🔑 Reset Password — ${user.name}`} onClose={onClose}>
       <div className="space-y-3">
         <Input label="New Password"     type="password" value={pw}  onChange={e => setPw(e.target.value)} />
         <Input label="Confirm Password" type="password" value={pw2} onChange={e => setPw2(e.target.value)} />
         {mismatch && <p className="text-xs text-rose-600 font-semibold">⚠️ Passwords do not match</p>}
+        {known && <p className="text-xs text-rose-600 font-semibold">⚠️ That is a known default password. Choose a different one</p>}
       </div>
       <button
-        disabled={!pw || mismatch}
+        disabled={!pw || mismatch || known}
         onClick={() => onSave(pw)}
         className="mt-5 w-full bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white py-2.5 rounded-xl font-bold text-xs transition-all active:scale-95"
       >

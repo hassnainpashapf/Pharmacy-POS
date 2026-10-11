@@ -50,6 +50,7 @@ import BrandLogo from './components/BrandLogo'
 import HardwareStation from './pages/HardwareStation'
 import AlertEngine from './components/AlertEngine'
 import ShiftModal from './components/ShiftModal'
+import DefaultPasswordPrompt from './components/DefaultPasswordPrompt'
 
 import {
   LayoutDashboard,
@@ -322,6 +323,7 @@ function Shell({ children }) {
       <CommandPalette isOpen={cmdOpen} onClose={setCmdOpen} />
       <AlertEngine isOpen={alertOpen} onClose={() => setAlertOpen(false)} />
       <ShiftModal isOpen={shiftModalOpen} onClose={() => setShiftModalOpen(false)} />
+      <DefaultPasswordPrompt />
 
       {/* Modern Light Clean White Sidebar (Odoo Style) */}
       <aside

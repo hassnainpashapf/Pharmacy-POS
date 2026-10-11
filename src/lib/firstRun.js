@@ -2,6 +2,8 @@
 // The app never ships a user with a known password. A device with no users shows
 // "Create the owner account"; the person chooses the password.
 
+import { isKnownDefaultPassword } from './passwordHash.js'
+
 export const MIN_PASSWORD_LENGTH = 8
 
 // True when there is nobody who could sign in on this device yet.
@@ -25,6 +27,7 @@ export function validateOwnerForm(form = {}) {
   if (!business) errors.business = 'Enter the business name'
   if (password.length < MIN_PASSWORD_LENGTH) errors.password = `The password needs at least ${MIN_PASSWORD_LENGTH} characters`
   else if (password.trim().toLowerCase() === username.toLowerCase()) errors.password = 'The password cannot be the same as the username'
+  else if (isKnownDefaultPassword(password)) errors.password = 'That is a known default password. Choose a different one'
   if (!errors.password && confirm !== password) errors.confirm = 'The two passwords do not match'
   return { ok: Object.keys(errors).length === 0, errors, value: { name, username, business, password } }
 }
