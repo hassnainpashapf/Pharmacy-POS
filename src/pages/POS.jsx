@@ -480,6 +480,9 @@ export default function POS() {
                   <ShoppingCart className="w-6 h-6 opacity-60" />
                 </div>
                 <p className="text-xs font-bold text-slate-700">Order Terminal Ready</p>
+                {!(db.medicines || []).length && (
+                  <p className="text-[11px] font-bold text-[#2f6df6] mt-1.5">No medicines yet. <a href="#/medicines" className="underline">Add your first medicine</a> to start selling.</p>
+                )}
                 <p className="text-[11px] text-slate-400 mt-0.5 max-w-sm">
                   Scan barcode with reader or press <kbd className="px-1 py-0.2 bg-slate-100 rounded-sm text-slate-700 font-mono text-[10px] border border-slate-200">F2</kbd> to search medicine.
                 </p>

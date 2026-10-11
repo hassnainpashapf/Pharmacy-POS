@@ -247,7 +247,7 @@ function DeleteModal({ sale, onClose, onConfirm }) {
 
 /* ─── Main Page ────────────────────────────────────── */
 export default function SalesHistory() {
-  useDB()
+  const db = useDB()
   const me = currentUser()
   const canDel = can('deleteSales')
 
@@ -387,7 +387,7 @@ export default function SalesHistory() {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-slate-400 gap-3">
             <ShoppingBag className="w-10 h-10 opacity-30" />
-            <p className="text-sm">No receipts found</p>
+            <p className="text-sm">{(db.sales || []).length ? 'No receipts found' : 'No sales yet. Receipts appear here after your first sale at the POS.'}</p>
           </div>
         ) : (
           <div className="overflow-x-auto">

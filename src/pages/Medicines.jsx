@@ -829,6 +829,7 @@ function BatchForm({ medicine, onClose }) {
                 onChange={set('supplierId')}
                 className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold"
               >
+                {!db.suppliers.length && <option value="">No supplier yet (optional)</option>}
                 {db.suppliers.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name} ({s.company})

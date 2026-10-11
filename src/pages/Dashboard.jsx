@@ -179,6 +179,15 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* First-run guide: only while the business has no medicines yet */}
+      {!(db.medicines || []).length && (
+        <div data-testid="first-run-guide" className="flex flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl border border-[#dbe6fb] bg-[#edf2fd] px-4 py-2.5 text-xs font-semibold text-[#1b2a4a]">
+          <PlusCircle className="w-4 h-4 text-[#2f6df6] shrink-0" />
+          <span>New here? Add medicines, then open the POS.</span>
+          <button type="button" onClick={() => nav('/medicines')} className="text-[#2f6df6] font-bold hover:underline cursor-pointer">Add your first medicine</button>
+        </div>
+      )}
+
       {/* 2. Quick Action Toolbar - MedSync Styled Cards */}
       <div className="quick-actions grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {/* New Sale */}

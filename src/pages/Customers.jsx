@@ -937,9 +937,9 @@ export function Customers() {
                       <tr>
                         <td colSpan={8} className="py-12 text-center text-slate-400">
                           <Users className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-                          <div className="text-sm font-bold text-slate-600">No Customers Found</div>
+                          <div className="text-sm font-bold text-slate-600">{(db.customers || []).length ? 'No Customers Found' : 'No customers yet'}</div>
                           <p className="text-xs text-slate-400 mt-0.5">
-                            Try searching with a different term or clear your active filters.
+                            {(db.customers || []).length ? 'Try searching with a different term or clear your active filters.' : 'Add your first customer with the New Customer button.'}
                           </p>
                           {isFiltered && (
                             <button

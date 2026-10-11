@@ -1630,7 +1630,7 @@ function ReportSection({ section, onSwitchToGui }) {
               {!displayRows.length && (
                 <tr>
                   <td colSpan={reportData.columns.length} className="p-8 text-center text-slate-400 font-medium">
-                    No data for the selected filters.
+                    {(db.sales || []).length ? 'No data for the selected filters.' : 'No sales yet. Complete your first sale at the POS and it will appear here.'}
                   </td>
                 </tr>
               )}

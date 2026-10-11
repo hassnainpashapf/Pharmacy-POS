@@ -427,7 +427,7 @@ export default function Inventory({ forcedTab }) {
             </tr></thead>
             <tbody className="divide-y divide-slate-200">
               {batches.map((batch) => <InventoryBatchRow key={batch.id} batch={batch} medicine={medicineById(batch.medicineId)} now={now} onReclassify={() => setReclassModal(batch)} />)}
-              {!batches.length && <tr><td colSpan={11} className="p-8 text-center text-slate-500">No batches match this dosage form, stock status, company, and search. Try another form or status, or clear the search.</td></tr>}
+              {!batches.length && <tr><td colSpan={11} className="p-8 text-center text-slate-500">{(db.medicines || []).length ? 'No batches match this dosage form, stock status, company, and search. Try another form or status, or clear the search.' : 'No medicines yet. Add your first medicine and its stock to see it here.'}</td></tr>}
             </tbody>
           </table>
         </section>

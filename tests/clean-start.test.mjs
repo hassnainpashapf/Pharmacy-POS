@@ -82,3 +82,15 @@ test('a non-admin cannot load or remove demo data', () => {
   assert.throws(() => db.removeDemoData(), /owner/)
   d.session = keep
 })
+
+test('a central (hub) business partition starts empty, and its users are never asked to change a default password', async () => {
+  const { usesDefaultPassword } = await import('../src/lib/defaultPasswords.js')
+  const { hash } = await import('../src/lib/passwordHash.js')
+  const session = db.syncCloudSession({ id: 'central_lab1_u1', username: 'hubuser', name: 'Hub User', role: 'ADMIN', tenantId: 'central-lab1', pharmacyName: 'Hub Pharmacy' }, 'manager123')
+  assert.equal(session.cloudConnected, true)
+  const d = db.getDB()
+  for (const key of ['medicines', 'batches', 'suppliers', 'customers', 'sales']) assert.deepEqual(d[key], [], key)
+  assert.equal(d.users.length, 1)
+  assert.equal(d.users[0].passHash, hash('manager123'))
+  assert.equal(usesDefaultPassword(d.users[0]), false)
+})
