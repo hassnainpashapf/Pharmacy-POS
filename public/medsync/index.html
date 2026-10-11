@@ -647,6 +647,7 @@ html.ph-js .showcase .rv.in{opacity:1;transform:none}
 /* ===== additions for the true content (same tokens, no new look) ===== */
 .hx-role{width:34px;height:34px;border-radius:50%;border:2.5px solid #fff;margin-left:-9px;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800;box-sizing:border-box}
 .hx-role:first-child{margin-left:0}
+@media(max-width:768px){.hx-glass,.mxh-glass-wrap>.hx-glass{box-sizing:border-box}}
 .showcase-shot{display:block;width:100%;height:auto;border-radius:20px;border:1px solid #e2e8f1;box-shadow:0 30px 60px -20px rgba(10,26,47,.22)}
 .shot-cap{margin:12px 4px 0;font-size:12.5px;font-weight:600;color:var(--muted);text-align:center}
 .rx-price-grid.rx-one{grid-template-columns:minmax(0,520px);justify-content:center}
@@ -883,9 +884,9 @@ html.ph-js .showcase .rv.in{opacity:1;transform:none}
         <button class="rx-stepbtn" data-rx-stepbtn="3" role="tab" aria-label="Step 3">3</button>
       </div>
       <div class="rx-photo-card rx-s1 rx-tilt" style="--rx-d:.18s" id="rxPhotoCard">
-        <img class="rx-ph rx-on" data-rx-ph="1" src="assets/step1.jpg" alt="">
-        <img class="rx-ph" data-rx-ph="2" src="assets/step2.jpg" alt="">
-        <img class="rx-ph" data-rx-ph="3" src="assets/step3.jpg" alt="">
+        <img class="rx-ph rx-on" data-rx-ph="1" src="assets/step1.jpg" alt="Screenshot of the counter POS with demo data">
+        <img class="rx-ph" data-rx-ph="2" src="assets/step2.jpg" alt="Screenshot of the Batch and Expiry Action screen with demo data">
+        <img class="rx-ph" data-rx-ph="3" src="assets/step3.jpg" alt="Screenshot of the Sales Reports screen with demo data">
         <div class="rx-floats rx-on" data-rx-fl="1">
           <div class="rx-float-card rx-fc-top"><span class="rx-fc-ic" style="background:var(--green)">✓</span><b>Fast barcode<br>checkout</b></div>
           <div class="rx-float-card rx-fc-bottom">
