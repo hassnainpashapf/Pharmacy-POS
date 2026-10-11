@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useDB, login, clearLock, syncCloudSession, isFirstRun, createOwnerAccount } from '../lib/db'
 import { validateOwnerForm, MIN_PASSWORD_LENGTH } from '../lib/firstRun'
 import { mobileApi } from '../lib/mobileApi'
 import { syncNow } from '../lib/syncEngine'
 import { ArrowLeft, ArrowRight, Download, ShieldCheck } from 'lucide-react'
+import { mountGoogleButton } from '@optix/suite-sdk'
 import AppChooser from '../components/AppChooser'
 import {
   centralLogin,
+  hub,
   clearCentral,
   lastBusinessId,
   localPasswordFor,
@@ -42,6 +44,44 @@ export default function Login() {
     syncCloudSession(toLocalUser(result), localPasswordFor(password))
     syncNow().catch((syncErr) => console.warn('Post-login sync info:', syncErr))
   }
+
+  // what happens after the Optix account (hub) accepted the person: pick an app, or go straight in. Used by the password form and by Google.
+  async function afterCentral(result, password) {
+    const apps = result.apps || []
+    if (apps.length > 1) {
+      setChoice({ result, password })
+    } else if (apps.includes(THIS_APP)) {
+      enterPharmacy(result, password)
+    } else if (apps.length === 1) {
+      await openApp(apps[0]) // the only app this person has lives on another site
+      return
+    } else {
+      setErr('This account has no app yet. Ask your administrator to give you access.')
+    }
+    setLoading(false)
+  }
+
+  // "Continue with Google": the hub checks the Google sign-in and the Gmail saved in the person's profile. The button only appears when the hub has a Google Client ID.
+  const googleRef = useRef(null)
+  const businessRef = useRef(business)
+  businessRef.current = business
+  useEffect(() => {
+    if (!googleRef.current) return undefined
+    const g = mountGoogleButton(googleRef.current, {
+      hub,
+      business: () => businessRef.current || '',
+      onResult: (result) => {
+        setErr('')
+        setLoading(true)
+        rememberBusinessId((businessRef.current || '').trim().toLowerCase())
+        rememberCentral(result)
+        afterCentral(result, '').catch((e) => { setErr(e.message || 'Could not sign in with Google.'); setLoading(false) })
+      },
+      onError: (e) => { setErr(e.message || 'Google sign-in failed.'); setLoading(false) },
+    })
+    return () => g.destroy()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [choice, setupMode])
 
   async function choose(app) {
     setErr('')
@@ -93,18 +133,7 @@ export default function Login() {
         const result = await centralLogin(business, trimmed, password)
         rememberBusinessId(business.trim().toLowerCase())
         rememberCentral(result)
-        const apps = result.apps || []
-        if (apps.length > 1) {
-          setChoice({ result, password })
-        } else if (apps.includes(THIS_APP)) {
-          enterPharmacy(result, password)
-        } else if (apps.length === 1) {
-          await openApp(apps[0]) // the only app this person has lives on another site
-          return
-        } else {
-          setErr('This account has no app yet. Ask your administrator to give you access.')
-        }
-        setLoading(false)
+        await afterCentral(result, password)
         return
       } catch (centralErr) {
         if (!centralErr.network && centralErr.status && centralErr.status !== 401) {
@@ -316,6 +345,7 @@ export default function Login() {
               </>
             )}
           </button>
+          <div ref={googleRef} className="justify-center min-h-[44px] [&:not([hidden])]:flex hidden" hidden />
         </form>
 
         {/* Footer Navigation Back to MedSync Website */}
