@@ -51,7 +51,7 @@ export function mountGoogleCredentialButton(el, { hub, text = 'continue_with', w
     claim()
     CLAIM_EVENTS.forEach((ev) => el.addEventListener(ev, reclaim, { passive: true }))
     el.innerHTML = ''
-    google.accounts.id.renderButton(el, { type: 'standard', theme: 'outline', size: 'large', shape: 'pill', text, logo_alignment: 'center', width: width || Math.max(240, Math.min(360, el.clientWidth || 320)) })
+    google.accounts.id.renderButton(el, { type: 'standard', theme: 'outline', size: 'large', shape: 'pill', text, logo_alignment: 'center', width: width || Math.max(240, Math.min(360, el.parentElement?.clientWidth || 320)) })
     el.hidden = false
   })().catch(() => { el.hidden = true })
   return { destroy() { dead = true; CLAIM_EVENTS.forEach((ev) => el.removeEventListener(ev, reclaim)) } }

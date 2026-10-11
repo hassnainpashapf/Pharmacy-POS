@@ -249,7 +249,7 @@ export default function Login() {
           </p>
         </div>
 
-        <form onSubmit={submitSetup} className="space-y-4" noValidate>
+        <form key="setup-form" onSubmit={submitSetup} className="space-y-4" noValidate>
           {[
             ['business', 'Business name', 'text', 'e.g. City Care Pharmacy', 'organization'],
             ['name', 'Your name', 'text', 'Full name', 'name'],
@@ -287,7 +287,7 @@ export default function Login() {
           >
             {loading ? <span>Creating…</span> : (<><span>Create account and continue</span><ArrowRight className="w-4 h-4" /></>)}
           </button>
-          <div ref={googleRef} className="justify-center min-h-[44px] [&:not([hidden])]:flex hidden" hidden />
+          <div key="google-setup" ref={googleRef} className="justify-center min-h-[44px] [&:not([hidden])]:flex hidden" hidden />
           <button
             type="button"
             onClick={() => { setErr(''); setSetupMode(false) }}
@@ -314,7 +314,7 @@ export default function Login() {
         </div>
 
         {/* Credentials Form */}
-        <form onSubmit={submit} className="space-y-4">
+        <form key="signin-form" onSubmit={submit} className="space-y-4">
           <div>
             <label className="block text-xs font-bold text-[#3c4761] mb-1.5">
               Username or Email
@@ -388,7 +388,7 @@ export default function Login() {
               </>
             )}
           </button>
-          <div ref={googleRef} className="justify-center min-h-[44px] [&:not([hidden])]:flex hidden" hidden />
+          <div key="google-signin" ref={googleRef} className="justify-center min-h-[44px] [&:not([hidden])]:flex hidden" hidden />
         </form>
 
         {/* Footer Navigation Back to MedSync Website */}
