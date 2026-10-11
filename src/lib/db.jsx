@@ -1,5 +1,6 @@
 // Offline localStorage database for Pharmacy POS (MVP)
 import { useEffect, useState } from 'react'
+import { needsFirstRun, validateOwnerForm, buildOwnerUser } from './firstRun'
 
 const KEY = 'pharmacy_pos_db_v2'
 const ACTIVE_TENANT_KEY = 'pharmacy_pos_active_tenant'
@@ -213,51 +214,23 @@ function load(targetTenantId) {
       }
 
       if (isMainTenant) {
-        // Ensure default users exist for all enterprise roles with email credentials ONLY for main tenant
-        const defaultStaff = [
-          { id: 'usr_pasha', username: 'pasha@pharmacy.com', email: 'pasha@pharmacy.com', passHash: hash('Password@786123'), name: 'Hussnain Pasha', role: 'ADMIN', active: true },
-          { id: 'usr_admin', username: 'admin', email: 'admin@pharmacy.com', passHash: hash('Password@786123'), name: 'Hussnain Pasha (Admin)', role: 'ADMIN', active: true },
-          { id: 'usr_manager', username: 'manager', email: 'manager@pharmacy.com', passHash: hash('manager123'), name: 'Tariq Manager', role: 'MANAGER', active: true },
-          { id: 'usr_pharmacist', username: 'pharmacist', email: 'pharmacist@pharmacy.com', passHash: hash('pharmacist123'), name: 'Dr. Sara Khan', role: 'PHARMACIST', active: true },
-          { id: 'usr_cashier', username: 'cashier', email: 'cashier@pharmacy.com', passHash: hash('cashier123'), name: 'Bilal Cashier', role: 'CASHIER', active: true },
-          { id: 'usr_receptionist', username: 'receptionist', email: 'receptionist@pharmacy.com', passHash: hash('reception123'), name: 'Fatima Receptionist', role: 'RECEPTIONIST', active: true },
-        ]
-
-        if (!Array.isArray(d.users) || !d.users.length) {
-          d.users = defaultStaff
-          localStorage.setItem(storageKey, JSON.stringify(d))
-        } else {
-          let changed = false
-          defaultStaff.forEach((def) => {
-            const existing = d.users.find((u) => String(u?.username || '').toLowerCase() === def.username.toLowerCase() || String(u?.email || '').toLowerCase() === def.email.toLowerCase())
-            if (!existing) {
-              d.users.push(def)
-              changed = true
-            } else {
-              if (!existing.email) {
-                existing.email = def.email
-                changed = true
-              }
-              if (def.username === 'pasha@pharmacy.com' || def.username === 'admin') {
-                existing.passHash = hash('Password@786123')
-                existing.active = true
-                changed = true
-              }
-            }
-          })
-          d.users.forEach((u) => {
-            if (!u.email) {
-              u.email = `${(u.username || 'user').toLowerCase()}@pharmacy.com`
-              changed = true
-            }
-            if (!u.perms || !Array.isArray(u.perms.grants) || !Array.isArray(u.perms.revokes)) {
-              u.perms = { grants: [], revokes: [] }
-              changed = true
-            }
-          })
-          if (changed) {
-            localStorage.setItem(storageKey, JSON.stringify(d))
+        // No user is ever created from source code. A device with no users shows the first-run
+        // "Create the owner account" screen. Existing users are kept exactly as they are; only
+        // additive back-fills (email, permissions) run here.
+        if (!Array.isArray(d.users)) d.users = []
+        let changed = false
+        d.users.forEach((u) => {
+          if (!u.email && u.username) {
+            u.email = String(u.username).includes('@') ? u.username : `${String(u.username).toLowerCase()}@pharmacy.com`
+            changed = true
           }
+          if (!u.perms || !Array.isArray(u.perms.grants) || !Array.isArray(u.perms.revokes)) {
+            u.perms = { grants: [], revokes: [] }
+            changed = true
+          }
+        })
+        if (changed) {
+          localStorage.setItem(storageKey, JSON.stringify(d))
         }
       } else {
         // Isolated Franchise tenant: keep their own users list intact
@@ -711,18 +684,8 @@ function seed(d) {
   d.stockAdjustments = []
   d.stockAudits = []
 
-  // Staff Users across enterprise roles
-  // Emails must be present from the very first save: the login screen's quick
-  // role sign-in submits the email address, so accounts seeded without one
-  // cannot be used until a reload runs the email backfill migration.
-  d.users = [
-    { id: 'usr_pasha', username: 'pasha@pharmacy.com', email: 'pasha@pharmacy.com', passHash: hash('Password@786123'), name: 'Hussnain Pasha', role: 'ADMIN', active: true },
-    { id: 'usr_admin', username: 'admin', email: 'admin@pharmacy.com', passHash: hash('Password@786123'), name: 'Hussnain Pasha (Admin)', role: 'ADMIN', active: true },
-    { id: 'usr_manager', username: 'manager', email: 'manager@pharmacy.com', passHash: hash('manager123'), name: 'Tariq Manager', role: 'MANAGER', active: true },
-    { id: 'usr_pharmacist', username: 'pharmacist', email: 'pharmacist@pharmacy.com', passHash: hash('pharmacist123'), name: 'Dr. Sara Khan', role: 'PHARMACIST', active: true },
-    { id: 'usr_cashier', username: 'cashier', email: 'cashier@pharmacy.com', passHash: hash('cashier123'), name: 'Bilal Cashier', role: 'CASHIER', active: true },
-    { id: 'usr_receptionist', username: 'receptionist', email: 'receptionist@pharmacy.com', passHash: hash('reception123'), name: 'Fatima Receptionist', role: 'RECEPTIONIST', active: true },
-  ]
+  // No default staff accounts: the first owner account is created on first run (see createOwnerAccount).
+  d.users = []
 
   // LAN Billing Counters
   d.counters = [
@@ -1647,7 +1610,7 @@ export function mergeCloudSyncData(cloudData) {
           email: cu.email || `${cu.username}@pharmacy.com`,
           name: cu.name || cu.username,
           role: cu.role || 'CASHIER',
-          passHash: cu.passHash || hash('admin123'),
+          passHash: cu.passHash || unusablePassHash(),
           active: cu.disabled ? false : true,
         })
       }
@@ -1722,7 +1685,7 @@ export function syncCloudSession(cloudUser, password) {
       email: cloudUser.email || `${cloudUser.username}@pharmacy.com`,
       name: cloudUser.name || 'Admin',
       role: cloudUser.role || 'ADMIN',
-      passHash: hash(password || 'Password@786123'),
+      passHash: password ? hash(password) : unusablePassHash(),
       active: true,
       perms: { grants: [], revokes: [] },
     }
@@ -1755,8 +1718,42 @@ export function syncCloudSession(cloudUser, password) {
   return db.session
 }
 
+// An account that nobody can sign in to (the stored hash never equals hash(x), which always starts with "h").
+function unusablePassHash() {
+  return 'x' + uid() + uid() + uid()
+}
+
+// True when no user exists on this device (any business partition), i.e. show "Create the owner account".
+export function isFirstRun() {
+  if (!needsFirstRun(db.users)) return false
+  if (typeof window === 'undefined') return true
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && (key === KEY || key.startsWith(`${KEY}_tenant_`))) {
+        const data = JSON.parse(localStorage.getItem(key))
+        if (!needsFirstRun(data?.users)) return false
+      }
+    }
+  } catch (_) {}
+  return true
+}
+
+// First-run setup: creates the first ADMIN (the person chooses the password) and signs them in.
+export function createOwnerAccount(form) {
+  if (!isFirstRun()) throw new Error('This station already has accounts. Please sign in.')
+  const { ok, errors, value } = validateOwnerForm(form)
+  if (!ok) throw new Error(Object.values(errors)[0])
+  const owner = buildOwnerUser(value, hash, uid)
+  db.users = [owner]
+  db.settings = { ...db.settings, pharmacyName: value.business }
+  log('OWNER_CREATED', owner.username)
+  save()
+  return login(owner.username, value.password, { remember: true })
+}
+
 export function login(identifier, password, { remember = true } = {}) {
-  const name = (identifier || 'admin').trim()
+  const name = String(identifier || '').trim()
   const lowerName = name.toLowerCase()
 
   // First check if current db has this user
@@ -1776,24 +1773,8 @@ export function login(identifier, password, { remember = true } = {}) {
     }
   }
 
-  // Handle Pasha default for main tenant if needed
-  if (!u && (lowerName === 'pasha@pharmacy.com' || lowerName === 'pasha')) {
-    localStorage.setItem(ACTIVE_TENANT_KEY, '51fce6e61f3a4065aef0bbbac3810f7a')
-    db = load('51fce6e61f3a4065aef0bbbac3810f7a')
-    u = {
-      id: 'usr_pasha',
-      username: 'pasha@pharmacy.com',
-      email: 'pasha@pharmacy.com',
-      passHash: hash('Password@786123'),
-      name: 'Hussnain Pasha',
-      role: 'ADMIN',
-      active: true,
-    }
-    db.users.push(u)
-  }
-
   const pass = password || ''
-  const validPass = u && (u.passHash === hash(pass) || (pass === 'Password@786123' && (u.role === 'ADMIN' || lowerName.includes('pasha') || lowerName === 'admin')))
+  const validPass = !!u && u.passHash === hash(pass)
   if (!u || !u.active || !validPass) {
     throw new Error('Invalid email or password')
   }
@@ -1833,7 +1814,8 @@ export function logout() {
     sessionStorage.removeItem(SESSION_STORAGE_KEY)
   } catch (_) {}
   save()
-  db = seed(empty())
+  // reload this device's saved users/data (a blank in-memory copy would make everyone look like a first run)
+  db = load()
   notifyListeners()
 }
 

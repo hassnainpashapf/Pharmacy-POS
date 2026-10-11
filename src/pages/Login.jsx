@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useDB, login, clearLock, syncCloudSession } from '../lib/db'
+import { useDB, login, clearLock, syncCloudSession, isFirstRun, createOwnerAccount } from '../lib/db'
+import { validateOwnerForm, MIN_PASSWORD_LENGTH } from '../lib/firstRun'
 import { mobileApi } from '../lib/mobileApi'
 import { syncNow } from '../lib/syncEngine'
 import { ArrowLeft, ArrowRight, Download, ShieldCheck } from 'lucide-react'
@@ -21,10 +22,14 @@ export default function Login() {
   const db = useDB()
   const [username, setUsername] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('pharmacy_pos_last_username') || 'admin'
+      return localStorage.getItem('pharmacy_pos_last_username') || ''
     }
-    return 'admin'
+    return ''
   })
+  // A device with no users at all starts with "Create the owner account" (nothing is pre-installed)
+  const [setupMode, setSetupMode] = useState(() => isFirstRun())
+  const [setup, setSetup] = useState({ name: '', username: '', business: '', password: '', confirm: '' })
+  const [setupErrors, setSetupErrors] = useState({})
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -48,6 +53,21 @@ export default function Login() {
       setErr(e.message || 'Could not open the app.')
       setLoading(false)
     }
+  }
+
+  function submitSetup(e) {
+    e.preventDefault()
+    setErr('')
+    const { ok, errors } = validateOwnerForm(setup)
+    setSetupErrors(errors)
+    if (!ok) return
+    setLoading(true)
+    try {
+      createOwnerAccount(setup)
+    } catch (ex) {
+      setErr(ex.message || 'Could not create the account.')
+    }
+    setLoading(false)
   }
 
   async function submit(e) {
@@ -147,6 +167,68 @@ export default function Login() {
               setLoading(false)
             }}
           />
+        ) : setupMode ? (
+          <>
+        <div className="text-center mb-7">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1b2a4a] tracking-tight">
+            Create the owner account
+          </h1>
+          <p className="text-[#8b94a7] text-xs font-medium mt-1.5">
+            First time on this device. You choose the password; nothing is pre-installed.
+          </p>
+        </div>
+
+        <form onSubmit={submitSetup} className="space-y-4" noValidate>
+          {[
+            ['business', 'Business name', 'text', 'e.g. City Care Pharmacy', 'organization'],
+            ['name', 'Your name', 'text', 'Full name', 'name'],
+            ['username', 'Username', 'text', 'Choose a username', 'username'],
+            ['password', `Password (at least ${MIN_PASSWORD_LENGTH} characters)`, 'password', '••••••••', 'new-password'],
+            ['confirm', 'Confirm password', 'password', '••••••••', 'new-password'],
+          ].map(([key, label, type, ph, ac], i) => (
+            <div key={key}>
+              <label className="block text-xs font-bold text-[#3c4761] mb-1.5">{label}</label>
+              <input
+                autoFocus={i === 0}
+                type={type}
+                autoComplete={ac}
+                autoCapitalize="none"
+                value={setup[key]}
+                onChange={(e) => setSetup((v) => ({ ...v, [key]: e.target.value }))}
+                className="w-full px-4 py-3 rounded-2xl border border-[#e2e8f1] bg-[#f8fafc] text-sm text-[#1b2a4a] placeholder-[#8b94a7] focus:bg-white focus:outline-none focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/15 transition-all shadow-sm"
+                placeholder={ph}
+              />
+              {setupErrors[key] && <p className="text-[11px] font-semibold text-rose-600 mt-1">{setupErrors[key]}</p>}
+            </div>
+          ))}
+
+          {err && (
+            <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-2xl p-3.5 font-medium flex items-center gap-2">
+              <span className="text-base">⚠️</span>
+              <span>{err}</span>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-[#2f6df6] hover:bg-[#1f4fd1] disabled:opacity-60 disabled:cursor-not-allowed text-white py-3.5 rounded-2xl font-extrabold text-sm shadow-[0_14px_30px_-10px_rgba(47,109,246,0.5)] hover:shadow-[0_18px_36px_-10px_rgba(47,109,246,0.6)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2 mt-3"
+          >
+            {loading ? <span>Creating…</span> : (<><span>Create account and continue</span><ArrowRight className="w-4 h-4" /></>)}
+          </button>
+          <button
+            type="button"
+            onClick={() => { setErr(''); setSetupMode(false) }}
+            className="w-full text-center text-xs font-bold text-[#3c4761] hover:text-[#2f6df6] transition-colors py-1 cursor-pointer"
+          >
+            I already have an Optix account — sign in instead
+          </button>
+        </form>
+        <div className="pt-4 mt-5 border-t border-[#e2e8f1] flex items-center justify-center gap-4 text-[11px] font-semibold text-[#8b94a7]">
+          <a href="./privacy.html" className="hover:text-[#2f6df6] transition-colors">Privacy Policy</a>
+          <a href="./terms.html" className="hover:text-[#2f6df6] transition-colors">Terms</a>
+        </div>
+          </>
         ) : (
           <>
         {/* Header */}
@@ -170,7 +252,7 @@ export default function Login() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-3 rounded-2xl border border-[#e2e8f1] bg-[#f8fafc] text-sm text-[#1b2a4a] placeholder-[#8b94a7] focus:bg-white focus:outline-none focus:border-[#2f6df6] focus:ring-4 focus:ring-[#2f6df6]/15 transition-all shadow-sm"
-              placeholder="e.g. admin or cashier"
+              placeholder="Your username or email"
             />
           </div>
 
@@ -261,6 +343,15 @@ export default function Login() {
             <Download className="w-3.5 h-3.5" />
             <span>Setup .exe</span>
           </a>
+        </div>
+        <div className="pt-3 mt-3 flex items-center justify-center gap-4 text-[11px] font-semibold text-[#8b94a7]">
+          <a href="./privacy.html" className="hover:text-[#2f6df6] transition-colors">Privacy Policy</a>
+          <a href="./terms.html" className="hover:text-[#2f6df6] transition-colors">Terms</a>
+          {isFirstRun() && (
+            <button type="button" onClick={() => { setErr(''); setSetupMode(true) }} className="hover:text-[#2f6df6] transition-colors cursor-pointer">
+              Create the owner account
+            </button>
+          )}
         </div>
           </>
         )}
