@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import AuditLogs from './AuditLogs'
 import Users from './Users'
+import GooglePasswordCard from '../components/GooglePasswordCard'
 import { useDB, updateSettings, fmt, loyaltyTiers, LOYALTY_TIERS, can, getActiveTenantKey, currentUser, demoDataStatus, loadDemoData, removeDemoData } from '../lib/db'
 import {
   Save,
@@ -525,6 +526,7 @@ function Configuration() {
 
   return (
     <div className="space-y-6 w-full">
+      <GooglePasswordCard />
       {/* 2. Top Overview KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
         <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">

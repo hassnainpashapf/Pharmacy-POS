@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react'
 import { needsFirstRun, validateOwnerForm, buildOwnerUser } from './firstRun'
 import { hash, isKnownDefaultPassword } from './passwordHash'
+import { buildGoogleOwner, validateGoogleSignup, findGoogleUser, canSetPasswordWithoutCurrent, normalizeEmail } from './googleAuth'
+import { validateNewPassword } from './defaultPasswords'
 
 const KEY = 'pharmacy_pos_db_v2'
 const ACTIVE_TENANT_KEY = 'pharmacy_pos_active_tenant'
@@ -1851,6 +1853,66 @@ export function createOwnerAccount(form) {
   return login(owner.username, value.password, { remember: true })
 }
 
+// First-run "Sign up with Google": the hub already verified the Google credential (identity = { email, name }).
+// Creates the first ADMIN with the Gmail as username and a password nobody knows, and signs them in.
+export function createOwnerAccountWithGoogle({ identity, business }) {
+  if (!isFirstRun()) throw new Error('This station already has accounts. Please sign in.')
+  const { ok, errors, value } = validateGoogleSignup({ business, identity })
+  if (!ok) throw new Error(Object.values(errors)[0])
+  const owner = buildGoogleOwner(identity, uid, unusablePassHash)
+  db.users = [owner]
+  db.settings = { ...db.settings, pharmacyName: value.business }
+  log('OWNER_CREATED', `${owner.username} (Google)`)
+  save()
+  return openLocalSession(owner, owner.username.toLowerCase(), true, 'LOGIN_GOOGLE')
+}
+
+// "Sign in with Google" for people who have a local account on this station: the hub verified the credential, this matches the
+// verified Gmail to an ACTIVE local user (googleEmail, or the profile email) and opens their session. No password is checked.
+export function loginWithVerifiedGoogle(email, { remember = true } = {}) {
+  const target = normalizeEmail(email)
+  let found = findGoogleUser(db.users, target)
+  if (found.error === 'NO_MATCH' && typeof window !== 'undefined') {
+    // not in the current business: look through the other businesses saved on this device (the same search login() does)
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i)
+        if (!key || !key.startsWith(`${KEY}_tenant_`)) continue
+        let data = null
+        try { data = JSON.parse(localStorage.getItem(key)) } catch (_) { data = null }
+        const hit = findGoogleUser(data?.users, target)
+        if (hit.user) {
+          const tenantId = key.replace(`${KEY}_tenant_`, '')
+          localStorage.setItem(ACTIVE_TENANT_KEY, tenantId)
+          db = load(tenantId)
+          found = findGoogleUser(db.users, target)
+          break
+        }
+        if (hit.error === 'INACTIVE') found = hit
+      }
+    } catch (_) {}
+  }
+  if (found.error) throw new Error(found.message)
+  const u = found.user
+  return openLocalSession(u, String(u.username || target).toLowerCase(), remember, 'LOGIN_GOOGLE')
+}
+
+// A Google-created owner has no password anyone knows. The signed-in person may choose one ONCE without the current password
+// (so the station also opens offline). Afterwards the normal password rules apply.
+export function setPasswordForGoogleUser(userId, form) {
+  const u = (db.users || []).find((x) => x.id === userId)
+  if (!u || db.session?.userId !== userId) throw new Error('Sign in first.')
+  if (!canSetPasswordWithoutCurrent(u)) throw new Error('This account already has a password.')
+  const { ok, errors } = validateNewPassword(u, form)
+  if (!ok) throw new Error(Object.values(errors)[0])
+  u.passHash = hash(form.password)
+  delete u.googlePasswordUnset
+  log('PASSWORD_SET', u.username)
+  save()
+  notifyListeners()
+  return u
+}
+
 export function login(identifier, password, { remember = true } = {}) {
   const name = String(identifier || '').trim()
   const lowerName = name.toLowerCase()
@@ -1877,6 +1939,11 @@ export function login(identifier, password, { remember = true } = {}) {
   if (!u || !u.active || !validPass) {
     throw new Error('Invalid email or password')
   }
+  return openLocalSession(u, lowerName, remember)
+}
+
+// Opens the local session of an already-authenticated user (password checked, or Google verified by the hub).
+function openLocalSession(u, lowerName, remember, logAction = 'LOGIN') {
   setLockState(lowerName, null)
 
   const activeTenantId = typeof window !== 'undefined' ? localStorage.getItem(ACTIVE_TENANT_KEY) : null
@@ -1897,7 +1964,7 @@ export function login(identifier, password, { remember = true } = {}) {
   if (u.branchId) db.currentBranch = u.branchId
   else db.currentBranch = 'ALL'
   u.lastLogin = db.session.loginAt
-  log('LOGIN')
+  log(logAction)
   save()
   notifyListeners()
   return db.session
@@ -2159,11 +2226,22 @@ export function setUserPermissions(id, { grants = [], revokes = [] }) {
   return u.perms
 }
 
-export function addUser({ username, password, name, role, branchId }) {
+// The profile email doubles as the Gmail for "Sign in with Google": one person per email on this station.
+function assertEmailFree(email, exceptId) {
+  if (!email) return
+  const taken = db.users.some((x) => x.id !== exceptId && [x.email, x.googleEmail, x.username].some((v) => normalizeEmail(v) === email))
+  if (taken) throw new Error('That email is already used by another account')
+}
+
+export function addUser({ username, password, name, role, branchId, email }) {
   if (db.users.some((u) => u.username.toLowerCase() === username.toLowerCase())) throw new Error('Username already exists')
   if (!username || !password || !name) throw new Error('All fields are required')
   if (isKnownDefaultPassword(password)) throw new Error('That is a known default password. Choose a different one')
+  const mail = normalizeEmail(email)
+  if (mail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) throw new Error('Enter a valid email address')
+  assertEmailFree(mail)
   const u = { id: uid(), username, passHash: hash(password), name, role: role || 'CASHIER', active: true, branchId: branchId || null, perms: { grants: [], revokes: [] } }
+  if (mail) u.email = mail
   db.users.push(u)
   log('USER_ADD', username)
   save()
@@ -2174,8 +2252,16 @@ export function updateUser(id, patch) {
   const u = db.users.find((x) => x.id === id)
   if (!u) return
   if (patch.password && isKnownDefaultPassword(patch.password)) throw new Error('That is a known default password. Choose a different one')
-  if (patch.password) patch.passHash = hash(patch.password)
+  if (patch.password) { patch.passHash = hash(patch.password); u.googlePasswordUnset = false }
   delete patch.password
+  if (patch.email !== undefined) {
+    const mail = normalizeEmail(patch.email)
+    if (mail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) throw new Error('Enter a valid email address')
+    assertEmailFree(mail, id)
+    // clearing the email keeps the old value (login and sessions rely on it); only a real address replaces it
+    if (mail) patch.email = mail
+    else delete patch.email
+  }
   // Allow username change — check uniqueness
   if (patch.username !== undefined) {
     const taken = db.users.some((x) => x.id !== id && x.username.toLowerCase() === patch.username.toLowerCase())

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
-import { useDB, login, clearLock, syncCloudSession, isFirstRun, createOwnerAccount } from '../lib/db'
+import { useDB, login, clearLock, syncCloudSession, isFirstRun, createOwnerAccount, createOwnerAccountWithGoogle, loginWithVerifiedGoogle } from '../lib/db'
 import { validateOwnerForm, MIN_PASSWORD_LENGTH } from '../lib/firstRun'
 import { mobileApi } from '../lib/mobileApi'
 import { syncNow } from '../lib/syncEngine'
 import { ArrowLeft, ArrowRight, Download, ShieldCheck } from 'lucide-react'
-import { mountGoogleButton } from '@optix/suite-sdk'
+import { mountGoogleCredentialButton } from '../lib/googleIdentity'
+import { resolveGoogleSignIn, verifyGoogleCredential } from '../lib/googleAuth'
 import AppChooser from '../components/AppChooser'
 import {
   centralLogin,
@@ -61,24 +62,65 @@ export default function Login() {
     setLoading(false)
   }
 
-  // "Continue with Google": the hub checks the Google sign-in and the Gmail saved in the person's profile. The button only appears when the hub has a Google Client ID.
+  // "Sign in with Google" / "Sign up with Google". ONE credential callback per button:
+  //  - sign in: the Optix account (hub) first; when the hub has no Optix account for that Gmail, the SAME credential is verified and
+  //    matched to a local user of this station (db.jsx -> loginWithVerifiedGoogle)
+  //  - sign up (first run only): the hub verifies the credential, then the owner is created from the Google name and Gmail.
+  // The button only appears when the hub has a Google Client ID. Only the button of the visible view is mounted.
   const googleRef = useRef(null)
   const businessRef = useRef(business)
   businessRef.current = business
+  const setupRef = useRef(setup)
+  setupRef.current = setup
+  const rememberRef = useRef(remember)
+  rememberRef.current = remember
+
+  async function googleSignIn(credential) {
+    setErr('')
+    setLoading(true)
+    try {
+      const outcome = await resolveGoogleSignIn(hub, credential, businessRef.current || '')
+      if (outcome.kind === 'hub') {
+        rememberBusinessId((businessRef.current || '').trim().toLowerCase())
+        rememberCentral(outcome.result)
+        await afterCentral(outcome.result, '')
+        return
+      }
+      loginWithVerifiedGoogle(outcome.identity.email, { remember: rememberRef.current })
+      setLoading(false)
+    } catch (e) {
+      setErr(e.message || 'Google sign-in failed.')
+      setLoading(false)
+    }
+  }
+
+  async function googleSignUp(credential) {
+    const business = String(setupRef.current.business || '').trim()
+    if (!business) {
+      setSetupErrors((v) => ({ ...v, business: 'Enter the business name, then use Sign up with Google' }))
+      return
+    }
+    setErr('')
+    setLoading(true)
+    try {
+      const identity = await verifyGoogleCredential(hub, credential)
+      createOwnerAccountWithGoogle({ identity, business })
+    } catch (e) {
+      setErr(e.message || 'Google sign-up failed.')
+    }
+    setLoading(false)
+  }
+
   useEffect(() => {
     if (!googleRef.current) return undefined
-    const g = mountGoogleButton(googleRef.current, {
+    const g = mountGoogleCredentialButton(googleRef.current, {
       hub,
-      business: () => businessRef.current || '',
-      onResult: (result) => {
-        setErr('')
-        setLoading(true)
-        rememberBusinessId((businessRef.current || '').trim().toLowerCase())
-        rememberCentral(result)
-        afterCentral(result, '').catch((e) => { setErr(e.message || 'Could not sign in with Google.'); setLoading(false) })
-      },
+      text: setupMode ? 'signup_with' : 'signin_with',
+      onCredential: setupMode ? googleSignUp : googleSignIn,
       onError: (e) => { setErr(e.message || 'Google sign-in failed.'); setLoading(false) },
     })
+    // test builds only: lets the browser tests hand over a fake credential instead of clicking Google's real button
+    if (import.meta.env.VITE_TEST_HOOKS === '1') window.__googleTest = { signIn: googleSignIn, signUp: googleSignUp }
     return () => g.destroy()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [choice, setupMode])
@@ -245,6 +287,7 @@ export default function Login() {
           >
             {loading ? <span>Creating…</span> : (<><span>Create account and continue</span><ArrowRight className="w-4 h-4" /></>)}
           </button>
+          <div ref={googleRef} className="justify-center min-h-[44px] [&:not([hidden])]:flex hidden" hidden />
           <button
             type="button"
             onClick={() => { setErr(''); setSetupMode(false) }}

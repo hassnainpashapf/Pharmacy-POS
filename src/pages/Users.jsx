@@ -511,13 +511,17 @@ export function UsersPanel({ hideHeader = false, addingProp, setAddingProp }) {
 
 /* ─── Add User Modal ─── */
 function AddUserModal({ db, onClose, onAdd }) {
-  const [f, setF] = useState({ username: '', name: '', role: 'CASHIER', pw: '', branchId: null })
+  const [f, setF] = useState({ username: '', name: '', email: '', role: 'CASHIER', pw: '', branchId: null })
   return (
     <Modal title="➕ Create New Staff Member" onClose={onClose}>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
         <Input label="Full Name *"  value={f.name}     onChange={e => setF({ ...f, name: e.target.value })} />
         <Input label="Username *"   value={f.username} onChange={e => setF({ ...f, username: e.target.value })} />
         <Input label="Password *" type="password" value={f.pw || ''} onChange={e => setF({ ...f, pw: e.target.value })} />
+        <div>
+          <Input label="Email (optional)" type="email" autoComplete="off" placeholder="name@gmail.com" value={f.email || ''} onChange={e => setF({ ...f, email: e.target.value })} />
+          <p className="text-[11px] text-slate-400 mt-1">Used for Sign in with Google</p>
+        </div>
 
         <div>
           <label className="block text-xs font-bold text-slate-700 mb-1">Assigned Role</label>
@@ -558,12 +562,16 @@ function AddUserModal({ db, onClose, onAdd }) {
 
 /* ─── Edit User Modal ─── */
 function EditUserModal({ user, onClose, onSave }) {
-  const [f, setF] = useState({ name: user.name, username: user.username })
+  const [f, setF] = useState({ name: user.name, username: user.username, email: user.email || '' })
   return (
     <Modal title={`✏️ Edit — ${user.name}`} onClose={onClose}>
       <div className="space-y-3">
         <Input label="Full Name"  value={f.name}     onChange={e => setF({ ...f, name: e.target.value })} />
         <Input label="Username"   value={f.username} onChange={e => setF({ ...f, username: e.target.value })} />
+        <div>
+          <Input label="Email" type="email" autoComplete="off" placeholder="name@gmail.com" value={f.email || ''} onChange={e => setF({ ...f, email: e.target.value })} />
+          <p className="text-[11px] text-slate-400 mt-1">Used for Sign in with Google</p>
+        </div>
       </div>
       <button
         onClick={() => onSave(f)}
