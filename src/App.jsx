@@ -756,7 +756,7 @@ function LegacyApp() {
         )
       }
     }
-    return <Login />
+    return <Login mode={loc.pathname === '/signup' ? 'signup' : 'login'} />
   }
 
   return (

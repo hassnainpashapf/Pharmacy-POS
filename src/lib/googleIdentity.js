@@ -53,6 +53,12 @@ export function mountGoogleCredentialButton(el, { hub, text = 'continue_with', w
     el.innerHTML = ''
     google.accounts.id.renderButton(el, { type: 'standard', theme: 'outline', size: 'large', shape: 'pill', text, logo_alignment: 'center', width: width || Math.max(240, Math.min(360, el.parentElement?.clientWidth || 320)) })
     el.hidden = false
+    const scope = el.closest('form')?.parentElement || document
+    scope.querySelectorAll('.soc-g-hit').forEach((hit) => {
+      hit.innerHTML = ''
+      CLAIM_EVENTS.forEach((ev) => hit.addEventListener(ev, reclaim, { passive: true }))
+      google.accounts.id.renderButton(hit, { type: 'icon', theme: 'outline', size: 'large', shape: 'circle' })
+    })
   })().catch(() => { el.hidden = true })
   return { destroy() { dead = true; CLAIM_EVENTS.forEach((ev) => el.removeEventListener(ev, reclaim)) } }
 }
