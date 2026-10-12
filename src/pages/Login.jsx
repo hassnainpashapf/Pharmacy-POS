@@ -217,51 +217,22 @@ export default function Login({ mode }) {
     }
   }
 
-  const triggerGoogle = () => {
-    const btn = googleRef.current?.querySelector('[role=button], iframe')
-    if (btn && btn.click) btn.click()
-  }
-
-  const SocialRow = () => {
-    const hitStyle = { position: 'absolute', inset: '-3px', opacity: 0.015, zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer' }
-    return (
-      <div className="flex items-center justify-center gap-3 mb-3.5">
-        <div className="relative overflow-hidden w-10 h-10 rounded-full border border-[#dde6e5] bg-white grid place-items-center shadow-sm hover:-translate-y-0.5 transition-all cursor-pointer" title="Continue with Facebook">
-          <span className="soc-g-hit" style={hitStyle} />
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="#1877F2"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4v-8.5z"/></svg>
-        </div>
-        <div className="relative overflow-hidden w-10 h-10 rounded-full border border-[#dde6e5] bg-white grid place-items-center shadow-sm hover:-translate-y-0.5 transition-all cursor-pointer" title="Continue with Google">
-          <span className="soc-g-hit" style={hitStyle} />
-          <svg viewBox="0 0 24 24" width="15" height="15"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/><path fill="#4285F4" d="M22.6 12.2c0-.8-.1-1.5-.2-2.2H12v4.3h6c-.3 1.4-1.1 2.6-2.3 3.4l3.6 2.8c2.1-2 3.3-4.9 3.3-8.3z"/><path fill="#FBBC05" d="M5.3 14.8c-.2-.8-.4-1.6-.4-2.5s.2-1.7.4-2.5L1.6 7C.6 9 0 11.2 0 13.5s.6 4.5 1.6 6.5l3.7-2.9z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.8c-1 .7-2.2 1.1-3.7 1.1-3.1 0-5.8-2.1-6.7-5l-3.7 2.9C3.5 20.4 7.4 23 12 23z"/></svg>
-        </div>
-        <div className="relative overflow-hidden w-10 h-10 rounded-full border border-[#dde6e5] bg-white grid place-items-center shadow-sm hover:-translate-y-0.5 transition-all cursor-pointer" title="Continue with Instagram">
-          <span className="soc-g-hit" style={hitStyle} />
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#E1306C" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#E1306C" stroke="none"/></svg>
-        </div>
-        <div className="relative overflow-hidden w-10 h-10 rounded-full border border-[#dde6e5] bg-white grid place-items-center shadow-sm hover:-translate-y-0.5 transition-all cursor-pointer" title="Continue with LinkedIn">
-          <span className="soc-g-hit" style={hitStyle} />
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="#0A66C2"><path d="M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z"/></svg>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div
       className="w-full min-h-screen flex items-center justify-center py-7 px-4 font-sans relative overflow-hidden"
-      style={{ background: 'linear-gradient(90deg, #f3f7f6 50%, #21524e 50%)' }}
+      style={{ background: '#f2f5f9' }}
     >
       <a
         href="#/website"
-        className="fixed top-5 left-6 z-20 inline-flex items-center gap-1.5 text-xs font-bold text-[#21524e] bg-white/90 backdrop-blur px-3.5 py-1.5 rounded-full border border-[#21524e]/15 shadow-sm hover:bg-white transition-all"
+        className="fixed top-5 left-6 z-20 inline-flex items-center gap-1.5 text-xs font-bold text-[#2f6df6] bg-white/90 backdrop-blur px-3.5 py-1.5 rounded-full border border-[#2f6df6]/15 shadow-sm hover:bg-white transition-all"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
         <span>Optix MedSync</span>
       </a>
 
-      <div className="w-full max-w-[860px] min-h-[510px] bg-[#f9fbfb] rounded-[26px] shadow-[0_32px_72px_-18px_rgba(8,28,26,0.34),0_8px_24px_-8px_rgba(8,28,26,0.14)] grid grid-cols-1 md:grid-cols-2 overflow-hidden relative z-10">
+      <div className="w-full max-w-[860px] min-h-[510px] bg-[#ffffff] rounded-[26px] shadow-[0_32px_72px_-18px_rgba(8,28,26,0.34),0_8px_24px_-8px_rgba(8,28,26,0.14)] grid grid-cols-1 md:grid-cols-2 overflow-hidden relative z-10">
         {/* Left Form Panel */}
-        <div className="p-8 sm:p-10 flex flex-col items-center justify-center text-center bg-[#f9fbfb]">
+        <div className="p-8 sm:p-10 flex flex-col items-center justify-center text-center bg-[#ffffff]">
           {choice ? (
             <div className="w-full max-w-[320px]">
               <AppChooser
@@ -280,9 +251,8 @@ export default function Login({ mode }) {
             </div>
           ) : setupMode ? (
             <div className="w-full max-w-[310px] flex flex-col items-center">
-              <h1 className="text-[27px] font-extrabold text-[#111827] tracking-tight mb-3.5">Sign Up</h1>
-              <SocialRow />
-              <p className="text-[#7c8b89] text-xs font-medium mb-3.5">Or create your pharmacy account</p>
+              <h1 className="text-[27px] font-extrabold text-[#1b2a4a] tracking-tight mb-3.5">Sign Up</h1>
+              <p className="text-[#7a88a3] text-xs font-medium mb-3.5">Or create your pharmacy account</p>
 
               <form key="setup-form" onSubmit={submitSetup} className="w-full space-y-2.5" noValidate>
                 {[
@@ -300,7 +270,7 @@ export default function Login({ mode }) {
                       autoCapitalize="none"
                       value={setup[key]}
                       onChange={(e) => setSetup((v) => ({ ...v, [key]: e.target.value }))}
-                      className="w-full h-[40px] px-5 rounded-full border border-[#d8e3e1] bg-[#edf3f2] text-xs font-medium text-[#1f2937] placeholder-[#7c8b89] focus:bg-white focus:outline-none focus:border-[#21524e] focus:ring-3 focus:ring-[#21524e]/15 transition-all"
+                      className="w-full h-[40px] px-5 rounded-full border border-[#dde4ee] bg-[#eef2f8] text-xs font-medium text-[#1f2937] placeholder-[#7a88a3] focus:bg-white focus:outline-none focus:border-[#2f6df6] focus:ring-3 focus:ring-[#2f6df6]/15 transition-all"
                       placeholder={ph}
                     />
                     {setupErrors[key] && <p className="text-[11px] font-semibold text-rose-600 mt-0.5">{setupErrors[key]}</p>}
@@ -313,7 +283,7 @@ export default function Login({ mode }) {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-[155px] h-[41px] mx-auto bg-[#21524e] hover:bg-[#183f3c] disabled:opacity-60 text-white rounded-full font-semibold text-xs shadow-[0_10px_22px_-6px_rgba(33,82,78,0.48)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center"
+                    className="w-[155px] h-[41px] mx-auto bg-[#2f6df6] hover:bg-[#1f57d6] disabled:opacity-60 text-white rounded-full font-semibold text-xs shadow-[0_10px_22px_-6px_rgba(47,109,246,0.48)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center"
                   >
                     {loading ? 'Creating…' : 'Sign Up'}
                   </button>
@@ -323,29 +293,28 @@ export default function Login({ mode }) {
             </div>
           ) : (
             <div className="w-full max-w-[300px] flex flex-col items-center">
-              <h1 className="text-[27px] font-extrabold text-[#111827] tracking-tight mb-4">Sign In</h1>
-              <SocialRow />
-              <p className="text-[#7c8b89] text-xs font-medium mb-3.5">Or use your account</p>
+              <h1 className="text-[27px] font-extrabold text-[#1b2a4a] tracking-tight mb-4">Sign In</h1>
+              <p className="text-[#7a88a3] text-xs font-medium mb-3.5">Or use your account</p>
 
               <form key="signin-form" onSubmit={submit} className="w-full space-y-3">
                 <input
                   autoFocus
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full h-[43px] px-5 rounded-full border border-[#d8e3e1] bg-[#edf3f2] text-xs font-medium text-[#1f2937] placeholder-[#7c8b89] focus:bg-white focus:outline-none focus:border-[#21524e] focus:ring-3 focus:ring-[#21524e]/15 transition-all"
+                  className="w-full h-[43px] px-5 rounded-full border border-[#dde4ee] bg-[#eef2f8] text-xs font-medium text-[#1f2937] placeholder-[#7a88a3] focus:bg-white focus:outline-none focus:border-[#2f6df6] focus:ring-3 focus:ring-[#2f6df6]/15 transition-all"
                   placeholder="Email Address or Username"
                 />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-[43px] px-5 rounded-full border border-[#d8e3e1] bg-[#edf3f2] text-xs font-medium text-[#1f2937] placeholder-[#7c8b89] focus:bg-white focus:outline-none focus:border-[#21524e] focus:ring-3 focus:ring-[#21524e]/15 transition-all"
+                  className="w-full h-[43px] px-5 rounded-full border border-[#dde4ee] bg-[#eef2f8] text-xs font-medium text-[#1f2937] placeholder-[#7a88a3] focus:bg-white focus:outline-none focus:border-[#2f6df6] focus:ring-3 focus:ring-[#2f6df6]/15 transition-all"
                   placeholder="Password"
                 />
                 <input
                   value={business}
                   onChange={(e) => setBusiness(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-                  className="w-full h-[38px] px-5 rounded-full border border-[#d8e3e1] bg-[#edf3f2]/80 text-[11.5px] font-medium text-[#1f2937] placeholder-[#7c8b89] focus:bg-white focus:outline-none focus:border-[#21524e] focus:ring-3 focus:ring-[#21524e]/15 transition-all"
+                  className="w-full h-[38px] px-5 rounded-full border border-[#dde4ee] bg-[#eef2f8]/80 text-[11.5px] font-medium text-[#1f2937] placeholder-[#7a88a3] focus:bg-white focus:outline-none focus:border-[#2f6df6] focus:ring-3 focus:ring-[#2f6df6]/15 transition-all"
                   placeholder="Business ID (optional)"
                   autoCapitalize="none"
                   autoComplete="off"
@@ -354,7 +323,7 @@ export default function Login({ mode }) {
                 {err && <div className="text-rose-600 text-xs font-semibold py-1">{err}</div>}
 
                 <div className="pt-1 pb-1">
-                  <a href={SUITE_URL + '/contact'} className="text-xs font-medium text-[#6b7b79] hover:text-[#21524e] hover:underline">
+                  <a href={SUITE_URL + '/contact'} className="text-xs font-medium text-[#5b6b85] hover:text-[#2f6df6] hover:underline">
                     Forget your password?
                   </a>
                 </div>
@@ -362,7 +331,7 @@ export default function Login({ mode }) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-[150px] h-[41px] mx-auto bg-[#21524e] hover:bg-[#183f3c] disabled:opacity-60 text-white rounded-full font-semibold text-xs shadow-[0_10px_22px_-6px_rgba(33,82,78,0.48)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center"
+                  className="w-[150px] h-[41px] mx-auto bg-[#2f6df6] hover:bg-[#1f57d6] disabled:opacity-60 text-white rounded-full font-semibold text-xs shadow-[0_10px_22px_-6px_rgba(47,109,246,0.48)] transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center"
                 >
                   {loading ? 'Signing in…' : 'Sign In'}
                 </button>
@@ -373,13 +342,13 @@ export default function Login({ mode }) {
         </div>
 
         {/* Right Blurred Artwork Panel */}
-        <aside className="relative isolate bg-[#0b1718] text-white p-9 flex flex-col items-center justify-center text-center overflow-hidden">
+        <aside className="relative isolate bg-[#0d1b3d] text-white p-9 flex flex-col items-center justify-center text-center overflow-hidden">
           <div
             aria-hidden="true"
             className="absolute -inset-[20%] -z-10 scale-110"
             style={{
               background:
-                'radial-gradient(circle at 62% 52%, #ff3b00 0%, #e0351b 24%, transparent 54%), radial-gradient(circle at 42% 35%, #ff9e2c 0%, transparent 42%), radial-gradient(circle at 48% 25%, #38bdf8 0%, transparent 32%), radial-gradient(circle at 38% 78%, #ec4899 0%, transparent 40%), linear-gradient(145deg, #071314 0%, #0f292a 50%, #091617 100%)',
+                'radial-gradient(circle at 70% 70%, #2f6df6 0%, transparent 55%), radial-gradient(circle at 30% 30%, #38bdf8 0%, transparent 46%), radial-gradient(circle at 25% 78%, #38a89d 0%, transparent 44%), radial-gradient(circle at 82% 22%, #7c5cff 0%, transparent 40%)',
               filter: 'blur(26px) saturate(1.25)',
             }}
           />
